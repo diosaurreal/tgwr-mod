@@ -1,20 +1,104 @@
 ROM_military_category = {
+	ROM_hold_constanta = {
+		icon = GFX_decision_generic_ignite_civil_war
+		allowed = {
+			original_tag = ROM
+		}
+		available = {
+			NOT = {
+				controls_province = 657
+				has_country_flag = ROM_armistice_of_focsani_completed
+			}
+		}
+		cancel_trigger = {
+			has_war = no
+		}
+		days_mission_timeout = 180
+		fire_only_once = yes
+		on_map_mode = map_and_decisions_view
+		highlight_states = {
+			highlight_provinces = {
+				657
+			}
+			highlight_color_while_active = 1
+		}
+		is_good = yes
+		activation = {
+			has_war = yes
+			has_civil_war = no
+			controls_province = 657
+			any_enemy_country = {
+				OR = {
+					controls_province = 12711
+					controls_province = 9614
+					controls_province = 11597
+				}
+			}
+		}
+		timeout_effect = {
+			add_war_support = 0.05
+		}
+		complete_effect = {
+			add_stability = -0.05
+			add_war_support = -0.05
+		}
+	}
 	ROM_evaluate_chitila = {
-		icon = GFX_decision_generic_speech
+		icon = GFX_decision_generic_air
 		allowed = {
 			original_tag = ROM
 		}
 		visible = {
 			has_completed_focus = ROM_advancements_in_plane_technology
 		}
+		cost = 5
 		fire_only_once = yes
 		days_remove = 30
 		ai_will_do = {
-			factor = 80
+			factor = 20
 		}
 		remove_effect = {
 			air_experience = 15
-			set_global_flag = ROM_chitila_flag
+		}
+	}
+	ROM_order_farmans_from_cerchez_and_co = {
+		icon = GFX_decision_eng_trade_unions_support
+		allowed = {
+			original_tag = ROM
+		}
+		visible = {
+			has_completed_focus = ROM_domestic_air_manufactor
+		}
+		available = {
+			has_tech = scout_plane
+			has_completed_focus = ROM_domestic_air_manufactor
+		}
+		fire_only_once = yes
+		cost = 10
+		days_remove = 30
+		ai_will_do = {
+			base = 10
+			modifier = {
+				factor = 5
+				has_political_power >60
+			}
+		}
+		complete_effect = {
+		}
+		remove_effect = {
+			if = {
+				limit = {
+					NOT = {
+						has_tech = scout_plane
+					}
+				}
+				custom_effect_tooltip = ROM_order_farmans.tt
+			}
+			add_equipment_to_stockpile = {
+				type = scout_plane_equipment_1
+				amount = 6
+			}
+			air_experience = 15
 		}
 	}
 	ROM_fortify_bucharest = {
@@ -41,7 +125,11 @@ ROM_military_category = {
 		fire_only_once = yes
 		days_remove = 30
 		ai_will_do = {
-			factor = 80
+			base = 10
+			modifier = {
+				threat >0.3
+				factor = 3
+			}
 		}
 		remove_effect = {
 			46 = {
@@ -69,26 +157,214 @@ ROM_military_category = {
 			planning_speed = 0.15
 		}
 		ai_will_do = {
-			factor = 80
+			base = 10
+			modifier = {
+				focus_progress = {
+					focus = ROM_turn_west
+					progress > 0
+				}
+				factor = 3
+			}
+		}
+	}
+	ROM_teach_new_tactics = {
+		icon = GFX_decision_hol_draw_up_staff_plans
+		allowed = {
+			original_tag = ROM
+		}
+		visible = {
+			has_completed_focus = ROM_training_schools
+		}
+		cost = 15
+		fire_only_once = yes
+		days_remove = 25
+		modifier = {
+			planning_speed = 0.15
+		}
+		remove_effect = {
+			add_doctrine_cost_reduction = {
+				cost_reduction = 0.5
+				name = ROM_teach_new_tactics
+				category = land_doctrine
+			}
+		}
+		ai_will_do = {
+			base = 10
+			modifier = {
+				has_war = yes
+				factor = 2
+			}
+			modifier = {
+				has_political_power >50
+				factor = 2
+			}
+		}
+	}
+	ROM_prepare_oil_field_scorching = {
+		icon = GFX_decision_eng_trade_unions_support
+		allowed = {
+			original_tag = ROM
+		}
+		visible = {
+			has_completed_focus = ROM_prepare_for_the_upcoming_war
+		}
+		available = {
+			46 = {
+				is_owned_and_controlled_by = ROM
+			}
+		}
+		cost = 25
+		fire_only_once = yes
+		days_remove = 25
+		remove_effect = {
+			set_country_flag = ROM_scorch_oil_fields_flag
+			custom_effect_tooltip = ROM_scorch_oil_fields.tt
+		}
+		ai_will_do = {
+			base = 20
+			modifier = {
+				has_war = yes
+				factor = 5
+			}
+		}
+	}
+	ROM_improve_fortifications = {
+		icon = GFX_decision_generic_construction
+		allowed = {
+			original_tag = ROM
+		}
+		visible = {
+			has_completed_focus = ROM_improvements_on_fortifications
+			NOT = {
+				has_country_flag = ROM_removed_fort_penalty_flag
+			}
+		}
+		cost = 15
+		days_remove = 50
+		modifier = {
+			civilian_factory_use = 1
+		}
+		remove_effect = {
+			custom_effect_tooltip = ROM_impfort.tt
+			add_to_variable = {
+				ROM_production_speed_bunker_army = 0.1
+			}
+			if = {
+				limit = {
+					check_variable = {
+						ROM_production_speed_bunker_army >-0.1
+					}
+				}
+				set_country_flag = ROM_removed_fort_penalty_flag
+			}
+		}
+		ai_will_do = {
+			base = 10
+			modifier = {
+				has_political_power >100
+				factor = 3
+			}
+		}
+	}
+	ROM_request_french_military_mission = {
+		icon = GFX_decision_generic_army_support
+		priority = 150
+		allowed = {
+			original_tag = ROM
+		}
+		visible = {
+			has_completed_focus = ROM_turn_west
+			is_in_faction_with = FRA
+		}
+		cost = 10
+		days_remove = 5
+		fire_only_once = yes
+		remove_effect = {
+			FRA = {
+				country_event = {
+					id = ww1_romania.139
+					days = 1
+				}
+			}
+		}
+		ai_will_do = {
+			base = 100
+		}
+	}
+	ROM_assemble_french_fighters_in_iasi = {
+		icon = GFX_decision_SWE_set_air_budget
+		allowed = {
+			original_tag = ROM
+		}
+		visible = {
+			has_completed_focus = ROM_found_rezerva_generala_a_aviatiei
+			is_in_faction_with = FRA
+		}
+		available = {
+			FRA = {
+				has_tech = fighter1
+			}
+		}
+		cost = 10
+		days_remove = 20
+		fire_only_once = yes
+		remove_effect = {
+			add_equipment_to_stockpile = {
+				type = fighter_equipment
+				amount = 24
+				producer = FRA
+			}
+		}
+		ai_will_do = {
+			base = 10
+			modifier = {
+				has_political_power >30
+				factor = 4
+			}
+		}
+	}
+	ROM_assemble_french_bombers_in_iasi = {
+		icon = GFX_decision_ger_military_buildup
+		allowed = {
+			original_tag = ROM
+		}
+		visible = {
+			has_completed_focus = ROM_found_rezerva_generala_a_aviatiei
+			is_in_faction_with = FRA
+		}
+		available = {
+			FRA = {
+				has_tech = tactical_bomber1
+			}
+		}
+		cost = 10
+		days_remove = 5
+		fire_only_once = yes
+		remove_effect = {
+			add_equipment_to_stockpile = {
+				type = tac_bomber_equipment
+				amount = 20
+				producer = FRA
+			}
+		}
+		ai_will_do = {
+			base = 10
+			modifier = {
+				has_political_power >30
+				factor = 4
+			}
 		}
 	}
 	ROM_suppress_khotyn_uprising = {
-		icon = GFX_decision_generic_speech
+		icon = GFX_decision_oppression
 		allowed = {
 			original_tag = ROM
 		}
 		available = {
 			has_country_flag = ROM_khotyn_uprising_happens
-			divisions_in_state = {
-    			size > 0
-    			state = 78
-			}
 		}
 		visible = {
 			has_country_flag = ROM_khotyn_uprising_happens
-			NOT = {
-				has_country_flag = ROM_khotyn_uprising_suppressed
-			}
 		}
 		fire_only_once = yes
 		days_remove = 10
@@ -101,7 +377,47 @@ ROM_military_category = {
 					modifier = ROM_khotyn_uprising
 				}
 			}
-			set_country_flag = ROM_khotyn_uprising_suppressed
+			clr_country_flag = ROM_khotyn_uprising_happens
+		}
+	}
+	ROM_artillery_modernization_decision = {
+		icon = GFX_decision_generic_artillery_icon
+		allowed = {
+			original_tag = ROM
+		}
+		visible = {
+			has_completed_focus = ROM_artillery_modernization_focus
+		}
+		available = {
+			has_completed_focus = ROM_artillery_modernization_focus
+		}
+		fire_only_once = yes
+		custom_cost_trigger = {
+			has_army_experience > 15
+		}
+		custom_cost_text = ROM_arty_modern_dec
+		days_remove = 30
+		ai_will_do = {
+			base = 0
+			modifier = {
+				factor = 5
+				has_army_experience > 15
+			}
+		}
+		complete_effect = {
+		}
+		remove_effect = {
+			add_tech_bonus = {
+				bonus = 0.5
+				uses = 2
+				category = mio_cat_all_artillery_equipment
+				name = ROM_artillery_modernization_focus
+			}
+			add_equipment_to_stockpile = {
+    			type = artillery_equipment
+    			amount = 75
+    			producer = ROM
+			}
 		}
 	}
 }
@@ -143,8 +459,178 @@ political_actions = {
 			}
 		}
 	}
+}
+
+ROM_kings_country_category = {
+	ROM_king_appoints_new_government = {
+		icon = GFX_decision_generic_monarchy
+		activation = {
+			check_variable = {
+				kings_approval_of_government < -3
+			}
+		}
+		available = {
+			is_ai = yes
+		}
+		cancel_trigger = {
+			OR = {
+				check_variable = {
+					kings_approval_of_government > -3
+				}
+				is_ai = yes
+				has_completed_focus = ROM_deal_with_the_liberal_king
+				has_completed_focus = ROM_in_the_hall_of_the_mountain_king
+
+				has_completed_focus = ROM_the_house_always_wins
+				has_completed_focus = ROM_new_constitution
+				has_completed_focus = ROM_new_times
+				has_war_with = RUS
+				has_war_with = AUS
+				has_war_with = GER
+				has_war_with = FRA
+				has_country_leader = {
+					character = ROM_carol_i
+					ruling_only = yes
+				}
+				has_country_leader = {
+					character = ROM_ferdinand_i
+					ruling_only = yes
+				}
+			}
+		}
+		days_mission_timeout = 90
+		selectable_mission = no
+		complete_effect = {
+		}
+		timeout_effect = {
+			country_event = {
+				id = ww1_romania.18
+				days = 1
+			}
+		}
+	}
+	ROM_kings_rotation = {
+		icon = GFX_decision_generic_monarchy
+		activation = {
+			original_tag = ROM
+		}
+		available = {
+			hidden_trigger = {
+				is_ai = yes
+			}
+		}
+		cancel_trigger = {
+			OR = {
+				has_completed_focus = ROM_deal_with_the_liberal_king
+				has_completed_focus = ROM_the_house_always_wins
+				has_completed_focus = ROM_in_the_hall_of_the_mountain_king
+				has_completed_focus = ROM_new_constitution
+				has_completed_focus = ROM_new_times
+				has_war_with = RUS
+				has_war_with = AUS
+				has_war_with = GER
+				has_war_with = FRA
+				has_country_leader = {
+					character = ROM_carol_i
+					ruling_only = yes
+				}
+				has_country_leader = {
+					character = ROM_ferdinand_i
+					ruling_only = yes
+				}
+			}
+		}
+		is_good = no
+		days_mission_timeout = 140
+		fire_only_once = yes
+		selectable_mission = no
+		timeout_effect = {
+			add_to_variable = {
+				var = kings_approval_of_government
+				value = -1
+			}
+			custom_effect_tooltip = king_opinion_worse.tt
+			activate_mission = ROM_kings_rotation
+			ROM_king_effect = yes
+		}
+		complete_effect = {
+		}
+	}
+	ROM_adopt_a_workers_right_plank = {
+		icon = GFX_decision_eng_trade_unions_support
+		allowed = {
+			original_tag = ROM
+		}
+		visible = {
+			has_completed_focus = ROM_mandatory_insurance
+		}
+		fire_only_once = yes
+		days_remove = 15
+		ai_will_do = {
+			factor = 80
+		}
+		remove_effect = {
+			add_political_power = 20
+			add_stability = -0.01
+		}
+	}
+	ROM_sway_the_vote_of_soldiers = {
+		icon = GFX_decision_generic_military
+		allowed = {
+			original_tag = ROM
+		}
+		visible = {
+			has_completed_focus = ROM_the_burdens_they_endure
+		}
+		fire_only_once = yes
+		days_remove = 15
+		ai_will_do = {
+			factor = 80
+		}
+		remove_effect = {
+			add_political_power = 20
+		}
+	}
+	ROM_end_foreign_purchases = {
+		icon = GFX_decision_generic_industry
+		allowed = {
+			original_tag = ROM
+		}
+		visible = {
+			has_completed_focus = ROM_beggers_cant_be_chosers
+		}
+		fire_only_once = yes
+		days_remove = 15
+		ai_will_do = {
+			factor = 80
+		}
+		remove_effect = {
+			add_offsite_building = {
+				type = arms_factory
+				level = -2
+			}
+			custom_effect_tooltip = ROM_mife2.tt
+		}
+	}
+	ROM_united_conservative_front = {
+		icon = GFX_decision_generic_political_rally
+		allowed = {
+			original_tag = ROM
+		}
+		visible = {
+			has_completed_focus = ROM_reunify_the_conservatives
+		}
+		fire_only_once = yes
+		days_remove = 15
+		ai_will_do = {
+			factor = 80
+		}
+		remove_effect = {
+			add_political_power = 20
+		}
+	}
 	ROM_recruitment_campaign = {
-		icon = GFX_decision_generic_speech
+		icon = GFX_decision_generic_military
         allowed = {
             always = yes
         }
@@ -180,174 +666,8 @@ political_actions = {
 			#
         }
    }
-}
-
-ROM_kings_country_category = {
-	ROM_king_appoints_new_government = {
-		icon = GFX_goud
-		activation = {
-			check_variable = {
-				kings_approval_of_government < -3
-			}
-		}
-		available = {
-			is_ai = yes
-		}
-		cancel_trigger = {
-			OR = {
-				check_variable = {
-					kings_approval_of_government > -3
-				}
-				is_ai = yes
-				has_completed_focus = ROM_deal_with_the_liberal_king
-				has_completed_focus = ROM_the_house_always_wins
-				has_completed_focus = ROM_new_constitution
-				has_completed_focus = ROM_new_times
-				has_war_with = RUS
-				has_war_with = AUH
-				has_war_with = GER
-				has_war_with = FRA
-				has_country_leader = {
-					character = ROM_carol_i
-					ruling_only = yes
-				}
-				has_country_leader = {
-					character = ROM_ferdinand_i
-					ruling_only = yes
-				}
-			}
-		}
-		days_mission_timeout = 90
-		selectable_mission = no
-		complete_effect = {
-		}
-		timeout_effect = {
-			country_event = {
-				id = ww1_romania.18
-				days = 1
-			}
-		}
-	}
-	ROM_kings_rotation = {
-		activation = {
-			original_tag = ROM
-		}
-		available = {
-			hidden_trigger = {
-				is_ai = yes
-			}
-		}
-		cancel_trigger = {
-			OR = {
-				has_completed_focus = ROM_deal_with_the_liberal_king
-				has_completed_focus = ROM_the_house_always_wins
-				has_completed_focus = ROM_new_constitution
-				has_completed_focus = ROM_new_times
-				has_war_with = RUS
-				has_war_with = AUH
-				has_war_with = GER
-				has_war_with = FRA
-				has_country_leader = {
-					character = ROM_carol_i
-					ruling_only = yes
-				}
-				has_country_leader = {
-					character = ROM_ferdinand_i
-					ruling_only = yes
-				}
-			}
-		}
-		is_good = no
-		days_mission_timeout = 140
-		fire_only_once = yes
-		selectable_mission = no
-		timeout_effect = {
-			add_to_variable = {
-				var = kings_approval_of_government
-				value = -1
-			}
-			custom_effect_tooltip = king_opinion_worse.tt
-			activate_mission = ROM_kings_rotation
-			ROM_king_effect = yes
-		}
-		complete_effect = {
-		}
-	}
-	ROM_adopt_a_workers_right_plank = {
-		icon = GFX_decision_generic_speech
-		allowed = {
-			original_tag = ROM
-		}
-		visible = {
-			has_completed_focus = ROM_mandatory_insurance
-		}
-		fire_only_once = yes
-		days_remove = 15
-		ai_will_do = {
-			factor = 80
-		}
-		remove_effect = {
-			add_political_power = 20
-			add_stability = -0.01
-		}
-	}
-	ROM_sway_the_vote_of_soldiers = {
-		icon = GFX_decision_generic_speech
-		allowed = {
-			original_tag = ROM
-		}
-		visible = {
-			has_completed_focus = ROM_the_burdens_they_endure
-		}
-		fire_only_once = yes
-		days_remove = 15
-		ai_will_do = {
-			factor = 80
-		}
-		remove_effect = {
-			add_political_power = 20
-		}
-	}
-	ROM_end_foreign_purchases = {
-		icon = GFX_decision_generic_speech
-		allowed = {
-			original_tag = ROM
-		}
-		visible = {
-			has_completed_focus = ROM_beggers_cant_be_chosers
-		}
-		fire_only_once = yes
-		days_remove = 15
-		ai_will_do = {
-			factor = 80
-		}
-		remove_effect = {
-			add_offsite_building = {
-				type = arms_factory
-				level = -2
-			}
-			custom_effect_tooltip = ROM_mife2.tt
-		}
-	}
-	ROM_united_conservative_front = {
-		icon = GFX_decision_generic_speech
-		allowed = {
-			original_tag = ROM
-		}
-		visible = {
-			has_completed_focus = ROM_reunify_the_conservatives
-		}
-		fire_only_once = yes
-		days_remove = 15
-		ai_will_do = {
-			factor = 80
-		}
-		remove_effect = {
-			add_political_power = 20
-		}
-	}
 	ROM_exile_carp_from_politics = {
-		icon = GFX_decision_generic_speech
+		icon = GFX_decision_SWI_dismiss_council
 		allowed = {
 			original_tag = ROM
 		}
@@ -367,7 +687,7 @@ ROM_kings_country_category = {
 		}
 	}
 	ROM_isolate_stere = {
-		icon = GFX_decision_generic_speech
+		icon = GFX_decision_SWI_dismiss_council
 		allowed = {
 			original_tag = ROM
 		}
@@ -403,7 +723,7 @@ ROM_kings_country_category = {
 		}
 	}
 	ROM_investigate_missing_government_funds = {
-		icon = GFX_decision_generic_speech
+		icon = GFX_decision_generic_political_discourse
 		allowed = {
 			original_tag = ROM
 		}
@@ -423,7 +743,7 @@ ROM_kings_country_category = {
 		}
 	}
 	ROM_shrink_the_size_of_government = {
-		icon = GFX_decision_generic_speech
+		icon = GFX_decision_generic_political_address
 		allowed = {
 			original_tag = ROM
 		}
@@ -441,7 +761,7 @@ ROM_kings_country_category = {
 		}
 	}
 	ROM_fight_pnl_corruption_networks = {
-		icon = GFX_decision_generic_speech
+		icon = GFX_decision_gre_investment_decisions
 		allowed = {
 			original_tag = ROM
 		}
@@ -459,7 +779,7 @@ ROM_kings_country_category = {
 		}
 	}
 	ROM_populist_rhetoric = {
-		icon = GFX_decision_generic_speech
+		icon = GFX_decision_oppression
 		allowed = {
 			original_tag = ROM
 		}
@@ -477,7 +797,7 @@ ROM_kings_country_category = {
 		}
 	}
 	ROM_populist_rhetoric2 = {
-		icon = GFX_decision_generic_speech
+		icon = GFX_decision_oppression
 		allowed = {
 			original_tag = ROM
 		}
@@ -495,7 +815,7 @@ ROM_kings_country_category = {
 		}
 	}
 	ROM_encourage_factory_jobs = {
-		icon = GFX_decision_generic_speech
+		icon = GFX_decision_generic_factory
 		allowed = {
 			original_tag = ROM
 		}
@@ -514,7 +834,7 @@ ROM_kings_country_category = {
 		}
 	}
 	ROM_oppose_political_parties = {
-		icon = GFX_decision_generic_speech
+		icon = GFX_decision_generic_political_discourse
 		allowed = {
 			original_tag = ROM
 		}
@@ -531,7 +851,7 @@ ROM_kings_country_category = {
 		}
 	}
 	ROM_glorify_the_monarchy = {
-		icon = GFX_decision_generic_speech
+		icon = GFX_decision_generic_monarchy
 		allowed = {
 			original_tag = ROM
 		}
@@ -550,7 +870,7 @@ ROM_kings_country_category = {
 		}
 	}
 	ROM_cut_government_bloat = {
-		icon = GFX_decision_generic_speech
+		icon = GFX_decision_generic_decision
 		allowed = {
 			original_tag = ROM
 		}
@@ -569,7 +889,7 @@ ROM_kings_country_category = {
 		}
 	}
 	ROM_prevent_a_brain_drain = {
-		icon = GFX_decision_generic_speech
+		icon = GFX_decision_generic_research
 		allowed = {
 			original_tag = ROM
 		}
@@ -607,7 +927,7 @@ ROM_kings_country_category = {
 		}
 	}
 	ROM_pander_to_the_middle_class = {
-		icon = GFX_decision_generic_speech
+		icon = GFX_decision_generic_political_rally
 		allowed = {
 			original_tag = ROM
 		}
@@ -641,7 +961,7 @@ ROM_kings_country_category = {
 		}
 	}
 	ROM_embrace_modernization = {
-		icon = GFX_decision_generic_speech
+		icon = GFX_decision_generic_political_discourse
 		allowed = {
 			original_tag = ROM
 		}
@@ -658,7 +978,7 @@ ROM_kings_country_category = {
 		}
 	}
 	ROM_consolidate_support_amongst_rural_areas = {
-		icon = GFX_decision_generic_speech
+		icon = GFX_decision_eng_propaganda_campaigns
 		allowed = {
 			original_tag = ROM
 		}
@@ -676,7 +996,7 @@ ROM_kings_country_category = {
 		}
 	}
 	ROM_vast_political_promises = {
-		icon = GFX_decision_generic_speech
+		icon = GFX_decision_eng_propaganda_campaigns
 		allowed = {
 			original_tag = ROM
 		}
@@ -697,7 +1017,7 @@ ROM_kings_country_category = {
 		}
 	}
 	ROM_challenge_pc_dominance_of_urban_romania = {
-		icon = GFX_decision_generic_speech
+		icon = GFX_decision_eng_propaganda_campaigns
 		allowed = {
 			original_tag = ROM
 		}
@@ -758,6 +1078,12 @@ GER_great_war = {
 		allowed = {
 			original_tag = ROM
 		}
+		available = {
+			country_exists = MOL
+			MOL = {
+				is_subject = no
+			}
+		}
 		visible = {
 			country_exists = MOL
 		}
@@ -773,6 +1099,184 @@ GER_great_war = {
 			}
 		}
 	}
+	ROM_invasion_of_bessarabia = {
+		icon = GFX_decision_generic_prepare_civil_war
+		allowed = {
+			original_tag = ROM
+		}
+		target_trigger = {
+			FROM = {
+				owns_state = 78
+				controls_state = 78
+				78 = {
+					num_owned_neighbour_states = {
+						owner = PREV
+						count < 2
+					}
+				}
+				NOT = {
+					tag = MOL
+					tag = AUS
+					tag = HUN
+					tag = GER
+					tag = BUL
+					tag = TUR
+					has_war_with = ROOT
+					ROOT = {
+						is_subject_of = PREV
+					}
+				}
+			}
+		}
+		available = {
+			has_war = no
+			78 = {
+				any_neighbor_state = {
+					is_owned_and_controlled_by = ROOT
+				}
+			}
+		}
+		days_remove = 10
+		ai_will_do = {
+			factor = 80
+		}
+		war_with_target_on_remove = yes
+		remove_effect = {
+			every_country = {
+				limit = {
+					owns_state = 78
+					controls_state = 78
+				}
+				ROOT = {
+					declare_war_on = {
+						target = PREV
+						type = take_state_focus
+						generator = { 78 }
+            				}
+				}
+				country_event = ww1_romania.153
+			}
+			activate_mission = ROM_bessarabian_gamble
+		}
+		cancel_trigger = {
+			hidden_trigger = {
+				FROM = {
+					NOT = {
+						owns_state = 78
+						controls_state = 78
+						78 = {
+							num_owned_neighbour_states = {
+								owner = PREV
+								count < 1
+							}
+						}
+					}
+					OR = {
+						tag = MOL
+						tag = AUS
+						tag = HUN
+						tag = GER
+						tag = BUL
+						tag = TUR
+						has_war_with = ROOT
+						ROOT = {
+							is_subject_of = PREV
+						}
+					}
+				}
+			}
+		}
+	}
+	ROM_bessarabian_gamble = {
+		icon = GFX_decision_generic_prepare_civil_war
+		available = {
+			controls_state = 78
+		}
+		cancel_trigger = {
+			OR = {
+				any_country = {
+					owns_state = 78
+					NOT = {
+						has_war_with = ROOT
+					}
+				}
+				surrender_progress > 0.05
+			}
+		}
+		days_mission_timeout = 150
+		activation = {
+			always = no
+		}
+		is_good = no
+		complete_effect = {
+			every_country = {
+				limit = {
+					has_war_with = ROOT
+					OR = {
+						owns_state = 78	
+						any_country = {
+							OR = {
+								is_in_faction_with = PREV
+								is_subject_of = PREV
+								has_subject = PREV
+							}
+						}
+					}
+				}
+				white_peace = ROOT
+			}
+			78 = {
+				transfer_state_to = ROOT
+			}
+			add_stability = 0.05
+			add_war_support = 0.05
+			add_political_power = 100
+		}
+		timeout_effect = {
+			every_country = {
+				limit = {
+					has_war_with = ROOT
+					OR = {
+						owns_state = 78	
+						any_country = {
+							OR = {
+								is_in_faction_with = PREV
+								is_subject_of = PREV
+								has_subject = PREV
+							}
+						}
+					}
+				}
+				white_peace = ROOT
+			}
+			add_stability = -0.05
+			add_war_support = -0.05
+			add_political_power = -50
+		}
+		cancel_effect  = {
+			hidden_effect = {
+				every_country = {
+					limit = {
+						has_war_with = ROOT
+						OR = {
+							owns_state = 78	
+							any_country = {
+								OR = {
+									is_in_faction_with = PREV
+									is_subject_of = PREV
+									has_subject = PREV
+								}
+							}
+						}
+					}
+					white_peace = ROOT
+				}
+				add_stability = -0.05
+				add_war_support = -0.05
+				add_political_power = -50
+			}	
+		}
+	}
 	ROM_armistice_of_focsani_decision = {
 		icon = GFX_decision_generic_break_treaty
 		cost = 0
@@ -783,6 +1287,7 @@ GER_great_war = {
 			has_global_flag = great_war
 			has_war_with = GER
 			surrender_progress > 0.4
+			fights_alone = yes
 		}
 		visible = {
 			has_global_flag = great_war
@@ -801,6 +1306,7 @@ GER_great_war = {
 			add_dynamic_modifier = {
 				modifier = ROM_occupation_costs
 			}
+			add_ideas = standing_alone
 			GER = {
 				add_ideas = ROM_occupation_costs_rom2
 			}
@@ -808,6 +1314,8 @@ GER_great_war = {
 				add_dynamic_modifier = {
 					modifier = ROM_armistice_of_focsani_dobrogea_de_nord
 				}
+				transfer_state_to = ROM
+				set_demilitarized_zone = yes
 			}
 			hidden_effect = {
 				set_capital = {
@@ -815,14 +1323,16 @@ GER_great_war = {
 				}
 				set_country_flag = ROM_armistice_of_focsani_completed
 				give_military_access = RUS
-				white_peace = {
-					tag = GER
-				}
-				white_peace = {
-					tag = AUH
-				}
-				white_peace = {
-					tag = BUL
+				every_country = {
+					limit = {
+						OR = {
+							tag = GER
+							is_in_faction_with = GER
+						}
+					}
+					ROM = {
+						white_peace = PREV
+					}
 				}
 				if = {
 					limit = {
@@ -833,31 +1343,17 @@ GER_great_war = {
 					leave_faction = yes
 				}
 			}
-			866 = {
-				transfer_state_to = GER
-			}
-			81 = {
-				transfer_state_to = GER
-			}
-			46 = {
-				transfer_state_to = GER
-			}
-			805 = {
-				transfer_state_to = ROM
-				set_demilitarized_zone = yes
-			}
-			846 = {
-				transfer_state_to = GER
-			}
-			if = {
+			every_owned_state = {
 				limit = {
-					ROM = {
-						owns_state = 77
+					OR = {
+						state = 46
+						state = 77
+						state = 81
+						state = 846
+						state = 866
 					}
 				}
-				77 = {
-					transfer_state_to = GER
-				}
+				transfer_state_to = GER
 			}
 			custom_effect_tooltip = ROM_armistice_of_focsani.tt
 		}
@@ -906,6 +1402,7 @@ GER_great_war = {
 		}
 		activation = {
 			has_global_flag = ROM_treaty_doable
+			has_war = yes
 		}
 		available = {
 			has_global_flag = ROM_treaty_of_bucharest
@@ -958,6 +1455,9 @@ GER_great_war = {
 					has_country_flag = GER_capitulation
 				}
 			}
+			NOT = {
+				has_completed_focus = ROM_pay_off_occupation_costs
+			}
 		}
 		visible = {
 			NOT = {
@@ -973,7 +1473,10 @@ GER_great_war = {
 		war_with_on_remove = GER
 		remove_effect = {
 			set_country_flag = ROM_treaty_of_bucharest_violated
-			remove_ideas = idea_armistice
+			remove_ideas = {
+				idea_armistice
+				standing_alone
+			}
 			FRA = {
 				if = {
 					limit = {
@@ -1078,6 +1581,85 @@ foreign_politics = {
 			add_state_claim = 77
 		}
 	}
+	ROM_balkan_war_intervention_german_pressure = {
+		icon = GFX_decision_generic_prepare_civil_war
+		allowed = {
+			original_tag = ROM
+		}
+		available = {
+			is_subject = no
+			BUL = {
+				has_war_with = SER
+				owns_state = 77
+			}
+			is_in_faction_with = GER
+		}
+		visible = {
+			NOT = {
+				has_war_together_with = GER
+				has_war_together_with = FRA
+			}
+			NOT = {
+				has_global_flag = kis_secondbalkanwar_victory
+			}
+			NOT = {
+				has_global_flag = kis_secondbalkanwar_lose
+			}
+			SER = {
+				NOT = {
+					is_in_faction_with = GER
+					has_war_together_with = GER
+					is_in_faction_with = FRA
+					has_war_together_with = FRA
+				}
+			}
+			BUL = {
+				NOT = {
+					is_in_faction_with = GER
+					has_war_together_with = GER
+					is_in_faction_with = FRA
+					has_war_together_with = FRA
+				}
+			}
+			BUL = {
+				has_war_with = SER
+			}
+		}
+		fire_only_once = yes
+		days_remove = 15
+		ai_will_do = {
+			factor = 200
+			modifier = {
+				factor = 0
+				OR = {
+					SER = {
+						OR = {
+							has_capitulated = yes
+							surrender_progress > 0.1
+						}
+					}
+					has_war = yes
+					AND = {
+						GRE = {
+							has_war_with = BUL
+							OR = {
+								has_capitulated = yes
+								surrender_progress > 0.1
+							}
+						}
+					}
+				}
+			}
+		}
+		remove_effect = {
+			GER = {
+			country_event = {
+				id = ww1_romania.167
+			}
+		}
+			add_state_claim = 77
+		}
+	}
 }
 
 peace_deals = {
@@ -1090,40 +1672,24 @@ peace_deals = {
 			surrender_progress > 0.1
 		}
 		visible = {
-			is_in_faction = no
-			has_war_with = FROM
+			has_war_with = HUN
 			is_subject = no
-			FROM = {
+			HUN = {
 				is_in_faction = no
 				is_subject = no
 			}
-		}
-		target_trigger = {
-			FROM = {
-				tag = HUN
-			}
+			has_completed_focus = ROM_romanian_hungarian_war_focus
 		}
 		fire_only_once = yes
 		ai_will_do = {
-			factor = 1000
+			base = 0
 			modifier = {
-				factor = 0
+				add = 1000
 				surrender_progress < 0.6
-			}
-			modifier = {
-				factor = 0
-				FROM = {
-					any_other_country = {
-						has_war_with = PREV
-						has_capitulated = no
-						surrender_progress < 0.35
-					}
-					surrender_progress > 0.35
-				}
 			}
 		}
 		complete_effect = {
-			FROM = {
+			HUN = {
 				country_event = ww1_hungary.8
 			}
 		}
@@ -1202,9 +1768,64 @@ economy_decisions = {
 			ROM_railway_improve = yes
 		}
 	}
+	ROM_repair_oil_fields = {
+		icon = GFX_decision_generic_construction
+		cost = 50
+		days_remove = 50
+		allowed = {
+		}
+		available = {
+			controls_state = 46
+		}
+		visible = {
+			has_global_flag = ROM_broken_oilfields_flag
+			controls_state = 46
+		}
+		cancel_trigger = {
+			NOT = {
+				controls_state = 46
+			}
+		}
+		ai_will_do = {
+			factor = 100
+		}
+		modifier = {
+			consumer_goods_factor = 0.15
+		}
+		remove_effect = {
+			country_event = ww1_romania.87
+		}
+	}
 }
 
 political_actions = {
+	ROM_law_on_southern_dobruja_decision = {
+		icon = GFX_decision_generic_political_discourse
+		cost = 50
+		days_remove = 30
+		allowed = {
+			original_tag = ROM
+		}
+		available = {
+			has_completed_focus = ROM_law_on_southern_dobruja
+		}
+		visible = {
+			has_completed_focus = ROM_law_on_southern_dobruja
+			NOT = {
+				77 = {
+					is_core_of = ROM
+				}
+			}
+		}
+		ai_will_do = {
+			factor = 100
+		}
+		remove_effect = {
+			77 = {
+				add_core_of = ROM
+			}
+		}
+	}
 	ROM_encourage_aromanian_migration = {
 		icon = GFX_none
 		cost = 10
@@ -1221,9 +1842,6 @@ political_actions = {
 				805 = {
 					is_core_of = ROM
 				}
-			}
-			NOT = {
-				has_country_flag = ROM_1914_start_date
 			}
 		}
 		ai_will_do = {
@@ -1306,9 +1924,315 @@ ROM_postwar_cat = {
 			}
 		}
 	}
+	ROM_suppress_szekelyfold_rebels = {
+		icon = GFX_decision_oppression
+		cost = 25
+		days_remove = 20
+		allowed = {
+			original_tag = ROM
+		}
+		available = {
+			NOT = {
+				778 = {
+					is_core_of = ROM
+				}
+			}
+		}
+		visible = {
+			has_completed_focus = ROM_suppress_szekelyfold_hungarians
+			NOT = {
+				778 = {
+					is_core_of = ROM
+				}
+			}
+		}
+		ai_will_do = {
+			factor = 3
+		}
+		remove_effect = {
+			778 = {
+				add_resistance = -10
+			}
+			custom_effect_tooltip = ROM_chance_of_violent_clash
+			hidden_effect = {
+				random_list = {
+					85 = {
+					}
+					15 = {
+						country_event = {
+							id = ww1_romania.148
+							days = 1
+						}
+					}
+				}
+			}
+		}
+	}
+	ROM_increase_szekelyfold_autonomy = {
+		icon = GFX_decision_eng_trade_unions_support
+		cost = 20
+		days_remove = 15
+		allowed = {
+			original_tag = ROM
+		}
+		available = {
+			NOT = {
+				778 = {
+					is_core_of = ROM
+					custom_trigger_tooltip = {
+						tooltip = ROM_szekelyfold_higher_autonomy
+						has_dynamic_modifier = {
+							modifier = ROM_szekelyfold_autonomy_higher
+						}
+					}
+				}
+			}
+		}
+		visible = {
+			has_completed_focus = ROM_grant_szekelyfold_autonomy
+			NOT = {
+				778 = {
+					is_core_of = ROM
+				}
+			}
+		}
+		ai_will_do = {
+			factor = 3
+		}
+		remove_effect = {
+			if = {
+				limit = {
+					778 = {
+						has_dynamic_modifier = {
+							modifier = ROM_szekelyfold_autonomy
+						}
+					}
+				}
+				custom_effect_tooltip = ROM_raise_szekelyfold_autonomy.tt
+				hidden_effect = {
+					778 = {
+						remove_dynamic_modifier = {
+							modifier = ROM_szekelyfold_autonomy
+						}
+						add_dynamic_modifier = {
+							modifier = ROM_szekelyfold_autonomy_higher
+						}
+					}
+				}
+			}
+			else = {
+				custom_effect_tooltip = ROM_raise_szekelyfold_autonomy.tt
+				hidden_effect = {
+					778 = {
+						remove_dynamic_modifier = {
+							modifier = ROM_szekelyfold_autonomy_lower
+						}
+						add_dynamic_modifier = {
+							modifier = ROM_szekelyfold_autonomy
+						}
+					}
+				}
+			}
+		}
+	}
+	ROM_decrease_szekelyfold_autonomy = {
+		icon = GFX_decision_generic_nationalism
+		cost = 15
+		days_remove = 15
+		allowed = {
+			original_tag = ROM
+		}
+		available = {
+			NOT = {
+				778 = {
+					is_core_of = ROM
+					custom_trigger_tooltip = {
+						tooltip = ROM_szekelyfold_lower_autonomy
+						has_dynamic_modifier = {
+							modifier = ROM_szekelyfold_autonomy_lower
+						}
+					}
+				}
+			}
+		}
+		visible = {
+			has_completed_focus = ROM_grant_szekelyfold_autonomy
+			NOT = {
+				778 = {
+					is_core_of = ROM
+				}
+			}
+		}
+		ai_will_do = {
+			factor = 3
+		}
+		remove_effect = {
+			random_list = {
+				50 = {
+					country_event = ww1_romania.150
+				}
+				50 = {
+
+				}
+			}
+			add_war_support = 0.05
+			add_political_power = 20
+			if = {
+				limit = {
+					778 = {
+						has_dynamic_modifier = {
+							modifier = ROM_szekelyfold_autonomy
+						}
+					}
+				}
+				custom_effect_tooltip = ROM_lower_szekelyfold_autonomy.tt
+				hidden_effect = {
+					778 = {
+						remove_dynamic_modifier = {
+							modifier = ROM_szekelyfold_autonomy
+						}
+						add_dynamic_modifier = {
+							modifier = ROM_szekelyfold_autonomy_lower
+						}
+					}
+				}
+			}
+			else = {
+				custom_effect_tooltip = ROM_lower_szekelyfold_autonomy.tt
+				hidden_effect = {
+					778 = {
+						remove_dynamic_modifier = {
+							modifier = ROM_szekelyfold_autonomy_higher
+						}
+						add_dynamic_modifier = {
+							modifier = ROM_szekelyfold_autonomy
+						}
+					}
+				}
+			}
+		}
+	}
+	ROM_clamp_down_on_the_resistance = {
+		icon = GFX_decision_generic_nationalism
+		cost = 35
+		days_remove = 40
+		fire_only_once = yes
+		allowed = {
+			original_tag = ROM
+		}
+		available = {
+			NOT = {
+				778 = {
+					is_core_of = ROM
+				}
+			}
+		}
+		visible = {
+			has_completed_focus = ROM_suppress_szekelyfold_hungarians
+			has_completed_focus = ROM_promote_romanian_language
+			NOT = {
+				778 = {
+					is_core_of = ROM
+				}
+			}
+		}
+		ai_will_do = {
+			factor = 3
+		}
+		custom_cost_trigger = {
+			has_equipment = { infantry_equipment > 2000 }
+		}
+		custom_cost_text = 2000_infantry_equipment_1
+		modifier = {
+			political_power_cost = 0.25
+		}
+		remove_effect = {
+			hidden_effect = {
+				778 = {
+					remove_dynamic_modifier = {
+						modifier = ROM_hungarian_opposition
+					}
+					add_dynamic_modifier = {
+						modifier = ROM_hungarian_opposition_weakened
+					}
+				}
+			}
+			custom_effect_tooltip = ROM_hungarian_opposition_weakened.tt
+			add_equipment_to_stockpile = {
+				type = infantry_equipment
+				amount = -2000
+			}
+		}
+	}
+	ROM_concessions_to_hungarians = {
+		icon = GFX_decision_generic_political_discourse
+		cost = 50
+		days_remove = 30
+		allowed = {
+			original_tag = ROM
+		}
+		available = {
+			NOT = {
+				778 = {
+					is_core_of = ROM
+				}
+				has_war_with = HUN
+			}
+		}
+		visible = {
+			has_completed_focus = ROM_promote_romanian_language
+			NOT = {
+				778 = {
+					is_core_of = ROM
+				}
+			}
+		}
+		ai_will_do = {
+			factor = 3
+		}
+		modifier = {
+			political_power_cost = 0.25
+		}
+		remove_effect = {
+			778 = {
+				add_compliance = 15
+			}
+		}
+	}
+	ROM_rename_szekelyfold = {
+		icon = GFX_decision_generic_nationalism
+		cost = 10
+		days_remove = 15
+		fire_only_once = yes
+		allowed = {
+			original_tag = ROM
+		}
+		available = {
+		}
+		visible = {
+			has_completed_focus = ROM_suppress_szekelyfold_hungarians
+			has_completed_focus = ROM_promote_romanian_language
+		}
+		ai_will_do = {
+			factor = 3
+		}
+		remove_effect = {
+			add_war_support = 0.05
+			add_political_power = 25
+			778 = {
+				set_state_name = SZEKELYFOLD_STATE
+			}
+			hidden_effect = {
+				country_event = {
+					id = ww1_romania.147
+					days = 2
+				}
+			}
+		}
+	}
 }
 
-ROM_repay_defeat_war_debts = {
+ROM_the_romanian_economy_cat = {
 	ROM_repay_war_debt_bulk = {
 		icon = GFX_decision_eng_trade_unions_support
 		cost = 200
@@ -1426,6 +2350,398 @@ ROM_repay_defeat_war_debts = {
 				ROM_eco_stability = 0.04
 			}
 			custom_effect_tooltip = ROM_small_pay_debt_decision.tt
+		}
+	}
+	ROM_open_transylvanian_coal_mines = {
+		icon = GFX_decision_generic_factory
+		cost = 30
+		days_remove = 30
+		fire_only_once = yes
+		highlight_states = {
+			highlight_states_trigger = {
+				state = 84
+			}
+		}
+		allowed = {
+			original_tag = ROM
+		}
+		available = {
+			84 = {
+				is_owned_and_controlled_by = ROM
+			}
+			num_of_civilian_factories_available_for_projects > 0
+		}
+		visible = {
+			has_completed_focus = ROM_expansion_of_the_coal_industry
+			84 = {
+				is_owned_and_controlled_by = ROM
+			}
+		}
+		modifier = {
+			civilian_factory_use = 1
+		}
+		remove_effect = {
+			84 = {
+				add_resource = {
+					type = steel
+					amount = 3
+				}
+			}
+			custom_effect_tooltip = ROM_ice.tt
+			add_to_variable = {
+				ROM_consumer_goods = -0.05
+			}
+		}
+	}
+	ROM_takeover_resita_machine_plant = {
+		icon = GFX_decision_steel
+		cost = 30
+		days_remove = 50
+		fire_only_once = yes
+		highlight_states = {
+			highlight_states_trigger = {
+				state = 82
+			}
+		}
+		allowed = {
+			original_tag = ROM
+		}
+		available = {
+			82 = {
+				is_owned_and_controlled_by = ROM
+			}
+			num_of_civilian_factories_available_for_projects > 0
+		}
+		visible = {
+			has_completed_focus = ROM_nationalize_resita_enterprise
+			82 = {
+				is_owned_and_controlled_by = ROM
+			}
+		}
+		modifier = {
+			civilian_factory_use = 1
+		}
+		remove_effect = {
+			82 = {
+				add_resource = {
+					type = steel
+					amount = 4
+				}
+			}
+			custom_effect_tooltip = ROM_efi
+			add_to_variable = {
+				ROM_build_speed = 0.05
+			}
+		}
+	}
+	ROM_expand_oltenia_agriculture = {
+		icon = GFX_decision_hol_attract_foreign_investors
+		cost = 25
+		days_remove = 50
+		fire_only_once = yes
+		highlight_states = {
+			highlight_states_trigger = {
+				state = 81
+			}
+		}
+		allowed = {
+			original_tag = ROM
+		}
+		available = {
+			81 = {
+				is_owned_and_controlled_by = ROM
+			}
+			num_of_civilian_factories_available_for_projects > 0
+		}
+		visible = {
+			has_completed_focus = ROM_develop_the_agriculture
+			81 = {
+				is_owned_and_controlled_by = ROM
+			}
+		}
+		modifier = {
+			civilian_factory_use = 1
+		}
+		remove_effect = {
+			82 = {
+				increase_state_category = yes
+			}
+			custom_effect_tooltip = ROM_ice.tt
+			add_to_variable = {
+				ROM_consumer_goods = -0.05
+			}
+		}
+	}
+	ROM_expand_bessarabia_agriculture = {
+		icon = GFX_decision_hol_attract_foreign_investors
+		cost = 25
+		days_remove = 50
+		fire_only_once = yes
+		highlight_states = {
+			highlight_states_trigger = {
+				state = 78
+			}
+		}
+		allowed = {
+			original_tag = ROM
+		}
+		available = {
+			78 = {
+				is_owned_and_controlled_by = ROM
+			}
+			num_of_civilian_factories_available_for_projects > 0
+		}
+		visible = {
+			has_completed_focus = ROM_develop_the_agriculture
+			has_completed_focus = ROM_agrarian_reforms_in_bessarabia
+			78 = {
+				is_owned_and_controlled_by = ROM
+			}
+		}
+		modifier = {
+			civilian_factory_use = 1
+		}
+		remove_effect = {
+			add_stability = 0.03
+			custom_effect_tooltip = ROM_ice.tt
+			add_to_variable = {
+				ROM_consumer_goods = -0.05
+			}
+		}
+	}
+	ROM_takeover_calan_steel_works = {
+		icon = GFX_decision_steel
+		cost = 30
+		days_remove = 50
+		fire_only_once = yes
+		highlight_states = {
+			highlight_states_trigger = {
+				state = 84
+			}
+		}
+		allowed = {
+			original_tag = ROM
+		}
+		available = {
+			84 = {
+				is_owned_and_controlled_by = ROM
+			}
+			num_of_civilian_factories_available_for_projects > 0
+		}
+		visible = {
+			has_completed_focus = ROM_reopen_the_steel_industry
+			84 = {
+				is_owned_and_controlled_by = ROM
+			}
+		}
+		modifier = {
+			civilian_factory_use = 1
+		}
+		remove_effect = {
+			84 = {
+				add_resource = {
+					type = steel
+					amount = 8
+				}
+			}
+			custom_effect_tooltip = ROM_efi
+			add_to_variable = {
+				ROM_build_speed = 0.05
+			}
+		}
+	}
+	ROM_takeover_resita_steel_works = {
+		icon = GFX_decision_steel
+		cost = 30
+		days_remove = 50
+		fire_only_once = yes
+		highlight_states = {
+			highlight_states_trigger = {
+				state = 82
+			}
+		}
+		allowed = {
+			original_tag = ROM
+		}
+		available = {
+			82 = {
+				is_owned_and_controlled_by = ROM
+			}
+			num_of_civilian_factories_available_for_projects > 0
+		}
+		visible = {
+			has_completed_focus = ROM_reopen_the_steel_industry
+			82 = {
+				is_owned_and_controlled_by = ROM
+			}
+		}
+		modifier = {
+			civilian_factory_use = 1
+		}
+		remove_effect = {
+			82 = {
+				add_resource = {
+					type = steel
+					amount = 8
+				}
+			}
+			custom_effect_tooltip = ROM_efi
+			add_to_variable = {
+				ROM_build_speed = 0.05
+			}
+		}
+	}
+	ROM_develop_banat = {
+		icon = GFX_decision_generic_construction
+		cost = 25
+		days_remove = 60
+		fire_only_once = yes
+		highlight_states = {
+			highlight_states_trigger = {
+				state = 82
+			}
+		}
+		allowed = {
+			original_tag = ROM
+		}
+		available = {
+			82 = {
+				is_owned_and_controlled_by = ROM
+			}
+			num_of_civilian_factories_available_for_projects > 0
+		}
+		visible = {
+			has_completed_focus = ROM_rebuild_transylvania
+			84 = {
+				is_owned_and_controlled_by = ROM
+			}
+		}
+		modifier = {
+			civilian_factory_use = 1
+		}
+		remove_effect = {
+			82 = {
+				add_building_construction = {
+					type = infrastructure
+					level = 1
+					instant_build = yes
+				}
+				increase_state_category = yes
+			}
+		}
+	}
+	ROM_develop_north_transylvania = {
+		icon = GFX_decision_generic_construction
+		cost = 25
+		days_remove = 60
+		fire_only_once = yes
+		highlight_states = {
+			highlight_states_trigger = {
+				state = 76
+			}
+		}
+		allowed = {
+			original_tag = ROM
+		}
+		available = {
+			76 = {
+				is_owned_and_controlled_by = ROM
+			}
+			num_of_civilian_factories_available_for_projects > 0
+		}
+		visible = {
+			has_completed_focus = ROM_rebuild_transylvania
+			76 = {
+				is_owned_and_controlled_by = ROM
+			}
+		}
+		modifier = {
+			civilian_factory_use = 1
+		}
+		remove_effect = {
+			76 = {
+				add_building_construction = {
+					type = infrastructure
+					level = 1
+					instant_build = yes
+				}
+				increase_state_category = yes
+			}
+		}
+	}
+	ROM_develop_transylvania = {
+		icon = GFX_decision_generic_construction
+		cost = 25
+		days_remove = 60
+		fire_only_once = yes
+		highlight_states = {
+			highlight_states_trigger = {
+				state = 84
+			}
+		}
+		allowed = {
+			original_tag = ROM
+		}
+		available = {
+			84 = {
+				is_owned_and_controlled_by = ROM
+			}
+			num_of_civilian_factories_available_for_projects > 0
+		}
+		visible = {
+			has_completed_focus = ROM_rebuild_transylvania
+			84 = {
+				is_owned_and_controlled_by = ROM
+			}
+		}
+		modifier = {
+			civilian_factory_use = 1
+		}
+		remove_effect = {
+			84 = {
+				add_building_construction = {
+					type = infrastructure
+					level = 1
+					instant_build = yes
+				}
+				increase_state_category = yes
+			}
+		}
+	}
+}
+ROM_tutorial = {
+	ROM_tutorial_event_trigger = {
+		icon = GFX_decision_generic_construction
+		cost = 0
+		allowed = {
+			original_tag = ROM
+		}
+		visible = {
+			always = yes
+		}
+		fire_only_once = no
+		ai_will_do = {
+			factor = 0
+		}
+		complete_effect = {
+			country_event = ww1_romania.160
+		}
+	}
+	ROM_disable_tutorial = {
+		icon = GFX_decision_generic_construction
+		cost = 0
+		allowed = {
+			original_tag = ROM
+		}
+		visible = {
+			always = yes
+		}
+		fire_only_once = no
+		ai_will_do = {
+			factor = 0
+		}
+		complete_effect = {
+			set_country_flag = ROM_no_more_tutorial
 		}
 	}
 }
