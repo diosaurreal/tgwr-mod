@@ -347,6 +347,8 @@ ideas = {
 						has_idea = partial_economic_mobilisation
 						has_idea = war_economy
 						has_idea = tot_economic_mobilisation
+						has_idea = tot_economic_mobilisation_tur_1
+						has_idea = tot_economic_mobilisation_tur_2
 					}
 				}
 			}
@@ -426,6 +428,8 @@ ideas = {
 						has_idea = partial_economic_mobilisation
 						has_idea = war_economy
 						has_idea = tot_economic_mobilisation
+						has_idea = tot_economic_mobilisation_tur_1
+						has_idea = tot_economic_mobilisation_tur_2
 					}
 				}
 				modifier = {
@@ -435,21 +439,13 @@ ideas = {
 			}
 
 			available = {
-				else_if = {
-					limit = {
-						has_idea = HUN_ausgleich
-					}
-					NOT = {
-						has_idea = HUN_ausgleich
-					}
+				if = {
+					limit = { has_idea = HUN_ausgleich }
+					NOT = { has_idea = HUN_ausgleich }
 				}
 				else_if = {
-					limit = {
-						has_idea = AUH_condominium
-					}
-					NOT = {
-						has_idea = AUH_condominium
-					}
+					limit = { has_idea = AUH_condominium }
+					NOT = { has_idea = AUH_condominium }
 				}
 			}
 			on_add = {
@@ -621,6 +617,8 @@ ideas = {
 						has_idea = partial_economic_mobilisation
 						has_idea = war_economy
 						has_idea = tot_economic_mobilisation
+						has_idea = tot_economic_mobilisation_tur_1
+						has_idea = tot_economic_mobilisation_tur_2
 						AND  = {
 							is_major = yes
 							has_manpower < 1000 #dont do it if you need PP for manpower !
@@ -765,6 +763,8 @@ ideas = {
 					OR = {
 						has_idea = war_economy
 						has_idea = tot_economic_mobilisation
+						has_idea = tot_economic_mobilisation_tur_1
+						has_idea = tot_economic_mobilisation_tur_2
 						AND  = {
 							is_major = yes
 							has_manpower < 1000 #dont do it if you need PP for manpower !
@@ -931,6 +931,8 @@ ideas = {
 					factor = 0
 					OR = {
 						has_idea = tot_economic_mobilisation
+						has_idea = tot_economic_mobilisation_tur_1
+						has_idea = tot_economic_mobilisation_tur_2
 						AND  = {
 							is_major = yes
 							has_manpower < 1000 #dont do it if you need PP for manpower !
@@ -944,7 +946,12 @@ ideas = {
 		}
 		
 		tot_economic_mobilisation = {
-			
+			visible = {
+				NOT = {
+					has_idea = TUR_turk_guc_dernegi
+					has_idea = TUR_osmanli_guc_dernegi
+				}
+			}
 			available = {
 				has_war = yes
 				has_war_support > 0.8
@@ -1100,6 +1107,330 @@ ideas = {
 					}
 				}
 			}
+		}
+		tot_economic_mobilisation_tur_1 = {
+			name = tot_economic_mobilisation
+			picture = tot_economic_mobilisation
+			available = {
+				has_war = yes
+				has_war_support > 0.8
+				any_enemy_country = {
+					ic_ratio = {
+						tag = ROOT
+						ratio > 0.7
+					}
+				}
+				NOT = {
+					has_country_flag = cant_change_from_civilian_economy
+				}
+				if = {
+					limit = { original_tag = ENG }
+					OR = {					
+						threat > 0.99
+						has_global_flag = great_war
+					}
+				}
+				if = {
+					limit = {
+						tag = SOV
+						has_idea = SOV_idea_NEP
+					}
+					has_completed_focus = SOV_economic_alternative
+				}
+				if = {
+					limit = { has_idea = SRA_marching_army }
+					NOT = { has_idea = SRA_marching_army }
+				}
+				else_if = {
+					limit = { original_tag = LUX }
+					OR = {
+						has_war = yes
+						NOT = {
+							has_idea = LUX_minor_army
+						}
+					}
+					if = {
+						limit = {
+							has_idea = LUX_occupation
+						}
+						NOT = {
+							has_idea = LUX_occupation
+						}
+					}
+				}
+				else_if = {
+					limit = {
+						has_idea = HUN_ausgleich
+					}
+					NOT = {
+						has_idea = HUN_ausgleich
+					}
+				}
+				else_if = {
+					limit = {
+						has_idea = AUH_condominium
+					}
+					NOT = {
+						has_idea = AUH_condominium
+					}
+				}
+			}
+			on_add = {
+				update_mobilisation_bonus = yes
+				if = {
+					limit = {
+						tag = AUS
+						any_subject_country = {
+							has_idea = HUN_ausgleich
+						}
+					}
+					every_subject_country = {
+						limit = {
+							has_idea = HUN_ausgleich
+						}
+						country_event = {
+							id = ww1_auh.215
+							days = 1
+						}
+					}
+				}
+				if = {
+					limit = {
+						OR = {
+							tag = AUS
+							tag = HUN
+						}	
+						any_subject_country = {
+							has_idea = AUH_condominium
+						}
+					}
+					every_subject_country = {
+						limit = {
+							has_idea = AUH_condominium
+						}
+						country_event = {
+							id = ww1_auh.215
+							days = 1
+						}
+					}
+				}
+			}
+
+			cancel = {
+				has_war = no
+				if = {
+					limit = {
+						has_idea = HUN_ausgleich
+					}
+					NOT = {
+						has_idea = HUN_ausgleich
+					}
+				}
+				else_if = {
+					limit = {
+						has_idea = AUH_condominium
+					}
+					NOT = {
+						has_idea = AUH_condominium
+					}
+				}
+			}
+			
+			cost = 150
+			removal_cost = -1
+			
+			modifier = {
+				consumer_goods_expected_value = 0.10
+				conscription = -0.02
+				industrial_capacity_factory = 0.025
+				industrial_capacity_dockyard = 0.025
+				production_speed_arms_factory_factor = 0.3
+				conversion_cost_civ_to_mil_factor= -0.3
+				conversion_cost_mil_to_civ_factor = -0.3
+			}
+			
+			cancel_if_invalid = no
+			
+			ai_will_do = {
+				factor = 80
+				modifier = { #don't increase without having enough manpower
+					factor = 0
+					check_variable = { manpower_k < num_battalions }
+				}
+				modifier = { #we don't want the conscription% to drop too low
+					factor = 0
+					has_manpower > 150000 #minimum manpower for minors
+					OR = {
+						has_idea = disarmed_nation
+						has_idea = volunteer_only
+						has_idea = limited_conscription
+						has_idea = extensive_conscription
+					}
+				}
+			}
+			visible = { has_idea = TUR_turk_guc_dernegi }
+		}
+		tot_economic_mobilisation_tur_2 = {
+			name = tot_economic_mobilisation
+			picture = tot_economic_mobilisation
+			available = {
+				has_war = yes
+				has_war_support > 0.8
+				any_enemy_country = {
+					ic_ratio = {
+						tag = ROOT
+						ratio > 0.7
+					}
+				}
+				NOT = {
+					has_country_flag = cant_change_from_civilian_economy
+				}
+				if = {
+					limit = { original_tag = ENG }
+					OR = {					
+						threat > 0.99
+						has_global_flag = great_war
+					}
+				}
+				if = {
+					limit = {
+						tag = SOV
+						has_idea = SOV_idea_NEP
+					}
+					has_completed_focus = SOV_economic_alternative
+				}
+				if = {
+					limit = { has_idea = SRA_marching_army }
+					NOT = { has_idea = SRA_marching_army }
+				}
+				else_if = {
+					limit = { original_tag = LUX }
+					OR = {
+						has_war = yes
+						NOT = {
+							has_idea = LUX_minor_army
+						}
+					}
+					if = {
+						limit = {
+							has_idea = LUX_occupation
+						}
+						NOT = {
+							has_idea = LUX_occupation
+						}
+					}
+				}
+				else_if = {
+					limit = {
+						has_idea = HUN_ausgleich
+					}
+					NOT = {
+						has_idea = HUN_ausgleich
+					}
+				}
+				else_if = {
+					limit = {
+						has_idea = AUH_condominium
+					}
+					NOT = {
+						has_idea = AUH_condominium
+					}
+				}
+			}
+			on_add = {
+				update_mobilisation_bonus = yes
+				if = {
+					limit = {
+						tag = AUS
+						any_subject_country = {
+							has_idea = HUN_ausgleich
+						}
+					}
+					every_subject_country = {
+						limit = {
+							has_idea = HUN_ausgleich
+						}
+						country_event = {
+							id = ww1_auh.215
+							days = 1
+						}
+					}
+				}
+				if = {
+					limit = {
+						OR = {
+							tag = AUS
+							tag = HUN
+						}	
+						any_subject_country = {
+							has_idea = AUH_condominium
+						}
+					}
+					every_subject_country = {
+						limit = {
+							has_idea = AUH_condominium
+						}
+						country_event = {
+							id = ww1_auh.215
+							days = 1
+						}
+					}
+				}
+			}
+
+			cancel = {
+				has_war = no
+				if = {
+					limit = {
+						has_idea = HUN_ausgleich
+					}
+					NOT = {
+						has_idea = HUN_ausgleich
+					}
+				}
+				else_if = {
+					limit = {
+						has_idea = AUH_condominium
+					}
+					NOT = {
+						has_idea = AUH_condominium
+					}
+				}
+			}
+			
+			cost = 150
+			removal_cost = -1
+			
+			modifier = {
+				consumer_goods_expected_value = 0.10
+				conscription = -0.01
+				industrial_capacity_factory = 0.05
+				industrial_capacity_dockyard = 0.05
+				production_speed_arms_factory_factor = 0.3
+				conversion_cost_civ_to_mil_factor= -0.3
+				conversion_cost_mil_to_civ_factor = -0.3
+			}
+			
+			cancel_if_invalid = no
+			
+			ai_will_do = {
+				factor = 80
+				modifier = { #don't increase without having enough manpower
+					factor = 0
+					check_variable = { manpower_k < num_battalions }
+				}
+				modifier = { #we don't want the conscription% to drop too low
+					factor = 0
+					has_manpower > 150000 #minimum manpower for minors
+					OR = {
+						has_idea = disarmed_nation
+						has_idea = volunteer_only
+						has_idea = limited_conscription
+						has_idea = extensive_conscription
+					}
+				}
+			}
+			visible = { has_idea = TUR_osmanli_guc_dernegi }
 		}
 	}
 	
@@ -1301,21 +1632,13 @@ ideas = {
 			}
 
 			available = {	
+				if = {
+					limit = { has_idea = HUN_ausgleich }
+					NOT = { has_idea = HUN_ausgleich }
+				}
 				else_if = {
-					limit = {
-						has_idea = HUN_ausgleich
-					}
-					NOT = {
-						has_idea = HUN_ausgleich
-					}
-				}	
-				else_if = {
-					limit = {
-						has_idea = AUH_condominium
-					}
-					NOT = {
-						has_idea = AUH_condominium
-					}
+					limit = { has_idea = AUH_condominium }
+					NOT = { has_idea = AUH_condominium }
 				}	
 			}
 			
@@ -1418,7 +1741,14 @@ ideas = {
 				OR = {
 					has_idea = partial_economic_mobilisation
 					has_idea = war_economy
-					has_idea = tot_economic_mobilisation
+					custom_trigger_tooltip = {
+						tooltip = has_idea_tot_economic_mobilisation
+						OR = {
+							has_idea = tot_economic_mobilisation
+							has_idea = tot_economic_mobilisation_tur_1
+							has_idea = tot_economic_mobilisation_tur_2
+						}
+					}
 				}
 				if = {
 					limit = {
@@ -1570,7 +1900,14 @@ ideas = {
 					}
 					OR = {
 						has_idea = war_economy
-						has_idea = tot_economic_mobilisation
+						custom_trigger_tooltip = {
+							tooltip = has_idea_tot_economic_mobilisation
+							OR = {
+								has_idea = tot_economic_mobilisation
+								has_idea = tot_economic_mobilisation_tur_1
+								has_idea = tot_economic_mobilisation_tur_2
+							}
+						}
 					}
 				}
 				if = {
