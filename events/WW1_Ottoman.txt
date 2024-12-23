@@ -1281,7 +1281,10 @@ country_event = { #Hürriyet ve İtilaf formed 1911
 			popularity = 0.1
 		}
 		add_ideas = TUR_growing_liberal_opposition
-		TUR_increase_itilafist_power = yes
+		add_to_variable = {
+			tooltip = TUR_government_stability_reduce_10
+			TUR_government_stability_var = -10
+		}
 		custom_effect_tooltip = ottoman.2.tt
 		hidden_effect = { country_event = { id = ottoman.3 days = 20 } }
 		ai_chance = { factor = 100 }
@@ -1319,16 +1322,22 @@ country_event = { #Elections of clubs
 			ideology = neutrality
 			popularity = 0.2
 		}
+		add_popularity = {
+			ideology = fascism
+			popularity = 0.05
+		}
 		set_politics = {
 			ruling_party = neutrality
 			election_frequency = 48
 			elections_allowed = yes
 		}
-		clr_country_flag = TUR_itilafist_regime
-		set_country_flag = TUR_ittihadist_regime
 		if = {
 			limit = { has_country_flag = TUR_hurriyet_ve_itilaf_formed }
 			remove_ideas = TUR_growing_liberal_opposition
+		}
+		if = {
+			limit = { TUR_mahmud_sevket = { is_character_slot = political_advisor } }
+			deactivate_advisor = TUR_mahmud_sevket
 		}
 		set_country_flag = TUR_elections_1912
 		set_country_flag = TUR_ittihat_ve_terakki_victory_elections
@@ -1358,10 +1367,16 @@ country_event = { #Elections of 1912
 				name = TUR_neutrality_party
 			}
 		}
+		TUR_government_popularity_calculate = yes
+		set_variable = { TUR_itf_popularity = TUR_neutrality_popularity }
+		set_variable = { TUR_hif_popularity = TUR_democratic_popularity }
 	}
 	option = {
 		name = ottoman.5.a
-		trigger = { has_war = no }
+		trigger = {
+			has_war = no
+			check_variable = { TUR_itf_popularity > TUR_hif_popularity }
+		}
 		TUR_mahmud_sevket = {
 			promote_character = authoritarian_democracy
 			promote_leader = yes
@@ -1371,11 +1386,21 @@ country_event = { #Elections of 1912
     	    election_frequency = 48
 		    elections_allowed = yes
 		}
-		clr_country_flag = TUR_itilafist_regime
-		set_country_flag = TUR_ittihadist_regime
 		set_country_flag = TUR_elections_1912
 		set_country_flag = TUR_ittihat_ve_terakki_victory_elections
 		complete_national_focus = TUR_elections_of_1912
+		if = {
+			limit = { has_idea = TUR_cabinet_crisis }
+			remove_ideas = TUR_cabinet_crisis
+		}
+		if = {
+			limit = { has_idea = TUR_opposition_in_cabinet }
+			remove_ideas = TUR_opposition_in_cabinet
+		}
+		if = {
+			limit = { has_idea = TUR_revamped_cabined }
+			remove_ideas = TUR_revamped_cabined
+		}
 		ai_chance = {
 			base = 0
 			modifier = {
@@ -1386,18 +1411,31 @@ country_event = { #Elections of 1912
 	}
 	option = {
 		name = ottoman.5.b
-		trigger = { has_war = no }
+		trigger = {
+			has_war = no
+			check_variable = { TUR_hif_popularity > TUR_itf_popularity }
+		}
 		promote_character = TUR_mehmed_kamil
 		set_politics = {
 			ruling_party = democratic
 			election_frequency = 48
 			elections_allowed = yes
 		}
-		clr_country_flag = TUR_ittihadist_regime
-		set_country_flag = TUR_itilafist_regime
 		set_country_flag = TUR_elections_1912
 		set_country_flag = TUR_hurriyet_ve_itilaf_victory_elections
 		complete_national_focus = TUR_elections_of_1912
+		if = {
+			limit = { has_idea = TUR_cabinet_crisis }
+			remove_ideas = TUR_cabinet_crisis
+		}
+		if = {
+			limit = { has_idea = TUR_opposition_in_cabinet }
+			remove_ideas = TUR_opposition_in_cabinet
+		}
+		if = {
+			limit = { has_idea = TUR_revamped_cabined }
+			remove_ideas = TUR_revamped_cabined
+		}
 		ai_chance = {
 			base = 0
 			modifier = {
@@ -1437,40 +1475,11 @@ country_event = { #Elections of 1912
 				elections_allowed = no
 			}
 		}
-		if = {
-			limit = {
-				OR = {
-					has_government = neutrality
-					has_government = fascism
-					has_government = communism
-				}
-				NOT = { has_country_leader = { character = TUR_ahmed_muhtar } }
-				NOT = { has_country_leader = { character = TUR_mehmed_v } }
-				NOT = { has_country_leader = { character = TUR_abdulhamid_II } }
-				NOT = { has_country_leader = { character = TUR_mehmed_VI } }
-				NOT = { has_country_leader = { character = TUR_yusuf_izzeddin } }
-				NOT = { has_country_leader = { character = TUR_abdulmecid_II } }
-				NOT = { has_country_leader = { character = TUR_ahmed_nihad } }
-				NOT = { has_country_leader = { character = TUR_osman_iv } }
-			}
-			TUR_decrease_itilafist_loyalty = yes
+		add_to_variable = {
+			tooltip = TUR_government_stability_reduce_5
+			TUR_government_stability_var = -5
 		}
-		else_if = {
-			limit = {
-				OR = {
-					has_government = democratic
-					has_country_leader = { character = TUR_ahmed_muhtar }
-					has_country_leader = { character = TUR_mehmed_v }
-					has_country_leader = { character = TUR_abdulhamid_II }
-					has_country_leader = { character = TUR_mehmed_VI }
-					has_country_leader = { character = TUR_yusuf_izzeddin }
-					has_country_leader = { character = TUR_abdulmecid_II }
-					has_country_leader = { character = TUR_ahmed_nihad }
-					has_country_leader = { character = TUR_osman_iv }
-				}
-			}
-			TUR_decrease_ittihadist_loyalty = yes
-		}
+		TUR_government_stability_calculate = yes
 		custom_effect_tooltip = ottoman.5.tt
 		set_country_flag = TUR_postpone_elections_cuz_of_war
 		ai_chance = { base = 100 }
@@ -1581,38 +1590,11 @@ country_event = { #officers take up arms in Manastir
 			203 = { add_resistance = 10 }
 		}
 		if = {
-			limit = {
-				OR = {
-					has_government = neutrality
-					has_government = fascism
-					has_government = communism
-				}
-				NOT = { has_country_leader = { character = TUR_ahmed_muhtar } }
-				NOT = { has_country_leader = { character = TUR_mehmed_v } }
-				NOT = { has_country_leader = { character = TUR_abdulhamid_II } }
-				NOT = { has_country_leader = { character = TUR_mehmed_VI } }
-				NOT = { has_country_leader = { character = TUR_yusuf_izzeddin } }
-				NOT = { has_country_leader = { character = TUR_abdulmecid_II } }
-				NOT = { has_country_leader = { character = TUR_ahmed_nihad } }
-				NOT = { has_country_leader = { character = TUR_osman_iv } }
+			limit = { has_idea = TUR_army_factionalism }
+			swap_ideas = {
+				remove_idea = TUR_army_factionalism
+				add_idea = TUR_army_factionalism_2
 			}
-			TUR_increase_itilafist_power = yes
-		}
-		else_if = {
-			limit = {
-				OR = {
-					has_government = democratic
-					has_country_leader = { character = TUR_ahmed_muhtar }
-					has_country_leader = { character = TUR_mehmed_v }
-					has_country_leader = { character = TUR_abdulhamid_II }
-					has_country_leader = { character = TUR_mehmed_VI }
-					has_country_leader = { character = TUR_yusuf_izzeddin }
-					has_country_leader = { character = TUR_abdulmecid_II }
-					has_country_leader = { character = TUR_ahmed_nihad }
-					has_country_leader = { character = TUR_osman_iv }
-				}
-			}
-			TUR_increase_ittihadist_power = yes
 		}
 		ai_chance = { factor = 100 }
 	}
@@ -1758,8 +1740,6 @@ country_event = { #raid on sublime porte
 			ruling_party = neutrality
 			elections_allowed = yes
 		}
-		clr_country_flag = TUR_itilafist_regime
-		set_country_flag = TUR_ittihadist_regime
 		clr_country_flag = TUR_hurriyet_ve_itilaf_victory_elections
 		set_country_flag = TUR_ittihat_ve_terakki_victory_elections
 		set_country_flag = TUR_raid_on_the_sublime_porte
@@ -6512,8 +6492,6 @@ country_event = { #march on harbiye nezareti
 			ruling_party = democratic
 			elections_allowed = yes
 		}
-		clr_country_flag = TUR_ittihadist_regime
-		set_country_flag = TUR_itilafist_regime
 		clr_country_flag = TUR_ittihat_ve_terakki_victory_elections
 		set_country_flag = TUR_hurriyet_ve_itilaf_victory_elections
 		set_country_flag = TUR_march_on_harbiye_nezareti
