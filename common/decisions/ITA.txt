@@ -215,15 +215,6 @@ ITA_libyan_war = {
 		activation = {
 			has_war_with = TUR
 		}
-		cancel_trigger = {
-			has_global_flag = ITA_surrender_libya_war
-		}
-		cancel_effect = {
-			white_peace = TUR
-			custom_effect_tooltip = ITA_consequences_lose_war
-			news_event = ww1_italianturkish.9
-			set_global_flag = libyan_crisis_resolved
-		}
 		timeout_effect = {
 			set_global_flag = ITA_libya_lose
 			white_peace = TUR
@@ -386,17 +377,44 @@ ITA_libyan_war = {
 		fire_only_once = yes
 	}
 	ITA_surrender_to_ottomans = {
-		icon = GFX_decision_generic_civil_support
+		name = sue_for_peace_TUR
+		icon = GFX_decision_eng_trade_unions_support
 		allowed = {
 			tag = ITA
 		}
 		cost = 0
 		available = {
 		}
+		visible = {
+			has_global_flag = italo_turkish_war
+			NOT = {
+				has_global_flag = libyan_crisis_resolved
+			}
+		}
 		complete_effect = {
 			set_global_flag = ITA_surrender_libya_war
 			set_global_flag = ITA_libya_lose
 			set_global_flag = libyan_crisis_resolved
+			add_days_mission_timeout = {
+				mission = ITA_the_clock_is_ticking
+				days = -550
+			}
+		}
+		ai_will_do = {
+			base = 0
+			modifier = {
+				add = 100
+				OR = {
+					surrender_progress > 0.1
+					any_owned_state = {
+						is_controlled_by = TUR
+					}
+				}
+			}
+			modifier = {
+				add = 500
+				casualties > 80000
+			}
 		}
 		fire_only_once = yes
 	}
@@ -419,6 +437,7 @@ ITA_government_house_of_cards = {
 			}
 		}
 		activation = {
+			has_completed_focus = ITA_giolitti_era
 			custom_trigger_tooltip = {
 				tooltip = ITA_i_not_confident
 				check_variable = {
@@ -750,6 +769,9 @@ ITA_government_stability = {
 		activation = {
 			has_country_leader = {
 				character = ITA_luigi_luzzatti
+			}
+			NOT = {
+				has_completed_focus = ITA_giolitti_era
 			}
 		}
 		timeout_effect = {
@@ -2035,242 +2057,6 @@ ITA_reforming_the_country = {
 }
 
 peace_deals = {
-	ITA_sue_for_peace_TUR = {
-		name = sue_for_peace_TUR
-		icon = GFX_decision_eng_trade_unions_support
-		allowed = {
-			tag = ITA
-		}
-		available = {
-			has_war_with = TUR
-			OR = {
-				TUR = {
-					is_in_faction = no
-				}
-				is_in_faction = no
-			}
-		}
-		visible = {
-			has_global_flag = italo_turkish_war
-			NOT = {
-				has_country_flag = ITA_libyan_war_mission_timeout
-				has_global_flag = italo_turkish_war_ends
-			}
-			if = {
-				limit = {
-					has_global_flag = great_war
-				}
-				OR = {
-					has_global_flag = great_war_ends
-					NOT = {
-						is_in_faction_with = FRA
-						is_in_faction_with = GER
-						has_war_with = FRA
-						has_war_with = GER
-					}
-				}
-			}
-		}
-		fire_only_once = yes
-		ai_will_do = {
-			base = 0
-			modifier = {
-				add = 500
-				OR = {
-					surrender_progress > 0.1
-					any_owned_state = {
-						is_fully_controlled_by = TUR
-					}
-				}
-			}
-			modifier = {
-				add = 500
-				any_country = {
-					is_major = yes
-					NOT = {
-						is_in_faction_with = TUR
-					}
-					NOT = {
-						original_tag = TUR
-					}
-					has_war_with = ROOT
-				}
-			}
-			# They give up too quick			## Guess you were wrong
-			modifier = {
-				add = 500
-				NOT = {
-					AND = {
-						controls_state = 448
-						controls_state = 450
-						controls_state = 661
-					}
-					TUR = {
-						any_owned_state = {
-							is_controlled_by = ITA
-						}
-					}
-				}
-				casualties > 20000
-			}
-			modifier = {
-				add = 500
-				NOT = {
-					any_other_Country = {
-						NOT = {
-							original_tag = TUR
-						}
-						has_war_with = TUR
-					}
-				}
-				casualties > 500000
-			}
-		}
-		complete_effect = {
-			ITA = {
-				country_event = {
-					id = ww1_italianturkish.2
-				}
-			}
-		}
-	}
-	ITA_libyan_war_mission = {
-		icon = GFX_decision_generic_ignite_civil_war
-		allowed = {
-			OR = {
-				tag = ITA
-				tag = TUR
-			}
-		}
-		available = {
-			OR = {
-				has_global_flag = great_war
-				has_global_flag = italo_turkish_war_ends
-				AND = {
-					TUR = {
-						is_in_faction = yes
-					}
-					ITA = {
-						is_in_faction = yes
-					}
-				}
-				ITA = {
-					has_full_control_of_state = 448
-					has_full_control_of_state = 1060
-					has_full_control_of_state = 450
-					has_full_control_of_state = 1061
-					has_full_control_of_state = 661
-				}
-			}
-		}
-		activation = {
-			ITA = {
-				has_war_with = TUR
-			}
-			has_global_flag = italo_turkish_war
-			NOT = {
-				has_global_flag = italo_turkish_war_ends
-			}
-			NOT = {
-				has_global_flag = great_war
-			}
-		}
-		timeout_effect = {
-			if = {
-				limit = {
-					ITA = {
-						any_controlled_state = {
-							is_core_of = LBA
-						}
-					}
-				}
-				ITA = {
-					set_country_flag = ITA_libyan_war_mission_timeout
-					country_event = {
-						id = ww1_italianturkish.11
-					}
-				}
-				else = {
-					ITA = {
-						set_country_flag = ITA_libyan_war_mission_timeout
-						country_event = {
-							id = ww1_italianturkish.2
-						}
-					}
-				}
-			}
-		}
-		fire_only_once = yes
-		days_mission_timeout = 450
-		is_good = no
-	}
-	ITA_sue_for_peace_LBA = {
-		name = sue_for_peace_FROM
-		icon = GFX_decision_eng_trade_unions_support
-		allowed = {
-			tag = ITA
-		}
-		target_trigger = {
-			FROM = {
-				tag = LBA
-			}
-		}
-		visible = {
-			is_subject = no
-			has_war_with = FROM
-			FROM = {
-				is_subject = no
-			}
-			has_global_flag = great_war
-			NOT = {
-				has_global_flag = great_war_ends
-			}
-		}
-		available = {
-			OR = {
-				FROM = {
-					OR = {
-						controls_province = 11954						#Bengazi
-						controls_province = 1149						#Trablus
-					}
-				}
-				surrender_progress > 0.3
-			}
-		}
-		fire_only_once = yes
-		ai_will_do = {
-			base = 1000
-		}
-		complete_effect = {
-			FROM = {
-				if = {
-					limit = {
-						is_in_faction = yes
-					}
-					leave_faction = yes
-				}
-				white_peace = ROOT
-				hidden_effect = {
-					every_enemy_country = {
-						limit = {
-							is_in_faction_with = ROOT
-						}
-						white_peace = PREV
-					}
-				}
-			}
-			every_owned_state = {
-				limit = {
-					is_core_of = LBA
-					NOT = {
-						state = 448
-						state = 450
-					}
-				}
-				transfer_state_to = FROM
-			}
-		}
-	}
 	ITA_return_rhodes_mission = {
 		# After Treaty of Ouchy
 		icon = GFX_decision_infiltrate_state
@@ -2301,7 +2087,7 @@ peace_deals = {
 		}
 		activation = {
 			# Italo-Turkish War ended
-			has_global_flag = italo_turkish_war_ends
+			has_global_flag = libyan_crisis_resolved
 			ITA = {
 				OR = {
 					owns_state = 164
