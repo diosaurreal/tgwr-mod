@@ -207,10 +207,10 @@ SWE_staaff_emergency = {
 		remove_effect = {
 			add_power_balance_value = {
 				id = SWE_staaf_approval
-				value = -0.15
+				value = -0.10
 			}
-			add_stability = 0.10
-			add_war_support = -0.05
+			add_stability = 0.05
+			add_war_support = -0.03
 		}
 		
 		ai_will_do = {
@@ -242,20 +242,28 @@ SWE_staaff_emergency = {
 				id = SWE_staaf_approval
 			}
 		}
+		available = {
+			OR = {
+				has_completed_focus = SWE_a_liberal_military_plan
+				has_completed_focus = SWE_short_term_preparations
+			}
+		}
 		days_remove = 5
 		cost = 65
-		remove_effect = {
+		complete_effect = {
 			add_power_balance_value = {
 				id = SWE_staaf_approval
 				value = -0.1
 			}
+		}
+		remove_effect = {
 			add_timed_idea = {
 				idea = SWE_higher_taxes
 				days = 100
 			}
 			add_popularity = {
 				ideology = neutrality
-				popularity = 0.05
+				popularity = 0.03
 			}
 		}
 		
@@ -275,6 +283,10 @@ SWE_staaff_emergency = {
 					value > 0.7
 				}
 			}
+			modifier = {
+				add = 1
+				has_completed_focus = SWE_short_term_preparations
+			}
 		}
 	}
 	SWE_endorse_feminism = {
@@ -283,6 +295,9 @@ SWE_staaff_emergency = {
 			original_tag = SWE
 		}
 		fire_only_once = yes
+		available = {
+			has_completed_focus = SWE_liberalism_and_parliamentalism
+		}
 		visible = {
 			has_power_balance = {
 				id = SWE_staaf_approval
@@ -349,7 +364,7 @@ SWE_staaff_emergency = {
 			}
 			add_popularity = {
 				ideology = neutrality
-				popularity = 0.15
+				popularity = 0.12
 			}
 		}
 		ai_will_do = {
@@ -421,12 +436,12 @@ SWE_staaff_emergency = {
 			original_tag = SWE
 		}
 		available = {
-			has_completed_focus = SWE_compromise_with_agrarian_interests
+			has_completed_focus = SWE_prepare_for_next_election
 			NOT = { has_idea = SWE_agricultural_lobbying }
 		}
 		
 		visible = {
-			NOT = { has_completed_focus = SWE_extensive_parliamentalism_reforms }
+			NOT = { has_completed_focus = SWE_forsvarsvasendet }
 			has_power_balance = {
 				id = SWE_staaf_approval
 			}
@@ -752,16 +767,13 @@ SWE_riksdagens_decisions = {
 			custom_trigger_tooltip = {
 				tooltip = conservatives_wont_support_this_unless_forced
 				OR = {
+					# Add more stuff later, but for now socialist takeover in major
 					AND = {
-						has_country_leader_ideology = conservatism
+						has_government = democratic
 						any_other_country = {
 							is_actual_major = yes
 							has_government = communism
 						}
-					}
-					AND = {
-						NOT = { has_country_leader_ideology = conservatism }
-						has_government = democratic
 					}
 					has_government = communism
 				}
@@ -1021,7 +1033,17 @@ SWE_riksdagens_decisions = {
 			add_to_variable = {
 				tooltip = experience_gain_army_factor_tt
 				var = SWE_mil_experience_gain_army_factor
-				value = 0.05
+				value = 0.15
+			}
+			add_to_variable = {
+				tooltip = army_attack_factor_tt
+				var = SWE_mil_army_attack_factor
+				value = 0.10
+			}
+			add_to_variable = {
+				tooltip = army_defence_factor_tt
+				var = SWE_mil_army_defence_factor
+				value = -0.05
 			}
 		}
 		ai_will_do = {
@@ -1074,12 +1096,12 @@ SWE_riksdagens_decisions = {
 			add_to_variable = {
 				tooltip = mobilization_speed_tt
 				var = SWE_mil_mobilization_speed
-				value = 0.15
+				value = 0.10
 			}
 			add_to_variable = {
 				tooltip = industrial_capacity_factory_tt
 				var = SWE_mil_industrial_capacity_factory
-				value = 0.05
+				value = 0.02
 			}
 		}
 		
@@ -1186,14 +1208,90 @@ SWE_riksdagens_decisions = {
 		remove_effect = {
 			custom_effect_tooltip = adjust_swe_military_tt
 			add_to_variable = {
+				tooltip = mobilization_speed_tt
+				var = SWE_mil_mobilization_speed
+				value = 0.05
+			}
+			add_to_variable = {
 				tooltip = training_time_factor_tt
 				var = SWE_mil_training_time_factor
-				value = -0.07
+				value = -0.03
+			}
+			add_to_variable = {
+				tooltip = experience_gain_army_unit_factor_tt
+				var = SWE_mil_experience_gain_army_unit_factor
+				value = 0.05
 			}
 		}
 		
 		ai_will_do = {
 			base = 2
+		}
+	}
+	SWE_early_conscription_extension = {
+		allowed = {
+			original_tag = SWE
+		}
+		visible = {
+			has_completed_focus = SWE_short_term_preparations
+		}
+		available = {
+			OR = {
+				NOT = { has_idea = SWE_anti_war_promises }
+				AND = {
+					has_stability > 0.7
+					has_war_support > 0.4
+				}
+			}
+			threat > 0.2
+			NOT = {
+				has_idea = idea_armistice
+				has_idea = idea_army_restrictions
+			}
+		}
+		
+		custom_cost_trigger = {
+			command_power > 24
+			has_political_power > 74
+		}
+		custom_cost_text = decision_cost_CP_25_pp_75
+		
+		days_remove = 50
+		fire_only_once = yes
+		
+		modifier = {
+			mobilization_speed = 0.05
+		}
+		
+		complete_effect = {
+			add_stability = -0.03
+			hidden_effect = {
+				add_command_power = -25
+				add_political_power = -75
+			}
+		}
+		
+		remove_effect = {
+			add_manpower = 2000
+			if = {
+				limit = {
+					has_idea = limited_conscription
+				}
+				add_ideas = extensive_conscription
+			}
+			else_if = {
+				limit = {
+					OR = {
+						has_idea = disarmed_nation
+						has_idea = volunteer_only
+					}
+				}
+				add_ideas = limited_conscription
+			}
+		}
+		
+		ai_will_do = {
+			base = 10
 		}
 	}
 	SWE_organise_military_labour_unions = {
@@ -1563,7 +1661,6 @@ SWE_riksdagens_decisions = {
 		
 		fire_only_once = yes
 		visible = {
-			NOT = { has_country_flag = SWE_industrial_decision }
 			has_completed_focus = SWE_funds_to_buy_industries
 			any_owned_state = {
 				free_building_slots = {
@@ -1903,6 +2000,24 @@ SWE_riksdagens_decisions = {
 		fire_only_once = yes
 		
 		remove_effect = {
+			if = {
+				limit = { NOT = { has_tech = electric_railway } }
+				add_tech_bonus = {
+					name = electric_railway
+					bonus = 0.5
+					uses = 1
+					technology = electric_railway
+				}
+			}
+			else_if = {
+				limit = { NOT = { has_tech = diesel_electric_control_system } }
+				add_tech_bonus = {
+					name = diesel_electric_control_system
+					bonus = 0.5
+					uses = 1
+					technology = diesel_electric_control_system
+				}
+			}
 			build_railway = {	# For now, arbitrary
 				level = 1
 				build_only_on_allied = yes
@@ -1984,6 +2099,7 @@ political_actions = {
 		}
 		
 		remove_effect = {
+			set_country_flag = SWE_modernise_army
 			custom_effect_tooltip = adjust_swe_military_tt
 			add_to_variable = {
 				tooltip = experience_gain_army_factor_tt
@@ -2173,14 +2289,14 @@ operations = {
 		remove_effect = {
 			custom_effect_tooltip = adjust_swe_military_tt
 			add_to_variable = {
-				tooltip = planning_speed_tt
-				var = SWE_mil_planning_speed
-				value = 0.03
+				tooltip = training_time_factor_tt
+				var = SWE_mil_training_time_factor
+				value = -0.05
 			}
 			add_to_variable = {
 				tooltip = industrial_capacity_factory_tt
 				var = SWE_mil_industrial_capacity_factory
-				value = 0.02
+				value = 0.01
 			}
 		}
 		

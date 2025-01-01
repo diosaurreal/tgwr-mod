@@ -180,6 +180,7 @@ focus_tree = {
 					instant_build = yes
 				}
 			}
+			# Should maybe unlock Riksdag decision instead
 		}
 	}
 	focus = {	# Reimburse them
@@ -475,6 +476,10 @@ focus_tree = {
 				idea = SWE_military_budget_adjustment
 				days = 365
 			}
+			unlock_decision_tooltip = {
+				decision = SWE_early_conscription_extension
+				show_effect_tooltip = yes
+			}
 		}
 	}
 	focus = {
@@ -598,6 +603,10 @@ focus_tree = {
 				character = SWE_karl_staaff
 				ruling_only = yes
 			}
+			NOT = {
+				has_completed_focus = SWE_courtyard_speech
+				has_completed_focus = SWE_third_liberal_regering
+			}
 		}
 		cancel = {
 			NOT = {
@@ -637,6 +646,7 @@ focus_tree = {
 				character = SWE_karl_staaff
 				ruling_only = yes
 			}
+			has_idea = SWE_anti_war_promises
 			custom_trigger_tooltip = {
 				tooltip = sixty_percent_leftwing_support
 				set_temp_variable = { leftwing_temp = party_popularity@communism }
@@ -1060,7 +1070,7 @@ focus_tree = {
 		prerequisite = { focus = SWE_pro_entente_stance }
 		relative_position_id = SWE_pro_entente_stance
 		cost = 5.00
-		x = -1
+		x = -2
 		y = 1
 		
 		available = {
@@ -1094,6 +1104,78 @@ focus_tree = {
 		}
 	}
 	focus = {
+		id = SWE_invite_french_officers
+		icon = GFX_goal_generic_propaganda
+		prerequisite = { focus = SWE_french_ties }
+		relative_position_id = SWE_pro_entente_stance
+		cost = 5.00
+		x = -2
+		y = 2
+		
+		available = {
+			FRA = {
+				exists = yes
+				is_subject = no
+				NOT = { has_war_with = ROOT }
+			}
+		}
+		
+		completion_reward = {
+			custom_effect_tooltip = penalty_based_on_non_democatic_support
+			set_temp_variable = { democratic_temp = party_popularity@fascism }
+			add_to_temp_variable = { democratic_temp = party_popularity@neutrality }
+			add_to_temp_variable = { democratic_temp = party_popularity@communism }
+			multiply_temp_variable = { democratic_temp = -0.15 }
+			add_stability = democratic_temp
+			add_ideas = SWE_french_military_mission
+			custom_effect_tooltip = adjust_swe_military_tt
+			add_to_variable = {
+				tooltip = industrial_capacity_factory_tt
+				var = SWE_mil_industrial_capacity_factory
+				value = 0.01
+			}
+			add_to_variable = {
+				tooltip = experience_gain_army_factor_tt
+				var = SWE_mil_experience_gain_army_factor
+				value = 0.05
+			}
+		}
+	}
+	focus = {
+		id = SWE_pro_entente_propaganda
+		icon = GFX_goal_generic_propaganda
+		prerequisite = { focus = SWE_french_ties }
+		prerequisite = { focus = SWE_entente_corridor_for_food_security }
+		relative_position_id = SWE_pro_entente_stance
+		cost = 5.00
+		x = 0
+		y = 2
+		
+		available = {
+			FRA = {
+				exists = yes
+				is_subject = no
+				NOT = { has_war_with = ROOT }
+				NOT = { has_country_flag = great_war_loser }
+			}
+			has_government = democratic
+		}
+		
+		completion_reward = {
+			add_timed_idea = {
+				idea = SWE_pro_entente_propaganda
+				days = 120
+			}
+			custom_effect_tooltip = when_expired
+			effect_tooltip = {
+				swap_ideas = {
+					remove_idea = SWE_pro_entente_minority
+					add_idea = SWE_pro_entente_minority_propaganda
+				}	
+			}
+		}
+	}
+	focus = {
 		id = SWE_entente_corridor_for_food_security
 		icon = GFX_focus_generic_price_controls
 		prerequisite = { focus = SWE_pro_entente_stance }
@@ -1103,11 +1185,31 @@ focus_tree = {
 		y = 1
 		
 		available = {
-			
+			OR = {
+				FRA = {
+					exists = yes
+					is_subject = no
+					NOT = { has_war_with = ROOT }
+					NOT = { has_country_flag = great_war_loser }
+				}
+				ENG = {
+					exists = yes
+					is_subject = no
+					NOT = { has_war_with = ROOT }
+					NOT = { has_country_flag = great_war_loser }
+				}
+			}
 		}
-		
+		bypass = {
+			NOT = {
+				has_idea = SWE_hungerskjold
+				has_idea = SWE_threat_of_famine
+			}
+		}
+
 		completion_reward = {
-			# ???
+			custom_effect_tooltip = if_they_accept_tt
+			custom_effect_tooltip = will_lower_requirements_to_remove_risk_of_famine
 		}
 	}
 	# Historical
@@ -1151,12 +1253,9 @@ focus_tree = {
 			SWE_hjalmar_hammarskjold = {
 				add_country_leader_trait = SWE_principalled
 			}
-			# Berndt Hasselrot
-				# Silent workhorse
-			# Knut Wallenberg
-				# Compassionate Gentleman
 			custom_effect_tooltip = available_political_advisor
-			show_ideas_tooltip = SWE_nils_eden
+			show_ideas_tooltip = SWE_berndt_hasselrot
+			show_ideas_tooltip = SWE_knut_wallenberg
 		}
 	}
 	focus = {
@@ -1285,7 +1384,7 @@ focus_tree = {
 			add_to_variable = {
 				tooltip = industrial_capacity_factory_tt
 				var = SWE_mil_industrial_capacity_factory
-				value = 0.03
+				value = 0.02
 			}
 		}
 	}
@@ -1307,6 +1406,12 @@ focus_tree = {
 		
 		completion_reward = {
 			add_ideas = SWE_neutralitetsvakt
+			custom_effect_tooltip = adjust_swe_military_tt
+			add_to_variable = {
+				tooltip = training_time_factor_tt
+				var = SWE_mil_training_time_factor
+				value = -0.05
+			}
 		}
 	}
 	focus = {
@@ -1501,11 +1606,9 @@ focus_tree = {
 				}
 			}
 			custom_effect_tooltip = enables_further_riksdag_decisions
-			custom_effect_tooltip = adjust_swe_military_tt
-			add_to_variable = {
-				tooltip = industrial_capacity_factory_tt
-				var = SWE_mil_industrial_capacity_factory
-				value = 0.03
+			unlock_decision_tooltip = {
+				decision = SWE_motion_for_military_expansion
+				show_effect_tooltip = yes
 			}
 		}
 	}
@@ -1533,6 +1636,8 @@ focus_tree = {
 			add_stability = -0.05
 			add_war_support = 0.05
 			add_political_power = 70
+			custom_effect_tooltip = available_political_advisor
+			show_ideas_tooltip = SWE_knut_wallenberg
 		}
 	}
 	focus = {
@@ -1670,6 +1775,11 @@ focus_tree = {
 				tooltip = planning_speed_tt
 				var = SWE_mil_planning_speed
 				value = 0.03
+			}
+			add_to_variable = {
+				tooltip = experience_gain_army_factor_tt
+				var = SWE_mil_experience_gain_army_factor
+				value = 0.05
 			}
 		}
 	}
@@ -1823,7 +1933,7 @@ focus_tree = {
 		id = SWE_creation_of_nationalistiskt_arbetarparti
 		icon = GFX_focus_fascist_revanchism
 		prerequisite = { focus = SWE_for_sveriges_framtid }
-		mutually_exclusive = { focus = SWE_organise_the_workers_cause }
+		mutually_exclusive = { focus = SWE_first_chance_for_social_democracy }
 		relative_position_id = SWE_for_sveriges_framtid
 		cost = 5.00
 		x = -2
@@ -1858,7 +1968,10 @@ focus_tree = {
 		id = SWE_kungliga_regeringen
 		icon = GFX_focus_SWE_king_in_council
 		prerequisite = { focus = SWE_creation_of_nationalistiskt_arbetarparti }
-		mutually_exclusive = { focus = SWE_military_control }
+		mutually_exclusive = {
+			focus = SWE_military_control
+			focus = SWE_promises_from_the_king
+		}
 		relative_position_id = SWE_creation_of_nationalistiskt_arbetarparti
 		cost = 10.00
 		x = -2
@@ -1866,7 +1979,7 @@ focus_tree = {
 		
 		available = {
 			has_government = neutrality
-			NOT = { has_country_flag = sweden_democratc_crisis }
+			NOT = { has_country_flag = sweden_democratic_crisis }
 		}
 		
 		search_filters = { FOCUS_FILTER_POLITICAL }
@@ -1891,7 +2004,7 @@ focus_tree = {
 				}
 				set_party_name = {
 					ideology = neutrality
-					long_name = SWE_neutrality_party_long
+					long_name = SWE_neutrality_party
 					name = SWE_neutrality_party
 				}
 			}
@@ -1993,7 +2106,10 @@ focus_tree = {
 		id = SWE_military_control
 		icon = GFX_goal_generic_military_sphere
 		prerequisite = { focus = SWE_creation_of_nationalistiskt_arbetarparti }
-		mutually_exclusive = { focus = SWE_kungliga_regeringen }
+		mutually_exclusive = {
+			focus = SWE_kungliga_regeringen
+			focus = SWE_promises_from_the_king
+		}
 		relative_position_id = SWE_creation_of_nationalistiskt_arbetarparti
 		cost = 10.00
 		x = 0
@@ -2003,7 +2119,7 @@ focus_tree = {
 			has_global_flag = great_war
 			NOT = { has_global_flag = great_war_ends }
 			NOT = { has_government = communism }
-			NOT = { has_country_flag = sweden_democratc_crisis }
+			NOT = { has_country_flag = sweden_democratic_crisis }
 		}
 		
 		search_filters = { FOCUS_FILTER_POLITICAL FOCUS_FILTER_WAR_SUPPORT FOCUS_FILTER_INTERNAL_AFFAIRS }
@@ -2070,7 +2186,7 @@ focus_tree = {
 			add_to_variable = {
 				tooltip = mobilization_speed_tt
 				var = SWE_mil_mobilization_speed
-				value = 0.12
+				value = 0.10
 			}
 		}
 	}
@@ -2212,17 +2328,212 @@ focus_tree = {
 			custom_effect_tooltip = will_disable_all_riksdag_decisions
 		}
 	}
+	# Social-Democracy
+	focus = {
+		id = SWE_first_chance_for_social_democracy
+		icon = GFX_focus_social_welfare
+		prerequisite = { focus = SWE_for_sveriges_framtid }
+		mutually_exclusive = {
+			focus = SWE_creation_of_nationalistiskt_arbetarparti
+			#focus = SWE_organise_the_workers_cause
+		}
+		relative_position_id = SWE_for_sveriges_framtid
+		cost = 5.00
+		x = 4
+		y = 1
+		
+		available = {
+			custom_trigger_tooltip = {
+				tooltip = social_democratic_coup
+				always = no
+			}
+		}
+		
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		
+		completion_reward = {
+			
+		}
+	}
+	focus = {
+		id = SWE_promises_from_the_king
+		icon = GFX_focus_social_welfare
+		prerequisite = { focus = SWE_first_chance_for_social_democracy }
+		relative_position_id = SWE_first_chance_for_social_democracy
+		cost = 5.00
+		x = 0
+		y = 1
+		
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		
+		completion_reward = {
+			if = {
+				limit = { NOT = { has_idea = SWE_gustaf_v } }
+				hidden_effect = {
+					remove_ideas = {
+						SWE_gustaf_v_apr
+						SWE_gustaf_v_dis
+						SWE_gustaf_v_opp
+					}
+				}
+				custom_effect_tooltip = replaces_current_gustaf_spirit_with
+				add_ideas = SWE_gustaf_v
+			}
+			swap_ideas = {
+				remove_idea = SWE_unofficial_parliamentalism
+				add_idea = SWE_parliamentalism
+			}
+		}
+	}
+	focus = {
+		id = SWE_introduce_universal_suffrage
+		icon = GFX_focus_social_welfare
+		prerequisite = { focus = SWE_promises_from_the_king }
+		relative_position_id = SWE_first_chance_for_social_democracy
+		cost = 5.00
+		x = -1
+		y = 2
+		
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		
+		completion_reward = {
+			# Implement other things
+			if = {
+				limit = {
+					NOT = { has_country_flag = SWE_suffrage_flag }
+					NOT = { has_decision = SWE_push_suffrage_through }
+				}
+				hidden_effect = { add_political_power = 50 }
+				activate_decision = SWE_push_suffrage_through
+			}
+		}
+	}
+	focus = {
+		id = SWE_secure_peace_within_the_left
+		icon = GFX_focus_social_welfare
+		prerequisite = { focus = SWE_introduce_universal_suffrage }
+		prerequisite = { focus = SWE_make_strikebreaking_illegal }
+		mutually_exclusive = { focus = SWE_fuel_to_the_fire }
+		relative_position_id = SWE_first_chance_for_social_democracy
+		cost = 7.00
+		x = -2
+		y = 3
+		
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		
+		completion_reward = {
+			
+		}
+	}
+	focus = {
+		id = SWE_fuel_to_the_fire
+		icon = GFX_focus_social_welfare
+		prerequisite = { focus = SWE_introduce_universal_suffrage }
+		prerequisite = { focus = SWE_make_strikebreaking_illegal }
+		mutually_exclusive = { focus = SWE_secure_peace_within_the_left }
+		relative_position_id = SWE_first_chance_for_social_democracy
+		cost = 7.00
+		x = 2
+		y = 3
+		
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		
+		completion_reward = {
+			add_timed_idea = {
+				idea = communist_pressure
+				days = 70
+			}
+			add_popularity = {
+				ideology = communism
+				popularity = 0.03
+			}
+		}
+	}
+	focus = {
+		id = SWE_make_strikebreaking_illegal
+		icon = GFX_focus_social_welfare
+		prerequisite = { focus = SWE_promises_from_the_king }
+		relative_position_id = SWE_first_chance_for_social_democracy
+		cost = 5.00
+		x = 1
+		y = 2
+		
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		
+		completion_reward = {
+			add_stability = 0.05
+			custom_effect_tooltip = adjust_emigration_problem_tt
+			add_to_variable = {
+				tooltip = monthly_population_tt
+				var = SWE_emigration_monthly_population
+				value = 0.06
+			}
+		}
+	}
+	focus = {
+		id = SWE_welfare_reforms
+		icon = GFX_focus_social_welfare
+		prerequisite = {
+			focus = SWE_secure_peace_within_the_left
+			focus = SWE_fuel_to_the_fire
+		}
+		relative_position_id = SWE_first_chance_for_social_democracy
+		cost = 10.00
+		x = -1
+		y = 4
+		
+		search_filters = { FOCUS_FILTER_STABILITY FOCUS_FILTER_INDUSTRY }
+		available = {
+			has_idea = SWE_class_conflict
+		}
+
+		completion_reward = {
+			swap_ideas = {
+				remove_idea = SWE_class_conflict
+				add_idea = SWE_class_unity
+			}
+		}
+	}
+	focus = {
+		id = SWE_secure_workers_support
+		icon = GFX_focus_social_welfare
+		prerequisite = {
+			focus = SWE_secure_peace_within_the_left
+			focus = SWE_fuel_to_the_fire
+		}
+		relative_position_id = SWE_first_chance_for_social_democracy
+		cost = 10.00
+		x = 1
+		y = 4
+		
+		search_filters = { FOCUS_FILTER_STABILITY FOCUS_FILTER_INDUSTRY }
+		available = {
+			has_idea = SWE_class_conflict
+		}
+
+		completion_reward = {
+			swap_ideas = {
+				remove_idea = SWE_class_conflict
+				add_idea = SWE_class_unity
+			}
+		}
+	}
 	# COMMUNISM
 	focus = {
 		id = SWE_organise_the_workers_cause
 		icon = GFX_focus_generic_workers
 		prerequisite = { focus = SWE_for_sveriges_framtid }
-		mutually_exclusive = { focus = SWE_creation_of_nationalistiskt_arbetarparti }
+		mutually_exclusive = { focus = SWE_first_chance_for_social_democracy }
 		relative_position_id = SWE_for_sveriges_framtid
 		cost = 5.00
-		x = 2
+		x = 7
 		y = 1
-		
+
+		# Temporary
+		allow_branch = {
+			always = no
+		}
+
 		available = {
 			has_government = communism
 		}
@@ -2682,7 +2993,10 @@ focus_tree = {
 		cost = 5.00
 		x = 0
 		y = 2
-		
+		# For now
+		allow_branch = {
+			always = no
+		}
 		available = {
 			has_civil_war = yes
 		}
