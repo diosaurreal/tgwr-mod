@@ -67,7 +67,6 @@ GER_great_war = {
 				has_global_flag = GER_capitulation
 				has_global_flag = FRA_capitulation
 			}
-			surrender_progress > 0.2
 			OR = {
 				surrender_progress > 0.4
 				# war is losing
@@ -92,6 +91,10 @@ GER_great_war = {
 						controls_state = 825
 						controls_state = 860
 					}
+				}
+				if = {
+					limit = { has_country_flag = TUR_yakub_cemils_coup_succeess }
+					has_country_flag = TUR_yakub_cemils_coup_succeess
 				}
 			}
 		}
@@ -9057,7 +9060,7 @@ TUR_government_stability_decision_category = {
 	}
 	TUR_saviour_officer_coup = {
 		allowed = { original_tag = TUR }
-		icon = GFX_decision_itilafist_coup
+		icon = GFX_decision_generic_military
 		days_mission_timeout = 50
 		fire_only_once = yes
 		is_good = no
@@ -9092,7 +9095,7 @@ TUR_government_stability_decision_category = {
 	}
 	TUR_raid_on_the_sublime_porte = {
 		allowed = { original_tag = TUR }
-		icon = GFX_decision_ittihadist_coup
+		icon = GFX_decision_generic_military
 		available = {
 			custom_trigger_tooltip = {
 				tooltip = TUR_government_stability_higher_than_25
@@ -9126,7 +9129,7 @@ TUR_government_stability_decision_category = {
 	}
 	TUR_liberal_retaliation = {
 		allowed = { original_tag = TUR }
-		icon = GFX_decision_itilafist_coup
+		icon = GFX_decision_generic_assassination
 		days_mission_timeout = 140
 		fire_only_once = yes
 		is_good = no
@@ -9147,6 +9150,72 @@ TUR_government_stability_decision_category = {
 				popularity = -0.05
 			}
 		}
+	}
+	TUR_yakub_cemils_coup = {
+		allowed = { original_tag = TUR }
+		icon = GFX_decision_generic_military
+		days_mission_timeout = 100
+		fire_only_once = yes
+		is_good = no
+		available = {
+			OR = {
+				custom_trigger_tooltip = {
+					tooltip = TUR_government_stability_higher_than_25
+					check_variable = { TUR_government_stability_var > 25 }
+				}
+				TUR_yakub_cemil = { has_character = imprisoned_flag }
+			}
+		}
+		activation = {
+			check_variable = { TUR_government_stability_var < 26 }
+			has_completed_focus = TUR_empower_the_special_organization
+			has_war = yes
+		}
+		timeout_effect = {
+			add_to_variable = {
+				tooltip = TUR_government_stability_add_30
+				TUR_government_stability_var = 30
+			}
+			set_politics = {
+				ruling_party = neutrality
+				elections_allowed = no
+			}
+			TUR_mustafa_kemal = {
+				add_country_leader_role = {
+					promote_leader = yes
+					country_leader = {
+						ideology = authoritarian_democracy
+						traits = { TUR_hero_of_galipoli TUR_commander_in_chief }
+					}
+				}
+			}
+			activate_mission = TUR_surrender_to_entente
+			hidden_effect = { country_event = { id = ottoman.76 days = 30 } }
+			set_country_flag = TUR_yakub_cemils_coup_succeess
+		}
+	}
+	TUR_imprison_yakub_cemil = {
+		allowed = { tag = TUR }
+		icon = GFX_decision_generic_arrest
+		visible = { has_active_mission = TUR_yakub_cemils_coup }
+		cost = 35
+		complete_effect = {
+			TUR_yakub_cemil = {
+				custom_effect_tooltip = TUR_imprison_yakub_cemil_tt
+				hidden_effect = { set_character_flag = imprisoned_flag }
+			}
+			set_portraits = {
+				character = TUR_yakub_cemil
+				civilian = { small = "GFX_idea_TUR_yakub_cemil_imprisoned" }
+			}
+			add_to_variable = {
+				tooltip = TUR_government_stability_add_5
+				TUR_government_stability_var = 5
+			}
+			remove_mission = TUR_yakub_cemils_coup
+			hidden_effect = { country_event = { id = ottoman.76 days = 30 } }
+		}
+		ai_will_do = { base = 1000 }
 	}
 	TUR_combat_military_militarization = {
 		allowed = { tag = TUR }
@@ -9172,7 +9241,7 @@ TUR_government_stability_decision_category = {
 	}
 	TUR_elevate_ittihadism_in_the_army = {
 		allowed = { tag = TUR }
-		icon = generic_army_support
+		icon = GFX_decision_generic_nationalism
 		cost = TUR_elevate_ittihadism_in_the_army_cost?50
 		days_re_enable = 70
 		visible = {
@@ -18852,7 +18921,7 @@ TUR_government_committee_struggle_decisions = {
 	}
 	TUR_politicize_the_army = {
 		allowed = { original_tag = TUR }
-		icon = GFX_decision_ittihadist_coup
+		icon = GFX_decision_generic_nationalism
 		fire_only_once = no
 		cost = 15
 		days_remove = 70
