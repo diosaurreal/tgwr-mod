@@ -981,32 +981,6 @@ on_actions = {
 					}
 				}
 			}
-			#war of independence
-			if = {
-				limit = {
-					FROM.FROM = { has_state_flag = kuvay_milliye }
-				}
-				if = {
-					limit = {
-						FROM.FROM = { has_dynamic_modifier = { modifier = TUR_turkish_revolts } }
-						ROOT = { tag = TUR }
-					}
-					FROM.FROM = {
-						remove_dynamic_modifier = { modifier = TUR_turkish_revolts }
-						add_dynamic_modifier = { modifier = TUR_turkish_support }
-					}
-				}
-				else_if = {
-					limit = {
-						FROM.FROM = { has_dynamic_modifier = { modifier = TUR_turkish_support } }
-						ROOT = { NOT = { tag = TUR } }
-					}
-					FROM.FROM = {
-						remove_dynamic_modifier = { modifier = TUR_turkish_support }
-						add_dynamic_modifier = { modifier = TUR_turkish_revolts }
-					}
-				}
-			}
 			#fix cores for turkish states with armenian core
 			if = {
 				limit = {
@@ -1048,27 +1022,8 @@ on_actions = {
 					}
 				}
 			}
-			#turanist integration
-			if = {
-				limit = {
-					FROM.FROM = { has_state_flag = TUR_turanist_state_not_controlled }
-					ROOT = { tag = TUR }
-				}
-				FROM.FROM = {
-					clr_country_flag = TUR_turanist_state_not_controlled
-					add_dynamic_modifier = { modifier = turanism_support }
-				}
-			}
-			else_if = {
-				limit = {
-					FROM.FROM = { has_dynamic_modifier = { modifier = turanism_support } }
-					ROOT = { NOT = { tag = TUR } }
-				}
-				FROM.FROM = {
-					remove_dynamic_modifier = { modifier = turanism_support }
-					set_country_flag = TUR_turanist_state_not_controlled
-				}
-			}
+		}
+		effect = {
 			#ottoman achievement
 			if = {
 				limit = {
@@ -1110,52 +1065,72 @@ on_actions = {
 				}
 				set_global_flag = TUR_1910_lost_a_starting_state
 			}
-			#hejaz
+		}
+		effect = { #kuvay-i milliye
+			if = {
+				limit = {
+					FROM.FROM = {
+						check_variable = { TUR_turkish_state_level > 0 }
+						has_dynamic_modifier = { modifier = TUR_turkish_resistance }
+						controller = {
+							OR = {
+								has_country_flag = TUR_turkish_resistance_ally
+								any_country = {
+									has_country_flag = TUR_turkish_resistance_ally
+									NOT = { has_war_with = PREV }
+								}
+							}
+						}
+					}
+				}
+				FROM.FROM = { remove_dynamic_modifier = { modifier = TUR_turkish_resistance } }
+			}
+			if = {
+				limit = {
+					FROM.FROM = {
+						check_variable = { TUR_turkish_state_level > 0 }
+						NOT = { has_dynamic_modifier = { modifier = TUR_turkish_resistance } }
+						controller = {
+							any_country = {
+								has_country_flag = TUR_turkish_resistance_ally
+								has_war_with = PREV
+							}
+						}
+					}
+				}
+				FROM.FROM = { add_dynamic_modifier = { modifier = TUR_turkish_resistance } }
+			}
+		}
+		effect = { #hejaz cosmetic tag
 			if = {
 				limit = {
 					679 = {
 						NOT = {
 							is_controlled_by = TUR
-							controller = {
-								is_subject_of = TUR
-							}
+							controller = { is_subject_of = TUR }
 						}
 					}
 					HJZ = { has_cosmetic_tag = HJZ_sharifate }
 				}
-				HJZ = {
-					drop_cosmetic_tag = yes
-				}
+				HJZ = { drop_cosmetic_tag = yes }
 			}
 			if = {
 				limit = {
 					679 = {
 						is_controlled_by = TUR
-						controller = {
-							is_subject_of = TUR
-						}
+						controller = { is_subject_of = TUR }
 					}
 					HJZ = { NOT = { has_cosmetic_tag = HJZ_arabia } }
 				}
-				HJZ = {
-					set_cosmetic_tag = HJZ_sharifate
-				}
+				HJZ = { set_cosmetic_tag = HJZ_sharifate }
 			}
 			if = {
 				limit = {
 					country_exists = HJZ
-					HJZ = {
-						has_cosmetic_tag = HJZ_sharifate
-					}
-					NOT = {
-						HJZ = {
-							is_subject_of = TUR
-						}
-					}
+					HJZ = { has_cosmetic_tag = HJZ_sharifate }
+					NOT = { HJZ = { is_subject_of = TUR } }
 				}
-				HJZ = {
-					drop_cosmetic_tag = yes
-				}
+				HJZ = { drop_cosmetic_tag = yes }
 			}
 			if = {
 				limit = {
@@ -1168,9 +1143,7 @@ on_actions = {
 					}
 					is_subject_of = TUR
 				}
-				HJZ = {
-					set_cosmetic_tag = HJZ_sharifate
-				}
+				HJZ = { set_cosmetic_tag = HJZ_sharifate }
 			}
 		}
 		effect = {
@@ -1990,55 +1963,28 @@ on_actions = {
 				}
 			}
 		}
+	}
+	on_peaceconference_ended = {
 		effect = {
 			if = {
 				limit = {
-					TUR = {
-						has_country_flag = TUR_defense_of_trablusgarp_enacted
-						NOT = {
-							any_country = {
-								has_war_with = TUR
-								is_major = yes
-								any_state = {
-									has_state_flag = TUR_defense_of_trablusgarp
-									is_claimed_by = PREV.PREV
-								}
-							}
-						}
+					ROOT = {
+						any_controlled_state = { has_dynamic_modifier = { modifier = TUR_turkish_resistance } }
+						NOT = { has_war_with = FROM }
 					}
+					FROM = { has_country_flag = TUR_turkish_resistance_ally }
 				}
-				TUR = {
-					every_country = {
-						random_select_amount = 1
-						limit = {
-							is_major = yes
-							NOT = { has_war_with = TUR }
-						}
-						every_state = {
-							limit = {
-								is_claimed_by = PREV
-								has_state_flag = TUR_defense_of_trablusgarp
-							}
-							add_to_variable = { TUR_ottoman_local_non_core_manpower = -0.15 }
-						}
+				ROOT = { every_controlled_state = { remove_dynamic_modifier = { modifier = TUR_turkish_resistance } } }
+			}
+			if = {
+				limit = {
+					FROM = {
+						any_controlled_state = { has_dynamic_modifier = { modifier = TUR_turkish_resistance } }
+						NOT = { has_war_with = FROM }
 					}
-					clr_country_flag = TUR_defense_of_trablusgarp_enacted
-					every_country = {
-						random_select_amount = 1
-						limit = {
-							is_major = yes
-							has_war_with = TUR
-						}
-						every_state = {
-							limit = {
-								is_claimed_by = PREV
-								has_state_flag = TUR_defense_of_trablusgarp
-							}
-							add_to_variable = { TUR_ottoman_local_non_core_manpower = 0.15 }
-						}
-					}
-					ottoman_minority_variable_check = yes
+					ROOT = { has_country_flag = TUR_turkish_resistance_ally }
 				}
+				FROM = { every_controlled_state = { remove_dynamic_modifier = { modifier = TUR_turkish_resistance } } }
 			}
 		}
 	}
