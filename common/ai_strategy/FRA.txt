@@ -80,6 +80,8 @@ FRA_buildup_right_before_ww1 = {
 	}
 
 	enable = {
+		date > 1912.1.1
+		date < 1915.1.1
 		NOT = {
 			has_global_flag = great_war_ends
 		}
@@ -125,6 +127,36 @@ FRA_buildup_right_before_ww1 = {
 		id = bunker  # Type of building
 		target = 11483
 		value = 20000  # AI weight, used for weighted random selection of what to build. The AI gathers all build_building strategies (including the ones created dynamically) with non-zero values, and selects one of them.
+	}
+}
+
+FRA_gerardmer_gap = {
+	allowed = { 
+		original_tag = FRA 
+	}
+
+	enable = {
+		tag = FRA
+		controls_province = 2923
+		NOT = {
+			has_global_flag = great_war_ends
+		}
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = front_unit_request
+		state = 864
+		value = 90
+	}
+	ai_strategy = {
+		type = front_control
+		state = 28
+		ratio = 0.3
+		priority = 9999
+		ordertype = front
+		execution_type = careful
+		execute_order = no
+		manual_attack = yes
 	}
 }
 
@@ -943,7 +975,7 @@ FRA_GRE_low_prio = {
 	ai_strategy = {
 		type = front_unit_request
 		strategic_region = 24
-		value = -450
+		value = -600
 	}
 
 	ai_strategy = {
@@ -1790,6 +1822,11 @@ armored_car_production_stop_after_tank = {
 		id = armored_car
 		value = -10
 	}
+	ai_strategy = {
+		type = equipment_production_factor
+		id = motorized	#armored cars
+		value = -9999
+	}
 }
 
 early_tank_production = {
@@ -1802,8 +1839,11 @@ early_tank_production = {
 		NOT = {
 			has_global_flag = great_war_ends
 		}
-		NOT = {
-			has_tech = basic_light_tank_chassis
+		OR = {
+			has_active_mission = FRA_fufill_schneider_contract
+			NOT = {
+				has_tech = basic_light_tank_chassis
+			}
 		}
 		has_tech = basic_medium_tank_chassis
 	}
@@ -1823,6 +1863,18 @@ early_tank_production = {
 		type = equipment_production_factor
 		id = armor
 		value = 800 #build some
+	}
+
+	ai_strategy = {
+		type = equipment_production_min_factories
+		id = armor
+		value = 6
+	}
+
+	ai_strategy = {
+		type = equipment_production_factor
+		id = fighter
+		value = -100 #no concurrency over steel cars
 	}
 
 	ai_strategy = {
@@ -1857,7 +1909,6 @@ renault_tank_production = {
 			has_active_mission = FRA_fufill_schneider_contract
 		}
 		has_tech = basic_light_tank_chassis
-		has_tech = basic_medium_tank_chassis
 	}
 	abort_when_not_enabled = yes
 	#it will force AI to produce armored cars and schneider tanks
@@ -1890,7 +1941,7 @@ renault_tank_production = {
 	ai_strategy = {
 		type = equipment_production_factor
 		id = armor
-		value = 250 #build some
+		value = 500 #build some
 	}
 }
 
@@ -1933,6 +1984,84 @@ renault_mission_focus = {
 		type = role_ratio
 		id = light_armor
 		value = 5
+	}
+}
+
+duval_plan_mission_focus_fighters = {
+	
+	allowed = {
+		original_tag = FRA	
+	}
+	enable = {
+		original_tag = FRA
+		NOT = {
+			has_global_flag = great_war_ends
+		}
+		has_active_mission = FRA_duval_plan
+		surrender_progress < 0.15
+		NOT = {
+			check_variable = { num_deployed_planes_with_type@fighter_equipment > 1999 }
+			has_equipment = {
+				fighter_equipment > 1999
+			}
+		}
+	}
+	abort_when_not_enabled = yes
+
+	ai_strategy = {
+		type = equipment_production_factor
+		id = fighter
+		value = 800 #bfighuild some
+	}
+
+	ai_strategy = {
+		type = air_factory_balance # focus on air
+		value = 30
+	}
+
+	ai_strategy = {
+		type = equipment_production_min_factories
+		id = fighter
+		value = 12
+	}
+}
+
+duval_plan_mission_focus_bombers = {
+	
+	allowed = {
+		original_tag = FRA	
+	}
+	enable = {
+		original_tag = FRA
+		NOT = {
+			has_global_flag = great_war_ends
+		}
+		has_active_mission = FRA_duval_plan
+		surrender_progress < 0.15
+		NOT = {
+			check_variable = { num_deployed_planes_with_type@tac_bomber_equipment > 499 }
+			has_equipment = {
+				tac_bomber_equipment > 499
+			}
+		}
+	}
+	abort_when_not_enabled = yes
+
+	ai_strategy = {
+		type = air_factory_balance # focus on air
+		value = 30
+	}
+
+	ai_strategy = {
+		type = equipment_production_factor
+		id = tactical_bomber
+		value = 1200
+	}
+
+	ai_strategy = {
+		type = equipment_production_min_factories
+		id = tactical_bomber
+		value = 12
 	}
 }
 
@@ -2013,5 +2142,60 @@ keep_djibouti = {
 		ratio = 0.05
 		states = { 268 }
 		subtract_fronts_from_need = yes
+	}
+}
+
+FRA_industrial_ai_smartness_1910_1911 = {
+	allowed = {
+		tag = FRA
+	}
+	enable = {
+		NOT = {
+			has_global_flag = great_war_ends
+		}
+		date < 1912.1.1
+	}
+	abort = {
+		has_global_flag = great_war_ends
+	}
+	ai_strategy = {
+		type = equipment_market_spend_factories
+		value = -999  # dont buy at game start
+	}
+	ai_strategy = {
+		type = intelligence_agency_usable_factories
+		value = -5
+	}
+	ai_strategy = {
+		type = agency_ai_base_num_factories_factor
+		value = -100    # -50% on the define
+	}
+
+	ai_strategy = {
+		type = agency_ai_per_upgrade_factories_factor
+		value = -100    # -25% on the define
+	}
+}
+
+FRA_TUN_MOR_mobilization = {
+	allowed = {
+		always = yes
+	}
+	enable = {
+		is_subject_of = FRA
+		NOT = {
+			has_global_flag = great_war_ends
+		}
+		has_war_with_major = yes
+		OR = {
+			tag = TUN
+			tag = MOR
+		}
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = front_unit_request
+		country_trigger = { NOT = { is_neighbor_of = FROM } }
+		value = 50
 	}
 }
