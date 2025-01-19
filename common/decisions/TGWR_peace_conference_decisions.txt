@@ -311,7 +311,10 @@ GER_great_war = {
 	frankfurt_armistice_mission = {
 		icon = GFX_decision_eng_trade_unions_support
 		available = {
-			has_global_flag = frankfurt_armistice
+			custom_trigger_tooltip = {
+				tooltip = frankfurt_armistice_signed
+				has_global_flag = frankfurt_armistice
+			}
 		}
 		allowed = {
 			always = yes
@@ -339,24 +342,18 @@ GER_great_war = {
 				has_country_flag = accepted_french_surrender
 			}
 			has_global_flag = germany_accepts_FRA_capitulation
-			NOT = {
-				has_global_flag = frankfurt_armistice
-			}
+			NOT = { has_global_flag = frankfurt_armistice }
 		}
 		fire_only_once = yes
 		is_good = no
 		timeout_effect = {
 			if = {
-				limit = {
-					tag = GER
-				}
+				limit = { tag = GER }
 				set_global_flag = frankfurt_armistice
 				set_global_flag = great_war_ends
 				hidden_effect = {
 					random_other_country = {
-						limit = {
-							has_country_flag = entente_leader
-						}
+						limit = { has_country_flag = entente_leader }
 						set_faction_leader = yes
 					}
 				}
@@ -364,9 +361,7 @@ GER_great_war = {
 					limit = {
 						OR = {
 							has_war_with = FRA
-							any_enemy_country = {
-								has_country_flag = entente_leader
-							}
+							any_enemy_country = { has_country_flag = entente_leader }
 						}
 						OR = {
 							tag = GER
@@ -376,11 +371,10 @@ GER_great_war = {
 							has_country_flag = accepted_french_surrender
 							has_subject = GER #austria
 						}
-						NOT = {
-							has_country_flag = refused_to_surrender
-						}
+						NOT = { has_country_flag = refused_to_surrender }
 					}
-					set_country_flag = great_war_winner
+					custom_effect_tooltip = get_great_war_winner
+					hidden_effect = { set_country_flag = great_war_winner }
 					add_ideas = idea_armistice
 					every_country = {
 						limit = {
@@ -415,7 +409,8 @@ GER_great_war = {
 								has_country_flag = refused_to_surrender
 							}
 						}
-						set_country_flag = great_war_loser
+						custom_effect_tooltip = get_great_war_loser
+						hidden_effect = { set_country_flag = great_war_loser }
 						add_ideas = idea_armistice
 						white_peace = {
 							tag = PREV
@@ -472,8 +467,122 @@ GER_great_war = {
 					name = frankfurt_armistice
 					threat = -10
 				}
-				hidden_effect = {
-					armistice_effect = yes
+				hidden_effect = { armistice_effect = yes }
+			}
+			if = {
+				limit = {
+					NOT = { tag = GER }
+					is_in_faction_with = GER
+				}
+				effect_tooltip = {
+					every_country = {
+						limit = {
+							OR = {
+								has_war_with = FRA
+								any_enemy_country = { has_country_flag = entente_leader }
+							}
+							OR = {
+								tag = GER
+								is_in_faction_with = GER
+								is_subject_of = GER
+								has_country_flag = member_of_central_powers
+								has_country_flag = accepted_french_surrender
+								has_subject = GER #austria
+							}
+							NOT = { has_country_flag = refused_to_surrender }
+						}
+						custom_effect_tooltip = get_great_war_winner
+						hidden_effect = { set_country_flag = great_war_winner }
+						add_ideas = idea_armistice
+						every_country = {
+							limit = {
+								has_war = yes
+								OR = {
+									has_country_flag = member_of_entente
+									AND = {
+										NOT = { has_global_flag = FRA_surrender_alone }
+										OR = {
+											is_in_faction_with = FRA
+											tag = FRA
+											is_subject_of = FRA
+										}
+									}
+									AND = {
+										has_global_flag = FRA_surrender_alone
+										OR = {
+											has_country_flag = entente_leader
+											any_allied_country = {
+												has_country_flag = entente_leader
+											}
+											AND = {
+												is_subject = yes
+												OVERLORD = {
+													has_country_flag = entente_leader
+												}
+											}
+										}
+									}
+								}
+								NOT = { has_country_flag = refused_to_surrender }
+							}
+							custom_effect_tooltip = get_great_war_loser
+							hidden_effect = { set_country_flag = great_war_loser }
+							add_ideas = idea_armistice
+							white_peace = {
+								tag = PREV
+								message = frankfurt_armistice_message
+							}
+							set_truce = {
+								target = PREV
+								days = 365
+							}
+							# Army Restriction checker
+							# i.e. you can't force usa or japan to restrict its army
+							if = {
+								limit = {
+									OR = {
+										has_capitulated = yes
+										surrender_progress > 0.01
+										casualties_inflicted_by = {
+											opponent = PREV
+											thousands > 1
+										}
+										PREV = { is_owner_neighbor_of = PREV }
+									}
+								}
+								set_country_flag = army_should_be_restricted
+							}
+							# PEACE WITH NON-FACTIONAL ENEMIES
+							# YOU CANNOT CONDUCT WAR ANYMORE SINCE YOU ARE GONNA LOST THE GREAT WAR
+							# BUT THEY ARE NOT GONNA RECOGNISED AS VICTOR OF THE GREAT WAR
+							every_other_country = {
+								limit = {
+									has_defensive_war_with = PREV
+									is_in_faction = no
+									is_subject = no
+									has_civil_war = no
+									NOT = {
+										has_country_flag = member_of_entente
+										has_country_flag = refused_to_surrender
+									}
+								}
+								PREV = {
+									white_peace = {
+										tag = PREV
+										message = frankfurt_armistice_message
+									}
+									set_truce = {
+										target = PREV
+										days = 365
+									}
+								}
+							}
+						}
+					}
+					add_named_threat = {
+						name = frankfurt_armistice
+						threat = -10
+					}
 				}
 			}
 		}
@@ -482,7 +591,10 @@ GER_great_war = {
 	frankfurt_conference = {
 		icon = GFX_decision_eng_install_government
 		available = {
-			has_global_flag = frankfurt_treaty
+			custom_trigger_tooltip = {
+				tooltip = frankfurt_treaty_signed
+				has_global_flag = frankfurt_treaty
+			}
 		}
 		allowed = {
 			always = yes
@@ -508,25 +620,32 @@ GER_great_war = {
 				has_country_flag = accepted_french_surrender
 				is_in_faction_with = GER
 			}
-			NOT = {
-				has_global_flag = frankfurt_treaty
-			}
+			NOT = { has_global_flag = frankfurt_treaty }
 			has_global_flag = frankfurt_armistice
 		}
 		fire_only_once = yes
 		is_good = no
 		timeout_effect = {
 			if = {
-				limit = {
-					tag = GER
-				}
+				limit = { tag = GER }
 				set_global_flag = frankfurt_treaty
 				add_named_threat = {
 					name = frankfurt_treaty
 					threat = -30
 				}
-				hidden_effect = {
-					conference_effect = yes
+				hidden_effect = { conference_effect = yes }
+			}
+			if = {
+				limit = {
+					NOT = { tag = GER }
+					is_in_faction_with = GER
+				}
+				effect_tooltip = {
+					set_global_flag = frankfurt_treaty
+					add_named_threat = {
+						name = frankfurt_treaty
+						threat = -30
+					}
 				}
 			}
 		}
@@ -998,11 +1117,12 @@ GER_great_war = {
 	compiegne_armistice_mission = {
 		icon = GFX_decision_eng_trade_unions_support
 		available = {
-			has_global_flag = compiegne_armistice
+			custom_trigger_tooltip = {
+				tooltip = compiegne_armistice_signed
+				has_global_flag = compiegne_armistice
+			}
 		}
-		allowed = {
-			always = yes
-		}
+		allowed = { always = yes }
 		days_mission_timeout = 10
 		activation = {
 			any_country = {
@@ -1217,7 +1337,10 @@ GER_great_war = {
 	versallies_conference = {
 		icon = GFX_decision_eng_install_government
 		available = {
-			has_global_flag = versallies_treaty
+			custom_trigger_tooltip = {
+				tooltip = versallies_treaty_signed
+				has_global_flag = versallies_treaty
+			}
 		}
 		allowed = {
 			always = yes
