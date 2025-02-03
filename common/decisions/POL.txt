@@ -24,20 +24,59 @@ peace_deals = {
 			base = 0
 			modifier = {
 				add = 100
-				casualties_inflicted_by = {
-					opponent = FROM
-					thousands > 55
-				}
-			}
-			modifier = {
-				add = 100
-				surrender_progress > 0.5
+				surrender_progress > 0.8
 			}
 		}
 		complete_effect = {
 			set_global_flag = soviet_polish_war_truce
 			FROM = {
 				country_event = { id = ww1_soviet.18 }
+			}
+		}
+	}
+	POL_sue_for_peace_UKR = {
+		icon = GFX_decision_eng_trade_unions_support
+		allowed = {
+			tag = POL
+		}
+		target_trigger = {
+			FROM = {
+				tag = UKR
+				is_subject = no
+				has_war_with = ROOT
+			}
+		}
+		available = {
+			surrender_progress > 0.15
+		}
+		visible = {
+			is_subject = no
+			is_in_faction = no
+			FROM = {
+				is_in_faction = no
+				NOT = { has_country_flag = treaty_of_warsaw }
+			}
+		}
+		cost = 0
+		fire_only_once = yes
+		ai_will_do = {
+			base = 0
+			modifier = {
+				add = 100
+				surrender_progress > 0.5
+			}
+			modifier = {
+				add = 100
+				surrender_progress > 0.3
+				FROM = {
+					surrender_progress < 0.3
+				}
+			}
+		}
+		complete_effect = {
+			set_country_flag = treaty_of_warsaw
+			FROM = {
+				country_event = { id = ww1_ukraine.13 }
 			}
 		}
 	}
@@ -117,57 +156,57 @@ special_projects = {
 		}
 	}
 }
-foreign_politics = {
-	POL_occupy_chelm = {
-		icon = GFX_decision_infiltrate_state
-		allowed = {
-			original_tag = POL
-		}
-		available = {
-			controls_state = 92
-			OR = {
-				has_subject = UKR
-				AND = {
-					UKR = { has_war_with = SOV }
-					NOT = {
-						has_war_with = SOV
-						is_in_faction_with = UKR
-					}
-				}
-			}
-		}
-		visible = {
-			is_subject = no
-			has_capitulated = no
-			owns_state = 92
-			UKR = {
-				owns_state = 766
-				is_subject = no
-				NOT = {
-					has_war_with = PREV
-				}
-			}
-		}
-		highlight_states = {
-			highlight_state_targets = {
-				state = 766
-			}
-		}
-		fire_only_once = yes
-		cost = 0
-		days_remove = 10
-		target_trigger = {
-			FROM = {
-				tag = UKR
-			}
-		}
-		ai_will_do = {
-			base = 1000
-		}
-		remove_effect = {
-			transfer_state = 766
-		}
-	}
+operations = {
+	# POL_occupy_chelm = {
+	# 	icon = GFX_decision_infiltrate_state
+	# 	allowed = {
+	# 		original_tag = POL
+	# 	}
+	# 	available = {
+	# 		controls_state = 92
+	# 		OR = {
+	# 			has_subject = UKR
+	# 			AND = {
+	# 				UKR = { has_war_with = SOV }
+	# 				NOT = {
+	# 					has_war_with = SOV
+	# 					is_in_faction_with = UKR
+	# 				}
+	# 			}
+	# 		}
+	# 	}
+	# 	visible = {
+	# 		is_subject = no
+	# 		has_capitulated = no
+	# 		owns_state = 92
+	# 		UKR = {
+	# 			owns_state = 766
+	# 			is_subject = no
+	# 			NOT = {
+	# 				has_war_with = PREV
+	# 			}
+	# 		}
+	# 	}
+	# 	highlight_states = {
+	# 		highlight_state_targets = {
+	# 			state = 766
+	# 		}
+	# 	}
+	# 	fire_only_once = yes
+	# 	cost = 0
+	# 	days_remove = 10
+	# 	target_trigger = {
+	# 		FROM = {
+	# 			tag = UKR
+	# 		}
+	# 	}
+	# 	ai_will_do = {
+	# 		base = 1000
+	# 	}
+	# 	remove_effect = {
+	# 		transfer_state = 766
+	# 	}
+	# }
 	POL_occupy_bialystok = {
 		icon = GFX_decision_infiltrate_state
 		allowed = {
@@ -175,10 +214,10 @@ foreign_politics = {
 		}
 		available = {
 			OR = {
-				LIT = { has_war = yes }
+				FROM = { has_war = yes }
 				has_war_with = BLR
 				has_war_with = SOV
-				has_subject = LIT
+				has_subject = FROM
 			}
 			OR = {
 				owns_state = 92
@@ -187,14 +226,14 @@ foreign_politics = {
 		}
 		visible = {
 			is_subject = no
-			any_other_country = {
-				is_neighbor_of = PREV
+			FROM = {
 				OR = {
 					is_subject = no
 					is_subject_of = SOV
+					is_subject_of = ROOT
 				}
-				owns_state = 97
 			}
+			has_completed_focus = POL_old_borders
 		}
 		highlight_states = {
 			highlight_state_targets = {
@@ -206,7 +245,7 @@ foreign_politics = {
 		days_remove = 10
 		target_trigger = {
 			FROM = {
-				tag = LIT
+				owns_state = 97
 			}
 		}
 		ai_will_do = {
@@ -214,7 +253,7 @@ foreign_politics = {
 			modifier = {
 				add = 1000
 				SOV = {
-					has_war_with = LIT
+					has_war_with = FROM
 					controls_state = 97
 				}
 			}
@@ -232,31 +271,106 @@ foreign_politics = {
 					has_completed_focus = POL_eastern_territories
 				}
 				add_state_core = 97
+				add_state_core = 1017
 				else = {
 					add_state_claim = 97
+					add_state_claim = 1017
 				}
 			}
 			if = {
 				limit = {
-					LIT = {
-						owns_state = 97
+					FROM = {
 						NOT = { has_war_with = ROOT }
 					}
 				}
 				transfer_state = 97
+				transfer_state = 1017
 			}
 			else_if = {
 				limit = {
-					any_other_country = {
-						owns_state = 97
+					FROM = {
 						has_war_with = ROOT
 					}
 					controls_state = 97
 				}
 				transfer_state = 97
+				transfer_state = 1017
 			}
 			else = {
 				set_state_owner = 97
+				set_state_owner = 1017
+			}
+		}
+	}
+	POL_occupy_suwalki = {
+		icon = GFX_decision_infiltrate_state
+		allowed = {
+			original_tag = POL
+		}
+		available = {
+			OR = {
+				FROM = { has_war = yes }
+				has_war_with = BLR
+				has_war_with = SOV
+				has_subject = FROM
+			}
+			OR = {
+				owns_state = 97
+				controls_state = 97
+			}
+		}
+		visible = {
+			is_subject = no
+			FROM = {
+				NOT = { tag = ROOT }
+				OR = {
+					is_subject = no
+					is_subject_of = SOV
+					is_subject_of = ROOT
+				}
+			}
+			has_completed_focus = POL_old_borders
+		}
+		highlight_states = {
+			highlight_state_targets = {
+				state = 1015
+			}
+		}
+		fire_only_once = yes
+		cost = 0
+		days_remove = 10
+		target_trigger = {
+			FROM = {
+				owns_state = 1015
+			}
+		}
+		ai_will_do = {
+			base = 1000
+		}
+		remove_effect = {
+			if = {
+				limit = {
+					FROM = {
+						NOT = { has_war_with = ROOT }
+					}
+				}
+				transfer_state = 1015
+			}
+			else_if = {
+				limit = {
+					FROM = {
+						has_war_with = ROOT
+					}
+					controls_state = 1015
+				}
+				transfer_state = 1015
+			}
+			else = {
+				set_state_owner = 1015
+			}
+			if = {
+				limit = { FROM = { tag = LIT } }
+				1015 = { add_claim_by = LIT }
 			}
 		}
 	}

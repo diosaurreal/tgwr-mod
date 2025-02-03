@@ -1,5 +1,65 @@
 add_namespace = freikorps
 
+# Kurt Eisner Assassinated
+country_event = {
+	id = freikorps.1
+	title = freikorps.1.t
+	desc = freikorps.1.d
+	picture = GFX_report_event_ger_civil_war
+	trigger = {
+		tag = GER
+		NOT = {
+			has_global_flag = spartakist_in_bavaria
+			has_global_flag = prussian_blue
+			AUS = {
+				has_country_flag = great_war_winner
+			}
+		}
+		has_country_flag = great_war_loser
+		BAY = {
+			has_country_flag = great_war_loser
+			has_country_leader = {
+				character = BAY_kurt_eisner
+				ruling_only = yes
+			}
+		}
+	}
+	fire_only_once = yes
+	mean_time_to_happen = { days = 120 }
+	option = {
+		name = freikorps.1.a
+		BAY = {
+			retire_character = BAY_kurt_eisner
+			hidden_effect = {
+				set_popularities = {
+					fascism = 21
+					communism = 44
+					democratic = 33
+					neutrality = 2
+				}
+				meta_effect = {
+					text = {
+						set_politics = {
+							ruling_party = communism
+							last_election = "[CURRENT_DATE]"
+							elections_allowed = no
+						}
+					}
+					CURRENT_DATE = "[?global.date.GetDateStringNoHour]"
+				}
+				set_cosmetic_tag = BAY_socialism
+				add_ideas = standing_alone
+			}
+			transfer_state = 52
+			send_embargo = GER
+			set_truce = {
+				target = GER
+				days = 365
+			}
+		}
+	}
+}
+
 # Spartakist Revolution Put Down
 ###################################
 country_event = {
@@ -12,6 +72,7 @@ country_event = {
 	option = {
 		name = freikorps.2.a
 		ai_chance = { factor = 20 }
+		custom_effect_tooltip = historical_tt
 		add_stability = -0.03
 		add_popularity = {
 			ideology = communism
@@ -22,7 +83,6 @@ country_event = {
 		promote_character = GER_ernst_thalmann
 		add_manpower = -500
 		hidden_effect = {
-			BAY = { retire_character = BAY_karl_liebknecht }
 			set_global_flag = karl_leibknecht_dead
 			activate_mission = GER_kapp_putsch_timer
 		}
@@ -38,12 +98,12 @@ country_event = {
 		ai_chance = {
 			base = 10
 			modifier = {
-				is_historical_focus_on = yes
-				factor = 0
-			}
-			modifier = {
 				NOT = { has_global_flag = russian_revolution }
 				add = 100
+			}
+			modifier = {
+				is_historical_focus_on = yes
+				factor = 0
 			}
 		}
 		add_manpower = -750
@@ -103,8 +163,12 @@ country_event = {
 			}
 			every_owned_state = {
 				limit = {
-					is_core_of = WUR
+					OR = {
+						is_core_of = WUR
+						state = 987
+					}
 				}
+				add_core_of = WUR
 				transfer_state_to = WUR
 			}
 			if = {
@@ -112,6 +176,18 @@ country_event = {
 					has_subject = WUR
 				}
 				end_puppet = WUR
+			}
+			every_owned_state = {
+				limit = {
+					is_core_of = BAD
+				}
+				transfer_state_to = BAD
+			}
+			if = {
+				limit = {
+					has_subject = BAD
+				}
+				end_puppet = BAD
 			}
 			every_owned_state = {
 				limit = {
@@ -180,24 +256,71 @@ country_event = {
 				GER_lepold_von_bayern = {
 					set_nationality = BAY
 				}
-				GER_rupprecht_von_wittelsbach = {
+				GER_rupprecht_von_bayern = {				
+					if = {
+						limit = {
+							has_character_flag = BAY_rupprecht_i
+						}
+						set_character_name = BAY_rupprecht_i
+					}
+					set_nationality = BAY
+				}
+				GER_felix_von_bothmer = {
+					set_nationality = BAY
+				}
+				GER_kress_von_kressenstein = {
+					set_nationality = BAY
+				}
+				GER_krafft_von_dellmensingen = {
 					set_nationality = BAY
 				}
 				GER_friedrich_august_iii = {
+					set_character_name = {
+						name = SAX_friedrich_august_iii
+					}
 					set_nationality = SAX
+				}
+				GER_karl_ludwig_delsa = {
+					set_nationality = SAX
+				}
+				GER_wilhelm_ii_von_wurttemberg = {
+					set_character_name = {
+						name = WUR_wilhelm_ii
+					}
+					set_nationality = WUR
 				}
 				GER_albrecht_von_wurttemberg = {
 					set_nationality = WUR
 				}
+				GER_wilhelm_karl_von_urach= {
+					set_nationality = WUR
+				}
+				GER_friedrich_ii = {
+					set_character_name = {
+						name = BAD_friedrich_ii
+					}
+					promote_leader = yes
+					set_nationality = BAD
+				}
+				GER_friedrich_franz_iv = {
+					set_character_name = {
+						name = MEK_friedrich_franz_iv
+					}
+					promote_leader = yes
+					set_nationality = MEK
+				}
 			}
 			BAY = {
-				BAY_karl_liebknecht = {
-					add_country_leader_role = {
-						country_leader = {
-							ideology = marxism
-						}
-					}
-					promote_character = marxism
+				every_possible_country = {
+					limit = { has_character = GER_karl_liebknecht }
+					GER_karl_liebknecht = { set_nationality = BAY }
+				}
+				every_possible_country = {
+					limit = { has_character = GER_rosa_luxemburg }
+					GER_rosa_luxemburg = { set_nationality = BAY }
+				}
+				GER_karl_liebknecht = {
+					promote_character = revolutionary_socialism
 				}
 				add_popularity = {
 					ideology = communism
@@ -222,14 +345,6 @@ country_event = {
 				inherit_technology = GER
 			}
 			WUR = {
-				add_popularity = {
-					ideology = democratic
-					popularity = 0.50
-				}
-				set_politics = {
-					ruling_party = democratic
-					elections_allowed = yes
-				}
 				inherit_technology = GER
 			}
 			SHL = {
@@ -266,6 +381,10 @@ country_event = {
 				army_ratio = 0.4
 				navy_ratio = 0.4
 				air_ratio = 0.3
+			}
+			transfer_units_fraction= {
+				target = BAD
+				size = 0.05
 			}
 			country_event = { id = freikorps.4 days = 1 }
 			HAN = {
@@ -304,12 +423,13 @@ country_event = {
 						tag = WUR
 						tag = SHL
 						tag = GER
+						tag = BAD
 					}
 				}
 				set_rule = {
 					can_join_factions = no
 				}
-				add_country_leader_trait = standing_alone
+				add_ideas = standing_alone	
 				if = {
 					limit = {
 						NOT = { has_idea = GER_idea_reparations }
@@ -366,8 +486,12 @@ country_event = {
 		hidden_effect = {
 			BAY = {
 				create_wargoal = {
-    					type = civil_war
-    					target = WUR
+					type = civil_war
+					target = WUR
+				}
+				create_wargoal = {
+					type = civil_war
+					target = BAD
 				}
 			}
 		}
@@ -383,8 +507,12 @@ country_event = {
 		hidden_effect = {
 			BAY = {
 				create_wargoal = {
-    					type = civil_war
-    					target = WUR
+					type = civil_war
+					target = WUR
+				}
+				create_wargoal = {
+					type = civil_war
+					target = BAD
 				}
 			}
 		}
@@ -429,11 +557,12 @@ country_event = {
 				add_country_leader_role = {
 					promote_leader = yes
 					country_leader = {
-						ideology = autocracy
-						traits = { imperial_connections kaiserin_of_the_people standing_alone }
+						ideology = semi_constitutional_monarchy
+						traits = { imperial_connections kaiserin_of_the_people }
 					}
 				}
 			}
+			add_ideas = standing_alone
 			set_party_name = {
 				ideology = neutrality
 				name = GER_neutrality_party
@@ -457,7 +586,7 @@ news_event = {
 	id = freikorps.7
 	title = freikorps.7.t
 	desc = freikorps.7.d
-	picture = GFX_news_event_ger_civil_war
+	picture = GFX_news_event_german_speech
 	is_triggered_only = yes
 	major = yes
 	option = {
@@ -482,140 +611,24 @@ country_event = {
 	option = {
 		name = freikorps.8.a
 		if = {
-			limit = {
-				tag = BAY
-			}
-			if = {
-				limit = {
-					has_government = communism
-				}
-				create_faction = komintern
-				every_other_country = {
-					limit = {
-						OR = {
-							tag = WUR
-							tag = HAN
-							tag = GER
-							tag = SHL
-							tag = SAX
-						}
-						has_government = communism
-						NOT = { has_war_with = PREV }
-					}
-					PREV = { add_to_faction = PREV }
-				}
-			}
-			every_other_country = {
-				limit = {
-					OR = {
-						tag = WUR
-						tag = HAN
-						tag = GER
-						tag = SHL
-						tag = SAX
-					}
-					NOT = {
-						is_subject_of = PREV
-						is_in_faction_with = PREV
-					}
-				}
-				PREV = {
-					create_wargoal = {
-						target = PREV
-						type = civil_war
-					}
-				}
-			}
+			limit = { has_idea = idea_armistice }
+			remove_ideas = idea_armistice
 		}
-		if = {
+		every_other_country = {
 			limit = {
-				tag = HAN
-			}
-			if = {
-				limit = {
-					has_government = neutrality
-				}
-				create_faction = HAN_germany_neutrality
-				every_other_country = {
-					limit = {
-						OR = {
-							tag = WUR
-							tag = BAY
-							tag = GER
-							tag = SHL
-							tag = SAX
-						}
-						has_government = neutrality
-						NOT = { has_war_with = PREV }
-					}
-					PREV = { add_to_faction = PREV }
-				}
-			}
-			every_other_country = {
-				limit = {
-					OR = {
-						tag = WUR
-						tag = BAY
-						tag = GER
-						tag = SHL
-						tag = SAX
-					}
-					NOT = {
-						is_subject_of = PREV
-						is_in_faction_with = PREV
-					}
-				}
+				exists = yes
+				is_constituent_of_germany = yes
 				PREV = {
-					create_wargoal = {
-						target = PREV
-						type = civil_war
-					}
-				}
-			}
-		}
-		if = {
-			limit = {
-				tag = GER
-			}
-			if = {
-				limit = {
-					has_government = democratic
-				}
-				create_faction = GER_democratic
-				every_other_country = {
-					limit = {
-						OR = {
-							tag = WUR
-							tag = HAN
-							tag = BAY
-							tag = SHL
-							tag = SAX
-						}
-						has_government = democratic
-						NOT = { has_war_with = PREV }
-					}
-					PREV = { add_to_faction = PREV }
-				}
-			}
-			every_other_country = {
-				limit = {
-					OR = {
-						tag = WUR
-						tag = HAN
-						tag = BAY
-						tag = SHL
-						tag = SAX
-					}
 					NOT = {
-						is_subject_of = PREV
-						is_in_faction_with = PREV
+						has_war_with = PREV
+						has_wargoal_against = PREV
 					}
 				}
-				PREV = {
-					create_wargoal = {
-						target = PREV
-						type = civil_war
-					}
+			}
+			PREV = {
+				create_wargoal = {
+					target = PREV
+					type = civil_war
 				}
 			}
 		}
@@ -730,6 +743,11 @@ country_event = {
 			NOT = { country_exists = MEK }
 			is_in_faction_with = MEK
 		}
+		OR = {
+			has_subject = BAD
+			NOT = { country_exists = BAD }
+			is_in_faction_with = BAD
+		}
 	}
 	mean_time_to_happen = { days = 0 }
 	immediate = {
@@ -748,6 +766,7 @@ country_event = {
 					tag = SHL
 					tag = WUR
 					tag = SAX
+					tag = BAD
 				}
 				OR = {
 					is_subject_of = PREV
@@ -762,7 +781,7 @@ country_event = {
 				change_tag_from = PREV
 			}
 		}
-		remove_country_leader_trait = standing_alone
+		remove_ideas = standing_alone
 		if = {
 			limit = {
 				is_faction_leader = yes
@@ -783,5 +802,99 @@ news_event = {
 	major = yes
 	option = {
 		name = freikorps.11.a
+	}
+}
+
+# Germany Annexes Bavaria
+country_event = {
+	id = freikorps.12
+	title = freikorps.12.t
+	desc = {
+		text = freikorps.12.d
+		trigger = {
+			NOT = { has_government = communism }
+		}
+	}
+	desc = {
+		text = freikorps.12.d_alt
+		trigger = {
+			has_government = communism
+		}
+	}
+	picture = GFX_report_event_ger_civil_war
+	trigger = {
+		tag = GER
+		has_global_flag = versallies_treaty
+		has_war = no
+		is_subject = no
+		BAY = {
+			OR = {
+				is_subject = no
+				is_subject_of = ROOT
+			}
+			is_neighbor_of = ROOT
+			has_war = no
+			OR = {
+				has_government = communism
+				has_country_leader = {
+					character = BAY_kurt_eisner
+					ruling_only = yes
+				}
+			}
+		}
+		NOT = {
+			has_global_flag = prussian_blue
+			has_global_flag = spartakist_in_bavaria
+		}
+	}
+	fire_only_once = yes
+	mean_time_to_happen = {
+		days = 180
+		modifier = {
+			factor = 0.10
+			BAY = { has_government = communism }
+		}
+		modifier = {
+			factor = 0.10
+			has_government = communism
+		}
+	}
+	option = {
+		name = freikorps.12.a
+		if = {
+			limit = { has_government = communism }
+			add_political_power = 75
+		}
+		else = {
+			add_popularity = {
+				ideology = fascism
+				popularity = 0.02
+			}
+			BAY = {
+				drop_cosmetic_tag = yes
+				retire_character = BAY_eugen_levine
+				add_popularity = {
+					ideology = communism
+					popularity = -0.10
+				}
+				add_popularity = {
+					ideology = fascism
+					popularity = 0.05
+				}
+				meta_effect = {
+					text = {
+						set_politics = {
+							ruling_party = democratic
+							last_election = "[CURRENT_DATE]"
+							elections_allowed = yes
+						}
+					}
+					CURRENT_DATE = "[?global.date.GetDateStringNoHour]"
+				}
+			}
+		}
+		annex_country = {
+			target = BAY
+		}
 	}
 }

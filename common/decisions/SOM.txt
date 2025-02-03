@@ -1,4 +1,53 @@
-political_actions = {
+operations = {
+	SOM_join_ottomans = {
+		icon = GFX_decision_generic_operation
+		allowed = {
+			original_tag = SOM
+		}
+		target_trigger = {
+			FROM = {
+				original_tag = ENG
+			}
+		}
+		days_remove = 65
+		available = {
+			command_power > 24
+			TUR = {
+				has_war_with = ENG
+			}
+		}
+		visible = {
+			has_global_flag = great_war
+			is_subject = no
+			is_in_faction = no
+			NOT = {
+				has_war_with = ENG
+				has_war_with = TUR
+				has_global_flag = somaliland_campaign
+				has_global_flag = great_war_ends
+			}
+		}
+		war_with_on_remove = ENG
+		cancel_if_not_visible = yes
+		cost = 0
+		custom_cost_trigger = {
+ 			command_power > 24
+ 		}
+		custom_cost_text = decision_cost_CP_25
+		remove_effect = {
+			add_to_war = {
+				targeted_alliance = TUR
+				enemy = ENG
+				hostility_reason = somaliland_campaign
+			}
+			ENG = {
+				country_event = ww1_england.30
+			}
+		}
+		ai_will_do = {
+			base = 100
+		}
+	}
 	SOM_claim_somali_territories = {
 		icon = GFX_decision_generic_operation
 		allowed = {
@@ -10,8 +59,16 @@ political_actions = {
 			}
 		}
 		state_target = yes
-		targets = {
-			268 269 559 657 792 880 888 889
+		target_trigger = {
+			FROM = {
+				OR = {
+					state = 792
+					is_core_of = SOM
+					is_core_of = GLD
+					is_core_of = HBY
+					is_core_of = MJT
+				}
+			}
 		}
 		on_map_mode = map_and_decisions_view
 		days_remove = 30
@@ -19,18 +76,19 @@ political_actions = {
 			controls_state = FROM
 		}
 		visible = {
-			NOT = {
-				FROM = {
-					is_owned_by = ROOT
-					is_core_of = ROOT
-				}
+			FROM = {
+				NOT = { is_core_of = ROOT }
+			}
+		}
+		cancel_if_not_visible = yes
+		cancel_trigger = {
+			OR = {
+				NOT = { controls_state = FROM }
 			}
 		}
 		cost = 25
 		remove_effect = {
-			FROM = {
-				add_core_of = ROOT
-			}
+			add_state_core = FROM
 		}
 		ai_will_do = {
 			base = 100
@@ -66,11 +124,13 @@ political_actions = {
 		available = {
 			is_subject = no
 			is_neighbor_of = FROM
+			has_country_flag = great_war_winner
 			NOT = {
 				has_idea = idea_armistice
 				has_idea = idea_army_restrictions
 			}
 		}
+		cost = 100
 		ai_will_do = {
 			factor = 100
 			modifier = {
@@ -108,10 +168,21 @@ political_actions = {
 				factor = 0
 				NOT = { tag = SOM }
 			}
+			modifier = {
+				factor = 0
+				has_war_with_major = yes
+			}
 		}
 		fire_only_once = no
-		days_remove = 45
+		days_remove = 10
 		complete_effect = {
+			if = {
+				limit = {
+					has_idea = idea_armistice
+					has_country_flag = great_war_winner
+				}
+				remove_ideas = idea_armistice
+			}
 			every_state = {
 				limit = {
 					is_core_of = FROM

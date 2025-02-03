@@ -1,0 +1,375 @@
+﻿add_namespace = ww1_armenia
+
+# Andranik in Zangezur
+country_event = {
+	id = ww1_armenia.1
+	title = ww1_armenia.1.t
+	desc = ww1_armenia.1.d
+	picture = GFX_report_event_armenian_resistance
+	fire_only_once = yes
+	trigger = {
+		tag = TUR
+		has_global_flag = treaty_of_batum
+		938 = { is_owned_by = ARM }
+		939 = { is_owned_or_subject_trigger = yes }
+		NOT = {
+			has_war_with = ARM
+		}
+	}
+	mean_time_to_happen = { days = 0 }
+	immediate = {
+		hidden_effect = {
+			create_dynamic_country = {
+				original_tag = ARM
+				transfer_state = 938
+				set_capital = { state = 938 }
+				set_politics = {
+					ruling_party = fascism
+					elections_allowed = no
+				}
+				set_popularities = {
+					democratic = 14
+					neutrality = 24
+					fascism = 62
+					communism = 0
+				}
+				set_stability = 0.7
+				set_war_support = 0.9
+				add_ideas = { 
+					standing_alone
+					service_by_requirement
+					closed_economy
+					war_economy
+				}	
+				set_party_name = {
+					ideology = fascism
+					long_name = ARM_andranik_party
+					name = ARM_andranik_party
+				}
+				set_party_name = {
+					ideology = neutrality
+					long_name = ARM_andranik_party
+					name = ARM_andranik_party
+				}
+				set_cosmetic_tag = ARM_andranik
+				# reserve_dynamic_country = yes
+				every_possible_country = {
+					limit = {
+						has_character = ARM_andranik_ozanian
+					}
+					ARM_andranik_ozanian = {
+						set_nationality = PREV.PREV
+						add_country_leader_role = {
+						promote_leader = yes
+							country_leader = {
+								ideology = revolutionary_nationalism
+							}
+						}
+						add_country_leader_role = {
+							promote_leader = yes
+							country_leader = {
+								ideology = authoritarian_democracy
+							}
+						}
+					}
+				}
+				division_template = {
+					name = "Striking Division"
+					is_locked = yes
+					division_names_group = ARM_INF_01
+					regiments = {
+						infantry = { x = 0 y = 0 }
+						infantry = { x = 0 y = 1 }
+						infantry = { x = 1 y = 0 }
+						infantry = { x = 1 y = 1 }
+					}
+					support = {
+						engineer = { x = 0 y = 0 }
+					}
+				}
+				938 = {
+					set_demilitarized_zone = no
+					create_unit = {
+						division = "name = \"Armenian Striking Division\" division_template = \"Striking Division\" start_experience_factor = 1 start_equipment_factor = 1"
+						owner = PREV
+						count = 1
+						prioritize_location = 4660
+						allow_spawning_on_enemy_provs = yes
+					}
+				}
+				every_other_country = {
+					limit = {
+						OR = {
+							tag = TUR
+							is_subject_of = TUR
+						}
+					}
+					PREV = {
+						send_embargo = PREV
+						add_opinion_modifier = {
+							target = PREV
+							modifier = HOI4TGW_Opinion_hostile_diplomatic_relations
+						}
+					}
+				}
+				TUR = {
+					add_opinion_modifier = {
+						target = PREV
+						modifier = TUR_extermination_of_our_people
+					}
+				}
+				AZR = {
+					add_opinion_modifier = {
+						target = PREV
+						modifier = TUR_extermination_of_our_people
+					}
+				}
+				diplomatic_relation = {
+					country = ARM
+					relation = non_aggression_pact
+					active = yes
+				}
+				give_guarantee = ARM
+			}
+		}
+	}
+	option = {
+		name = ww1_armenia.1.a
+		unlock_decision_tooltip = TUR_finish_andranik
+		unlock_decision_tooltip = TUR_restore_armenian_railway_control
+	}
+}
+
+# Andranik Returns
+country_event = {
+	id = ww1_armenia.2
+	fire_only_once = yes
+	trigger = {
+		tag = ARM
+		is_subject = no
+		OR = {
+			has_global_flag = great_war_ends
+			has_global_flag = mudros_armistice
+		}
+		TUR = { has_country_flag = great_war_loser }
+		any_other_country = {
+			original_tag = ARM
+			has_country_leader = {
+				character = ARM_andranik_ozanian
+			}
+			NOT = {
+				has_war_with = ROOT
+			}
+		}
+	}
+	hidden = yes
+	mean_time_to_happen = { days = 10 }
+	immediate = {
+		random_other_country = {
+			limit = {
+				original_tag = ARM
+				has_country_leader = {
+					character = ARM_andranik_ozanian
+				}
+			}
+			ARM_andranik_ozanian = {
+				remove_country_leader_role = {
+					ideology = revolutionary_nationalism
+				}
+				remove_country_leader_role = {
+					ideology = authoritarian_democracy
+				}
+			}
+			every_character = {
+				set_nationality = ROOT
+			}
+			every_state = {
+				limit = {
+					OR = {
+						is_core_of = PREV
+						is_claimed_by = PREV
+					}
+				}
+				remove_core_of = PREV
+				remove_claim_by = PREV
+			}
+			delete_unit_template_and_units = {
+				division_template = "Striking Division"
+				disband = yes
+			}
+			ROOT = {
+				annex_country = {
+					target = PREV
+					transfer_troops = yes
+				}
+			}
+		}
+	}
+}
+
+# Treaty of Alexandropol
+country_event = {
+	id = ww1_armenia.3
+	title = ww1_armenia.3.t
+	desc = ww1_armenia.3.d
+	picture = GFX_report_event_armenian_resistance
+	is_triggered_only = yes
+	option = {
+		name = ww1_armenia.3.a
+		white_peace = FROM
+		every_state = {
+			limit = {
+				is_owned_by = FROM
+				OR = {
+					is_core_of = ROOT
+					is_claimed_by = ROOT
+				}
+				NOT = {
+					state = 230
+					state = 787
+					state = 939
+				}
+			}
+			transfer_state_to = ROOT
+		}
+		if = {
+			limit = {
+				FROM = { owns_state = 818 }
+				OR = {
+					is_in_faction_with = AZR
+					has_subject = AZR
+					AZR = { has_war_with = FROM }
+					AZR = { is_subject = no NOT = { has_war_with = ROOT } }
+				}
+			}
+			AZR = { white_peace = FROM }
+			818 = { transfer_state_to = AZR }
+		}
+		set_global_flag = treaty_of_alexandropol
+		add_named_threat = {
+			threat = -0.02
+			name = treaty_of_alexandropol
+		}
+	}
+	option = {
+		name = ww1_armenia.3.b
+		add_stability = -0.10
+		add_named_threat = {
+			threat = 5
+			name = treaty_of_alexandropol_failed
+		}
+		ai_chance = {
+			base = 0
+		}
+	}
+}
+
+# Mountainous Armenia
+country_event = {
+	id = ww1_armenia.4
+	title = ww1_armenia.4.t
+	desc = ww1_armenia.4.d
+	picture = GFX_report_event_armenian_resistance
+	trigger = {
+		is_subject = no
+		has_government = communism
+		has_civil_war = no
+		ARM = {
+			has_government = communism
+			is_subject_of = ROOT
+			has_capitulated = no
+		}
+		938 = {
+			is_owned_or_subject_trigger = yes
+		}
+	}
+	fire_only_once = yes
+	mean_time_to_happen = {
+		days = 100
+	}
+	immediate = {
+		hidden_effect = {
+			ARM = {
+				transfer_state = 938
+				start_civil_war = {
+					ideology = fascism
+					states = { 938 }
+					size = 0.1
+					keep_all_characters = yes
+					PREV = {
+						ARM_garegin_nzhdeh = {
+							set_nationality = PREV.PREV
+						}
+					}
+					promote_character = ARM_garegin_nzhdeh
+					set_cosmetic_tag = ARM_mountainous
+					division_template = {
+						name = "Milits'ia"
+						division_names_group = ARM_MTN_01
+						regiments = {
+							mountaineers = { x = 0 y = 0 }
+							mountaineers = { x = 0 y = 1 }
+							mountaineers = { x = 0 y = 2 }
+						}
+						support = {
+							recon = { x = 0 y = 0 }
+							engineer = { x = 0 y = 1 }
+						}
+					}
+					938 = {
+						create_unit = {
+							division = "name = \"Milits'ia\" division_template = \"Milits'ia\" start_experience_factor = 1.0 start_equipment_factor = 0.7"
+							owner = PREV
+							count = 2
+							allow_spawning_on_enemy_provs = yes
+						}
+					}
+					add_ideas = standing_alone
+					add_ideas = communism_banned
+				}
+				division_template = {
+					name = "Milits'ia"
+					division_names_group = ARM_GAR_01
+					template_counter = 69
+					regiments = {
+						militia = { x = 0 y = 0 }
+						militia = { x = 0 y = 1 }
+						militia = { x = 0 y = 2 }
+					}
+				}
+				230 = {
+					create_unit = {
+						division = "name = \"Milits'ia\" division_template = \"Milits'ia\" start_experience_factor = 1.0 start_equipment_factor = 0.7"
+						owner = PREV
+						count = 4
+						allow_spawning_on_enemy_provs = yes
+					}
+				}
+				add_popularity = {
+					ideology = fascism
+					popularity = -0.10
+				}
+				add_popularity = {
+					ideology = democratic
+					popularity = -0.10
+				}
+				add_popularity = {
+					ideology = neutrality
+					popularity = -0.10
+				}
+			}
+		}
+	}
+	option = {
+		name = ww1_armenia.4.a
+		effect_tooltip = {
+			ARM = {
+				start_civil_war = {
+					ideology = fascism
+					states = { 938 }
+					size = 0.1
+				}
+			}
+		}
+	}
+}

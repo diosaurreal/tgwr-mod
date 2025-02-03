@@ -13,31 +13,16 @@ country_event = {
    	 		threat = 5 
     		name = italo_turkish_war
 		}
-		if = {
-			limit = {
-				TUR = {
-					owns_state = 448
-				}
-			}
-			declare_war_on = {
-				type = take_claimed_state
-				target = TUR
-			}
-		}
-		if = {
-			limit = {
-				LBA = {
-					owns_state = 448
-				}
-			}
-			declare_war_on = {
-				type = take_claimed_state
-				target = LBA
-			}
+		declare_war_on = {
+			type = take_claimed_state
+			target = 448.OWNER
 		}
 		if = {
 			limit = {
 				is_ai = yes
+				TUR = {
+					is_ai = no
+				}
 			}
 			set_province_controller = 1149
 			set_province_controller = 11954
@@ -100,42 +85,30 @@ country_event = {
 					allow_spawning_on_enemy_provs = yes
 				}	
 			}	
-			if = {
-				limit = {
-					TUR = {
-						is_ai = no
-					}	
-				}
-				448 = {
-					create_unit = {
-						division = "name = \"IV/Regio Corpo di Truppe Coloniale\" division_template = \"Divisione di Fanteria di Tobruk\" start_experience_factor = 0.2"
-						owner = ROOT
-						prioritize_location = 1149
-						allow_spawning_on_enemy_provs = yes
-					}
-				}
-			}
-			else_if = {
-				limit = {
-					TUR = {
-						NOT = { has_completed_focus = TUR_call_for_the_trablusgarp_war }
-					}
-				}
-				TUR = {
-					complete_national_focus = TUR_call_for_the_trablusgarp_war
-					activate_decision = TUR_civil_conscription_trablus
-					activate_decision = TUR_civil_conscription_bengazi
-					activate_decision = TUR_civil_conscription_trablusgrap
-					activate_decision = TUR_civil_conscription_cyrenaica
-					activate_decision = TUR_civil_conscription_dscharabub
-				}
-			}
+			# if = {
+			# 	limit = {
+			# 		TUR = {
+			# 			is_ai = no
+			# 		}	
+			# 	}
+			# 	448 = {
+			# 		create_unit = {
+			# 			division = "name = \"IV/Regio Corpo di Truppe Coloniale\" division_template = \"Divisione di Fanteria di Tobruk\" start_experience_factor = 0.2"
+			# 			owner = ROOT
+			# 			prioritize_location = 1149
+			# 			allow_spawning_on_enemy_provs = yes
+			# 		}
+			# 	}
+			# }
 		}
 		news_event = {
 			days = 1
 			id = ww1_italianturkish.8
 		}
 		set_global_flag = italo_turkish_war
+		hidden_effect = {
+			TUR = { country_event = { id = ww1_ottoman.137 days = 4 } }
+		}
 	}
 }
 
@@ -156,19 +129,7 @@ country_event = {
 			white_peace = ITA
 			add_stability = 0.05
 			set_country_flag = italo_turkish_war_winner
-			custom_effect_tooltip = TUR_remove_debt_2950
-			add_to_variable = {
-				opda_lira = -2.950
-			}
-			add_to_variable = {
-				opda_consumer_goods = -0.1
-			}
-			add_to_variable = {
-				opda_resources_to_market = -0.05
-			}
-			hidden_effect = {
-				ottoman_minority_variable_check = yes
-			}
+			TUR_remove_debt_2950 = yes
 		}
 		ITA = {
 			add_stability = -0.1
@@ -183,6 +144,10 @@ country_event = {
 				OR = {
 					is_subject_of = TUR
 					is_in_faction_with = TUR
+					AND = {
+						tag = LBA
+						has_war_with = ITA
+					}
 				}
 			}
 			white_peace = ITA
@@ -238,11 +203,16 @@ country_event = {
 				        set_state_flag = TUR_arab_state
 			        }
 			    }
-				ottoman_minority_variable_check = yes
 			    delete_unit_template_and_units = { division_template = "Trablusgarp Milisi" }
 			}
 		}
 		set_global_flag = italo_turkish_war_ends
+		hidden_effect = {
+			TUR = {
+				country_event = { id = ww1_ottoman.138 days = 90 }
+			}
+		}
+		ottoman_minority_variable_check = yes
 		news_event = ww1_italianturkish.9
 	}
 }
@@ -272,14 +242,8 @@ country_event = {
 					limit = {
 						owns_state = 515
 					}
-					567 = {
-						remove_core_of = LBA
-					}					#prevent bug when great war end
 					transfer_state = 567
 				}
-			}
-			hidden_effect = {
-				ottoman_minority_variable_check = yes
 			}
 		}
 		every_country = {
@@ -287,6 +251,10 @@ country_event = {
 				OR = {
 					is_subject_of = TUR
 					is_in_faction_with = TUR
+					AND = {
+						tag = LBA
+						has_war_with = ITA
+					}
 				}
 			}
 			white_peace = ITA
@@ -309,6 +277,8 @@ country_event = {
 					state = 661
 					state = 164					#Dodecaneso
 					state = 899					#Rodi
+					state = 1060
+					state = 1061
 				}
 			}
 			ITA = {
@@ -325,7 +295,7 @@ country_event = {
 		}
 		hidden_effect = {
 			448 = { set_state_name = TRIPOLI_STATE }
-			661 = { set_state_name = TRIPOLITANIA_STATE }
+			1060 = { set_state_name = TRIPOLITANIA_STATE }
 			450 = { set_state_name = BENGHAZI_STATE }
 		    set_province_name = { id = 1149 name = TRIPOLI_PROV }
 		    set_province_name = { id = 11954 name = BENGHAZI_PROV }
@@ -333,57 +303,50 @@ country_event = {
 				set_country_flag = italo_turkish_war_winner
 			}
 			set_global_flag = italo_turkish_war_ends
-			every_state = {
-				limit = {
-					is_owned_by = ITA
-				}
-				remove_core_of = TUR
-			}
+			# every_state = {
+			# 	limit = {
+			# 		is_owned_by = ITA
+			# 	}
+			# 	remove_core_of = TUR
+			# }
 			LBA = {
+				remove_state_core = 567
 				every_state = {
 					limit = {
 						is_owned_by = TUR
-						is_core_of = LBA
+						is_core_of = PREV
 					}
-					LBA = {
-						transfer_state = PREV
-					}
+					transfer_state_to = PREV
 				}
 				if = {
 					limit = {
 						owns_state = 767
 					}
-					every_other_country = {
-						limit = {
-							owns_state = 551
+					551 = {
+						owner = {
+							transfer_state = 767
 						}
-						transfer_state = 767
 					}
-					remove_state_core = 767
 				}
 				if = {
 					limit = {
 						owns_state = 775
 					}
-					every_other_country = {
-						limit = {
-							owns_state = 515
+					515 = {
+						owner = {
+							transfer_state = 775
 						}
-						transfer_state = 775
 					}
-					remove_state_core = 775
 				}
 				if = {
 					limit = {
 						owns_state = 567
 					}
-					every_other_country = {
-						limit = {
-							owns_state = 515
+					515 = {
+						owner = {
+							transfer_state = 567
 						}
-						transfer_state = 567
 					}
-					remove_state_core = 567
 				}
 				if = {
 					limit = {
@@ -425,7 +388,6 @@ country_event = {
 				        set_state_flag = TUR_arab_state
 			        }
 			    }
-				ottoman_minority_variable_check = yes
 			    delete_unit_template_and_units = { division_template = "Trablusgarp Milisi" }
 			}
 			every_state = {
@@ -439,6 +401,12 @@ country_event = {
 			}
 		}
 		news_event = ww1_italianturkish.10
+		hidden_effect = {
+			TUR = {
+				country_event = { id = ww1_ottoman.138 days = 90 }
+			}
+		}
+		ottoman_minority_variable_check = yes
 	}
 }
 
@@ -459,6 +427,7 @@ news_event = {
 				TAG = TUR
 			}
 		}
+		ottoman_minority_variable_check = yes
 	}
 	option = {
 		name = ww1_italianturkish.8.b
@@ -468,6 +437,7 @@ news_event = {
 				TAG = TUR
 			}
 		}
+		ottoman_minority_variable_check = yes
 	}
 }
 
@@ -487,12 +457,14 @@ news_event = {
 				is_subject_of = TUR
 			}
 		}
+		ottoman_minority_variable_check = yes
 	}
 	option = {
 		name = ww1_italianturkish.9.b
 		trigger = {
 			tag = ITA
 		}
+		ottoman_minority_variable_check = yes
 	}
 	option = {
 		name = ww1_italianturkish.9.c
@@ -503,6 +475,7 @@ news_event = {
 				tag = ITA
 			}
 		}
+		ottoman_minority_variable_check = yes
 	}
 }
 
@@ -522,12 +495,14 @@ news_event = {
 				is_subject_of = TUR
 			}
 		}
+		ottoman_minority_variable_check = yes
 	}
 	option = {
 		name = ww1_italianturkish.10.b
 		trigger = {
 			tag = ITA
 		}
+		ottoman_minority_variable_check = yes
 	}
 	option = {
 		name = ww1_italianturkish.10.c
@@ -536,6 +511,209 @@ news_event = {
 				tag = TUR
 				is_subject_of = TUR
 				tag = ITA
+			}
+		}
+		ottoman_minority_variable_check = yes
+	}
+}
+
+# London Conference - Stalemate
+country_event = {
+	id = ww1_italianturkish.11
+	title = ww1_italianturkish.11.t
+	desc = ww1_italianturkish.11.d
+	fire_only_once = yes
+	is_triggered_only = yes
+	option = {
+		name = ww1_italianturkish.11.a
+		ai_chance = {
+			factor = 100
+		}
+		# ITA = {
+		# 	every_controlled_state = {
+		# 		limit = {
+		# 			is_owned_by = TUR
+		# 		}
+		# 		transfer_state_to = ITA
+		# 	}
+		# }
+		ITA = {
+			transfer_state = 448
+			transfer_state = 661
+			transfer_state = 273
+			transfer_state = 1060
+		}
+		TUR = {
+			white_peace = ITA
+			if = {
+				limit = {
+					owns_state = 567
+				}
+				every_country = {
+					limit = {
+						owns_state = 515
+					}
+					transfer_state = 567
+				}
+			}
+		}
+		hidden_effect = {
+			every_country = {
+				limit = {
+					OR = {
+						is_subject_of = TUR
+						is_in_faction_with = TUR
+						AND = {
+							tag = LBA
+							has_war_with = ITA
+						}
+					}
+				}
+				white_peace = ITA
+			}
+			every_country = {
+				limit = {
+					OR = {
+						is_subject_of = ITA
+						is_in_faction_with = ITA
+					}
+				}
+				white_peace = TUR
+			}
+			TUR = {
+			    if = {
+				    limit = {
+					    has_country_flag = TUR_italo_turkish_war_arab_minorities
+				    }
+			        every_state = {
+				        limit = {
+					        is_core_of = LBA
+					        has_state_flag = TUR_removed_libyan_minority
+				        }
+				        add_dynamic_modifier = { modifier = TUR_arab_minority }
+				        set_state_flag = TUR_arab_state
+			        }
+			    }
+			    delete_unit_template_and_units = { division_template = "Trablusgarp Milisi" }
+				if = {
+					limit = {
+						owns_state = 663
+					}
+					810 = { owner = { transfer_state = 663 } }
+				}
+			}
+			LBA = {
+				remove_state_core = 567
+				if = {
+					limit = {
+						owns_state = 767
+					}
+					551 = {
+						owner = {
+							transfer_state = 767
+						}
+					}
+				}
+				if = {
+					limit = {
+						owns_state = 775
+					}
+					515 = {
+						owner = {
+							transfer_state = 775
+						}
+					}
+				}
+				if = {
+					limit = {
+						owns_state = 567
+					}
+					515 = {
+						owner = {
+							transfer_state = 567
+						}
+					}
+				}
+				if = {
+					limit = {
+						owns_state = 273
+					}
+					transfer_state = 812
+				}
+			}
+		}
+		set_global_flag = italo_turkish_war_ends
+		ottoman_minority_variable_check = yes
+		news_event = ww1_italianturkish.12
+	}
+}
+
+# Turkish Victory on Italy
+news_event = {
+	id = ww1_italianturkish.12
+	title = ww1_italianturkish.12.t
+	desc = ww1_italianturkish.12.d
+	picture = GFX_news_event_civil_war_turkey
+	is_triggered_only = yes
+	major = yes
+	option = {
+		name = ww1_italianturkish.12.a
+	}
+}
+
+# Asir Revolt
+country_event = {
+	id = ww1_italianturkish.13
+	title = ww1_italianturkish.13.t
+	desc = ww1_italianturkish.13.d
+	picture = GFX_report_event_tur_turkish_soldiers
+	trigger = {
+		tag = TUR
+		has_war_with = ITA
+		owns_state = 747
+		NOT = {
+			country_exists = ASR
+			has_global_flag = great_arabian_revolt
+			has_global_flag = great_war
+			country_exists = ASR
+			has_country_flag = TUR_truce_with_asir
+			has_completed_focus = TUR_power_of_the_caliph
+			has_completed_focus = TUR_modern_islamism
+			has_government = democratic
+			ASR = { all_core_state = { NOT = { has_dynamic_modifier = { modifier = TUR_arab_minority } } } }
+		}
+	}
+	fire_only_once = yes
+	option = {
+		name = ww1_italianturkish.13.a
+		hidden_effect = {
+			if = {
+				limit = {
+					has_active_mission = TUR_brewing_asir_rebellion
+				}
+				add_days_mission_timeout = {
+					mission = TUR_brewing_asir_rebellion
+					days = -1000
+				}
+			}
+			else = {
+				ASR = {
+					add_ideas = standing_alone
+					transfer_state = 747
+					load_oob = "ASR_1910"
+					declare_war_on = {
+						target = ROOT
+						type = independence_wargoal
+					}
+				}
+			}
+		}
+		effect_tooltip = {
+			ASR = {
+				declare_war_on = {
+					target = ROOT
+					type = independence_wargoal
+				}
 			}
 		}
 	}

@@ -187,6 +187,8 @@ country_event = {
 		name = ww1_serbia.3.a
 		GRE = {
 			add_state_claim = 790
+			add_state_claim = 974
+			add_state_claim = 975
 			add_state_claim = 803
 			add_state_claim = 757
 			add_state_claim = 184
@@ -235,6 +237,8 @@ country_event = {
 				tag = GRE
 			}
 			add_state_claim = 790
+			add_state_claim = 974
+			add_state_claim = 975
 			add_state_claim = 803
 			add_state_claim = 757
 			add_state_claim = 184
@@ -308,6 +312,8 @@ country_event = {
 		name = ww1_serbia.10.a
 		BUL = {
 			add_state_claim = 790
+			add_state_claim = 974
+			add_state_claim = 975
 			add_state_claim = 803
 			add_state_claim = 757
 			add_state_claim = 184
@@ -323,7 +329,7 @@ country_event = {
 country_event = {
 	id = ww1_bulgaria.11
 	title = ww1_bulgaria.11.t
-	desc = ww1_bulgaria.12.d
+	desc = ww1_bulgaria.11.d
 	picture = GFX_report_event_gathering_protest
 	fire_only_once = yes
 	trigger = {
@@ -338,7 +344,7 @@ country_event = {
 		days = 1
 	}
 	option = {
-		name = ww1_bulgaria.12.a
+		name = ww1_bulgaria.11.a
 		add_ideas = BUL_idea_second_national_catastrophe
 		add_timed_idea = {
 			idea = GER_idea_reparations
@@ -347,7 +353,7 @@ country_event = {
 		destroy_ships = {
 			type = ship_hull_submarine
 			count = all
-		}	
+		}
 	}
 }
 
@@ -359,17 +365,7 @@ country_event = {
 	desc = ww1_bulgaria.12.d
 	picture = GFX_report_event_gathering_protest
 	fire_only_once = yes
-	trigger = {
-		tag = BUL
-		has_global_flag = kis_secondbalkanwar_victory
-		NOT = {
-		    has_idea = BUL_idea_first_national_catastrophe
-		    has_idea = BUL_idea_first_national_catastrophe_2
-		}
-	}
-	mean_time_to_happen = {
-		days = 1
-	}
+	is_triggered_only = yes
 	option = {
 		name = ww1_bulgaria.12.a
 		BUL = {
@@ -470,10 +466,11 @@ news_event = {
 	title = ww1_bulgaria.16.t
 	desc = ww1_bulgaria.16.d
 	picture = ww1_bulgaria_2
+	fire_only_once = yes
 	major = yes
 	trigger = {
 		date > 1910.7.1
-		date < 1910.9.1
+		has_start_date < 1914.1.1
 		BUL = {
 			has_war = no
 			exists = yes
@@ -608,7 +605,7 @@ country_event = {
 	trigger = {
 		tag = BUL
 		BUL = {
-			has_war_with = AUH
+			has_war_with = AUS
 			has_country_flag = BUL_coop_austria
 		}
 	}
@@ -1007,18 +1004,9 @@ country_event = {
 country_event = {
 	id = ww1_bulgaria.25
 	title = ww1_bulgaria.25.t
-	picture = ww1_bulgaria_4
-	fire_only_once = yes
 	desc = ww1_bulgaria.25.d
-	trigger = {
-		tag = BUL
-		has_war_with = FRA
-		surrender_progress > 0.05
-		casualties > 50000
-	}
-	mean_time_to_happen = {
-		days = 1
-	}
+	picture = ww1_bulgaria_4
+	is_triggered_only = yes
 	option = {
 		name = ww1_bulgaria.25.a
 		ai_chance = {
@@ -1083,7 +1071,17 @@ country_event = {
 	picture = ww1_bulgaria_3
 	is_triggered_only = yes
 	fire_only_once = yes
+	trigger = {
+		has_civil_war = no
+		has_government = neutrality
+		has_war = yes
+	}
 	desc = ww1_bulgaria.26.d
+	immediate = {
+		hidden_effect = {
+			set_global_flag = radomir_rebellion
+		}
+	}
 	option = {
 		name = ww1_bulgaria.26.a
 		ai_chance = {
@@ -1098,6 +1096,7 @@ country_event = {
 		}
 		set_country_flag = radomir_rebellion_failed
 		add_stability = -0.2
+		add_war_support = -0.3
 		add_political_power = -100
 		add_popularity = {
 			ideology = democratic
@@ -1107,10 +1106,36 @@ country_event = {
 			ideology = communism
 			popularity = 0.08
 		}
+
+		# Armistice of Salonika
+		if = {
+			limit = {
+				has_war_with = FRA
+				is_in_faction = yes
+				is_faction_leader = no
+				has_global_flag = great_war
+				NOT = { has_global_flag = great_war_ends }
+			}
+			if = {
+				limit = {
+					OR = {
+						has_war_support < 0.3
+						surrender_progress > 0.10
+						casualties > 150000
+					}
+				}
+				force_capitulate = yes
+			}
+			else = {
+				add_war_support = -0.20
+				add_ideas = mutiny_3
+			}
+		}
 	}
 	option = {
 		name = ww1_bulgaria.26.b
 		add_stability = -0.1
+		add_war_support = -0.2
 		hidden_effect = {
 			set_cosmetic_tag = BUL_radomir
 		}
@@ -1132,6 +1157,8 @@ country_event = {
 			ideology = communism
 			popularity = 0.1
 		}
+		add_ideas = mutiny_3
+		add_ideas = strikes_3
 		ai_chance = {
 			factor = 2
 			modifier = {
@@ -1153,6 +1180,7 @@ country_event = {
 		}
 		news_event = {
 			id = ww1_bulgaria.27
+			hours = 3
 		}
 	}
 }
@@ -1194,79 +1222,7 @@ country_event = {
 	}
 }
 
-# Treaty Of Friendship - To Serbia
-country_event = {
-	id = ww1_bulgaria.29
-	title = ww1_bulgaria.29.t
-	picture = GFX_report_event_generic_read_write
-	is_triggered_only = yes
-	desc = ww1_bulgaria.29.d
-	option = {
-		name = ww1_bulgaria.29.a
-		ai_chance = {
-			factor = 10
-		}
-		SER = {
-			give_guarantee = BUL
-			add_opinion_modifier = {
-				target = BUL
-				modifier = BUL_treaty_of_friendship
-			}
-			country_event = {
-				id = ww1_bulgaria.30
-			}
-		}
-		BUL = {
-			give_guarantee = SER
-			add_opinion_modifier = {
-				target = SER
-				modifier = BUL_treaty_of_friendship
-			}
-			country_event = {
-				id = ww1_bulgaria.30
-				days = 1
-			}
-		}
-	}
-	option = {
-		name = ww1_bulgaria.29.b
-		BUL = {
-			country_event = {
-				id = ww1_bulgaria.31
-				days = 1
-			}
-		}
-		ai_chance = {
-			factor = 0
-		}
-	}
-}
-
-# Treaty Of Friendship - Signed 
-country_event = {
-	id = ww1_bulgaria.30
-	title = ww1_bulgaria.30.t
-	picture = GFX_report_event_generic_sign_treaty2
-	is_triggered_only = yes
-	desc = ww1_bulgaria.30.d
-	option = {
-		name = ww1_bulgaria.30.a
-	}
-}
-
-# Treaty Of Friendship - Serbia Declined 
-country_event = {
-	id = ww1_bulgaria.31
-	title = ww1_bulgaria.31.t
-	picture = GFX_report_event_generic_read_write
-	is_triggered_only = yes
-	desc = ww1_bulgaria.31.d
-	option = {
-		name = ww1_bulgaria.31.a
-	}
-}
-
-# German submarines for Bulgaria
+#German submarines for Bulgaria
 country_event = {
 	id = ww1_bulgaria.36
 	title = ww1_bulgaria.36.t
@@ -1320,7 +1276,6 @@ country_event = {
 		}
 	}
 }
-
 # German submarines for Bulgaria
 country_event = {
 	id = ww1_bulgaria.37
@@ -1351,9 +1306,7 @@ country_event = {
 	fire_only_once = yes
 	trigger = {
 		original_tag = BUL
-		BUL_radko_dimitriev = {
-			is_unit_leader = yes
-		}
+		has_character = BUL_radko_dimitriev
 		has_war = no
 		OR = {
 			RUS = {
@@ -1363,27 +1316,38 @@ country_event = {
 		}
 		RUS = {
 			NOT = {
+				tag = SOV
 				has_war_with = SOV
 			}	
 		}
+		has_russian_civil_war = no
 	}
 	option = {
 		name = ww1_bulgaria.38.a
-		BUL_radko_dimitriev = {
-			if = {
-				limit = { has_trait = hidden_sympathies }
-				remove_unit_leader_trait = hidden_sympathies
+		if = {
+			limit = {
+				has_idea = BUL_radko_dimitriev
 			}
+			deactivate_advisor = BUL_radko_dimitriev
+		}
+		BUL_radko_dimitriev = {
+			remove_advisor_role = {
+				slot = army_chief
+			}		
 			set_nationality = RUS
 		}
-		RUS = {
-			country_event = ww1_bulgaria.39
+		hidden_effect = {
+			RUS = {
+				BUL_radko_dimitriev = {
+					unit_leader_event = ww1_bulgaria.39
+				}
+			}
 		}
 	}
 }
 
 #Radko Dimitriev defects to Russia - Russian event
-country_event = {
+unit_leader_event = {
 	id = ww1_bulgaria.39
 	title = ww1_bulgaria.39.t
 	desc = ww1_bulgaria.39.d
@@ -1392,55 +1356,66 @@ country_event = {
 	immediate = {
 		hidden_effect = {
 			BUL_radko_dimitriev = {
-				demote_leader = yes
-				remove_unit_leader_trait = recently_promoted
+				if = {
+					limit = { is_field_marshal = yes }
+					demote_leader = yes
+					remove_unit_leader_trait = recently_promoted
+				}			
+				if = {
+					limit = { has_trait = hidden_sympathies }
+					remove_unit_leader_trait = hidden_sympathies
+				}
 			}
 		}
 	}
 	option = {
 		name = ww1_bulgaria.39.a
 		effect_tooltip = {
-			BUL_radko_dimitriev = {
-				set_nationality = RUS
+			BUL = {
+				BUL_radko_dimitriev = {
+					set_nationality = RUS
+				}
 			}
 		}
 	}
 }
 
-#Radko Dimitriev resigns
-country_event = {
-	id = ww1_bulgaria.40
-	title = ww1_bulgaria.40.t
-	desc = ww1_bulgaria.40.d
-	picture = ww1_bulgaria_7
-	fire_only_once = yes
-	trigger = {
-		original_tag = BUL
-		BUL_radko_dimitriev = {
-			is_unit_leader = yes
+ #Radko Dimitriev resigns
+ country_event = {
+ 	id = ww1_bulgaria.40
+ 	title = ww1_bulgaria.40.t
+ 	desc = ww1_bulgaria.40.d
+ 	picture = ww1_bulgaria_7
+ 	fire_only_once = yes
+ 	trigger = {
+ 		original_tag = BUL
+ 		has_character = BUL_radko_dimitriev
+ 		has_war_with = RUS
+ 	}
+ 	option = {
+ 		name = ww1_bulgaria.40.a
+		effect_tooltip = {
+			BUL_radko_dimitriev = {
+				remove_unit_leader_role = yes
+			}
 		}
-		has_war_with = RUS
-	}
-	option = {
-		name = ww1_bulgaria.40.a
-		remove_unit_leader = 12032
 		add_war_support = -0.05
-		ai_chance = {
-			factor = 5
-		}
-	}
-	option = {
-		name = ww1_bulgaria.40.b
-		remove_unit_leader = 12032
-		add_political_power = -50
-		add_stability = -0.05
-		ai_chance = {
-			factor = 4
-		}
-	}
-}
-# Assassination of Aleksandar Stamboliyski and 1923 Bulgarian coup d'état
-###############################################################################
+ 		ai_chance = {
+ 			factor = 5
+ 		}
+ 	}
+ 	option = {
+ 		name = ww1_bulgaria.40.b
+		retire_character = BUL_radko_dimitriev
+ 		add_political_power = -50
+ 		add_stability = -0.05
+ 		ai_chance = {
+ 			factor = 4
+ 		}
+ 	}
+ }
+ # Assassination of Aleksandar Stamboliyski and 1923 Bulgarian coup d'état
+ ###############################################################################
 country_event = {
 	id = ww1_bulgaria.42
 	title = ww1_bulgaria.42.t
@@ -1510,8 +1485,8 @@ country_event = {
 	}
 }
 
-# 1934 Bulgarian coup d'état
-###############################
+# # 1934 Bulgarian coup d'état
+# ###############################
 country_event = {
 	id = ww1_bulgaria.43
 	title = ww1_bulgaria.43.t
@@ -1626,8 +1601,8 @@ country_event = {
 		}
 	}
 }
-# 1923 Elections
-###############################################################################
+# # 1923 Elections
+# ###############################################################################
 country_event = {
 	id = ww1_bulgaria.44
 	title = ww1_bulgaria.44.t
@@ -1665,8 +1640,8 @@ country_event = {
 		}
 	}
 }
-# 1931 Elections - Popular Block
-###############################################################################
+# # 1931 Elections - Popular Block
+# ###############################################################################
 country_event = {
 	id = ww1_bulgaria.45
 	title = ww1_bulgaria.45.t
@@ -1703,61 +1678,531 @@ country_event = {
 	}
 }
 
-#Konstantin Zhostov dies
+ #Konstantin Zhostov dies
 country_event = {
-	id = ww1_bulgaria.46
-	title = ww1_bulgaria.46.t
-	desc = ww1_bulgaria.46.d
-	picture = GFX_report_event_bul_military_parade_vidin
+ 	id = ww1_bulgaria.46
+ 	title = ww1_bulgaria.46.t
+ 	desc = ww1_bulgaria.46.d
+ 	picture = GFX_report_event_bul_military_parade_vidin
+ 	fire_only_once = yes
+ 	trigger = {
+ 		original_tag = BUL
+ 		date > 1916.8.1
+ 		has_character = BUL_konstantin_zhostov
+ 	}
+ 	desc = {
+ 		text = ww1_bulgaria.46.d
+		trigger = {
+ 			has_war_with = SER
+ 		}
+ 	}
+ 	desc = {
+ 		text = ww1_bulgaria.46.d_2
+ 		trigger = {
+ 			NOT = {
+				has_war_with = SER
+ 			}
+ 		}
+ 	}
+ 	mean_time_to_happen = { days = 30  }
+ 	immediate = {
+ 		hidden_effect = {
+ 			retire_character = BUL_konstantin_zhostov
+ 		}
+ 	}
+ 	option = {
+ 		name = ww1_bulgaria.46.a
+ 		trigger = {
+ 			has_war_with = SER
+ 		}
+ 		effect_tooltip = {
+ 			BUL_konstantin_zhostov = {
+ 				remove_unit_leader_role = yes
+ 			}
+ 		}
+ 	}
+ 	option = {
+		name = ww1_bulgaria.46.a_2
+ 		trigger = {
+ 			NOT = {
+ 				has_war_with = SER
+ 			}
+ 		}
+ 		effect_tooltip = {
+ 			BUL_konstantin_zhostov = {
+ 				remove_unit_leader_role = yes
+ 			}
+ 		}
+ 	}
+}
+
+# Ottoman surrender orestiada
+country_event = {
+	id = ww1_bulgaria.500
+	title = ww1_bulgaria.51.t
+	desc = ww1_bulgaria.51.d
+	picture = GFX_report_event_bul_troops_macedonia
 	fire_only_once = yes
 	trigger = {
-		original_tag = BUL
-		date > 1916.8.1
-		BUL_konstantin_zhostov = {
-			is_unit_leader = yes
+		tag= BUL
+		NOT = {
+			has_country_flag = orestiada_restitued
+		}
+		200 = {
+			is_owned_and_controlled_by = TUR
+		}
+		212 = {
+			is_owned_and_controlled_by = BUL
+		}
+		BUL = {
+			is_in_faction_with = TUR
 		}
 	}
-	desc = {
-		text = ww1_bulgaria.46.d
-		trigger = {
-			has_war_with = SER
+	option = {
+		name = ww1_bulgaria.51.a
+		BUL = {
+			transfer_state = 200
 		}
-	}
-	desc = {
-		text = ww1_bulgaria.46.d_2
-		trigger = {
-			NOT = {
-				has_war_with = SER
+		if = {
+			limit = {
+				TUR = {
+					any_owned_state = {
+						OR = {
+							is_core_of = BUL
+							is_claimed_by = BUL
+						}
+						is_on_continent = europe
+						NOT = {
+							state = 756
+							state = 849
+							state = 860
+							state = 341
+							state = 347
+							state = 347
+						}
+					}
+				}
+			}
+			every_state = {
+				limit = {
+					OR = {
+						is_core_of = BUL
+						is_claimed_by = BUL
+					}
+					is_on_continent = europe
+					NOT = {
+						state = 756
+						state = 849
+						state = 860
+						state = 341
+						state = 347
+						state = 347
+					}
+					is_owned_by = TUR
+				}
+				transfer_state_to = BUL
 			}
 		}
+		set_country_flag = orestiada_restitued
+		TUR = {
+			country_event = ww1_bulgaria.52
+		}
 	}
-	mean_time_to_happen = { days = 30  }
+}
+
+# Ottoman surrender orestiada TUR vesion
+country_event = {
+	id = ww1_bulgaria.52
+	title = ww1_bulgaria.51.t
+	desc = ww1_bulgaria.52.d
+	picture = GFX_report_event_bul_troops_macedonia
+	is_triggered_only = yes
+	option = {
+		name = ww1_bulgaria.52.a
+		effect_tooltip = {
+			BUL = {
+				transfer_state = 200
+			}
+			every_state = {
+				limit = {
+					OR = {
+						is_core_of = BUL
+						is_claimed_by = BUL
+					}
+					is_on_continent = europe
+					NOT = {
+						state = 756
+						state = 849
+						state = 860
+						state = 341
+						state = 347
+						state = 347
+					}
+					is_owned_by = TUR
+				}
+				transfer_state_to = BUL
+			}
+		}
+
+	}
+}
+
+
+# AUS receive the bulgarian sole ambassador
+country_event = {
+	id = ww1_bulgaria.60
+	title = ww1_bulgaria.60.t
+	desc = ww1_bulgaria.60.d
+	picture = GFX_report_event_bul_troops_macedonia
+	is_triggered_only = yes
+	option = {
+		name = ww1_bulgaria.60.a ##full cooperation against ottoman in order to get supremacy in balkans
+		add_political_power = 100
+		add_opinion_modifier = {
+			target = BUL
+			modifier = HOI4TGW_Opinion_diplomats_bonus
+		}
+		add_ai_strategy = {
+			type = protect
+			id = BUL
+			value = 100
+		}
+		add_ai_strategy = {
+			type = befriend
+			id = BUL
+			value = 100
+		}
+		BUL = {
+			set_country_flag = BUL_AUH_pact
+		}
+		AUS = {
+			set_country_flag = BUL_AUH_pact
+		}
+		every_country = {
+			limit = {
+				OR = {
+					tag = AUS
+					tag = BUL
+				}
+			}
+			set_variable = {
+				var = BUL_vassalisation
+				value = 0
+			}
+		}
+		custom_effect_tooltip = escape_line
+		unlock_decision_category_tooltip = AUH_investment_in_BUL
+	}
+	option = {
+		name = ww1_bulgaria.60.b ## nooo
+		add_opinion_modifier = {
+			target = BUL
+			modifier = HOI4TGW_Opinion_diplomats_malus
+		}
+		BUL = {
+			set_country_flag = BUL_AUH_refused
+		}
+		AUS = {
+			set_country_flag = BUL_AUH_refused
+		}
+	}
+}
+
+# AUS receive the bulgarian sole ambassador
+country_event = {
+	id = ww1_bulgaria.61
+	hidden = yes
+	title = ww1_bulgaria.61.t
+	desc = ww1_bulgaria.61.d
+	picture = GFX_report_event_bul_troops_macedonia
+	trigger = {
+		has_variable = BUL_vassalisation
+		tag = AUS
+	}
+	mean_time_to_happen = {
+		days = 7
+	}
 	immediate = {
-		hidden_effect = {
-			retire_character = BUL_konstantin_zhostov
+		if = {
+			limit = {
+				check_variable = {
+					BUL_vassalisation < 2
+				}
+			}
+			AUS = {
+				remove_ideas = AUH_interests_in_bulgaria2
+				remove_ideas = AUH_interests_in_bulgaria3
+				add_ideas = AUH_interests_in_bulgaria
+			}
+			BUL = {
+				remove_ideas = BUL_AUH_interests_in_bulgaria2
+				remove_ideas = BUL_AUH_interests_in_bulgaria3
+				add_ideas = BUL_AUH_interests_in_bulgaria
+			}
+		}
+		if = {
+			limit = {
+				check_variable = {
+					BUL_vassalisation > 2
+				}
+				check_variable = {
+					BUL_vassalisation < 7
+				}
+			}
+			AUS = {
+				remove_ideas = AUH_interests_in_bulgaria
+				remove_ideas = AUH_interests_in_bulgaria3
+				add_ideas = AUH_interests_in_bulgaria2
+			}
+			BUL = {
+				remove_ideas = BUL_AUH_interests_in_bulgaria
+				remove_ideas = BUL_AUH_interests_in_bulgaria3
+				add_ideas = BUL_AUH_interests_in_bulgaria2
+			}
+		}
+		if = {
+			limit = {
+				check_variable = {
+					BUL_vassalisation > 6
+				}
+			}
+			AUS = {
+				remove_ideas = AUH_interests_in_bulgaria2
+				remove_ideas = AUH_interests_in_bulgaria
+				add_ideas = AUH_interests_in_bulgaria3
+			}
+			BUL = {
+				remove_ideas = BUL_AUH_interests_in_bulgaria2
+				remove_ideas = BUL_AUH_interests_in_bulgaria
+				add_ideas = BUL_AUH_interests_in_bulgaria3
+			}
 		}
 	}
+}
+
+#BUL_united_balkan_HQ
+country_event = {
+	id = ww1_bulgaria.62
+	title = ww1_bulgaria.62.t
+	desc = ww1_bulgaria.62.d
+	picture = GFX_report_event_bul_troops_macedonia
+	trigger = {
+		has_global_flag = BUL_united_balkan_HQ
+		has_war_with = TUR
+		OR = {
+			is_in_faction_with = BUL
+			tag = BUL
+		}
+		NOT = {
+			has_country_flag = BUL_idea_united_bulgarian_headquarters
+			has_global_flag = kis_firstbalkanwar_victory
+			has_global_flag = kis_firstbalkanwar_lose
+		}
+		capital_scope = {
+			OR = {
+				region = 24
+				region = 25
+				region = 26
+				region = 202
+			}
+		}
+	}
+	mean_time_to_happen = {
+		days = 14
+	}
 	option = {
-		name = ww1_bulgaria.46.a
-		trigger = {
-			has_war_with = SER
+		name = ww1_bulgaria.62.a ## cool
+		set_country_flag = BUL_idea_united_bulgarian_headquarters
+		add_ideas = BUL_idea_united_bulgarian_headquarters
+	}
+}
+
+#second balkan war is lasting too long
+country_event = {
+	id = ww1_bulgaria.63
+	title = ww1_bulgaria.63.t
+	desc = ww1_bulgaria.63.d
+	picture = GFX_report_event_bul_troops_macedonia
+	is_triggered_only = yes
+	option = {
+		name = ww1_bulgaria.63.a ## cool
+		hidden_effect = {
+			set_global_flag = BUL_partial_defeat
+			every_controlled_state = {
+				limit = {
+					OR = {
+						is_claimed_by = BUL
+						is_core_of = BUL
+						is_core_of = MAC
+						state = 759
+						state = 203
+					}
+					any_neighbor_state = {
+						is_controlled_by = BUL #avoid floating states isolated from mainland
+					}
+				}
+				set_state_flag = under_bulgarian_control_for_partial_defeat
+			}
+			every_enemy_country = {
+				limit = {
+					OR = {
+						tag = SER
+						is_in_faction_with = SER
+						tag = GRE
+						tag = TUR
+						is_in_faction_with = TUR
+					}
+				}
+				set_country_flag = kis_secondbalkan_war_winner
+				white_peace = PREV
+			}
+			set_global_flag = kis_secondbalkanwar_lose
+			SER = { country_event = {id = ww1_secondbalkan.5 } }
+			if = {
+				limit = {
+					TUR = {
+						has_war_with = BUL
+						NOT = { has_country_flag = tur_no_peace_bw2 }
+					}
+				}
+				TUR = {
+					country_event = {
+						id = ww1_secondbalkan.15
+						days = 1
+					}
+					country_event = {
+						id = ww1_secondbalkan.10
+						days = 7
+					}
+				}
+				effect_tooltip = {
+					activate_decision = BUL_sue_for_peace_TUR_2
+				}
+			}
 		}
 		effect_tooltip = {
-			BUL_konstantin_zhostov = {
-				remove_unit_leader_role = yes
+			activate_decision = BUL_sue_for_peace_SER
+		}
+		ai_chance = {
+			factor = 500
+			modifier = {
+				has_game_rule = {
+					rule = second_balkan_war_outcome
+					option = BUL_BULGARIAN_VICTORY
+				}
+				factor = 0
 			}
 		}
 	}
 	option = {
-		name = ww1_bulgaria.46.a_2
+		name = ww1_bulgaria.63.b ## cool
+		add_timed_idea = {
+			idea = idea_famine
+			days = 180
+		}
+		ai_chance = {
+			factor = 50
+			modifier = {
+				is_historical_focus_on = yes
+				factor = 0
+			}
+			modifier = {
+				has_game_rule = {
+					rule = second_balkan_war_outcome
+					option = BUL_BULGARIAN_VICTORY
+				}
+				factor = 1000
+			}
+		}
+	}
+}
+
+# Lone Liberator Demand on Turkey
+country_event = {
+	id = ww1_bulgaria.64
+	title = ww1_bulgaria.64.t
+	desc = ww1_bulgaria.64.d
+	picture = GFX_report_event_bul_troops_macedonia
+	is_triggered_only = yes
+	option = {
+		name = ww1_bulgaria.64.b
+		ai_chance = { base = 100 }
+		FROM = {
+			create_wargoal = {
+				target = ROOT
+				type = take_claimed_state
+				generator = {788 451 200 756 849 759 106 203 184 757 345 225 731}
+			}
+		}
+	}
+	option = {
+		name = ww1_bulgaria.64.a
 		trigger = {
 			NOT = {
-				has_war_with = SER
+				has_war_with = BLL
 			}
 		}
-		effect_tooltip = {
-			BUL_konstantin_zhostov = {
-				remove_unit_leader_role = yes
+		ai_chance = { base = 0 }
+		every_owned_state = {
+			limit = {
+				OR = {
+					is_claimed_by = FROM
+					is_core_of = FROM
+				}
+			}
+			transfer_state_to = FROM
+		}
+		every_owned_state = {
+			limit = {
+				OR = {
+					region = 24
+					region = 25
+					region = 26
+				}
+			}
+			set_demilitarized_zone = yes
+		}
+		set_truce = {
+			target = FROM
+			days = 365
+		}
+		set_global_flag = lone_liberator_victorious
+		hidden_effect = {
+			if = {
+				limit = {
+					NOT = { has_global_flag = TUR_surrender_1st_balkan_war }
+				}
+				every_other_country = {
+					limit = {
+						OR = {
+							tag = SER
+							tag = GRE
+							tag = MNT
+						}
+						is_subject = no
+						NOT = {
+							has_war_with = ROOT
+						}
+						ROOT = {
+							any_owned_state = {
+								OR = {
+									is_core_of = PREV.PREV
+									is_claimed_by = PREV.PREV
+								}
+								OR = {
+									region = 24
+									region = 25
+									region = 26
+								}
+							}
+						}
+					}
+					country_event = {
+						id = ww1_balkan.22
+						hours = 10
+						random_hours = 10
+					}
+				}
 			}
 		}
 	}

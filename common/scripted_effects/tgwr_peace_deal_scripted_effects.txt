@@ -1,12 +1,52 @@
 armistice_effect = {
+	clr_global_flag = WW1_is_stuck
+	#### Check your side is winner ####
+	every_country = {
+		limit = {
+			has_country_flag = great_war_loser
+		}
+		if = {
+			limit = {
+				has_global_flag = frankfurt_armistice
+				has_country_flag = member_of_central_powers
+			}
+			clr_country_flag = great_war_loser
+			set_country_flag = great_war_winner
+		}
+		if = {
+			limit = {
+				has_global_flag = compiegne_armistice
+				has_country_flag = member_of_entente
+			}
+			clr_country_flag = great_war_loser
+			set_country_flag = great_war_winner
+		}
+	}
 	##### Restrictions #####
 	every_country = {
 		limit = {
 			#shit, your divisions got locked
 			has_country_flag = great_war_loser
+			NOT = {
+				AND = {
+					original_tag = LBA
+					has_country_flag = TUR_invoke_senussiya_alliance
+				}
+			}
 		}
-		country_lock_all_division_template = yes
-		add_ideas = idea_army_restrictions
+		if = {
+			limit = {
+				has_country_flag = army_should_be_restricted
+			}
+			country_lock_all_division_template = yes
+			add_ideas = idea_army_restrictions
+			if = {
+				limit = {
+					is_faction_leader = yes
+				}
+				dismantle_faction = yes
+			}
+		}
 		remove_wargoal = {
 			type = all
 			target = ROOT
@@ -19,6 +59,7 @@ armistice_effect = {
 				remove_state_claim = PREV
 			}
 		}
+		
 		every_other_country = {
 			diplomatic_relation = {
 				country = PREV
@@ -75,9 +116,14 @@ armistice_effect = {
 					target = PREV
 					modifier = great_war_enemy
 				}
-				remove_wargoal = {
-					target = PREV
-					type = all
+				if = {
+					limit = {
+						has_wargoal_against = PREV
+					}
+					remove_wargoal = {
+						target = PREV
+						type = all
+					}
 				}
 			}
 		}
@@ -131,11 +177,24 @@ armistice_effect = {
 		}
 		if = {
 			limit = {
-				NOT = {
-					has_focus_tree = german_focus
-				}			
+				FRA= {
+					has_country_flag = great_war_winner
+				}
 			}
-			add_ideas = idea_victors_of_wwi
+			add_ideas = idea_victors_of_wwi_entente
+		}
+		if = {
+			limit = {
+				GER = {
+					has_country_flag = great_war_winner
+				}
+				NOT = {
+					FRA= {
+						has_country_flag = great_war_winner
+					}
+				}
+			}
+			add_ideas = idea_victors_of_wwi_cp
 		}
 	}
 	if = {
@@ -143,35 +202,50 @@ armistice_effect = {
 			FRA = {
 				has_country_flag = great_war_loser
 			}
-			RUS = {
-				has_war_with = FRA
-				has_war_with = SOV
-			}
 		}
-		every_country = {
+		if = {
 			limit = {
-				has_war_with = FRA
-				OR = {
-					tag = SOV
-					is_in_faction_with = SOV
-					is_subject_of = SOV
-					tag = RUS
-					is_in_faction_with = RUS
-					is_subject_of = RUS
-				}
-			}
-			every_country = {
-				limit = {
-					has_war_with = RUS
+				FRA = {
 					OR = {
-						is_in_faction_with = FRA
-						tag = FRA
-						is_subject_of = FRA
-						has_country_flag = member_of_entente
+						owns_state = 6
+						owns_state = 34
 					}
 				}
-				white_peace = PREV
+				NOT = { country_exists = BEL }
 			}
+			FRA = { release = BEL }
+			BEL = { set_country_flag = released_by_germany }
+		}
+		every_state = {
+			limit = {
+				is_owned_by = FRA
+				OR = {
+					state = 15
+					state = 16
+					state = 17
+					state = 18
+					state = 27
+					state = 785
+					state = 863
+					state = 864
+					state = 865
+					state = 29
+				}
+			}
+			set_demilitarized_zone = yes
+		}
+		if = {
+			limit = {
+				has_global_flag = luxembourg_submitted
+				GER = { has_subject = LUX }
+			}
+			GER = {
+				annex_country = {
+					target = LUX
+					transfer_troops = yes
+				}
+			}
+			LUX = { add_state_core = 906 }
 		}
 	}
 	if = {
@@ -179,37 +253,686 @@ armistice_effect = {
 			GER = {
 				has_country_flag = great_war_loser
 			}
-			RUS = {
-				has_war_with = GER
-				has_war_with = SOV
-			}
 		}
-		every_country = {
+		if = {
 			limit = {
-				has_war_with = GER
-				OR = {
-					tag = SOV
-					is_in_faction_with = SOV
-					is_subject_of = SOV
-					tag = RUS
-					is_in_faction_with = RUS
-					is_subject_of = RUS
+				GER = { has_war_with = SOV }
+			}
+			every_state = {
+				limit = {
+					OR = {
+						region = 37
+						region = 38
+						region = 39
+						region = 130
+						region = 131
+						region = 192
+					}
+					owner = {
+						OR = {
+							tag = GER
+							is_subject_of = GER
+							is_in_faction_with = GER
+							has_country_flag = member_of_central_powers
+						}
+					}
+					controller = {
+						OR = {
+							tag = SOV
+							is_subject_of = SOV
+							is_in_faction_with = SOV
+						}
+					}
+				}
+				set_state_flag = soviet_occupation
+				owner = {
+					if = {
+						limit = { has_capitulated = yes }
+						set_country_flag = soviet_occupation
+					}
+				}
+			}
+			every_state = {
+				limit = {
+					OR = {
+						region = 37
+						region = 38
+						region = 39
+						region = 130
+						region = 131
+						region = 192
+					}
+					owner = {
+						OR = {
+							tag = SOV
+							is_subject_of = SOV
+							is_in_faction_with = SOV
+						}
+					}
+					controller = {
+						OR = {
+							tag = GER
+							is_subject_of = GER
+							is_in_faction_with = GER
+							has_country_flag = member_of_central_powers
+						}
+					}
+				}
+				set_state_flag = german_occupation
+				owner = {
+					if = {
+						limit = { has_capitulated = yes }
+						set_country_flag = german_occupation
+					}
+				}
+			}
+			# release ukraine
+			if = {
+				limit = {
+					UKR = {
+						is_subject_of = GER
+						NOT = { has_country_flag = ukrainian_hetmanate }
+					}
+				}
+				UKR = {
+					clear_all_relations_except_wars = yes
+					every_enemy_country = {
+						limit = {
+							NOT = {
+								tag = SOV
+								is_in_faction_with = SOV
+								is_subject_of = SOV
+								original_tag = UKR
+							}
+						}
+						white_peace = PREV
+					}
+					if = {
+						limit = { has_civil_war = yes }
+						random_enemy_country = {
+							limit = {
+								original_tag = UKR
+							}
+							every_enemy_country = {
+								limit = {
+									NOT = { original_tag = UKR }
+								}
+								white_peace = PREV
+							}
+							if = {
+								limit = { has_idea = standing_alone }
+								remove_ideas = standing_alone
+							}
+							SOV = {
+								add_to_faction = PREV
+							}
+						}
+					}
+				}
+			}
+			# release poland
+			if = {
+				limit = {
+					OR = {
+						NOT = { country_exists = POL }
+						POL = {
+							NOT = {
+								has_country_flag = great_war_loser
+								has_country_flag = great_war_winner
+								is_subject_of = SOV
+								is_subject_of = GER
+								has_war_with = SOV
+								has_war_with = GER
+							}
+						}
+					}
+				}
+				every_state = {
+					limit = {
+						is_core_of = POL
+						region = 38
+						has_state_flag = german_occupation
+					}
+					transfer_state_to = POL
+				}
+			}
+			# release lithuania
+			if = {
+				limit = {
+					OR = {
+						NOT = { country_exists = LIT }
+						LIT = {
+							NOT = {
+								has_country_flag = great_war_loser
+								has_country_flag = great_war_winner
+								is_subject_of = SOV
+								is_subject_of = GER
+								has_war_with = SOV
+								has_war_with = GER
+							}
+						}
+					}
+				}
+				every_state = {
+					limit = {
+						is_core_of = LIT
+						region = 37
+						has_state_flag = german_occupation
+					}
+					transfer_state_to = LIT
+				}
+			}
+			# release latvia
+			if = {
+				limit = {
+					OR = {
+						NOT = { country_exists = LAT }
+						LAT = {
+							NOT = {
+								has_country_flag = great_war_loser
+								has_country_flag = great_war_winner
+								is_subject_of = SOV
+								is_subject_of = GER
+								has_war_with = SOV
+								has_war_with = GER
+							}
+						}
+					}
+				}
+				every_state = {
+					limit = {
+						is_core_of = LAT
+						region = 37
+						has_state_flag = german_occupation
+						NOT = { state = 96 }
+					}
+					transfer_state_to = LAT
+				}
+			}
+			# release estonia
+			if = {
+				limit = {
+					OR = {
+						NOT = { country_exists = EST }
+						EST = {
+							NOT = {
+								has_country_flag = great_war_loser
+								has_country_flag = great_war_winner
+								is_subject_of = SOV
+								is_subject_of = GER
+								has_war_with = SOV
+								has_war_with = GER
+							}
+						}
+					}
+				}
+				every_state = {
+					limit = {
+						is_core_of = EST
+						region = 37
+						has_state_flag = german_occupation
+					}
+					transfer_state_to = EST
+				}
+			}
+			# release moldavia
+			if = {
+				limit = {
+					OR = {
+						NOT = { country_exists = MOL }
+						MOL = {
+							NOT = {
+								has_country_flag = great_war_loser
+								has_country_flag = great_war_winner
+								is_subject_of = SOV
+								is_subject_of = GER
+								has_war_with = SOV
+								has_war_with = GER
+							}
+						}
+					}
+				}
+				every_state = {
+					limit = {
+						is_core_of = MOL
+						region = 192
+						has_state_flag = german_occupation
+					}
+					transfer_state_to = MOL
+				}
+			}
+			# cores and claims
+			every_state = {
+				limit = {
+					has_state_flag = soviet_occupation
+					OR = {
+						is_core_of = SOV
+						is_claimed_by = SOV
+					}
+				}
+				transfer_state_to = SOV
+			}
+			every_country = {
+				limit = {
+					has_country_flag = soviet_occupation
+				}
+				# in case there is soviet puppet, they annexes
+				if = {
+					limit = {
+						any_other_country = {
+							original_tag = PREV
+							OR = {
+								is_subject_of = SOV
+								is_in_faction_with = SOV
+							}
+							exists = yes
+						}
+					}
+					random_other_country = {
+						limit = {
+							original_tag = PREV
+							OR = {
+								is_subject_of = SOV
+								is_in_faction_with = SOV
+							}
+						}
+						annex_country = {
+							target = PREV
+						}
+					}
+				}
+				# soviet ukraine
+				if = {
+					limit = { original_tag = UKR }
+					if = {
+						limit = { NOT = { has_character = UKR_yuriy_pyatakov } }
+						every_possible_country = {
+							limit = { has_character = UKR_yuriy_pyatakov }
+							UKR_yuriy_pyatakov = { set_nationality = PREV.PREV }
+						}
+					}
+					SOV = {
+						puppet = PREV
+						PREV = { copy_government_of_PREV = yes }
+					}
+					promote_character = UKR_yuriy_pyatakov
+					set_cosmetic_tag = UKR_SOV_provisional
+					set_party_name = { 
+						ideology = communism 
+						long_name = UKR_communist_party_long
+						name = UKR_communist_party 
+					}
+				}
+				# soviet poland
+				else_if = {
+					limit = { original_tag = POL }
+					SOV = {
+						puppet = PREV
+						PREV = { copy_government_of_PREV = yes }
+					}
+					every_possible_country = {
+						limit = {
+							has_character = SOV_felix_dzerzhinsky
+						}	
+						SOV_felix_dzerzhinsky = {
+							set_nationality = POL
+							set_character_name = POL_felix_dzerzhinsky
+							promote_character = vanguardism
+						}			
+					}
+					set_cosmetic_tag = POL_SOVIET
+					set_party_name = { 
+						ideology = communism 
+						long_name = POL_polrewkom_party_long
+						name = POL_polrewkom_party 
+					}
+					unlock_national_focus = POL_declare_a_republic
+					unlock_national_focus = POL_red_tram_goes_on
+					unlock_national_focus = POL_alliance_with_bolsheviks
+				}
+				# soviet baltics
+				else_if = {
+					limit = { original_tag = UBD }
+					every_owned_state = {
+						limit = { is_core_of = EST }
+						if = {
+							limit = { EST = { exists = no } }
+							EST = { set_country_flag = soviet_occupation }
+						}
+						transfer_state_to = EST
+					}
+					every_owned_state = {
+						limit = { is_core_of = LAT }
+						if = {
+							limit = { LAT = { exists = no } }
+							LAT = { set_country_flag = soviet_occupation }
+						}
+						transfer_state_to = LAT
+					}
+					every_state = {
+						limit = {
+							OR = {
+								is_core_of = UBD
+								is_claimed_by = UBD
+							}
+						}
+						remove_core_of = UBD
+						remove_claim_by = UBD
+					}
+					if = {
+						limit = {
+							EST = { has_country_flag = soviet_occupation }
+						}
+						SOV = {
+							puppet = EST
+							EST = {
+								set_cosmetic_tag = SOV_puppet
+								copy_government_of_PREV = yes
+							}
+						}
+					}
+					if = {
+						limit = {
+							LAT = { has_country_flag = soviet_occupation }
+						}
+						SOV = {
+							puppet = LAT
+							LAT = {
+								set_cosmetic_tag = SOV_puppet
+								copy_government_of_PREV = yes
+							}
+						}
+					}
+					if = {
+						limit = {
+							country_exists = COU
+						}
+						12 = {
+							owner = {
+								annex_country = {
+									target = COU
+								}
+							}
+						}
+					}
+				}
+				else = {
+					SOV = {
+						puppet = PREV
+						PREV = { copy_government_of_PREV = yes }
+					}
+					set_cosmetic_tag = SOV_puppet
+				}
+				# cores and claims of puppets
+				every_state = {
+					limit = {
+						has_state_flag = soviet_occupation
+						OR = {
+							is_core_of = PREV
+							is_claimed_by = PREV
+						}
+						owner = {
+							OR = {
+								tag = GER
+								is_subject_of = GER
+								is_in_faction_with = GER
+								has_country_flag = member_of_central_powers
+							}
+						}
+						PREV = {
+							OR = {
+								is_subject_of = SOV
+								is_in_faction_with = SOV
+							}
+						}
+					}
+					transfer_state_to = PREV
+				}
+				if = {
+					limit = {
+						LIT = {
+							is_subject_of = SOV
+							owns_state = 97
+						}
+					}
+					LIT = {
+						transfer_state = 773
+						transfer_state = 1017
+					}
 				}
 			}
 			every_country = {
 				limit = {
-					has_war_with = RUS
 					OR = {
-						is_in_faction_with = GER
-						tag = GER
-						is_subject_of = GER
-						has_country_flag = member_of_central_powers
+						has_war_with = GER
+						any_enemy_country = {
+							OR = {
+								is_in_faction_with = GER
+								is_subject_of = GER
+								has_country_flag = member_of_central_powers
+							}
+						}
+					}
+					OR = {
+						tag = SOV
+						is_in_faction_with = SOV
+						is_subject_of = SOV
+						is_russian_tag = yes
 					}
 				}
-				white_peace = PREV
+				every_other_country = {
+					limit = {
+						NOT = { original_tag = PREV }
+						OR = {
+							has_war_with = SOV
+							any_enemy_country = {
+								OR = {
+									is_in_faction_with = SOV
+									is_subject_of = SOV
+									is_russian_tag = yes
+								}
+							}
+						}
+						OR = {
+							is_in_faction_with = GER
+							tag = GER
+							is_subject_of = GER
+							has_country_flag = member_of_central_powers
+						}
+					}
+					white_peace = PREV
+					set_truce = {
+						target = PREV
+						days = 365
+					}
+				}
 			}
 		}
-	}	
+		if = {
+			limit = {
+				has_global_flag = brest_litovsk
+			}
+			if = {
+				limit = {
+					GER = {
+						OR = {
+							owns_state = 95
+							owns_state = 204
+							owns_state = 206
+						}
+					}
+				}
+				GER = {
+					every_owned_state = {
+						limit = {
+							OR = {
+								state = 95
+								state = 204
+								state = 206
+							}
+						}
+						243 = {
+							owner = {
+								transfer_state = PREV.PREV
+							}
+						}
+					}
+				}
+			}
+			if = {
+				limit = {
+					GER = {
+						OR = {
+							owns_state = 94
+							owns_state = 194
+						}
+					}
+				}
+				GER = {
+					every_owned_state = {
+						limit = {
+							OR = {
+								state = 94
+								state = 194
+							}
+						}
+						241 = {
+							owner = {
+								transfer_state = PREV.PREV
+							}
+						}
+					}
+				}
+			}
+			if = {
+				limit = {
+					GER = {
+						any_owned_state = {
+							region = 132
+						}
+					}
+				}
+				# add your own white army tag here
+				210 = {
+					owner = {
+						every_state = {
+							limit = {
+								is_owned_by = GER
+								region = 132
+							}
+							remove_claim_by = GER
+							transfer_state_to = PREV
+						}
+					}
+				}
+			}
+			if = {
+				limit = {
+					GER = {
+						OR = {
+							owns_state = 96
+							owns_state = 913
+						}
+					}
+				}
+				# add your own white army tag here
+				207 = {
+					owner = {
+						every_state = {
+							limit = {
+								is_owned_by = GER
+								OR = {
+									state = 96
+									state = 913
+								}
+							}
+							remove_claim_by = GER
+							transfer_state_to = PREV
+						}
+					}
+				}
+			}
+			if = {
+				limit = {
+					GER = {
+						owns_state = 218
+					}
+				}
+				# DON
+				245 = {
+					owner = {
+						GER = { remove_state_claim = 218 }
+						transfer_state = 218
+					}
+				}
+			}
+		}
+		# German Occupation of Aland ends
+		if = {
+			limit = {
+				GER = { owns_state = 145 }
+			}
+			if = {
+				limit = {
+					any_country = {
+						exists = yes
+						has_country_flag = SWE_aland
+					}
+				}
+				random_country = {
+					limit = {
+						exists = yes
+						has_country_flag = SWE_aland
+					}
+					transfer_state = 145
+				}
+			}
+			else = {
+				random_country = {
+					limit = {
+						owns_state = 111
+					}
+					transfer_state = 145
+				}
+			}
+		}
+		# Release Luxembourg
+		if = {
+			limit = {
+				has_global_flag = luxembourg_submitted
+				GER = { has_subject = LUX }
+				NOT = {
+					has_global_flag = LUX_fate_for_entente
+				}
+			}
+			LUX = {
+				clear_all_relations = yes
+				clr_country_flag = great_war_loser
+				remove_ideas = idea_army_restrictions
+			}
+			FRA = {
+				country_event = {
+					id = ww1_luxembourg.6
+					days = 25
+					random_days = 10
+				}
+			}
+		}
+	}
+	if = {	#restitution of belgian territory
+		limit = {
+			BEL = {
+				has_country_flag = BEL_submit_to_GER_1914
+				NOT = {
+					has_country_flag = great_war_loser
+				}
+				owns_state = 6
+			}
+		}
+		transfer_state = 34
+		transfer_state = 907
+		transfer_state = 906
+	}
 	if = {
 		limit = {
 			TUR = {
@@ -228,6 +951,9 @@ armistice_effect = {
 					ITA = {
 						has_country_flag = great_war_winner
 					}
+					LBA = {
+						NOT = { has_country_flag = great_war_winner }
+					}
 				}
 				TUR = {
 					every_owned_state = {
@@ -238,6 +964,8 @@ armistice_effect = {
 								state = 661
 								state = 164
 								state = 899
+								state = 1060
+								state = 1061
 							}
 						}
 						remove_claim_by = TUR
@@ -288,7 +1016,7 @@ armistice_effect = {
 				ITA = { set_country_flag = italo_turkish_war_winner }
 				set_global_flag = italo_turkish_war_ends
 				448 = { set_state_name = TRIPOLI_STATE }
-				661 = { set_state_name = TRIPOLITANIA_STATE }
+				1060 = { set_state_name = TRIPOLITANIA_STATE }
 				450 = { set_state_name = BENGHAZI_STATE }
 				set_province_name = { id = 1149 name = TRIPOLI_PROV }
 				set_province_name = { id = 11954 name = BENGHAZI_PROV }
@@ -313,7 +1041,6 @@ armistice_effect = {
 								transfer_state_to = FRA
 							}
 							remove_state_core = 567
-							remove_state_core = 775
 						}
 					}
 					if = {
@@ -322,7 +1049,6 @@ armistice_effect = {
 						}
 						LBA = {
 							767 = {
-								remove_core_of = PREV
 								transfer_state_to = ENG
 							}
 						}
@@ -330,44 +1056,55 @@ armistice_effect = {
 				}
 			}
 		}
+		### NOT IN THE TRUCE ###
+		# if = {
+		# 	limit = {
+		# 		AZR = {
+		# 			is_subject_of = TUR
+		# 		}
+		# 	}
+		# 	TUR = {
+		# 		end_puppet = AZR
+		# 	}
+		# 	AZR = {
+		# 		every_owned_state = {
+		# 			limit = {
+		# 				is_core_of = ARM
+		# 			}
+		# 			ARM = { transfer_state = PREV }
+		# 		}
+		# 		clr_country_flag = protectorate
+		# 	}
+		# }
+		# every_state = {
+		# 	limit = {
+		# 		is_owned_by = TUR
+		# 		is_core_of = ARM
+		# 		NOT = {
+		# 			state = 349
+		# 		    state = 348
+		# 			is_core_of = TUR
+		# 		}
+		# 	}
+		# 	ARM = { transfer_state = PREV }
+		# }
+		# every_state = {
+		# 	limit = {
+		# 		is_owned_by = TUR
+		# 		is_core_of = GEO
+		# 		NOT = {
+		# 			is_core_of = TUR
+		# 		}
+		# 	}
+		# 	GEO = { transfer_state = PREV }
+		# }
 		if = {
 			limit = {
-				AZR = {
-					is_subject_of = TUR
-				}
+				ASY = { has_war_with = TUR }
 			}
 			TUR = {
-				end_puppet = AZR
+				white_peace = ASY
 			}
-			AZR = {
-				every_owned_state = {
-					limit = {
-						is_core_of = ARM
-					}
-					ARM = { transfer_state = PREV }
-				}
-				clr_country_flag = protectorate
-			}
-		}
-		every_state = {
-			limit = {
-				is_owned_by = TUR
-				is_core_of = ARM
-				NOT = {
-					is_core_of = TUR
-				}
-			}
-			ARM = { transfer_state = PREV }
-		}
-		every_state = {
-			limit = {
-				is_owned_by = TUR
-				is_core_of = GEO
-				NOT = {
-					is_core_of = TUR
-				}
-			}
-			GEO = { transfer_state = PREV }
 		}
 		if = {
 			limit = {
@@ -394,14 +1131,11 @@ armistice_effect = {
 						state = 858
 						state = 904
 						state = 905
+						state = 1021
 					}
 				}
-				ENG = {
-					transfer_state = PREV
-				}
-				TUR = {
-					remove_state_core = PREV
-				}
+				transfer_state_to = ENG
+				remove_core_of = TUR
 			}
 		}
 		if = {
@@ -417,7 +1151,31 @@ armistice_effect = {
 					NOT = {
 						has_global_flag = sykes_picot_lawrence
 						has_global_flag = sykes_picot_mcmahon
-					}					
+					}
+				}
+				ENG = {
+					annex_country = {
+						target = ASY
+					}
+				}
+				if = {
+					limit = {
+						FRA = {
+							has_country_flag = great_war_winner
+							is_subject = no
+						}
+					}
+					every_state = {
+						limit = {
+							is_owned_by = TUR
+							OR = {
+								state = 852
+								state = 553
+							}
+						}
+						remove_core_of = TUR
+						transfer_state_to = FRA
+					}
 				}
 				every_state = {
 					limit = {
@@ -435,10 +1193,31 @@ armistice_effect = {
 							state = 804
 							state = 904
 							state = 905
+							state = 676
+							state = 853
+							state = 879
+							state = 883
+							state = 1021
+
+							AND = {
+								OR = {
+									state = 676
+									state = 879
+								}
+								NOT = { is_claimed_by = FRA }
+							}
 						}
 					}
 					remove_core_of = TUR
-					transfer_state_to = ENG
+					if = {
+						limit = {
+							NOT = {
+								state = 676
+								state = 879
+							}
+						}
+						transfer_state_to = ENG
+					}
 				}
 				else = {
 					if = {
@@ -454,13 +1233,50 @@ armistice_effect = {
 									state = 454
 									state = 856
 									state = 858
+									state = 1021
 								}
 							}
 							remove_core_of = TUR
 							transfer_state_to = ENG
 						}
+						if = {
+							limit = {
+								FRA = {
+									has_country_flag = great_war_winner
+									is_subject = no
+								}
+							}
+							every_state = {
+								limit = {
+									is_owned_by = TUR
+									OR = {
+										# state = 852
+										state = 553
+									}
+								}
+								remove_core_of = TUR
+								transfer_state_to = FRA
+							}
+						}
 					}
 					else = {
+						every_state = {
+							limit = {
+								owner = {
+									OR = {
+										tag = ENG
+										tag = FRA
+									}
+								}
+								region = 228
+								NOT = {
+									state = 447
+									state = 453
+								}
+							}
+							remove_core_of = TUR
+							transfer_state_to = HJZ
+						}
 						every_state = {
 							limit = {
 								is_owned_by = TUR
@@ -469,51 +1285,119 @@ armistice_effect = {
 							remove_core_of = TUR
 							transfer_state_to = HJZ
 						}
+						if = {
+							limit = {
+								JBS = { has_country_flag = great_war_loser }
+							}
+							HJZ = {
+								annex_country = {
+									target = JBS
+								}
+							}
+						}
 					}
 					every_state = {
 						limit = {
-							is_owned_by = TUR
 							OR = {
 								is_core_of = SYR
+								is_core_of = HJZ
 								is_core_of = IRQ
 							}
 						}
 						remove_core_of = TUR
-						transfer_state_to = HJZ
-					}
-					HJZ = {
-						set_cosmetic_tag = HJZ_arabia
-						every_state = {
+						if = {
 							limit = {
-								OR = {
-									is_core_of = SYR
-									is_core_of = IRQ
-									is_core_of = JBS
-									is_core_of = SAU
-									is_core_of = ASR
-									is_core_of = YEM
-									is_core_of = OMA
-									is_core_of = QAT
-									is_core_of = BHR
-									is_core_of = KUW
+								NOT = {
+									state = 676
+									state = 680
+									state = 1023
+									state = 884
+									state = 879
+									state = 859
+									state = 853
+									state = 883
 								}
 							}
-							add_core_of = PREV
+							add_core_of = HJZ
+							if = {
+								limit = {
+									owner = { has_country_flag = great_war_loser }
+								}
+								transfer_state_to = HJZ
+							}
 						}
+					}
+					HJZ = {
+						annex_country = {
+							target = THIS
+						}
+						set_cosmetic_tag = HJZ_arabia
 						annex_country = {
 							target = SYR
 						}
 						annex_country = {
 							target = IRQ
 						}
-						if = {
-							limit = {
-								JBS = { has_country_flag = great_war_loser }
-							}
-							annex_country = {
-								target = JBS
+						division_template = {
+							name = "almuharirin"
+							priority = 0
+							regiments = {
+								militia = {
+									x = 0
+									y = 0
+								}
+								militia = {
+									x = 0
+									y = 1
+								}
+								militia = {
+									x = 0
+									y = 2
+								}
 							}
 						}
+						random_owned_state = {
+							limit = {
+								is_core_of = HJZ
+							}
+							prioritize = { 831 }
+							create_unit = {
+								division = "division_template = \"almuharirin\" start_experience_factor = 0.1 start_equipment_factor = 0.75"
+								owner = HJZ
+							}
+						}
+						random_owned_state = {
+							limit = {
+								is_core_of = HJZ
+							}
+							prioritize = { 680 }
+							create_unit = {
+								division = "division_template = \"almuharirin\" start_experience_factor = 0.1 start_equipment_factor = 0.75"
+								owner = HJZ
+							}
+							create_unit = {
+								division = "division_template = \"almuharirin\" start_experience_factor = 0.1 start_equipment_factor = 0.75"
+								owner = HJZ
+							}
+							create_unit = {
+								division = "division_template = \"almuharirin\" start_experience_factor = 0.1 start_equipment_factor = 0.75"
+								owner = HJZ
+							}
+							create_unit = {
+								division = "division_template = \"almuharirin\" start_experience_factor = 0.1 start_equipment_factor = 0.75"
+								owner = HJZ
+							}
+						}
+						news_event = {
+							id = interwar_news.19
+							hours = 3
+						}
+					}
+					ENG = { give_guarantee = HJZ }
+					give_military_access = ENG
+					diplomatic_relation = {
+						country = ENG
+						relation = non_aggression_pact
 					}
 				}
 			}	
@@ -540,58 +1424,97 @@ armistice_effect = {
 						state = 858
 						state = 554
 						state = 677
+						state = 831
+						state = 680
+						state = 884
+						state = 1021
+						state = 1023
+						state = 1029
 					}
 				}
 				remove_core_of = TUR
-				transfer_state_to = SYR
-			}
-		}
-		if = {
-			limit = {
-				FRA = {
-					has_country_flag = great_war_winner
-					is_subject = no
-				}
-			}
-			if = {
-				limit = {
-					ENG = {
-						has_completed_focus = ENG_Sykes_Picot
-					}
-				}
-				every_state = {
+				if = {
 					limit = {
-						is_owned_by = TUR
-						OR = {
-							state = 553
-							state = 852
-							state = 859
+						NOT = {
+							state = 680
+							state = 1023
+							state = 884
+							state = 1029
 						}
 					}
-					remove_core_of = TUR
-					transfer_state_to = FRA
+					transfer_state_to = SYR
 				}
 			}
-			else_if = {
-				limit = {
-					has_global_flag = great_arabian_revolt
-				}
-				every_state = {
-					limit = {
-						is_owned_by = TUR
-						OR = {
-							state = 852
-							state = 553
+			SYR = {
+				division_template = {
+					name = "almuharirin"
+					priority = 0
+					regiments = {
+						militia = {
+							x = 0
+							y = 0
+						}
+						militia = {
+							x = 0
+							y = 1
+						}
+						militia = {
+							x = 0
+							y = 2
 						}
 					}
-					remove_core_of = TUR
-					transfer_state_to = FRA
+				}
+				random_owned_state = {
+					limit = {
+						is_core_of = SYR
+					}
+					prioritize = { 831 }
+					create_unit = {
+						division = "division_template = \"almuharirin\" start_experience_factor = 0.1 start_equipment_factor = 0.75"
+						owner = SYR
+					}
+				}
+				random_owned_state = {
+					limit = {
+						is_core_of = SYR
+					}
+					prioritize = { 680 }
+					create_unit = {
+						division = "division_template = \"almuharirin\" start_experience_factor = 0.1 start_equipment_factor = 0.75"
+						owner = SYR
+					}
+					create_unit = {
+						division = "division_template = \"almuharirin\" start_experience_factor = 0.1 start_equipment_factor = 0.75"
+						owner = SYR
+					}
+					create_unit = {
+						division = "division_template = \"almuharirin\" start_experience_factor = 0.1 start_equipment_factor = 0.75"
+						owner = SYR
+					}
+					create_unit = {
+						division = "division_template = \"almuharirin\" start_experience_factor = 0.1 start_equipment_factor = 0.75"
+						owner = SYR
+					}
 				}
 			}
 		}
 	}
+	HUN = {
+		every_state = {
+			teleport_armies = {
+				to_state = 43	#get them free from impassable moutains and fiume
+			}
+		}	
+	}
 	##### Germany #####
 	GER = {
+		GER_wilhelm_ii = {
+			set_portraits = {
+				civilian = {
+					large="gfx/leaders/GER/GER_Wilhelm_II_1918.png"
+				}
+			}
+		}
 		if = {
 			limit = {
 				has_country_flag = great_war_loser
@@ -603,7 +1526,16 @@ armistice_effect = {
 				}
 				transfer_state_to = ROM
 			}
-			remove_resource_rights = 46
+			if = {
+				limit = {
+					GER = {
+						has_resources_rights = {
+							state = 46
+						}
+					}
+				}
+				remove_resource_rights = 46
+			}
 			if = {
 				limit = {
 					has_subject = GEO
@@ -634,26 +1566,22 @@ armistice_effect = {
 				NOT = {
 					has_government = communism
 				}
-			}			
+			}
 			if = {
 				limit = {
 					BEL = {
-						has_country_flag = great_war_loser
+						OR = {
+							has_country_flag = released_by_germany
+							has_country_flag = great_war_loser
+						}
 						exists = yes
-					}					
+						NOT = { has_cosmetic_tag = BEL_GER }
+					}
 				}
 				GER = {
-					if = {
-						limit = {
-							has_dlc = "Together for Victory"
-						}
-						set_autonomy = {
-							target = BEL
-							autonomous_state = autonomy_integrated_puppet
-						}
-						else = {
-							puppet = BEL
-						}
+					set_autonomy = {
+						target = BEL
+						autonomous_state = autonomy_integrated_puppet
 					}
 					GER_ludwig_von_falkenhausen = {
 						set_nationality = BEL
@@ -678,17 +1606,26 @@ armistice_effect = {
 						name = BEL_occupation_party
 					}
 					set_cosmetic_tag = BEL_GER
-					create_country_leader = {
-						name = "GER_ludwig_von_falkenhausen"
-						picture = "gfx/leaders/GER/GER_Ludwig_von_Falkenhausen.png"
-						
-						ideology = stratocracy
-						traits = {					
-							foreign_leader
-							german_agent			
+					GER_ludwig_von_falkenhausen = {
+						if = {
+							limit = { has_ideology = stratocracy }
+							promote_character = stratocracy
 						}
-					}				
+						else = {
+							add_country_leader_role = {
+								promote_leader = yes
+								country_leader = {
+									ideology = stratocracy
+									traits = {
+										foreign_leader
+										german_agent
+									}
+								}
+							}
+						}
+					}
 					add_ideas = BEL_belgian_resistance
+					remove_ideas = idea_army_restrictions
 					set_country_flag = dont_trigger_political_event
 					every_owned_state = {
 						limit = {
@@ -700,21 +1637,29 @@ armistice_effect = {
 						transfer_state_to = GER
 					}
 				}
-				FRA = {
-					every_owned_state = {
-						limit = {
-							OR = {
-								is_core_of = BEL
-								is_claimed_by = BEL
-							}
-							NOT = {
-								is_core_of = GER
-								is_claimed_by = GER
-							}
+				if = {
+					limit = {
+						FRA = {
+							has_country_flag = great_war_loser
 						}
-						transfer_state_to = BEL
+					}
+					FRA = {
+						every_owned_state = {
+							limit = {
+								OR = {
+									is_core_of = BEL
+									is_claimed_by = BEL
+								}
+								NOT = {
+									is_core_of = GER
+									is_claimed_by = GER
+								}
+							}
+							transfer_state_to = BEL
+						}
 					}
 				}
+
 			}
 			if = {
 				limit = {
@@ -729,27 +1674,14 @@ armistice_effect = {
 					}
 				}
 			}
-		}
-		if = {
-			limit = {
-				has_country_flag = great_war_winner
-			}
 			if = {
 				limit = {
 					has_completed_focus = GER_suppress_the_hungarian_uprising
 					HUN = { has_country_flag = great_war_loser }
 				}
-				if = {
-					limit = {
-						has_dlc = "Together for Victory"
-					}
-					set_autonomy = {
-						target = HUN
-						autonomous_state = autonomy_dominion
-					}
-					else = {
-						puppet = HUN
-					}
+				set_autonomy = {
+					target = HUN
+					autonomous_state = autonomy_dominion
 				}
 			}
 			if = {
@@ -777,7 +1709,11 @@ armistice_effect = {
 		limit = {
 			RUS = {
 				has_country_flag = great_war_winner
-			}													
+			}
+			NOT = {
+				has_global_flag = october_revolution
+				has_global_flag = russ_kapitulation
+			}
 		}
 		##### Russia Puppet Poland no Piłsudski #####
 		if = {
@@ -801,24 +1737,111 @@ armistice_effect = {
 			RUS = {
 				puppet = POL
 			}
-		}
-		##### Russia Annex Armenia After uprsing #####
+		}	
 		if = {
 			limit = {
-				has_global_flag = TUR_armenian_uprising_happened
 				RUS = {
-					has_subject = ARM
+					has_completed_focus = RUS_unite_ruthenia
 				}
-			}
+				NOT = {
+					country_exists = UKR
+				}
+				OR = {
+					has_global_flag = galicia_released
+					GAL = {
+						has_country_flag = great_war_loser
+					}	
+					WUK = {
+						has_country_flag = great_war_loser
+					}
+				}	
+			}		
 			RUS = {
 				annex_country = {
-					target = ARM
-					transfer_troops = no
+					target = WUK
+				}
+				annex_country = {
+					target = GAL
 				}
 			}
-		}					
+		}
+	}
+	if = {
+		limit = {
+			RUS = {
+				has_country_flag = great_war_loser
+			}													
+		}
+		set_global_flag = russ_kapitulation
 	}
 	### ITALY ###
+	if = {
+		limit = {
+			ITA = {
+				has_country_flag = great_war_winner
+			}
+			AUS = {
+				has_country_flag = great_war_loser
+			}
+			736 = {
+				OWNER = {
+					OR = {
+						tag = AUS
+						tag = CRO
+						is_in_faction_with = AUS
+					}
+				}
+			}
+			OR = {
+				163 = {
+					OWNER = {
+						OR = {
+							tag = AUS
+							tag = CRO
+							is_in_faction_with = AUS
+						}
+					}
+				}
+				1006 = {
+					OWNER = {
+						OR = {
+							tag = AUS
+							tag = CRO
+							is_in_faction_with = AUS
+						}
+					}
+				}
+				1010 = {
+					OWNER = {
+						OR = {
+							tag = AUS
+							tag = CRO
+							is_in_faction_with = AUS
+						}
+					}
+				}
+			}
+		}
+		every_state = {
+			limit = {
+				owner = {
+					OR = {
+						has_country_flag = great_war_loser
+						tag = AUS
+						tag = CRO
+						is_in_faction_with = AUS
+					}
+				}
+				OR = {
+					state = 163
+					state = 736
+					state = 1006
+					state = 1010
+				}
+			}
+			transfer_state_to = ITA
+		}
+	}
 	if = {
 		limit = {
 			ITA = {
@@ -831,12 +1854,84 @@ armistice_effect = {
 			add_ideas = victor_emmanuel
 		}
 	}
+	if = {
+		limit = {
+			ITA = {
+				has_country_flag = great_war_loser
+			}
+		}
+		# Release Albania
+		every_state = {
+			limit = {
+				is_owned_by = ITA
+				is_core_of = ALB
+				NOT = {
+					is_core_of = ROOT
+				}
+			}
+			transfer_state_to = ALB
+		}
+		if = {
+			limit = {
+				ITA = { owns_state = 803 }
+			}
+			if = {
+				limit = {
+					any_country = {
+						owns_state = 758
+						NOT = { has_country_flag = great_war_loser }
+					}
+				}
+				random_country = {
+					limit = {
+						owns_state = 758
+						NOT = { has_country_flag = great_war_loser }
+					}
+					transfer_state = 803
+				}
+			}
+			else = {
+				random_country = {
+					limit = {
+						owns_state = 871
+					}
+					transfer_state = 803
+				}
+			}
+		}
+
+	}
+	### ENGLAND ###
+	if = {
+		limit = {
+			ENG = {
+				has_country_flag = great_war_loser
+			}
+		}
+		ENG = {
+			if = {
+				limit = {
+					NOT = {
+						has_global_flag = british_capitulation
+						has_country_flag = british_capitulation
+					}
+				}
+				every_state = {
+					limit = {
+						is_owned_or_subject_PREV_trigger = yes
+					}
+					set_state_flag = dont_transfer
+				}
+				set_global_flag = honourable_peace
+			}
+		}
+	}
 	##### Darfur becomes free if not pacified #####
 	if = {
 		limit = {
 			ENG = {
 				has_country_flag = great_war_loser
-				has_country_flag = ENG_pacify_darfur
+				NOT = { has_country_flag = ENG_darfur_pacified }
 				owns_state = 827
 			}
 		}
@@ -891,39 +1986,75 @@ armistice_effect = {
 		ETH = {
 			transfer_state = 657
 		}
+		if = {
+			limit = {
+				SOM = { owns_state = 1039 }
+			}
+			ETH = { transfer_state = 1039 }
+		}
 	}
 	### ALBANIA ###
 	if = {
 		limit = {
 			ALB = {
-				OR = {
-					has_country_flag = great_war_loser
-					has_country_flag = great_war_winner
-				}	
+				has_country_flag = AUH_occupation_of_ALB
 			}
 		}
-		ALB = {
-			set_politics = {
-				ruling_party = neutrality
-				long_name = ALB_neutrality_durres_party
-				name = ALB_neutrality_durres_party
-				elections_allowed = no
+		every_state = {
+			limit = {
+				is_owned_by = AUS
+				is_core_of = ALB
 			}
-			set_popularities = {
-				democratic = 40
-				neutrality = 60
+			transfer_state_to = ALB
+		}
+	}
+	if = {
+		limit = {
+			ALB = {
+				has_war_with = AUS
 			}
-			promote_character = ALB_turhan_permeti
-			set_cosmetic_tag = ALB_principality
+			AUS = {
+				has_country_flag = great_war_winner
+			}
+			NOT = {
+				ALB = {
+					has_country_flag = AUH_occupation_of_ALB
+				}
+			}
+		}
+		AUS = {
+			set_autonomy = {
+				target = ALB
+				autonomy_state = autonomy_tgwr_protectorate
+			}
+		}
+		every_state = {
+			limit = {
+				is_core_of = ALB
+				OWNER = {
+					OR = {
+						tag = AUS
+						is_subject_of = AUS
+						has_country_flag = great_war_loser
+					}
+				}
+				OR = {
+					state = 44
+					state = 803
+					state = 870
+					state = 871
+				}
+			}
+			transfer_state_to = ALB
 		}
 	}
 	#### Thessaloniki returns ####
 	if = {
 		limit = {
-			NOT = { has_global_flag = venizelist_government_established }
+			NOT = { has_global_flag = GRE_thessaloniki_state_formed }
 			345 = {
 				is_owned_by = FRA
-				has_state_flag = french_salonika
+				# has_state_flag = french_salonika
 			}
 		}
 		FRA = {
@@ -932,25 +2063,723 @@ armistice_effect = {
 					OR = {
 						state = 345
 						state = 184
+						state = 731
 					}
 				}
-				every_country = {
+				47 = {
+					owner = {
+						transfer_state = PREV
+					}
+				}
+			}
+		}
+	}
+	#### Thrace giveaway for Greece ####
+	if = {
+		limit = {
+			GRE = {
+				NOT = {
+					has_country_flag = great_war_loser
+				}
+			}
+			BUL = {
+				has_country_flag = great_war_loser
+			}
+			TUR = {
+				has_country_flag = great_war_loser
+			}
+		}
+		345 = {
+			owner = {
+				transfer_state = 184
+				transfer_state = 757
+				transfer_state = 200
+			}
+		}
+	}
+	#### Corfu returns ####
+	if = {
+		limit = {
+			has_global_flag = corfu_lease
+			187 = { is_owned_by = SER }
+		}
+		185 = {
+			OWNER = {
+				transfer_state = 187
+			}
+		}
+	}
+	### Greece Schism ###
+	if = {
+		limit = {
+			GRE = {
+				has_global_flag = great_war_ends
+				has_global_flag = GRE_thessaloniki_state_formed
+				NOT = {
+					has_country_flag = GRE_national_defense_flag
+				}
+				any_other_country = {
+					original_tag = GRE
+					has_country_flag = GRE_national_defense_flag
+					has_country_flag = great_war_loser
+					exists = yes
+				}
+			}
+		}
+		GRE = {
+			THE = {
+				GRE_pavlos_kountouriotis = {
+					remove_country_leader_role = {
+						ideology = authoritarian_democracy
+					}
+				}
+				GRE_panagiotis_danglis = {
+					remove_country_leader_role = {
+						ideology = stratocracy
+					}
+				}
+				every_character = {
+					set_nationality = GRE
+				}
+				transfer_navy = {
+					target = GRE
+				}
+				transfer_units_fraction = {
+					target = GRE
+					size = 1
+					army_ratio = 0
+					keep_unit_leaders_trigger = {
+						always = yes
+					}
+				}
+				every_state = {
 					limit = {
-						owns_state = 47
+						is_core_of = PREV
 					}
-					transfer_state = PREV
+					remove_core_of = PREV
+					add_core_of = GRE
 				}
+				every_state = {
+					limit = {
+						is_claimed_by = PREV
+					}
+					remove_claim_by = PREV
+					remove_claim_by = GRE
+				}
+			}
+			clr_country_flag = empty_focus
+			load_focus_tree = { tree = greek_ww1_focus keep_completed = yes }
+			add_ideas = GRE_idea_national_schism3
+			remove_ideas = {
+				GRE_idea_national_schism
+				GRE_idea_dual_power
+				gre_royalist_port_blocked2
+				GRE_idea_national_schism
+				GRE_idea_national_schism2
+				GRE_idea_national_schism2b
+				GRE_idea_national_schism4
+			}
+			if = {
+				limit = {
+					NOT = {
+						has_country_flag = great_war_winner
+					}
+				}
+				set_country_flag = great_war_loser
+				add_ideas = idea_armistice
+			}
+			annex_country = { target = THE transfer_troops = no }
+			if = {
+				limit = {
+					THE = { is_ai = no }	
+				}
+				change_tag_from = THE
+			}
+		}
+	}
+	else_if = {
+		limit = {
+			THE = {
+				has_country_flag = GRE_national_defense_flag
+				has_country_flag = great_war_winner
+				has_global_flag = great_war_ends
+				has_global_flag = GRE_thessaloniki_state_formed
+				any_other_country = {
+					original_tag = GRE		
+					NOT = {
+						has_country_flag = GRE_national_defense_flag
+					}
+				}
+			}
+		}
+		THE = {
+			country_event = ww1_greece.50
+		}
+	}
+	#### Serbia capital returns ###
+	if = {
+		limit = {
+			SER = { has_completed_focus = SER_war_preparations }
+		}
+		SER = {
+			set_capital = { state = 107 }
+			add_victory_points = {
+				province = 11887
+				value = -15
+			}
+			add_victory_points = {
+				province = 11586
+				value = 15
+			}
+		}
+	}
+	#### Ottoman be like ###
+	if = {
+		limit = {
+			TUR = {
+				has_country_flag = great_war_winner
+			}
+		}
+		if = {
+			limit = {
+				GRE = {
+					has_country_flag = great_war_loser
+				}
+				NOT = {
+					has_global_flag = greek_defeated_in_ww1
+				}
+			}
+			every_state = {
+				limit = {
+					OR = {
+						region = 25
+						state = 182
+						state = 900
+					}
+					OR = {
+						is_core_of = TUR
+						is_claimed_by = TUR
+					}
+					is_core_of = GRE
+				}
+				remove_claim_by = TUR
+				set_state_flag = dont_transfer
+			}
+		}	
+		if = {
+			limit = { HJZ = { has_country_flag = great_war_loser has_country_flag = arab_revolt_member } }
+			TUR = {
+				annex_country = {
+					target = HJZ
+					transfer_troops = no
+				}
+			}
+		}
+		if = {
+			limit = { ASR = { has_country_flag = great_war_loser has_country_flag = arab_revolt_member } }
+			TUR = {
+				annex_country = {
+					target = ASR
+					transfer_troops = no
+				}
+			}
+		}
+		if = {
+			limit = { YEM = { has_country_flag = great_war_loser has_country_flag = arab_revolt_member } }
+			TUR = {
+				annex_country = {
+					target = YEM
+					transfer_troops = no
+				}
+			}
+		}
+		if = {
+			limit = {
+				YEM = {
+					is_subject_of = TUR
+				}
+			}
+			if = {
+				limit = {
+					YEM = { NOT = { owns_state = 654 } }
+				}
+				654 = {
+					add_core_of = YEM
+					transfer_state_to = YEM
+				}
+			}
+		}
+	}
+	### GER_paul_von_lettowvorbeck ###
+	if = {
+		limit = {
+			TZN = {
+				has_country_flag = great_war_loser
+				has_character = GER_paul_von_lettowvorbeck
+			}
+		}
+		TZN = {
+			GER_paul_von_lettowvorbeck = {
+				set_nationality = GER
+			}
+		}
+	}
+	### Japanese Shandong ###
+	if = {
+		limit = {
+			JAP = {
+				has_country_flag = great_war_loser
+				owns_state = 872
+			}
+		}
+		597 = {
+			owner = {
+				transfer_state = 872
+			}
+		}
+	}
+	### Morocco ###
+	if = {
+		limit = {
+			FRA = {
+				has_country_flag = great_war_loser
+			}
+			MOR = {
+				has_cosmetic_tag = MOR_FRA
+			}
+		}
+		MOR = {
+			add_state_core = 461
+			drop_cosmetic_tag = yes
+		}
+	}
+	### Series of please stop ruining the Interwar ###
+	# First: Persia
+	if = {
+		limit = {
+			any_country = {
+				original_tag = PER
+				has_country_flag = PER_gendarmerie_flag
+				any_other_country = {
+					has_war_with = PREV
+					OR = {
+						has_country_flag = great_war_winner
+						has_country_flag = great_war_loser
+					}
+					NOT = {
+						any_owned_state = {
+							is_core_of = PER
+						}
+					}
+				}
+			}
+		}
+		random_country = {
+			limit = {
+				original_tag = PER
+				has_country_flag = PER_gendarmerie_flag
+			}
+			every_enemy_country = {
+				limit = {
+					NOT = { original_tag = PER }
+					OR = {
+						any_owned_state = {
+							is_core_of = PER
+						}
+						AND = {
+							is_subject = yes
+							OVERLORD = {
+								any_owned_state = {
+									is_core_of = PER
+								}
+							}
+						}
+					}
+					is_in_faction = yes
+					is_faction_leader = no
+					has_country_flag = great_war_winner
+				}
+				leave_faction = yes
+			}
+			every_enemy_country = {
+				limit = {
+					NOT = { original_tag = PER }
+					OR = {
+						has_country_flag = great_war_loser
+						NOT = {
+							any_owned_state = {
+								is_core_of = PER
+							}
+						}
+					}
+				}
+				white_peace = PREV
+			}
+		}
+	}
+	if = {
+		limit = {
+			has_global_flag = frankfurt_armistice
+			PER = {
+				NOT = { has_country_flag = great_war_loser }
+				any_enemy_country = {
+					original_tag = PER
+					has_country_flag = PER_gendarmerie_flag
+					NOT = {
+						has_war_with = ENG
+						has_war_with = RUS
+					}
+				}
+			}
+		}
+
+		PER = {
+			random_other_country = {
+				limit = {
+					original_tag = PER
+					has_country_flag = PER_gendarmerie_flag
+				}
+				transfer_navy = {
+					target = PREV
+				}
+				every_character = {
+					set_nationality = PREV
+				}
+				PREV = {
+					annex_country = {
+						target = PREV
+						transfer_troops = yes
+					}
+					add_popularity = {
+						ideology = fascism
+						popularity = 0.25
+					}
+				}
+			}
+		}
+	}
+	if = {
+		limit = {
+			country_exists = PER
+			has_global_flag = russian_revolution
+			has_global_flag = persian_gendarmerie_revolt
+			OR = {
+				419 = {
+					owner = {
+						NOT = {
+							PREV = { is_core_of = PREV }
+							original_tag = PER
+							has_war_with = PER
+						}
+					}
+				}
+				420 = {
+					owner = {
+						NOT = {
+							PREV = { is_core_of = PREV }
+							original_tag = PER
+							has_war_with = PER
+						}
+					}
+				}
+				421 = {
+					owner = {
+						NOT = {
+							PREV = { is_core_of = PREV }
+							original_tag = PER
+							has_war_with = PER
+						}
+					}
+				}
+				877 = {
+					owner = {
+						NOT = {
+							PREV = { is_core_of = PREV }
+							original_tag = PER
+							has_war_with = PER
+						}
+					}
+				}
+			}
+		}
+		every_state = {
+			limit = {
+				OR = {
+					state = 419
+					state = 420
+					state = 421
+					state = 877
+				}
+				owner = {
+					NOT = {
+						PREV = { is_core_of = PREV }
+						original_tag = PER
+						has_war_with = PER
+					}
+				}
+			}
+			transfer_state_to = PER
+		}
+	}
+	# Second: Ireland
+	if = {
+		limit = {
+			ENG = {
+				has_war_with = IRE
+				has_country_flag = great_war_winner
+			}
+		}
+		IRE = {
+			every_enemy_country = {
+				limit = {
+					OR = {
+						tag = ENG
+						is_subject_of = ENG
+					}
+					is_in_faction = yes
+				}
+				leave_faction = yes
+			}
+			every_enemy_country = {
+				limit = {
+					is_in_faction = yes
+					has_country_flag = great_war_winner
+				}
+				white_peace = PREV
+			}
+		}
+	}
+	if = {
+		limit = {
+			has_global_flag = irish_civil_war
+		}
+		ENG = {
+			if = {
+				limit = {
+					is_in_faction = yes
+					any_subject_country = {
+						original_tag = IRE
+						has_civil_war = yes
+					}
+				}
+				leave_faction = yes
+				random_enemy_country = {
+					limit = {
+						original_tag = IRE
+					}
+					every_enemy_country = {
+						limit = {
+							NOT = {
+								original_tag = IRE
+								original_tag = ENG
+								is_subject_of = ENG
+							}
+						}
+						white_peace = PREV
+					}
+				}
+			}
+		}
+	}
+	# Third: South Africa
+	if = {
+		limit = {
+			SAF = {
+				any_enemy_country = {
+					original_tag = SAF
+					has_government = fascism
+				}
+			}
+		}
+		random_country = {
+			limit = {
+				original_tag = SAF
+				has_government = fascism
+			}
+			every_enemy_country = {
+				limit = {
+					OR = {
+						tag = ENG
+						is_subject_of = ENG
+					}
+					is_in_faction = yes
+				}
+				leave_faction = yes
+			}
+			every_enemy_country = {
+				limit = {
+					is_in_faction = yes
+					has_country_flag = great_war_winner
+				}
+				white_peace = PREV
+			}
+		}
+	}
+	# Fourth: Senussiya
+	if = {
+		limit = {
+			LBA = {
+				has_country_flag = great_war_loser
+				has_country_flag = TUR_invoke_senussiya_alliance
+			}
+		}
+		LBA = {
+			clr_country_flag = great_war_loser
+			if = {
+				limit = {
+					owns_state = 663
+					NOT = { owns_state = 273 }
+				}
+				transfer_state = 273
+			}
+			if = {
+				limit = {
+					273 = {
+						owner = {
+							NOT = { owns_state = 812 }
+						}
+					}
+				}
+				273 = {
+					owner = {
+						transfer_state = 812
+					}
+				}
+			}
+			if = {
+				limit = {
+					owns_state = 567
+				}
+				515 = {
+					owner = {
+						transfer_state = 567
+					}
+				}
+			}
+			if = {
+				limit = {
+					owns_state = 775
+				}
+				515 = {
+					owner = {
+						transfer_state = 775
+					}
+				}
+			}
+		}
+	}
+	# Fifth: Vietnam
+	if = {
+		limit = {
+			VIN = {
+				has_war_with = FRA
+			}
+		}
+		VIN = {
+			every_enemy_country = {
+				limit = {
+					OR = {
+						tag = FRA
+						is_subject_of = FRA
+					}
+					is_in_faction = yes
+				}
+				leave_faction = yes
+			}
+			every_enemy_country = {
+				limit = {
+					is_in_faction = yes
+					has_country_flag = great_war_winner
+				}
+				white_peace = PREV
+			}
+		}
+	}
+	# Sixth: Assyria
+	if = {
+		limit = {
+			TUR = {
+				has_country_flag = great_war_loser
+				has_war_with = ASY
+			}
+		}
+		ASY = {
+			every_enemy_country = {
+				white_peace = PREV
+			}
+		}
+	}
+	# Seventh: Azerbaijan
+	if = {
+		limit = {
+			AZR = {
+				has_country_flag = great_war_loser
+				has_war_with = BAK
+			}
+		}
+		AZR = {
+			if = {
+				limit = {
+					is_subject = yes
+					OVERLORD = { has_country_flag = great_war_loser }
+				}
+				OVERLORD = { end_puppet = PREV }
+			}
+			if = {
+				limit = { is_in_faction = yes }
+				leave_faction = yes
+			}
+			every_enemy_country = {
+				limit = {
+					NOT = {
+						tag = BAK
+						is_in_faction_with = BAK
+						has_subject = BAK
+					}
+				}
+				white_peace = PREV
+			}
+		}
+		BAK = {
+			every_enemy_country = {
+				limit = {
+					NOT = {
+						tag = AZR
+						is_in_faction_with = AZR
+						has_subject = AZR
+					}
+				}
+				white_peace = PREV
 			}
 		}
 	}
 }
 conference_effect = {
+	set_global_flag = tgwr_show_division_limiter
 	every_country = {
 		limit = {
 			has_country_flag = great_war_loser
 		}
 		every_state = {
 			limit = {
+				if = {
+					limit = {
+						PREV = {
+							tag = TUR
+						}
+						349 = { is_claimed_by = TUR }
+					}
+					NOT = { state = 349 }
+				}
+				if = {
+					limit = {
+						PREV = {
+							tag = TUR
+						}
+						348 = { is_claimed_by = TUR }
+					}
+					NOT = { state = 348 }
+				}
 				is_claimed_by = PREV
 			}
 			remove_claim_by = PREV
@@ -1018,16 +2847,18 @@ conference_effect = {
 				is_major = yes
 			}
 			every_other_country = {
-				limit = { has_country_flag = great_war_loser }
+				limit = { 
+					has_country_flag = great_war_loser
+					has_war = no
+				}
 				PREV = {
 					every_state = {
 						limit = {
 							is_owned_by = PREV.PREV
 							is_core_of = PREV
+							NOT = { has_state_flag = dont_transfer }
 						}
-						PREV = {
-							transfer_state = PREV
-						}
+						transfer_state_to = PREV
 					}
 				}
 			}
@@ -1044,10 +2875,9 @@ conference_effect = {
 							limit = {
 								is_owned_by = PREV.PREV
 								is_core_of = PREV
+								NOT = { has_state_flag = dont_transfer }
 							}
-							PREV = {
-								transfer_state = PREV
-							}
+							transfer_state_to = PREV
 						}
 					}
 				}
@@ -1062,10 +2892,9 @@ conference_effect = {
 								limit = {
 									is_owned_by = PREV.PREV
 									is_core_of = PREV
+									NOT = { has_state_flag = dont_transfer }
 								}
-								PREV = {
-									transfer_state = PREV
-								}
+								transfer_state_to = PREV
 							}
 						}
 					}
@@ -1077,10 +2906,9 @@ conference_effect = {
 									limit = {
 										is_owned_by = PREV.PREV
 										is_core_of = PREV
+										NOT = { has_state_flag = dont_transfer }
 									}
-									PREV = {
-										transfer_state = PREV
-									}
+									transfer_state_to = PREV
 								}
 							}
 						}
@@ -1099,10 +2927,9 @@ conference_effect = {
 						limit = {
 							is_owned_by = PREV.PREV
 							is_claimed_by = PREV
+							NOT = { has_state_flag = dont_transfer }
 						}
-						PREV = {
-							transfer_state = PREV
-						}
+						transfer_state_to = PREV
 					}
 				}
 			}
@@ -1119,10 +2946,9 @@ conference_effect = {
 							limit = {
 								is_owned_by = PREV.PREV
 								is_claimed_by = PREV
+								NOT = { has_state_flag = dont_transfer }
 							}
-							PREV = {
-								transfer_state = PREV
-							}
+							transfer_state_to = PREV
 						}
 					}
 				}
@@ -1137,10 +2963,9 @@ conference_effect = {
 								limit = {
 									is_owned_by = PREV.PREV
 									is_claimed_by = PREV
+									NOT = { has_state_flag = dont_transfer }
 								}
-								PREV = {
-									transfer_state = PREV
-								}
+								transfer_state_to = PREV
 							}
 						}
 					}
@@ -1152,10 +2977,9 @@ conference_effect = {
 									limit = {
 										is_owned_by = PREV.PREV
 										is_claimed_by = PREV
+										NOT = { has_state_flag = dont_transfer }
 									}
-									PREV = {
-										transfer_state = PREV
-									}
+									transfer_state_to = PREV
 								}
 							}
 						}
@@ -1176,13 +3000,13 @@ conference_effect = {
 					owns_state = 87
 				}
 			}
+			# Danzig
 			if = {
 				limit = {
-					GER = {
-						owns_state = 404
-					}
+					GER = { owns_state = 404 }
 				}
 				404 = {
+					add_core_of = DNZ
 					set_demilitarized_zone = yes
 					add_dynamic_modifier = { modifier = international_city }
 				}
@@ -1197,36 +3021,50 @@ conference_effect = {
 						}
 					}	
 					OR = {
+						state = 67
 						state = 86
 						state = 85
 						state = 404
 						state = 762
+						state = 995 #just in case
 					}
 				}
 				if = {
 					limit = {
-						state = 404
+						POL = { has_country_flag = great_war_winner }
 					}
-					add_core_of = DNZ
+					transfer_state_to = POL
+					else = {
+						if = {
+							limit = {
+								state = 86
+							}
+							remove_core_of = GER
+							transfer_state_to = POL
+						}
+						else = {
+							set_demilitarized_zone = yes
+						}
+					}
 				}
-				POL = { transfer_state = PREV add_state_core = PREV }
-				GER = { remove_state_core = PREV }
 			}
 		}
 		# Rhineland
-		GER = {
-			every_owned_state = {
-				limit = {
-					OR = {
-						state = 8
-						state = 42
-						state = 51
-						state = 343
-						state = 869
-					}
+		every_state = {
+			limit = {
+				owner = {
+					has_country_flag = great_war_loser
 				}
-				transfer_state_to = FRA
+				OR = {
+					state = 8
+					state = 42
+					# state = 51
+					state = 343
+					state = 869
+					state = 989
+				}
 			}
+			transfer_state_to = FRA
 		}
 		# Memelland
 		if = {
@@ -1262,41 +3100,7 @@ conference_effect = {
 			}
 			FRA = { transfer_state = PREV }
 		}
-		if = {
-			limit = {
-				FRA = {
-					owns_state = 553
-				}			
-				ENG = {
-					has_country_flag = great_war_winner
-					has_completed_focus = ENG_Sykes_Picot
-				}
-				NOT = {
-					has_global_flag = sykes_picot_lawrence
-					has_global_flag = sykes_picot_mcmahon
-				}
-				SYR = {
-					NOT = {
-						has_country_flag = great_war_winner
-					}
-				}
-			}
-			FRA = {
-				annex_country = {
-					target = SYR
-				}
-				every_owned_state = {
-					limit = {
-						OR = {
-							state = 454
-							state = 455
-							state = 856
-						}
-					}
-					transfer_state_to = ENG
-				}
-			}			
-		}	
+
 	}
 	### GERMANY ###
 	if = {
@@ -1304,6 +3108,17 @@ conference_effect = {
 			GER = {
 				has_country_flag = great_war_winner
 			}			
+		}
+		every_state = {
+			limit = {
+				OR = {
+					region = 19
+					region = 208
+				}
+				NOT = { state = 17 }
+				is_demilitarized_zone = yes
+			}
+			set_demilitarized_zone = no
 		}
 		if = {
 			limit = {
@@ -1315,6 +3130,7 @@ conference_effect = {
 					NOT = {
 						has_country_flag = ottomans_hold_cairo_and_alexandria
 						has_subject = EGY
+						has_country_flag = ottomans_lost_jerusalem
 					}
 				}
 			}
@@ -1325,53 +3141,17 @@ conference_effect = {
 				}
 			}
 		}
-		BEL = {
+		every_state = {
+			limit = {
+				OR = {
+					state = 17
+					state = 863
+					state = 864
+				}
+			}
 			if = {
-				limit = {
-					is_subject_of = GER
-				}
-				if = {
-					limit = {
-						has_global_flag = german_moselland
-					}
-					every_state = {
-						limit = {
-							OR = {
-								state = 29
-								state = 865
-							}
-							OWNER = {
-								OR = {
-									tag = GER
-									original_tag = FRA
-									is_subject_of = FRA
-									has_country_flag = great_war_loser
-								}
-							}
-						}
-						transfer_state_to = PREV
-					}
-				}
-				else = {
-					every_state = {
-						limit = {
-							OR = {
-								state = 34
-								state = 865
-							}
-							OWNER = {
-								OR = {
-									tag = GER
-									original_tag = FRA
-									is_subject_of = FRA
-									has_country_flag = great_war_loser
-								}
-							}
-						}
-						transfer_state_to = PREV
-					}
-					17 = { set_demilitarized_zone = yes }
-				}
+				limit = { owner = { has_country_flag = great_war_loser } }
+				set_demilitarized_zone = yes
 			}
 		}
 		random_country = {
@@ -1387,8 +3167,6 @@ conference_effect = {
 					}	
 					OWNER = {
 						OR = {						
-							original_tag = FRA
-							is_subject_of = FRA
 							has_country_flag = great_war_loser
 						}
 					}				
@@ -1454,18 +3232,46 @@ conference_effect = {
 					puppet = HOL
 					if = {
 						limit = {
-							has_idea = GER_idea_wilhelm_ii
+							OR = {
+								has_government = neutrality
+								has_idea = GER_idea_wilhelm_ii
+							}
 						}
 						HOL = {
+							every_possible_country = {
+								limit = {
+									has_character = LUX_marieadelaide
+								}
+								LUX_marieadelaide = { set_nationality = HOL }
+							}
+							LUX_marieadelaide = {
+								if = {
+									limit = {
+										has_ideology = semi_constitutional_monarchy_reserve
+									}
+									promote_character = semi_constitutional_monarchy_reserve
+									else = {
+										add_country_leader_role = {
+											promote_leader = yes
+											country_leader = {
+												ideology = semi_constitutional_monarchy_reserve
+												traits = { inexperienced_monarch foreign_leader }
+											}
+										}
+									}
+								}
+							}
 							set_politics = {
 								ruling_party = neutrality
 								elections_allowed = no
+								long_name = LUX_neutrality_party_long
+								name = LUX_neutrality_party
 							}
 							set_popularities = {
-								democratic = 10
-								neutrality = 70
-								fascism = 10
-								communism = 10
+								democratic = 28
+								fascism = 0
+								communism = 14
+								neutrality = 58
 							}
 						}
 					}
@@ -1481,6 +3287,7 @@ conference_effect = {
 					limit = {
 						SWE = {
 							has_country_flag = great_war_loser
+							is_subject = no
 						}				
 					}
 					GER = {
@@ -1597,13 +3404,13 @@ conference_effect = {
 							}
 							BLR_genrikh = {
 								if = {
-									limit = { has_ideology = autocracy }
-									promote_character = autocracy
+									limit = { has_ideology = semi_constitutional_monarchy }
+									promote_character = semi_constitutional_monarchy
 								}
 								else = {
 									add_country_leader_role = {
 										country_leader = {
-											ideology = autocracy
+											ideology = semi_constitutional_monarchy
 											traits = { german_agent }
 										}
 										promote_leader = yes
@@ -1620,13 +3427,13 @@ conference_effect = {
 						else = {
 							BLR_uladzimir = {
 								if = {
-									limit = { has_ideology = autocracy }
-									promote_character = autocracy
+									limit = { has_ideology = semi_constitutional_monarchy }
+									promote_character = semi_constitutional_monarchy
 								}
 								else = {
 									add_country_leader_role = {
 										country_leader = {
-											ideology = autocracy
+											ideology = semi_constitutional_monarchy
 											traits = { german_agent }
 										}
 										promote_leader = yes
@@ -1729,33 +3536,15 @@ conference_effect = {
 								has_subject = FIN
 							}
 						}
-						SWE = {
-							NOT = {
-								has_country_flag = great_war_winner
-							}
-						}
 					}
 					every_state = {
 						limit = {
-							OR = {
-								state = 111
-								state = 149
-								state = 150
-								state = 148
-								state = 146
-								state = 145
-							}	
+							is_core_of = FIN
 							is_owned_by = RUS				
 						}
-						FIN = {
-							transfer_state = PREV
-						}
-						RUS = {
-							remove_state_core = PREV
-						}	
-					}
-					RUS = {
-						remove_unit_leader = 76235
+						transfer_state_to = FIN
+						remove_russian_cores = yes
+						remove_russian_claims = yes
 					}
 					FIN = {
 						if = {
@@ -1774,6 +3563,12 @@ conference_effect = {
 							}
 						}
 						set_cosmetic_tag = FIN_kingdom
+						set_party_name = {
+							ideology = neutrality
+							long_name = FIN_regency
+							name = FIN_regency
+						}
+						FIN_set_finnish_state_names = yes
 					}
 				}
 			}
@@ -1820,13 +3615,48 @@ conference_effect = {
 		}
 		if = {
 			limit = {
-				GRE = {
-					has_country_flag = great_war_loser
-					owns_state = 790
+				WTH = {
+					is_puppet_of = TUR
 				}
 			}
-			TUR = {
-				transfer_state = 790
+			every_state = {
+				limit = {
+					OR = {
+						state = 757
+						AND = {
+							OWNER = {
+								has_country_flag = great_war_loser
+							}
+							is_core_of = WTH
+						}
+					}
+				}
+				transfer_state_to = WTH
+			}
+		}
+		if = {
+			limit = {
+				GRE = {
+					has_country_flag = great_war_loser
+					any_owned_state = {
+						OR = {
+							state = 790
+							state = 974
+							state = 975
+						}
+					}
+				}
+			}
+			every_state = {
+				limit = {
+					is_owned_by = GRE
+					OR = {
+						state = 790
+						state = 974
+						state = 975
+					}
+				}
+				transfer_state_to = TUR
 			}
 		}
 		# if = {
@@ -1842,6 +3672,24 @@ conference_effect = {
 		# 		transfer_state = 656
 		# 	}
 		# }
+		## get lybia if you losed 1911 war
+		if = {
+			limit = {
+				ITA = {
+					has_country_flag = great_war_winner
+				}
+				TUR = {
+					has_country_flag = great_war_loser
+				}
+			}
+			every_state = {
+				limit = {
+					is_owned_by = TUR
+					is_core_of = LBA
+				}
+				transfer_state_to = ITA
+			}
+		}
 		if = {
 			limit = {
 				TUR = {
@@ -1876,6 +3724,7 @@ conference_effect = {
 							state = 273
 							state = 812
 							state = 567
+							state = 1060
 						}
 					}
 					remove_claim_by = TUR
@@ -1887,30 +3736,35 @@ conference_effect = {
 					limit = {
 						OR = {
 							is_owned_by = LBA
+							is_owned_by = ITA
 						}
 						OR = {
 							state = 273
 							state = 448
 							state = 661
 							state = 812
+							state = 1060
 						}
 					}
 					TUR = {
 						transfer_state = PREV
 					}
 				}
+				every_state = {
+					limit = {
+						OR = {
+							state = 552
+							state = 767
+						}
+					}
+					LBA = {
+						transfer_state = PREV
+					}
+				}
 				TUR = {
-					if = {
-						limit = {
-							has_dlc = "Together for Victory"
-						}
-						set_autonomy = {
-							target = LBA
-							autonomous_state = autonomy_dominion
-						}
-						else = {
-							puppet = LBA
-						}
+					set_autonomy = {
+						target = LBA
+						autonomous_state = autonomy_dominion
 					}
 				}
 				LBA = {
@@ -1935,17 +3789,9 @@ conference_effect = {
 					}
 				}
 				TUR = {
-					if = {
-						limit = {
-							has_dlc = "Together for Victory"
-						}
-						set_autonomy = {
-							target = LBA
-							autonomous_state = autonomy_dominion
-						}
-						else = {
-							puppet = LBA
-						}
+					set_autonomy = {
+						target = LBA
+						autonomous_state = autonomy_dominion
 					}
 				}
 				LBA = {
@@ -1978,6 +3824,35 @@ conference_effect = {
 			TUR = {
 				transfer_state = 805
 			}
+		}
+		if = {
+			limit = {
+				TUR = {
+					owns_state = 756
+				}
+				849 = {
+					OWNER = {
+						has_country_flag = great_war_loser
+					}
+				}
+			}
+			TUR = {
+				transfer_state = 849
+			}
+		}
+	}
+	if = {
+		limit = {
+			TUR = { has_country_flag = great_war_loser }
+		}
+		if = {
+			limit = {
+				TUR = {
+					owns_state = 654
+					NOT = { owns_state = 747 }
+				}
+			}
+			293 = { owner = { transfer_state = 654 } }
 		}
 	}
 	TUR = {
@@ -2035,381 +3910,97 @@ conference_effect = {
 			}
 		}
 	}
+	### AUSTRIA ###
 	if = {
 		limit = {
-			TUR = {
-				has_country_flag = great_war_loser
-			}
+			AUS = { has_country_flag = great_war_winner }
 		}
 		if = {
 			limit = {
-				has_global_flag = kis_firstbalkan_war
-				NOT = {
-					has_global_flag = kis_firstbalkanwar_victory
-					has_global_flag = kis_firstbalkanwar_lose
-				}
-			}
-			if = {
-				limit = {
-					MNT = {
-						has_country_flag = great_war_winner
-					}
-				}
-				TUR = {
-					every_owned_state = {
-						limit = {
-							OR = {
-								is_core_of = MNT
-								is_claimed_by = MNT
-							}
-							NOT = {
-								is_core_of = BUL
-							}
-						}
-						transfer_state_to = MNT
-					}
-				}
-				if = {
-					limit = {
-						ALB = {
-							exists = yes
-							NOT = {
-								has_country_flag = great_war_winner
-								has_country_flag = great_war_loser
-							}
-							owns_state = 848
-						}
-					}
-					MNT = { transfer_state = 848 }
-				}
-			}
-			if = {
-				limit = {
-					GRE = {
-						has_country_flag = great_war_winner
-					}
-				}
-				TUR = {
-					every_owned_state = {
-						limit = {
-							OR = {
-								is_core_of = GRE
-								is_claimed_by = GRE
-							}
-							NOT = {
-								is_core_of = BUL
-								is_core_of = BUL
-							}
-						}
-						transfer_state_to = GRE
-					}
-				}
-			}
-			if = {
-				limit = {
-					BUL = {
-						has_country_flag = great_war_winner
-					}
-				}
-				TUR = {
-					every_owned_state = {
-						limit = {
-							OR = {
-								is_core_of = BUL
-								is_claimed_by = BUL
-							}
-							NOT = {
-								is_core_of = SER
-							}
-						}
-						transfer_state_to = BUL
-					}
-				}
-				BUL = {
-					set_country_flag = won_balkan_war
-					# I can't fix this, why they alwasy belongs to Greece even I set trigger right
-					if = {
-						limit = {
-							GRE = {
-								owns_state = 200
-								owns_state = 184
-								owns_state = 757
-							}
-						}
-						transfer_state = 184
-						transfer_state = 200
-						transfer_state = 757
-					}
+				AUS = {
+					has_completed_focus = AUH_balkan_expansion
+					is_subject = no
 				}
 			}
 			if = {
 				limit = {
 					SER = {
-						has_country_flag = great_war_winner
-					}
-				}
-				TUR = {
-					every_owned_state = {
-						limit = {
-							OR = {
-								is_core_of = SER
-								is_claimed_by = SER
-							}
-							NOT = {
-								is_core_of = BUL
-							}
+						exists = yes
+						OR = {
+							is_subject = no
+							OVERLORD = { has_country_flag = great_war_loser }
 						}
-						transfer_state_to = SER
-					}
-				}
-				SER = {
-					remove_state_core = 106
-					remove_state_core = 203
-					if = {
-						limit = {
-							is_faction_leader = yes
-						}
-						dismantle_faction = yes
-					}
-				}
-			}
-			set_global_flag = kis_firstbalkanwar_victory
-			every_state = { 
-				limit = {
-					OR = {
-						is_owned_by = SER
-						is_owned_by = BUL
-						is_owned_by = GRE
-						is_owned_by = MNT
-						is_owned_by = ALB
-					}
-					NOT = {
-						state = 341
-						state = 756
-						state = 200
-						state = 451
-						state = 757
-						state = 345
-						state = 790
-						state = 849
-					}
-				}
-				remove_core_of = TUR
-				remove_core_of = OTT
-				remove_claim_by = TUR
-				remove_claim_by = OTT
-			}
-			every_country = {
-				limit = {
-					has_idea = SER_idea_balkan_liberation
-				}
-				remove_ideas = SER_idea_balkan_liberation
-			}
-		}
-	}
-	### AUSTRIA ###
-	if = {
-		limit = {
-			AUH = {
-				has_country_flag = great_war_winner
-				has_completed_focus = AUH_claims_on_serbia_montenegro
-				is_subject = no
-			}
-			SER = {
-				exists = yes
-				has_country_flag = great_war_loser
-			}
-		}
-		AUH = {
-			if = {
-				limit = {
-					has_subject_autonomy_feature = yes
-				}
-				set_autonomy = {
-					target = SER
-					autonomy_state = autonomy_tgwr_informal_protectorate
-				}
-				SER = {
-					set_country_flag = protectorate
-				}
-				else = {
-					puppet = SER
-					SER = { add_ideas = protectorate }
-				}
-			}
-		}
-		SER = {
-			#retire_ideology_leader = neutrality
-			SER_dorde_obrenovic = {
-				if = {
-					limit = {
-						is_country_leader = no
-					}
-					add_country_leader_role = {
-						promote_leader = yes
-						country_leader = {
-							ideology = autocracy
-							traits = { unpopular_monarch }
-						}
-					}
-					else = {
-						promote_character = autocracy
-					}
-				}
-			}
-			remove_ideas = {
-				SER_idea_alexander_i
-				SER_idea_alexander_i_1
-			}
-			SER_cedomilj_mijatovic = {
-				if = {
-					limit = {
-						is_country_leader = no
-					}
-					add_country_leader_role = {
-						promote_leader = yes
-						country_leader = {
-							ideology = conservatism
-							traits = { the_banker }
-						}
-					}
-					else = {
-						promote_character = conservatism
-					}
-				}
-			}
-			set_party_name = {
-				ideology = democratic
-				long_name = SER_naprednjaci_party_long
-				name = SER_naprednjaci_party
-			}
-			set_party_name = {
-				ideology = neutrality
-				long_name = SER_obrenovic_dynasty_long
-				name = SER_obrenovic_dynasty
-			}
-		}
-		# East Montenegro to puppet Serbia
-		every_state = {
-			limit = {
-				OR = {
-					state = 761
-					state = 848
-				}
-				OWNER = {
-					OR = {
-						tag = AUH
-						is_subject_of = AUH
 						has_country_flag = great_war_loser
 					}
 				}
+				AUS = {
+					SER = { set_country_flag = protectorate }
+					set_autonomy = {
+						target = SER
+						autonomy_state = autonomy_tgwr_informal_protectorate
+					}
+				}
+				SER = {
+					AUH_puppet_SER = yes
+				}
 			}
-			remove_claim_by = AUH
-			add_core_of = SER
-			transfer_state_to = SER
-		}
-	}
-	if = {
-		limit = {
-			AUH = {
-				has_country_flag = great_war_winner
-				has_completed_focus = AUH_dominance_in_balkan
-				is_subject = no
-			}
-			ROM = {
-				exists = yes
-				has_country_flag = great_war_loser
-			}
-		}
-		AUH = {
 			if = {
 				limit = {
-					has_dlc = "Together for Victory"
+					BUL = {
+						exists = yes
+						OR = {
+							is_subject = no
+							OVERLORD = { has_country_flag = great_war_loser }
+						}
+						has_country_flag = great_war_loser
+						has_country_flag = army_should_be_restricted
+					}
+					TUR = {
+						NOT = { has_country_flag = great_war_winner }
+					}
 				}
-				set_autonomy = {
-					target = ROM
-					autonomy_state = autonomy_dominion
+				BUL = {
+					set_autonomy = {
+						target = BUL
+						autonomy_state = autonomy_dominion
+					}
 				}
 			}
-			else = {
-				puppet = ROM			
-			}
-		}
-	}
-	if = {
-		limit = {
-			AUH = {
-				has_country_flag = great_war_winner
-				has_completed_focus = AUH_dominance_in_balkan
-				is_subject = no
-			}
-			BUL = {
-				exists = yes
-				has_country_flag = great_war_loser
-			}
-		}
-		BUL = {
 			if = {
 				limit = {
-					has_dlc = "Together for Victory"
+					ROM = {
+						exists = yes
+						OR = {
+							is_subject = no
+							OVERLORD = { has_country_flag = great_war_loser }
+						}
+						has_country_flag = great_war_loser
+						has_country_flag = army_should_be_restricted
+					}
+					TUR = {
+						NOT = { has_country_flag = great_war_winner }
+					}
+					RUS = {
+						NOT = { has_country_flag = great_war_winner }
+					}
 				}
-				set_autonomy = {
-					target = BUL
-					autonomy_state = autonomy_dominion
+				AUS = {
+					set_autonomy = {
+						target = ROM
+						autonomy_state = autonomy_dominion
+					}
 				}
 			}
-			else = {
-				puppet = BUL			
-			}
-		}
-	}
-	if = {
-		limit = {
-			AUH = { has_country_flag = great_war_winner }
 		}
 		if = {
 			limit = {
 				GER = { has_country_flag = great_war_loser }
 				NOT = { RUS = { has_country_flag = great_war_winner } }
 			}
-			GER = {
-				every_owned_state ={
-					limit = {
-						OR = {
-							is_core_of = BAY
-							is_core_of = WUR
-						}
-					}
-					add_core_of = AUH
-					transfer_state_to = AUH
-				}
-				create_country_leader = {
-					name = "GER_frankfurt_parliament"
-					picture = "gfx/leaders/GER/GER_Frankfurt_Parliament.png"
-					ideology = oligarchism
-				}
-				set_party_name = { 
-					ideology = neutrality
-					long_name = GER_frankfurt_parliament
-					name = GER_frankfurt_parliament
-				}
-				set_capital = { state = 55 }
-				set_cosmetic_tag = GER_norddeutscher_bund
-			}
-			AUH = {
-				set_cosmetic_tag = GER_suddeutscher_bund
-				create_faction = danube_adriabund
-				if = {
-					limit = {
-						has_dlc = "Together for Victory"
-					}
-					set_autonomy = {
-						target = GER
-						autonomy_state = autonomy_dominion
-					}
-				}
-				else = {
-					puppet = GER
+			AUS = {
+				set_autonomy = {
+					target = GER
+					autonomy_state = autonomy_dominion
 				}
 				add_ai_strategy = {
 					type = protect
@@ -2421,9 +4012,9 @@ conference_effect = {
 		if = {
 			limit = {
 				RUS = { has_country_flag = great_war_loser }
-				GER = { is_subject_of = AUH }
+				GER = { is_subject_of = AUS }
 			}
-			AUH = {
+			AUS = {
 				if = {
 					limit = {
 						NOT = { country_exists = POL }
@@ -2434,9 +4025,9 @@ conference_effect = {
 								is_owned_by = RUS
 								is_owned_by = SOV
 								AND = {
-									is_owned_by = AUH
+									is_owned_by = AUS
 									NOT = {
-										is_core_of = AUH
+										is_core_of = AUS
 									}
 								}
 							}
@@ -2453,6 +4044,8 @@ conference_effect = {
 										is_core_of = UKR
 										is_core_of = BLR
 										state = 97
+										state = 1015
+										state = 1017
 									}
 								}
 							}
@@ -2463,11 +4056,11 @@ conference_effect = {
 					POL = {
 						set_country_flag = released_by_germany
 						drop_cosmetic_tag = yes
-						inherit_technology = AUH
+						inherit_technology = AUS
 						load_oob = "POL_divisions"
 						if = {
 							limit = {
-								AUH = {
+								AUS = {
 									has_government = neutrality
 								}
 							}
@@ -2510,6 +4103,8 @@ conference_effect = {
 										is_core_of = UKR
 										is_core_of = BLR
 										state = 97
+										state = 1015
+										state = 1017
 									}
 								}
 							}
@@ -2520,11 +4115,11 @@ conference_effect = {
 						limit = {
 							is_owned_by = POL
 							OR = {
-								is_core_of = AUH
-								is_claimed_by = AUH
+								is_core_of = AUS
+								is_claimed_by = AUS
 							}
 						}
-						transfer_state_to = AUH
+						transfer_state_to = AUS
 					}
 					puppet = POL
 					POL = {
@@ -2532,7 +4127,7 @@ conference_effect = {
 						drop_cosmetic_tag = yes
 						if = {
 							limit = {
-								AUH = {
+								AUS = {
 									has_government = neutrality
 								}
 							}
@@ -2553,7 +4148,7 @@ conference_effect = {
 				}
 				else_if = {
 					limit = {
-						POL = { is_subject_of = AUH }
+						POL = { is_subject_of = AUS }
 					}		
 					every_state = {
 						limit = {
@@ -2574,6 +4169,8 @@ conference_effect = {
 										is_core_of = UKR
 										is_core_of = BLR
 										state = 97
+										state = 1015
+										state = 1017
 									}
 								}
 							}
@@ -2584,8 +4181,8 @@ conference_effect = {
 						limit = {
 							is_core_of = POL
 						}
-						remove_core_of = RUS
-						remove_core_of = SOV
+						remove_russian_cores = yes
+						remove_russian_claims = yes
 					}
 				}
 			}
@@ -2607,7 +4204,7 @@ conference_effect = {
 				}
 			}
 			else = {
-				AUH = {
+				AUS = {
 					annex_country = {
 						target = BOS
 					}
@@ -2617,7 +4214,7 @@ conference_effect = {
 	}
 	if = {
 		limit = {
-			AUH = {
+			AUS = {
 				has_country_flag = great_war_loser
 			}
 		}
@@ -2629,50 +4226,121 @@ conference_effect = {
 			}
 			if = {
 				limit = {
-					AUH = {
+					AUS = {
 						any_owned_state = {
 							is_core_of = BAY
 						}
 					}
 				}
-				AUH = {
+				AUS = {
 					every_owned_state = {
 						limit = {
 							is_core_of = BAY
 						}
-						remove_core_of = AUH
+						remove_core_of = AUS
 						transfer_state_to = BAY
 					}
 				}
 			}
 			if = {
 				limit = {
-					AUH = {
+					AUS = {
 						any_owned_state = {
-							is_core_of = WUR
+							OR = {
+								state = 987
+								is_core_of = WUR
+							}
 						}
 					}
 				}
-				AUH = {
+				AUS = {
 					every_owned_state = {
 						limit = {
-							is_core_of = WUR
+							OR = {
+								state = 987
+								is_core_of = WUR
+							}
 						}
-						remove_core_of = AUH
+						remove_core_of = AUS
 						transfer_state_to = WUR
 					}
 				}
 			}
 			if = {
 				limit = {
-					AUH = {
-						has_cosmetic_tag = GER_suddeutscher_bund
+					AUS = {
+						any_owned_state = {
+							is_core_of = BAD
+						}
 					}
 				}
-				AUH = {
-					drop_cosmetic_tag = yes
+				AUS = {
+					every_owned_state = {
+						limit = {
+							is_core_of = BAD
+						}
+						remove_core_of = AUS
+						transfer_state_to = BAD
+					}
 				}
 			}
+		}
+	}
+	if = {
+		limit = {
+			any_country = {
+				has_country_flag = collapse_of_austria_hungary_YUG
+			}
+		}
+		every_state = {
+			limit = {
+				OR = {
+					is_owned_by = HUN
+					is_owned_by = AUS
+				}
+				OR = {
+					is_core_of = CRO
+					is_core_of = SLV
+					is_core_of = BOS
+					is_core_of = SER
+					state = 513
+					state = 208
+					state = 102
+				}
+			}
+			remove_core_of = HUN
+			remove_core_of = AUS
+			if = {
+				limit = {
+					owner = {
+						OR = {
+							has_country_flag = great_war_loser
+							has_country_flag = collapse_of_austria_hungary_HUN
+							AND = {
+								is_subject = yes
+								OVERLORD = {
+									OR = {
+										has_country_flag = great_war_loser
+										has_country_flag = collapse_of_austria_hungary_HUN
+									}
+								}
+							}
+						}
+					}
+				}
+				transfer_state_to = CRO
+			}
+		}
+	}
+	UKR = {
+		#somehow, CP is at war with Ukraine and it breaks interwar content. So we make sure Ukraine peace out with CP
+		every_enemy_country = {
+			limit = {
+				is_in_russian_civil_war = no
+				is_russian_core = no
+				has_country_flag = great_war_loser
+			}
+			white_peace = UKR
 		}
 	}
 	### RUSSIA ###
@@ -2696,7 +4364,7 @@ conference_effect = {
 					GER = {
 						has_country_flag = great_war_winner						
 					}
-					AUH = {
+					AUS = {
 						has_country_flag = great_war_winner
 					}
 				}
@@ -2757,22 +4425,22 @@ conference_effect = {
 			}
 			if = {
 				limit = {
-					AUH = {
+					AUS = {
 						has_country_flag = great_war_winner
 						is_subject = no
 					}
 				}
 				UKR = {
 					UKR_vasyl_i = {
-						set_character_name = UKR_vasyl_vyshyvanyi
+						set_character_name = UKR_vasyl_i
 						if = {
-							limit = { has_ideology = autocracy }
-							promote_character = autocracy
+							limit = { has_ideology = semi_constitutional_monarchy }
+							promote_character = semi_constitutional_monarchy
 						}
 						else = {
 							add_country_leader_role = {
 								country_leader = {
-									ideology = autocracy
+									ideology = semi_constitutional_monarchy
 									traits = { knyaz_vasyl }
 								}
 								promote_leader = yes
@@ -2786,18 +4454,10 @@ conference_effect = {
 						name = UKR_monarchy_party
 					}
 				}
-				AUH = {
-					if = {
-						limit = {
-							has_dlc = "Together for Victory"
-						}
-						set_autonomy = {
-							target = UKR
-							autonomous_state = autonomy_dominion
-						}
-						else = {
-							puppet = UKR
-						}
+				AUS = {
+					set_autonomy = {
+						target = UKR
+						autonomous_state = autonomy_dominion
 					}
 				}
 				else_if = {
@@ -2808,17 +4468,9 @@ conference_effect = {
 						}
 					}
 					GER = {
-						if = {
-							limit = {
-								has_dlc = "Together for Victory"
-							}
-							set_autonomy = {
-								target = UKR
-								autonomous_state = autonomy_dominion
-							}
-							else = {
-								puppet = UKR
-							}
+						set_autonomy = {
+							target = UKR
+							autonomous_state = autonomy_dominion
 						}
 					}
 				}
@@ -2881,7 +4533,7 @@ conference_effect = {
 			}
 			if = {
 				limit = {
-					AUH = {
+					AUS = {
 						OR = {
 							has_country_flag = great_war_loser
 							exists = no
@@ -2944,12 +4596,61 @@ conference_effect = {
 		}				
 	}
 	### BULGARIA ###
+	# Solun
+	if = {
+		limit = {
+			184 = {
+				OWNER = {
+					has_country_flag = great_war_loser
+				}
+				OR = {
+					is_core_of = BUL
+					is_claimed_by = BUL
+				}
+			}
+			BUL = {
+				owns_state = 757
+				NOT = { has_country_flag = great_war_loser }
+			}
+		}
+		BUL = { transfer_state = 184 }
+	}
+	if = {
+		limit = {
+			345 = {
+				OWNER = {
+					has_country_flag = great_war_loser
+				}
+			}
+		}
+		if = {
+			limit = {
+				BUL = { has_country_flag = great_war_winner }
+				OR = {
+					BUL = { has_completed_focus = BUL_claim_salonika }
+					has_global_flag = greek_defeated_in_ww1
+				}
+			}
+			BUL = { transfer_state = 345 }
+		}
+		else_if = {
+			limit = {
+				TUR = { has_country_flag = great_war_winner }
+				has_global_flag = greek_defeated_in_ww1
+			}
+			TUR = { transfer_state = 345 }
+		}
+		else = {
+			345 = { set_state_flag = dont_transfer }
+		}
+	}
 	if = {
 		limit = {
 			BUL = {
 				has_country_flag = great_war_winner
 			}
 		}
+		# Northern Dobruja
 		every_state = {
 			limit = {
 				is_core_of = BUL
@@ -2959,6 +4660,18 @@ conference_effect = {
 			BUL = {
 				transfer_state = PREV
 			}
+		}
+		#fix ottoman exclave wtf
+		every_state = {
+			limit = {
+				is_core_of = BUL
+				owner = { has_country_flag = great_war_loser }
+				all_neighbor_state = {
+					NOT = { is_owned_by = TUR }
+				}
+				NOT = { has_state_flag = dont_transfer }
+			}
+			transfer_state_to = BUL
 		}
 	}
 	### SERBIA ###
@@ -2978,15 +4691,13 @@ conference_effect = {
 						state = 803
 					}
 				}
-				ALB = {
-					transfer_state = PREV
-				}
+				transfer_state_to = ALB
 			}
 			if = {
 				limit = {
 					NOT = {
-						AUH = {
-							has_completed_focus = AUH_claims_on_montengro
+						AUS = {
+							has_completed_focus = AUH_anti_serb_policy
 						}
 					}
 				}
@@ -2998,33 +4709,67 @@ conference_effect = {
 							state = 848
 						}
 					}
-					MNT = {
-						transfer_state = PREV
-					}
+					transfer_state_to = MNT
 				}
 			}
 			every_owned_state = {
 				limit = {
 					is_core_of = CRO
 				}
-				CRO = {
-					set_politics = {
-						ruling_party = democratic
-						elections_allowed = yes
-					}
-					add_popularity = {
-						ideology = democratic
-						popularity = 0.5
-					}
-					transfer_state = PREV
-				}
+				transfer_state_to = CRO
 				SER = {
 					remove_state_core = PREV
 				}
 			}
-			drop_cosmetic_tag = yes
+			if = {
+				limit = { is_subject = no }
+				drop_cosmetic_tag = yes
+			}
 		}
 	}
+	else = {
+		if = {
+			limit = {
+				has_country_flag = collapse_of_austria_hungary_YUG
+			}
+			if = {
+				limit = {
+					is_subject = no
+					CRO = {
+						is_subject = no
+						has_war = no
+						NOT = {
+							has_country_flag = great_war_winner
+						}	
+					}	
+				}
+				SER = {
+					set_autonomy = {
+						target = CRO
+						autonomous_state = autonomy_supervised_state
+					}
+				}
+			}
+			if = {
+				limit = {
+					is_subject = no
+					BOS = {
+						is_subject = no
+						has_war = no
+						NOT = {
+							has_country_flag = great_war_winner
+						}
+					}	
+				}
+				SER = {
+					annex_country = {
+						target = BOS
+						transfer_troops = yes						
+					}	
+				}
+			}
+		}
+	}	
 	### GREECE ###
 	if = {
 		limit = {
@@ -3041,20 +4786,133 @@ conference_effect = {
 			if = {
 				limit = {
 					owns_state = 803
-					ALB = { owns_state = 871 }
-				}
-				ALB = { transfer_state = 803 }
-			}
-			if = {
-				limit = {
-					any_country = {
-						original_tag = TUR
-						NOT = { has_country_flag = thessaloniki_controlled }
-						has_country_flag = great_war_winner
-						owns_state = 345
+					any_other_country = {
+						owns_state = 871
 					}
 				}
-				transfer_state = 345
+				random_other_country = {
+					limit = {
+						owns_state = 871
+					}
+					transfer_state = 803
+				}
+			}
+		}
+	}
+	if = {
+		limit = {
+			any_country = {
+				original_tag = GRE
+				has_country_flag = great_war_winner
+			}
+		}
+		if = {
+			limit = {
+				ITA = {
+					owns_state = 803
+				}
+			}
+			every_country = {
+				limit = {
+					original_tag = GRE
+					has_country_flag = great_war_winner
+				}
+				transfer_state = 803
+			}
+		}
+	}
+	if = {
+		limit = {
+			GRE = {
+				NOT = {
+					has_country_flag = great_war_loser
+					has_country_flag = great_war_winner
+				}
+			}
+		}
+		if = {
+			limit = {
+				GRE = {
+					any_other_country = {
+						has_country_flag = GRE_national_defense_flag
+						has_country_flag = great_war_loser
+						has_global_flag = great_war_ends
+						has_global_flag = GRE_thessaloniki_state_formed
+					}
+				}
+			}
+			GRE = {
+				THE = {
+					every_state = {
+						limit = {
+							NOT = { is_owned_by = PREV }
+							is_controlled_by = PREV
+						}
+						set_state_controller_to = GRE
+					}
+					every_owned_state = {
+						limit = {
+							NOT = { 
+								is_controlled_by = PREV
+							}
+						}
+						set_state_owner_to = GRE
+					}
+					GRE_pavlos_kountouriotis = {
+						remove_country_leader_role = {
+							ideology = authoritarian_democracy
+						}
+					}
+					GRE_panagiotis_danglis = {
+						remove_country_leader_role = {
+							ideology = stratocracy
+						}
+					}
+					every_character = {
+						set_nationality = GRE
+					}
+					transfer_navy = {
+						target = GRE
+					}
+					transfer_units_fraction = {
+						target = GRE
+						size = 1
+						keep_unit_leaders_trigger = {
+							always = no
+						}
+					}
+					every_state = {
+						limit = {
+							OR = {
+								is_core_of = PREV
+								is_claimed_by = PREV
+							}
+						}
+						remove_core_of = PREV
+						remove_claim_by = PREV
+					}		
+				}
+				annex_country = {
+					target = THE
+					transfer_troops = yes
+				}
+				if = {
+					limit = {
+						THE = { is_ai = no }
+					}
+					change_tag_from = THE
+				}
+			}
+			remove_ideas = GRE_idea_national_schism
+			remove_ideas = GRE_idea_dual_power
+			complete_national_focus = GRE_towards_a_new_decade2
+			if = {
+				limit = { has_government = neutrality }
+				complete_national_focus = GRE_eradicate_opposition
+			}
+			else_if = {
+				limit = { has_government = fascism }
+				complete_national_focus = GRE_the_great_generals_regime
 			}
 		}
 	}
@@ -3079,7 +4937,7 @@ conference_effect = {
 	}
 	if = {
 		limit = {
-			has_country_flag = great_war_winner
+			ENG = { has_country_flag = great_war_winner }
 		}
 		if = {
 			limit = {
@@ -3119,9 +4977,7 @@ conference_effect = {
 					}
 					is_owned_by = TUR
 				}
-				ENG = {
-					transfer_state = PREV
-				}		
+				transfer_state_to = ENG	
 			}
 		}	
 	}
@@ -3129,54 +4985,34 @@ conference_effect = {
 	if = {
 		limit = {
 			ALB = {
-				has_country_flag = great_war_loser
+				OR = {
+					has_country_flag = great_war_loser
+					has_country_flag = AUH_occupation_of_ALB
+				}			
 			}
-			OR = {
-				AUH = {
-					has_country_flag = great_war_winner
-					is_subject = no
-					NOT = {
-						has_government = communism
-					}
-				}
-				GER = {
-					has_country_flag = great_war_winner
-					is_subject = no
-					NOT = {
-						has_government = communism
-					}
-				}
-			}		
 		}
 		if = {
 			limit = {
-				AUH = {
-					has_country_flag = great_war_winner
-					is_subject = no
-					NOT = {
-						has_government = communism
+				OR = {
+					AUS = {
+						has_country_flag = great_war_winner
+						is_subject = no
+						NOT = {
+							has_government = communism
+						}
 					}
-				}				
-			}
-			AUH = {
-				if = {
-					limit = {
-						has_subject_autonomy_feature = yes
-					}
-					set_autonomy = {
-						target = ALB
-						autonomous_state = autonomy_tgwr_informal_protectorate
-					}
-					ALB = { set_country_flag = protectorate } 
-					else = {
-						puppet = ALB
-						ALB = { add_ideas = protectorate } 
+					GER = {
+						has_country_flag = great_war_winner
+						is_subject = no
+						NOT = {
+							has_government = communism
+						}
 					}
 				}
 			}
-			else_if = {
+			if = {
 				limit = {
-					GER = {
+					AUS = {
 						has_country_flag = great_war_winner
 						is_subject = no
 						NOT = {
@@ -3184,76 +5020,125 @@ conference_effect = {
 						}
 					}				
 				}
-				GER = {
-					if = {
-						limit = {
-							has_subject_autonomy_feature = yes
-						}
+				AUS = {
+					ALB = { set_country_flag = protectorate }
+					set_autonomy = {
+						target = ALB
+						autonomous_state = autonomy_tgwr_informal_protectorate
+					}			
+				}
+				else_if = {
+					limit = {
+						GER = {
+							has_country_flag = great_war_winner
+							is_subject = no
+							NOT = {
+								has_government = communism
+							}
+						}				
+					}
+					GER = {
+						ALB = { set_country_flag = protectorate }
 						set_autonomy = {
 							target = ALB
 							autonomous_state = autonomy_tgwr_informal_protectorate
 						}
-						ALB = { set_country_flag = protectorate } 
-						else = {
-							puppet = ALB
-							ALB = { add_ideas = protectorate } 
+					}
+				}
+			}
+			ALB = {
+				set_politics = {
+					ruling_party = neutrality
+					long_name = ALB_neutrality_prince_party
+					name = ALB_neutrality_prince_party
+					elections_allowed = no
+				}
+				set_popularities = {
+					democratic = 40
+					neutrality = 60
+				}
+				if = {
+					limit = {
+						ALB_vilhelm_i = { can_be_country_leader = yes }
+					}
+					promote_character = {
+						character = ALB_vilhelm_i
+						ideology = semi_constitutional_monarchy
+					}
+					else = {
+						add_country_leader_role = {
+							character = ALB_vilhelm_i
+							promote_leader = yes
+							country_leader = {
+								ideology = semi_constitutional_monarchy
+								traits = { foreign_leader german_agent }
+							}
 						}
 					}
 				}
+				add_country_leader_role = {
+					character = ALB_fan_noli
+					promote_leader = yes
+					country_leader = {
+						ideology = social_liberalism
+						traits = { priestly_prime_minister }
+					}
+				}
+				set_party_name = {
+					ideology = democratic 
+					long_name = ALB_peoples_party 
+					name = ALB_peoples_party 
+				}
+				retire_character = ALB_ismail_qemali
+				retire_character = ALB_essad_pasha_toptani
+				retire_character = ALB_prenk_bib_doda
+				set_party_name = {
+					ideology = fascism 
+					long_name = fascism 
+					name = fascism 
+				}
+				set_cosmetic_tag = ALB_principality
 			}
 		}
-		ALB = {
-			set_politics = {
-				ruling_party = neutrality
-				long_name = ALB_neutrality_prince_party
-				name = ALB_neutrality_prince_party
-				elections_allowed = no
-			}
-			set_popularities = {
-				democratic = 40
-				neutrality = 60
-			}
-			if = {
-				limit = {
-					ALB_vilhelm_i = { can_be_country_leader = yes }
+		else_if = {
+			limit = {
+				ITA = {
+					owns_state = 871
+					has_country_flag = great_war_winner
 				}
-				promote_character = {
-					character = ALB_vilhelm_i
-					ideology = autocracy
-				}
-				else = {
-					add_country_leader_role = {
-						character = ALB_vilhelm_i
-						promote_leader = yes
-						country_leader = {
-							ideology = autocracy
-							traits = { foreign_leader german_agent }
+			}
+			ALB = {
+				if = {
+					limit = {
+						owns_state = 870
+					}
+					random_other_country = {
+						limit = {
+							owns_state = 105
 						}
+						transfer_state = 870
+					}
+				}
+				if = {
+					limit = {
+						OR = {
+							owns_state = 803
+							has_subject = EPR
+						}
+					}
+					random_other_country = {
+						limit = {
+							owns_state = 758
+						}
+						transfer_state = 803
 					}
 				}
 			}
-			add_country_leader_role = {
-				character = ALB_fan_noli
-				promote_leader = yes
-				country_leader = {
-					ideology = social_liberalism
-					traits = { priestly_prime_minister }
+			ITA = {
+				annex_country = {
+					target = ALB
 				}
 			}
-			set_party_name = {
-				ideology = democratic 
-				long_name = ALB_peoples_party 
-				name = ALB_peoples_party 
-			}
-			retire_character = ALB_ismail_qemali
-			retire_character = ALB_essad_pasha_toptani
-			retire_character = ALB_prenk_bib_doda
-			set_party_name = {
-				ideology = fascism 
-				long_name = fascism 
-				name = fascism 
-			}
-			set_cosmetic_tag = ALB_principality
 		}
 	}
 	### QUEBEC ###
@@ -3270,20 +5155,6 @@ conference_effect = {
 			}
 			annex_country = {
 				target = QBC
-			}
-		}
-		if = {
-			limit = {
-				country_exists = QBC
-			}
-			every_other_country = {
-				limit = {
-					owns_state = 331
-					NOT = { has_country_flag = great_war_loser }
-				}
-				annex_country = {
-					target = QBC
-				}
 			}
 		}
 	}
@@ -3310,6 +5181,7 @@ conference_effect = {
 		limit = {
 			MOR = {
 				NOT = { has_country_flag = great_war_winner }
+				is_subject_of = FRA
 			}
 		}
 		if = {
@@ -3319,31 +5191,58 @@ conference_effect = {
 					has_completed_focus = GER_moroccan_crisis
 				}
 			}
-			FRA = {
-				every_owned_state = {
-					limit = {
-						is_core_of = MOR
-					}
-					transfer_state_to = GER
-				}
+			MOR = {
+				add_state_core = 461
+				drop_cosmetic_tag = yes
 			}
 			GER = {
-				annex_country = {
+				MOR = { set_country_flag = protectorate }
+				set_autonomy = {
 					target = MOR
+					autonomous_state = autonomy_tgwr_protectorate
 				}
 			}
-		}
+			MOR = {
+				set_politics = {
+					ruling_party = neutrality
+					elections_allowed = no
+				}
+				set_popularities = {
+					neutrality = 100
+				}
+			}
+			else_if = {
+				limit = {
+					FRA = { has_country_flag = great_war_loser }
+					SPR = { has_country_flag = great_war_winner }
+				}
+				every_state = {
+					limit = {
+						owner = {
+							OR = {
+								tag = FRA
+								is_subject_of = FRA
+							}
+						}
+						is_core_of = MOR
+					}
+					transfer_state_to = SPR
+				}
+			}
+		}	
 	}
 	### SWEDEN ###
 	if = {
 		limit = {
 			SWE = {
 				has_country_flag = great_war_winner
+				is_subject = no
 			}
 		}
 		if = {
 			limit = {
 				NOR = { has_country_flag = great_war_loser }
+				is_subject = no
 			}
 			SWE = {
 				NOR = {
@@ -3357,17 +5256,9 @@ conference_effect = {
 						transfer_state_to = PREV.PREV
 					}
 					PREV = {
-						if = {
-							limit = {
-								has_dlc = "Together for Victory"
-							}
-							set_autonomy = {
-								target = PREV
-								autonomous_state = autonomy_dominion
-							}
-							else = {
-								puppet = PREV
-							}
+						set_autonomy = {
+							target = PREV
+							autonomous_state = autonomy_dominion
 						}
 					}
 				}
@@ -3376,12 +5267,16 @@ conference_effect = {
 	}
 	if = {
 		limit = {
-			SWE = { has_country_flag = great_war_loser }
+			SWE = { 
+				has_country_flag = great_war_loser 
+				is_subject = no
+			}
 		}
 		if = {
 			limit = {
 				NOR = {
 					has_country_flag = great_war_winner
+					is_subject = no
 				}
 			}
 			NOR = {
@@ -3396,48 +5291,10 @@ conference_effect = {
 						transfer_state_to = PREV.PREV
 					}
 					PREV = {
-						if = {
-							limit = {
-								has_dlc = "Together for Victory"
-							}
-							set_autonomy = {
-								target = PREV
-								autonomous_state = autonomy_dominion
-							}
-							else = {
-								puppet = PREV
-							}
+						set_autonomy = {
+							target = PREV
+							autonomous_state = autonomy_dominion
 						}
-					}
-				}
-			}
-		}
-		else_if = {
-			limit = {
-				RUS = {
-					has_country_flag = great_war_winner
-				}
-			}
-			if = {
-				limit = {
-					RUS = {
-						owns_state = 111
-					}
-					FIN = {
-						exists = no
-					}
-				}
-				SWE = {
-					every_owned_state = {
-						limit = {
-							OR = {
-								is_core_of = RUS
-								is_claimed_by = RUS
-								is_core_of = FIN
-								is_claimed_by = FIN
-							}
-						}
-						transfer_state_to = RUS
 					}
 				}
 			}
@@ -3477,18 +5334,18 @@ conference_effect = {
 	# BAHRAIN
 	if = {
 		limit = {
-			BHR = { has_country_flag = great_war_loser }
-		}
-		if = {
-			limit = {
-				BHR = { is_subject = no }
-				QAT = { has_country_flag = great_war_loser }
+			BHR = { 
+				has_country_flag = great_war_winner 
+				is_subject = no
 			}
-			BHR = {
-				add_state_core = 765
-				annex_country = {
-					target = QAT
-				}
+			QAT = { 
+				has_country_flag = great_war_loser 
+			}
+		}
+		BHR = {
+			add_state_core = 765
+			annex_country = {
+				target = QAT
 			}
 		}
 	}
@@ -3552,6 +5409,341 @@ conference_effect = {
 			}
 		}
 	}
+	#Italy 
+	if = {
+		limit = {
+			ITA = {
+				has_country_flag = great_war_loser
+			}
+		}
+			##give libya to France or British
+		##scenario 1 : France and Britain share the place
+		if = {
+			limit = {
+				ITA = {
+					owns_state = 448
+				}
+				FRA = {
+					has_country_flag = great_war_winner
+				}
+				ENG = {
+					has_country_flag = great_war_winner
+				}
+			}
+			FRA = {
+				transfer_state = 448
+				transfer_state = 661
+				transfer_state = 812
+				transfer_state = 273
+				transfer_state = 1060
+			}
+			ENG = {
+				transfer_state = 450
+				transfer_state = 1061
+			}
+		}
+		##scenario 2 : France won alone
+		if = {
+			limit = {
+				ITA = {
+					owns_state = 448
+				}
+				FRA = {
+					has_country_flag = great_war_winner
+				}
+				NOT = {
+					ENG = {
+						has_country_flag = great_war_winner
+					}
+				}
+			}
+			FRA = {
+				transfer_state = 448
+				transfer_state = 661
+				transfer_state = 812
+				transfer_state = 273
+				transfer_state = 1060
+			}
+			LBA = {
+				transfer_state = 450
+				transfer_state = 1061
+			}
+		}
+		##scenario 2 : Great Britain won alone
+		if = {
+			limit = {
+				ITA = {
+					owns_state = 448
+				}
+				ENG = {
+					has_country_flag = great_war_winner
+				}
+				NOT = {
+					FRA = {
+						has_country_flag = great_war_winner
+					}
+				}
+			}
+			LBA = {
+				transfer_state = 448
+				transfer_state = 661
+				transfer_state = 812
+				transfer_state = 273
+				transfer_state = 1060
+			}
+			ENG = {
+				transfer_state = 450
+				transfer_state = 1061
+			}
+		}
+	}
+	##Syria givaway
+	# if = {
+	# 	limit = {
+	# 		FRA = { has_country_flag = great_war_winner }
+	# 		OR = {
+	# 			owns_state = 553
+	# 			owns_state = 852
+	# 			owns_state = 859
+	# 		}
+	# 	}
+	# 	every_state = {
+	# 		limit = {
+	# 			is_owned_by = FRA
+	# 			NOT = {
+	# 				is_on_continent = europe
+	# 				is_core_of = FRA
+	# 			}
+	# 			OR = {
+	# 				is_core_of = SYR
+	# 				state = 829
+	# 			}
+	# 			NOT = {
+	# 				state = 553
+	# 				state = 852
+	# 				state = 859
+	# 				state = 857
+	# 				state = 344
+
+	# 				state = 680
+	# 				state = 884
+	# 				state = 829
+	# 			}
+	# 		}
+	# 		transfer_state_to = SYR
+	# 	}
+	# }
+	# Luxembourg
+	if = {
+		limit = {
+			LUX = { has_country_flag = great_war_winner }
+		}
+		if = {
+			limit = {
+				any_country = {
+					owns_state = 906
+					has_country_flag = great_war_loser
+				}
+			}
+			LUX = {
+				add_state_core = 906
+				transfer_state = 906
+			}
+		}
+	}
+	# Kingdom of Arabia
+	if = {
+		limit = {
+			OR = {
+				has_global_flag = sykes_picot_mcmahon
+				has_global_flag = sykes_picot_lawrence
+			}
+			HJZ = {
+				has_country_flag = great_war_winner
+				# has_cosmetic_tag = HJZ_arabia
+			}
+		}
+		HJZ = {
+			set_cosmetic_tag = HJZ_arabia
+			give_military_access = ENG
+		}
+		every_state = {
+			limit = {
+				OR = {
+					is_core_of = SYR
+					is_core_of = IRQ
+					is_core_of = JBS
+					is_core_of = SAU
+					is_core_of = ASR
+					is_core_of = YEM
+					is_core_of = RWL
+					is_core_of = OMA
+					is_core_of = QAT
+					is_core_of = BHR
+					is_core_of = KUW
+				}
+			}
+			add_core_of = HJZ
+		}
+		if = {
+			limit = {
+				has_global_flag = sykes_picot_mcmahon
+			}
+			every_state = {
+				limit = {
+					is_core_of = HJZ
+				}
+				if = {
+					limit = {
+						owner = {
+							has_country_flag = great_war_loser
+						}
+					}
+					transfer_state_to = HJZ
+				}
+			}
+		}
+		else = {
+			every_state = {
+				limit = {
+					OR = {
+						is_core_of = SYR
+						is_core_of = IRQ
+						is_core_of = JBS
+					}
+				}
+				if = {
+					limit = {
+						owner = {
+							has_country_flag = great_war_loser
+						}
+						NOT = {
+							state = 859
+							state = 676
+							state = 879
+							state = 883
+							state = 853
+						}
+					}
+					transfer_state_to = HJZ
+				}
+			}
+		}
+		every_state = {
+			limit = {
+				is_owned_by = HJZ
+			}
+			remove_claim_by = ENG
+		}
+	}
+	# Kingdom of Syria
+	if = {
+		limit = {
+			TUR = {
+				has_country_flag = great_war_winner
+				OR = {
+					owns_state = 553
+					owns_state = 852
+				}
+			}
+			ENG = {
+				NOT = { has_completed_focus = ENG_Sykes_Picot }
+			}
+			SYR = {
+				exists = yes
+				NOT = {
+					has_country_flag = great_war_winner
+					has_country_flag = great_war_loser
+				}
+			}
+		}
+		every_state = {
+			limit = {
+				owner = { has_country_flag = great_war_loser }
+				OR = {
+					is_core_of = SYR
+					is_core_of = IRQ
+				}
+				# NOT = {
+				# 	state = 859
+				# }
+			}
+			transfer_state_to = SYR
+		}
+	}
+	# indochina if at war with rebels
+	if = {
+		limit = {
+			IND = {
+				has_country_flag = great_war_winner
+			}
+		}
+		IND = {
+			annex_country = {
+				target = VIN
+				transfer_troops = no
+			}
+		}
+	}
+	if = {
+		limit = {
+			VIN = {
+				has_country_flag = great_war_winner
+			}
+			NOT = {
+				GER = {
+					has_country_flag = great_war_winner
+				}
+			}
+		}
+		VIN = {
+			annex_country = {
+				target = IND
+				transfer_troops = no
+			}
+		}
+	}
+	#germany will push long aside pretty easy so lets just wide him
+	# if = {
+	# 	limit = {
+	# 		IND = {
+	# 			has_country_flag = great_war_loser
+	# 		}
+	# 		GER = {
+	# 			has_country_flag = great_war_winner
+	# 		}
+	# 		VIN = {
+	# 			is_ai = yes
+	# 			exists = yes
+	# 		}
+	# 	}
+	# 	IND = {
+	# 		get_current_government_type = yes
+	# 	}
+	# 	GER = {
+	# 		set_autonomy = {
+	# 			target = IND
+	# 			autonomous_state = autonomy_colony
+	# 		}
+	# 	}
+	# 	IND = {
+	# 		restore_previous_government_type = yes
+	# 		set_cosmetic_tag = IND_GER
+	# 		annex_country = {
+	# 			target = VIN
+	# 			transfer_troops = no
+	# 		}
+	# 		remove_ideas = VIN_union_of_protectorates
+	# 		remove_ideas = VIN_union_of_protectorates_worst
+	# 		remove_ideas = VIN_union_of_protectorates2
+	# 		remove_ideas = VIN_colonial_army
+	# 		remove_ideas = VIN_colonial_army2
+	# 		remove_ideas = VIN_colonial_army_bis
+	# 		retire_character = VIN_albert_pierre_sarraut
+	# 		retire_character = VIN_albert_jean_george_marie_louis_picquie
+	# 	}
+	# }
+	
 	every_country = {
 		limit = {
 			has_country_flag = great_war_loser
@@ -3572,12 +5764,12 @@ conference_effect = {
 			}
 		}
 	}
-	every_possible_country = {
-		limit = {
-			NOT = { has_idea = idea_armistice }
-		}
-		set_rule = {
-			can_send_volunteers = yes
-		}
-	}
+	# every_possible_country = {
+	# 	limit = {
+	# 		NOT = { has_idea = idea_armistice }
+	# 	}
+	# 	set_rule = {
+	# 		can_send_volunteers = yes
+	# 	}
+	# }
 }

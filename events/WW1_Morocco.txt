@@ -7,18 +7,33 @@ country_event = {
 	id = ww1_morocco.1
 	title = ww1_morocco.1.t
 	desc = ww1_morocco.1.d
-	picture = GFX_report_event_usa_destroyers
+	picture = GFX_morocco_tribes
 	is_triggered_only = yes
 	option = {
 		name = ww1_morocco.1.a
+		custom_effect_tooltip = historical_tt
 		set_global_flag = agadir_crisis
-		FRA = { country_event = { id = ww1_morocco.2 days = 2 } }
-		custom_effect_tooltip = GAME_OVER_TT
-		ai_chance = { factor = 100 }
+		effect_tooltip = {
+			FRA = {
+				puppet = ROOT
+			}
+		}
+		hidden_effect = {
+			FRA = { country_event = { id = ww1_morocco.2 days = 2 } }
+		}
+		ai_chance = { 
+			base = 100 
+			modifier = {
+				has_game_rule = {
+					rule = moroccan_revolution
+					option = MOROCCAN_REVOLUTION_FIRED
+				}
+				factor = 0
+			}
+		}
 	}
 	option = {
 		name = ww1_morocco.1.b
-		set_global_flag = agadir_crisis
 		set_politics = {
 			ruling_party = democratic
 			elections_allowed = no
@@ -31,33 +46,207 @@ country_event = {
 				communism = 2
 			}
 		}
+		division_template = {
+			name = "Partisans"
+			is_locked = yes
+			regiments = {
+				irregular_infantry = {
+					x = 0
+					y = 0
+				}
+				irregular_infantry = {
+					x = 0
+					y = 1
+				}
+				irregular_infantry = {
+					x = 0
+					y = 2
+				}
+				irregular_infantry = {
+					x = 1
+					y = 0
+				}
+				irregular_infantry = {
+					x = 1
+					y = 1
+				}
+				irregular_infantry = {
+					x = 1
+					y = 2
+				}
+			}
+		}
+		diplomatic_relation = {
+			country = FRA
+			relation = military_access
+			active = no
+		}
+		FRA = {
+			diplomatic_relation = {
+				country = MOR
+				relation = military_access
+				active = no
+			}
+		}
+		set_global_flag = MOR_rebellion_against_FRA
+		461 = {
+			create_unit = {
+				division = "name = \"Partisans\" division_template = \"Partisans\" start_experience_factor = 0.25"
+				owner = ROOT
+				count = 10
+			}
+		}
+		add_ideas = MOR_guerilla_warfare
 		remove_ideas = FRA_idea_moroccan_intervention
 		news_event = ww1_morocco.5
 		FRA = { country_event = { id = ww1_morocco.3 days = 2 } }
-		ai_chance = { factor = 0 }
+		ai_chance = { 
+			base = 0
+			modifier = {
+				has_game_rule = {
+					rule = moroccan_revolution
+					option = MOROCCAN_REVOLUTION_FIRED
+				}
+				add = 500
+			}
+		}
 	}
 }
+
+# French protectorate in Morocco
 country_event = {
 	title = ww1_morocco.2.t
 	desc = ww1_morocco.2.d
 	id = ww1_morocco.2
 	picture = GFX_report_event_usa_destroyers
-
+	immediate = {
+		hidden_effect = {
+			set_global_flag = agadir_crisis
+			set_global_flag = {
+				flag = GER_reaction_time
+				days = 40
+				value = 1
+			}
+		}
+	}
 	is_triggered_only = yes
 	option = {
 		name = ww1_morocco.2.a
-		annex_country = {
-			target = MOR
-			transfer_troops = no
+		ai_chance = {
+			factor = 100
 		}
+		custom_effect_tooltip = historical_tt
+		news_event = {
+			id = ww1_morocco.23
+			days = 3
+		}
+		MOR = { 
+			set_country_flag = protectorate 
+			get_current_government_type = yes
+			ROOT = {
+				set_autonomy = {
+					target = PREV
+					autonomy_state = autonomy_tgwr_protectorate
+					freedom_level = 0.6
+					end_civil_wars = no
+					end_wars = no
+				}
+			}
+			restore_previous_government_type = yes		
+		}
+		if = {
+			limit = {
+				country_exists = SPR
+			}
+			effect_tooltip = {
+				SPR = { transfer_state = 290 transfer_state = 807 }
+			}
+			hidden_effect = {
+				SPR = {
+					country_event = {
+						id = ww1_morocco.20
+						days = 2
+					}
+				}
+			}
+		}
+		
 		hidden_effect = {
-			SPR = { transfer_state = 290 transfer_state = 807}
+			every_owned_state = {
+				limit = { is_core_of = MOR }
+				transfer_state_to = MOR
+			}
+			MOR = {
+				set_cosmetic_tag = MOR_FRA
+				MOR_mulay_abdelhafid = {
+					remove_country_leader_role = {
+						ideology = absolute_monarchy
+					}
+				}
+				promote_character = MOR_yusef_bin_hassan
+				add_ideas = disarmed_nation
+			}
+			create_dynamic_country = {
+				original_tag = MOR
+				reserve_dynamic_country = yes
+				set_country_flag = MOR_anti_french
+				every_state = {
+					limit = {
+						is_core_of = MOR
+					}
+					if = {
+						limit = { has_resistance = no }
+						start_resistance = yes
+					}
+					add_core_of = PREV
+				}
+				set_popularities = {
+					neutrality = 100
+				}
+				set_politics = {
+					ruling_party = neutrality
+					elections_allowed = no
+				}
+			}
 		}
-		news_event = ww1_morocco.4
-		activate_mission_tooltip = GER_misison_agadir_crisis
-		ai_chance = { factor = 100 }
+		
+		461 = {
+			remove_core_of = MOR
+			add_core_of = RMO
+			if = {
+				limit = { has_resistance = no }
+				start_resistance = yes
+			}
+			add_dynamic_modifier = {
+				modifier = FRA_anti_french_resistance
+			}
+			transfer_state_to = RMO	#to avoid no flag bug
+			transfer_state_to = MOR
+		}
+		MOR = {
+			set_capital = {
+				state = 462
+			}
+		}
+	}
+	option = {
+		name = ww1_morocco.2.b
+		add_war_support = -0.05
+		ai_chance = {
+			factor = 0
+		}
+		MOR = {
+			add_opinion_modifier = {
+				target = FRA
+				modifier = large_increase
+			}
+			promote_character = MOR_yusef_bin_hassan
+		}
+		
 	}
 }
+
+# Moroccan Rebellion
 country_event = {
 	title = ww1_morocco.3.t
 	desc = ww1_morocco.3.d
@@ -67,19 +256,38 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_morocco.3.a
-		create_wargoal = {
-			type = annex_everything
-			target = MOR
+		every_state = {
+			limit = {
+				is_core_of = MOR
+				NOT = {
+					is_owned_by = ROOT
+					state = 699
+					state = 743
+					state = 783
+					state = 807
+				}
+			}
 		}
-		add_state_claim = 290
-		add_state_claim = 461
-		add_state_claim = 462
-		add_state_claim = 807
-		add_state_claim = 887
+		create_wargoal = {
+			target = MOR
+			type = annex_everything	
+		}
+		set_global_flag = FRA_MOR_war
 		add_named_threat = { threat = 3 name = "ww1_morocco.3.t" }
-		ai_chance = { factor = 100 }
+		ai_chance = {
+			factor = 1000
+		}
+	}
+	option = {
+		name = ww1_morocco.3.b
+		add_war_support = -0.05
+		ai_chance = {
+			factor = 0
+		}
 	}
 }
+
+# France occupied Fez
 news_event = {
 	id = ww1_morocco.4
 	title = ww1_morocco.4.t
@@ -91,9 +299,10 @@ news_event = {
 
 	option = {
 		name = ww1_morocco.4.a
-		ai_chance = { factor = 100 }
 	}
 }
+
+# Moroccan Rebellion
 news_event = {
 	id = ww1_morocco.5
 	title = ww1_morocco.5.t
@@ -105,49 +314,135 @@ news_event = {
 
 	option = {
 		name = ww1_morocco.5.a
-		ai_chance = { factor = 100 }
 	}
 }
-# ГЕРМАНИЯ ПОСЫЛАЕТ КОРАБЛИ
-##############
+
+# German fleet in Agadir
 country_event = {
 	title = ww1_morocco.6.t
 	desc = ww1_morocco.6.d
 	id = ww1_morocco.6
 	picture = GFX_report_event_usa_destroyers
 
+	immediate = {
+		hidden_effect = {
+			start_agadir_crisis = yes
+		}
+	}
+
 	is_triggered_only = yes
 	option = {
 		name = ww1_morocco.6.a
-		news_event = ww1_morocco.7
 		ai_chance = { factor = 100 }
 	}
 }
-news_event = {
-	id = ww1_morocco.7
-	title = ww1_morocco.7.t
-	desc = ww1_morocco.7.d
-	picture = EVENT_hoi4tgw_agadir_crisis
 
-	major = yes
-	is_triggered_only = yes
 
-	option = {
-		name = ww1_morocco.7.a
-		ai_chance = { factor = 100 }
-	}
-}
 # Agadir Crisis - Germany Demands Compensation
 #################################################
 country_event = {
 	title = ww1_morocco.8.t
-	desc = ww1_morocco.8.d
+	
 	id = ww1_morocco.8
 	picture = GFX_report_event_usa_destroyers
+	desc = {
+		text = ww1_morocco.8.d.forcongo
+		trigger = {
+			has_global_flag = agadir_german_demand_congo
+		}
+	}
+	desc = {
+		text = ww1_morocco.8.d.forsouthmorocco
+		trigger = {
+			has_global_flag = agadir_german_southern_morocco
+		}
+	}
+	desc = {
+		text = ww1_morocco.8.d.forfreemorocco
+		trigger = {
+			has_global_flag = agadir_german_free_morocco
+		}
+	}
 
 	is_triggered_only = yes
+	###############
+	# GERMANY WANT CONGO
+	#################################
 	option = {
 		name = ww1_morocco.8.a
+		add_political_power = -75
+		transfer_state = 769
+		hidden_effect = {
+			set_crisis_progressbar_75 = yes
+		}
+		GER = {
+			transfer_state = 815 
+			transfer_state = 814
+			transfer_state = 752
+			transfer_state = 772
+			country_event = {
+				id = ww1_morocco.10
+				days = 2
+			}
+		}
+		news_event = ww1_morocco.11
+		if = {
+			limit = { CMR = { exists = yes } }
+			CMR = {
+				transfer_state = 815 
+				transfer_state = 814
+				transfer_state = 752
+				transfer_state = 772
+			}
+		}
+		hidden_effect = {
+			add_state_claim = 815
+			add_state_claim = 814
+			add_state_claim = 772
+			add_state_claim = 752
+			CMR = {
+				add_state_core = 814
+		   		add_state_core = 815
+			}
+			CAR = {
+				add_state_core = 769
+			}
+		}
+		ai_chance = {
+			factor = 100 
+			modifier = {
+				GER = {
+					has_navy_size = {
+						size < 70
+					}
+				}
+				factor = 0.5
+			}
+			modifier = {
+				has_war_with = GER
+				factor = 0
+			}
+			modifier = {
+				factor = 0
+				has_game_rule = {
+					rule = ultimatum_on_agadir
+					option = WAR_ON_AGADIR
+				}
+			}
+		}
+		trigger = {
+			has_global_flag = agadir_german_demand_congo
+			NOT = {
+				has_global_flag = agadir_british_support_france
+			}
+		}
+	}
+	option = {
+		name = ww1_morocco.8.b
+		trigger = {
+			has_global_flag = agadir_german_demand_congo
+			has_global_flag = agadir_british_support_france
+		}
 		add_war_support = 0.05
 		transfer_state = 769
 		GER = {
@@ -191,23 +486,152 @@ country_event = {
 				has_war_with = GER
 				factor = 0
 			}
+			modifier = {
+				factor = 0
+				has_game_rule = {
+					rule = ultimatum_on_agadir
+					option = WAR_ON_AGADIR
+				}
+			}
 		}
 	}
+	###############
+	# GERMANY WANT SOUTH MOROCCO
+	#################################
 	option = {
-		name = ww1_morocco.8.b
-		GER = { country_event = { id = ww1_morocco.12 days = 2 } }
+		name = ww1_morocco.8.e
+		trigger = {
+			has_global_flag = agadir_german_southern_morocco
+		}
+		hidden_effect = {
+			set_crisis_progressbar_50 = yes
+		}
+		GER = {
+			add_stability = 0.05
+			transfer_state = 807
+			transfer_state = 783
+		}
+		add_political_power = -150
+		news_event = ww1_morocco.11
+		ai_chance = {
+			factor = 100 
+			modifier = {
+				GER = {
+					has_navy_size = {
+						size < 70
+					}
+				}
+				factor = 0.5
+			}
+			modifier = {
+				has_war_with = GER
+				factor = 0
+			}
+			modifier = {
+				factor = 0
+				has_game_rule = {
+					rule = ultimatum_on_agadir
+					option = WAR_ON_AGADIR
+				}
+			}
+		}
+	}
+	###############
+	# GERMANY WANT FREE MOROCCO
+	#################################
+	option = {
+		name = ww1_morocco.8.f
+		trigger = {
+			has_global_flag = agadir_german_free_morocco
+		}
+		hidden_effect = {
+			set_crisis_progressbar_25 = yes
+		}
+		set_autonomy = {
+			target = MOR
+			autonomous_state = autonomy_free
+		}
+		FRA = {
+			every_owned_state = {
+				limit = {
+					is_core_of = MOR
+				}
+				transfer_state_to = MOR
+			}
+		}
+		MOR = {
+			leave_faction = yes
+			drop_cosmetic_tag = yes
+			GER = { give_guarantee = PREV }
+		}
+		add_political_power = -75
+		news_event = ww1_morocco.11
+		hidden_effect = {
+			RMO = {
+				every_state = {
+					limit = {
+						is_core_of = PREV
+					}
+					remove_core_of = PREV
+				}
+			}
+		}
+		ai_chance = {
+			factor = 100 
+			modifier = {
+				GER = {
+					has_navy_size = {
+						size < 70
+					}
+				}
+				factor = 0.5
+			}
+			modifier = {
+				has_war_with = GER
+				factor = 0
+			}
+			modifier = {
+				factor = 0
+				has_game_rule = {
+					rule = ultimatum_on_agadir
+					option = WAR_ON_AGADIR
+				}
+			}
+		}
+	}
+
+	option = {
+		name = ww1_morocco.8.c
+		hidden_effect = {
+			set_crisis_progressbar_100 = yes
+		}
+		GER = { country_event = { id = ww1_morocco.12 days = 4 } }
 		news_event = ww1_morocco.14
 		ai_chance = {
 			factor = 10
 			modifier = {
 				is_historical_focus_on = yes
 				NOT = { has_war_with = GER }
+				NOT = {
+					has_game_rule = {
+						rule = ultimatum_on_agadir
+						option = WAR_ON_AGADIR
+					}
+				}
 				factor = 0
+			}
+			modifier = {
+				has_game_rule = {
+					rule = ultimatum_on_agadir
+					option = WAR_ON_AGADIR
+				}
+				factor = 1000
 			}
 		}
 	}
 }
-# ГЕРМАНИЯ ТРЕБУЕТ ВОСТОЧНОЕ МАРОККО
+
+# Germany Demands Agadir
 ##############################
 country_event = {
 	title = ww1_morocco.9.t
@@ -215,13 +639,46 @@ country_event = {
 	id = ww1_morocco.9
 	picture = GFX_report_event_usa_destroyers
 
+	immediate = {
+		hidden_effect = {
+			delete_crisis = yes
+		}
+	}
 	is_triggered_only = yes
 	option = {
 		name = ww1_morocco.9.a
 		news_event = ww1_morocco.13
-		MOR = { transfer_state = 461 }
-		GER = { puppet = MOR }
-		FRA = { add_state_claim = 461 }
+		FRA = {
+			every_state = {
+				limit = {
+					is_core_of = MOR
+					is_owned_or_subject_trigger = yes
+				}
+				add_claim_by = PREV
+				transfer_state_to = MOR
+			}
+			end_puppet = MOR
+		}
+		GER = {
+			MOR = { set_country_flag = protectorate }
+			set_autonomy = {
+				target = MOR
+				autonomy_state = autonomy_tgwr_protectorate
+				freedom_level = 0.6
+			}
+			hidden_effect = {
+				MOR = {
+					set_politics = {
+						ruling_party = neutrality
+						elections_allowed = no
+					}
+					set_popularities = {
+						neutrality = 100
+					}
+					drop_cosmetic_tag = yes
+				}
+			}
+		}
 		add_war_support = 0.10
 		ai_chance = {
 			factor = 80 
@@ -270,7 +727,8 @@ country_event = {
 		}
 	}
 }
-# КОМПЕНСАЦИЯ ГЕРМАНИИ - КАМЕРУН РАСШИРЕН
+
+# France will pay for Morocco
 #####################
 country_event = {
 	title = ww1_morocco.10.t
@@ -282,56 +740,138 @@ country_event = {
 	option = {
 		name = ww1_morocco.10.a		
 		set_global_flag = agadir_crisis_ends
-		effect_tooltip = {
-			GER = {
-				transfer_state = 815 
-				transfer_state = 814				
-			}
-		}	
 		ai_chance = { factor = 100 }
 	}
 }
+
+# Agadir Crisis Averted
 news_event = {
 	id = ww1_morocco.11
 	title = ww1_morocco.11.t
-	desc = ww1_morocco.11.d
 	picture = EVENT_hoi4tgw_agadir_crisis
+	immediate = {
+		hidden_effect = {
+			delete_crisis = yes
+		}
+	}
+	desc = {
+		text = ww1_morocco.11.d.forcongo
+		trigger = {
+			has_global_flag = agadir_german_demand_congo
+		}
+	}
+	desc = {
+		text = ww1_morocco.11.d.forsouthmorocco
+		trigger = {
+			has_global_flag = agadir_german_southern_morocco
+		}
+	}
+	desc = {
+		text = ww1_morocco.11.d.forfreemorocco
+		trigger = {
+			has_global_flag = agadir_german_free_morocco
+		}
+	}
 
 	major = yes
 	is_triggered_only = yes
+	immediate = {
+		set_global_flag = agadir_crisis_ends
+	}
 
 	option = {
 		name = ww1_morocco.11.a
-		set_global_flag = agadir_crisis_ends
-		ai_chance = { factor = 100 }
+		trigger = {
+			NOT = {
+				tag = FRA
+				tag = GER
+			}
+		}
+	}
+	option = {
+		name = ww1_morocco.11.b
+		trigger = {
+			tag = GER
+		}
+	}
+	option = {
+		name = ww1_morocco.11.c
+		trigger = {
+			tag = FRA
+		}
 	}
 }
-# ФРАНЦИЯ ОТКАЗАЛА ГЕРМАНИИ
+
+# France refuced to cede the colony
 ##############################
 country_event = {
 	title = ww1_morocco.12.t
 	desc = ww1_morocco.12.d
 	id = ww1_morocco.12
 	picture = GFX_report_event_usa_destroyers
-
+	immediate = {
+		hidden_effect = {
+			delete_crisis = yes
+		}
+	}
 	is_triggered_only = yes
 	option = {
 		name = ww1_morocco.12.a
 		create_wargoal = {
 			type = take_state_focus
-			target = FRA
+			target = MOR
 			generator = { 462 108 } 
 		}
 		set_global_flag = agadir_crisis_ends
 		ai_chance = { factor = 100 }
 	}
+	option = {
+		name = ww1_morocco.12.b
+		add_stability = 0.05
+		add_war_support = -0.1
+		add_political_power = -150
+		set_global_flag = agadir_crisis_ends
+		country_event = {
+			id = ww1_morocco.15
+			days = 3
+		}
+		every_other_country = {
+			limit = {
+				OR = {
+					tag = SPR
+					tag = FRA
+					tag = ENG
+				}
+			}
+			country_event = {
+				id = ww1_morocco.27
+				days = 1
+			}
+		}
+		ai_chance = {
+			factor = 25
+			modifier = {
+				factor = 0
+				has_game_rule = {
+					rule = ultimatum_on_agadir
+					option = WAR_ON_AGADIR
+				}
+			}
+		}
+	}
 }
+
+# Germany occupies Western Morocco
 news_event = {
 	id = ww1_morocco.13
 	title = ww1_morocco.13.t
 	desc = ww1_morocco.13.d
 	picture = EVENT_hoi4tgw_agadir_crisis
-
+	immediate = {
+		hidden_effect = {
+			delete_crisis = yes
+		}
+	}
 	major = yes
 	is_triggered_only = yes
 
@@ -341,32 +881,64 @@ news_event = {
 		ai_chance = { factor = 100 }
 	}
 }
+
+# Escalation of the Agadir Crisis
 news_event = {
 	id = ww1_morocco.14
 	title = ww1_morocco.14.t
 	desc = ww1_morocco.14.d
 	picture = EVENT_hoi4tgw_agadir_crisis
-
+	immediate = {
+		hidden_effect = {
+			delete_crisis = yes
+		}
+	}
 	major = yes
 	is_triggered_only = yes
-
+	immediate = {
+		set_global_flag = agadir_crisis_ends
+	}
 	option = {
 		name = ww1_morocco.14.a
-		set_global_flag = agadir_crisis_ends
-		ai_chance = { factor = 100 }
+		trigger = {
+			tag = GER
+		}
+	}
+	option = {
+		name = ww1_morocco.14.b
+		trigger = {
+			OR = {
+				tag = FRA
+				is_in_faction_with = FRA
+			}
+		}
+	}
+	option = {
+		name = ww1_morocco.14.c
+		trigger = {
+			NOT = {
+				is_in_faction_with = FRA
+				tag = FRA
+				tag = GER
+			}
+		}
 	}
 }
+
+# The crisis period has passed
 country_event = {
 	title = ww1_morocco.15.t
 	desc = ww1_morocco.15.d
 	id = ww1_morocco.15
 	picture = GFX_report_event_usa_destroyers
-
+	immediate = {
+		hidden_effect = {
+			delete_crisis = yes
+		}
+	}
 	is_triggered_only = yes
 	option = {
 		name = ww1_morocco.15.a
-		add_war_support = -0.1
-		add_political_power = -75
 		ai_chance = { factor = 100 }
 	}
 }
@@ -385,13 +957,10 @@ country_event = {
 			target = FROM
 			modifier = HOI4TGW_Opinion_diplomats_bonus
 		}
-	}
-	option = {
-		name = ww1_morocco.16.b
-		trigger = { tag = GER }
-		add_opinion_modifier = {
-			target = FROM
-			modifier = HOI4TGW_Opinion_diplomats_malus
+		hidden_effect = {
+			ENG = {
+				join_aggressor_in_current_crisis = yes
+			}
 		}
 	}
 }
@@ -402,16 +971,30 @@ country_event = {
 	title = ww1_morocco.17.t
 	desc = ww1_morocco.17.d
 	picture = GFX_report_event_gathering_protest
-	trigger = {
-		tag = GER
-		has_global_flag = agadir_crisis
-		has_completed_focus = GER_moroccan_crisis
-		has_active_mission = GER_misison_agadir_crisis
-	}
+	is_triggered_only = yes
 	fire_only_once = yes
 	option = {
 		name = ww1_morocco.17.a
 		add_ideas = GER_financial_crisis_of_agadir
+		if = {
+			limit = {
+				has_country_flag = GER_sms_panther_morocco
+			}
+			custom_effect_tooltip = GER_leave_in_one_month_or_crash
+			activate_mission = GER_retire_from_morocco
+			else = {
+				country_event = {
+					id = ww1_morocco.26
+					days = 3
+				}
+			}
+		}
+		
+		set_country_flag = {
+			flag = wait_25_days
+			days = 25
+			value = 1
+		}
 	}
 }
 
@@ -431,6 +1014,659 @@ country_event = {
 	}
 }
 
+# Spainish Morocco
+country_event = {
+	id = ww1_morocco.20
+	title = ww1_morocco.20.t
+	desc = ww1_morocco.20.d
+	picture = GFX_report_event_spr_army_of_africa
+	is_triggered_only = yes
+	option = {
+		name = ww1_morocco.20.a
+		transfer_state = 290
+		transfer_state = 807
+		add_state_claim = 887
+	}
+}
+
+
+# Agadir Crisis
+news_event = {
+	id = ww1_morocco.23
+	title = ww1_morocco.23.t
+	desc = ww1_morocco.23.d
+	picture = EVENT_hoi4tgw_france_at_war
+
+	major = yes
+	is_triggered_only = yes
+
+	option = {
+		name = ww1_morocco.23.a
+		trigger = {
+			tag = FRA
+		}
+	}
+
+	option = {
+		name = ww1_morocco.23.b
+		trigger = {
+			tag = GER
+		}
+		custom_effect_tooltip = GER_decisions_agadir
+		activate_mission = GER_agadir_crisis_opportunity
+	}
+	option = {
+		name = ww1_morocco.23.c
+		trigger = {
+			NOT = {
+				tag = GER
+				tag = FRA
+				tag = ENG
+				tag = SPR
+			}
+		}
+	}
+	option = {
+		name = ww1_morocco.23.e
+		trigger = {
+			tag = ENG
+		}
+	}
+	option = {
+		name = ww1_morocco.23.f
+		trigger = {
+			tag = SPR
+		}
+	}
+}
+
+# germany remove SMS panther
+country_event = {
+	id = ww1_morocco.24
+	title = ww1_morocco.24.t
+	desc = ww1_morocco.24.d
+	picture = GFX_report_event_usa_destroyers
+
+	major = no
+	is_triggered_only = yes
+
+	option = {
+		name = ww1_morocco.24.a
+		trigger = {
+			tag = FRA
+		}
+	}
+	option = {
+		name = ww1_morocco.24.b
+		trigger = {
+			tag = ENG
+		}
+
+	}
+}
+
+# will british intervene ? 
+country_event = {
+	id = ww1_morocco.25
+	title = ww1_morocco.25.t
+	picture = GFX_report_event_usa_destroyers
+	desc = {
+		text = ww1_morocco.25.d.forcongo
+		trigger = {
+			has_global_flag = agadir_german_demand_congo
+		}
+	}
+	desc = {
+		text = ww1_morocco.25.d.forsouthmorocco
+		trigger = {
+			has_global_flag = agadir_german_southern_morocco
+		}
+	}
+	desc = {
+		text = ww1_morocco.25.d.forfreemorocco
+		trigger = {
+			has_global_flag = agadir_german_free_morocco
+		}
+	}
+	major = no
+	is_triggered_only = yes
+
+	option = {
+		name = ww1_morocco.25.a
+		set_global_flag = agadir_british_support_france
+		FRA = {
+			country_event = {
+				id = ww1_morocco.16
+				days = 1
+			}
+		}
+		ai_chance = {
+			factor = 500
+		}
+	}
+	option = {
+		name = ww1_morocco.25.b #neutral
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+# What germany want ? 
+country_event = {
+	id = ww1_morocco.26
+	title = ww1_morocco.26.t
+	desc = ww1_morocco.26.d
+	picture = GFX_report_event_usa_destroyers
+
+	major = no
+	is_triggered_only = yes
+
+	option = {	#huh we want french congo - historical
+		name = ww1_morocco.26.a
+		custom_effect_tooltip = historical_tt
+		set_global_flag = agadir_german_demand_congo
+		ENG = {
+			country_event = {
+				id = ww1_morocco.25
+				days = 1
+			}
+		}
+		FRA = {
+			country_event = {
+				id = ww1_morocco.8
+				days = 14
+			}
+		}
+		ai_chance = {
+			factor = 10
+			modifier = {
+				is_historical_focus_on = yes
+				factor = 500
+			}
+		}
+	}
+	option = {
+		name = ww1_morocco.26.b #huh give us southern morocco
+		set_global_flag = agadir_german_southern_morocco
+		ENG = {
+			country_event = {
+				id = ww1_morocco.25
+				hours = 6
+			}
+		}
+		FRA = {
+			country_event = {
+				id = ww1_morocco.8
+				days = 14
+			}
+		}
+		ai_chance = {
+			factor = 10
+		}
+	}
+	option = {
+		name = ww1_morocco.26.c #morocco must be free
+		set_global_flag = agadir_german_free_morocco
+		ENG = {
+			country_event = {
+				id = ww1_morocco.25
+				hours = 6
+			}
+		}
+		FRA = {
+			country_event = {
+				id = ww1_morocco.8
+				days = 14
+			}
+		}
+		ai_chance = {
+			factor = 5
+		}
+	}
+	# option = {
+	# 	name = ww1_morocco.26.e #give us money
+	# 	ai_chance = {
+	# 		factor = 5
+	# 	}
+	# }
+	# option = {
+	# 	name = ww1_morocco.26.f #nothing, we are cucked
+	# 	ai_chance = {
+	# 		factor = 1
+	# 	}
+	# }
+}
+
+
+# the agadir crisis has been ignored by germany
+country_event = {
+	id = ww1_morocco.27
+	title = ww1_morocco.27.t
+	desc = ww1_morocco.27.d
+	picture = GFX_report_event_usa_destroyers
+	is_triggered_only = yes
+	immediate = {
+		hidden_effect = {
+			delete_crisis = yes
+		}
+	}
+	option = {
+		name = ww1_morocco.27.a
+	}
+}
+
+# germany is warned of French occupation of morocco
+country_event = {
+	id = ww1_morocco.28
+	title = ww1_morocco.28.t
+	desc = ww1_morocco.28.d
+	picture = GFX_report_event_usa_destroyers
+	is_triggered_only = yes
+
+	option = {
+		name = ww1_morocco.28.a
+	}
+}
+
+# morocco rebellion defeated
+country_event = {
+	id = ww1_morocco.29
+	title = ww1_morocco.29.t
+	desc = ww1_morocco.29.d
+	picture = GFX_report_event_arab_revolt
+	is_triggered_only = yes
+
+	option = {
+		annex_country = {
+			target = MOR
+		}
+		country_event = {
+			id = ww1_morocco.2
+			days = 2
+		}
+		name = ww1_morocco.29.a
+	}
+}
+
+# moroccan forces beat the french
+country_event = {
+	id = ww1_morocco.31
+	title = ww1_morocco.31.t
+	desc = ww1_morocco.31.d
+	picture = GFX_report_event_generic_peaceful_annexation
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_morocco.31.a
+		white_peace = FRA
+		hidden_effect = {
+			every_country = {
+				limit = {
+					has_war_with = MOR
+					has_war_together_with = FRA
+				}
+				white_peace = MOR
+			}
+		}
+		every_state = {
+			limit = {
+				is_owned_by = FRA
+				OR = {
+					is_core_of = MOR
+					state = 996
+				}
+				
+			}
+			transfer_state_to = MOR
+		}
+		news_event = ww1_morocco.33
+
+	}
+}
+
+# moroccan survived
+country_event = {
+	id = ww1_morocco.32
+	title = ww1_morocco.32.t
+	desc = ww1_morocco.32.d
+	picture = GFX_report_event_generic_peaceful_annexation
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_morocco.32.a
+		white_peace = FRA
+		hidden_effect = {
+			every_country = {
+				limit = {
+					has_war_with = MOR
+					has_war_together_with = FRA
+				}
+				white_peace = MOR
+			}
+		}
+		every_state = {
+			limit = {
+				is_owned_by = FRA
+				is_core_of = MOR
+				
+			}
+			transfer_state_to = MOR
+		}
+		news_event = ww1_morocco.33
+	}
+}
+
+
+# french defeat news
+news_event = {
+	id = ww1_morocco.33
+	title = ww1_morocco.33.t
+	desc = ww1_morocco.33.d
+	picture = EVENT_hoi4tgw_france_at_war
+	immediate = {
+		hidden_effect = {
+			set_global_flag = agadir_crisis_ends
+		}
+	}
+	major = yes
+	is_triggered_only = yes
+
+	option = {
+		name = ww1_morocco.33.a
+		trigger = {
+			tag = FRA
+		}
+	}
+	option = {
+		name = ww1_morocco.33.c
+		trigger = {
+			NOT = {
+				tag = GER
+				tag = FRA
+				tag = ENG
+				tag = SPR
+			}
+		}
+	}
+	option = {
+		name = ww1_morocco.33.e
+		trigger = {
+			tag = ENG
+		}
+	}
+	option = {
+		name = ww1_morocco.33.f
+		trigger = {
+			tag = SPR
+		}
+	}
+}
+
+
+# moroccan reclaim lands
+country_event = {
+	id = ww1_morocco.34
+	title = ww1_morocco.34.t
+	desc = ww1_morocco.34.d
+	picture = GFX_report_event_generic_peaceful_annexation
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_morocco.34.a
+		every_owned_state = {
+			limit = {
+				is_core_of = MOR
+			}
+			transfer_state_to = MOR
+		}
+		
+		add_political_power = -100
+		FROM = {
+			country_event = {
+				id = ww1_morocco.36
+				days = 2
+			}
+		}
+		ai_chance = {
+			factor = 50
+			modifier = {
+				has_war = yes
+				factor = 500
+			}
+			modifier = {
+				FROM = {
+					has_army_size = {
+						size > 20
+					}
+				}
+				add = 10
+			}
+			modifier = {
+				FROM = {
+					has_army_size = {
+						size > 30
+					}
+				}
+				add = 50
+			}
+		}
+	}
+	option = {
+		name = ww1_morocco.34.b
+		FROM = {
+			country_event = {
+				id = ww1_morocco.35
+				days = 2
+			}
+		}
+		ai_chance = {
+			factor = 50
+			modifier = {
+				FROM = {
+					has_army_size = {
+						size < 15
+					}
+				}
+				add = 100
+			}
+			modifier = {
+				FROM = {
+					has_army_size = {
+						size < 5
+					}
+				}
+				add = 100
+			}
+		}
+	}
+}
+
+
+# FROM dont give lands
+country_event = {
+	id = ww1_morocco.35
+	title = ww1_morocco.35.t
+	desc = ww1_morocco.35.d
+	picture = GFX_report_event_generic_peaceful_annexation
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_morocco.35.a
+		create_wargoal = {
+			type = take_claimed_state
+			target = FROM
+		}
+	}
+}
+
+# FROM give lands
+country_event = {
+	id = ww1_morocco.36
+	title = ww1_morocco.36.t
+	desc = ww1_morocco.36.d
+	picture = GFX_report_event_generic_peaceful_annexation
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_morocco.36.a
+	}
+}
+
+
+############################################################################################################################################
+
+
+# German Protectorate Interwar
+country_event = {
+	id = ww1_morocco.19
+	title = ww1_morocco.19.t
+	desc = ww1_morocco.19.d
+	picture = GFX_report_event_arab_protests
+	trigger = {
+		tag = GER
+		has_war = no
+		OR = {
+			AND = {
+				any_owned_state = { is_core_of = MOR }
+				NOT = { country_exists = MOR }
+			}
+			AND = {
+				MOR = { NOT = { has_country_flag = great_war_winner } }
+				has_country_flag = great_war_winner
+				has_completed_focus = GER_moroccan_crisis
+			}
+		}
+		has_global_flag = frankfurt_treaty
+	}
+	fire_only_once = yes
+	option = {
+		name = ww1_morocco.19.a
+		# Loyal protectorate
+		GER = {
+			every_owned_state = {
+				limit = {
+					OR = {
+						is_core_of = MOR
+						state = 461 
+						state = 462
+						state = 108
+					}
+					NOT = {
+						state = 743
+						state = 783
+						state = 887
+					}
+				}
+				transfer_state_to = MOR
+				add_core_of = MOR
+			}
+			MOR = { set_country_flag = protectorate }
+			set_autonomy = {
+				target = MOR
+				autonomy_state = autonomy_tgwr_protectorate
+				freedom_level = 0.6
+			}
+			hidden_effect = {
+				MOR = {
+					drop_cosmetic_tag = yes
+					set_politics = {
+						ruling_party = neutrality
+						elections_allowed = no
+					}
+					set_popularities = {
+						neutrality = 100
+					}
+					every_owned_state = {
+						limit = { is_claimed_by = OVERLORD }
+						remove_claim_by = OVERLORD
+					}
+				}
+			}
+		}
+	}
+	option = {
+		name = ww1_morocco.19.b
+		# The Germans fools us!
+		every_owned_state = {
+			limit = { is_core_of = MOR }
+			add_compliance = -50
+			add_resistance = 30
+		}
+		ai_chance = { factor = 0 }
+	}
+}
+
+# Yusef dies
+country_event = {
+	id = ww1_morocco.21
+	title = ww1_morocco.21.t
+	desc = ww1_morocco.21.d
+	picture = GFX_report_event_generic_funeral
+	fire_only_once = yes
+	trigger = {
+		tag = MOR
+		date > 1927.11.1
+		has_character = MOR_yusef_bin_hassan
+	}
+	mean_time_to_happen = {
+		days = 17
+	}
+	option = {
+		name = ww1_morocco.21.a
+		retire_character = MOR_yusef_bin_hassan
+		MOR_muhammad_bin_yusef = {
+			add_country_leader_role = {
+				country_leader = {
+					ideology = semi_constitutional_monarchy
+				}
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					has_cosmetic_tag = MOR_FRA
+					has_cosmetic_tag = MOR_FRA
+				}
+			}
+			promote_character = MOR_muhammad_bin_yusef
+		}
+	}
+}
+
+# Tangier International Zone
+country_event = {
+	id = ww1_morocco.22
+	title = ww1_morocco.22.t
+	desc = ww1_morocco.22.d
+	picture = GFX_report_event_generic_peaceful_annexation
+	trigger = {
+		country_exists = TGR
+		is_subject = no
+		NOT = {
+			has_war_with = TGR
+			has_war_with = FRA
+			has_war_with = MOR
+			has_country_flag = great_war_loser
+		}
+		OR = {
+			original_tag = ENG
+			original_tag = SPR
+			is_neighbor_of = TGR
+		}
+	}
+	fire_only_once = yes
+	option = {
+		name = ww1_morocco.22.b
+		give_guarantee = TGR
+		TGR = { give_military_access = ROOT }
+	}
+}
+
+
+
+##########################################################
+
 # The Rif #
 # Riffian tribesmen strongly resists the Spanish
 country_event = {
@@ -440,15 +1676,15 @@ country_event = {
 	picture = GFX_report_event_india_protests
 	trigger = {
 		tag = SPR
-		owns_state = 290
+		290 = { is_owned_or_subject_trigger = yes }
 	}
 	fire_only_once = yes
 	option = {
 		name = ww1_rif.1.a
-		290 = {
-			add_compliance = -10
-			add_resistance = 10
-		}
+		# 290 = {
+		# 	add_compliance = -10
+		# 	add_resistance = 10
+		# }
 		add_manpower = -40000
 	}
 }
@@ -461,7 +1697,7 @@ country_event = {
 	picture = GFX_report_event_spr_army_of_africa
 	trigger = {
 		tag = SPR
-		owns_state = 290
+		290 = { is_owned_or_subject_trigger = yes }
 		date > 1921.6.1
 	}
 	fire_only_once = yes
@@ -482,6 +1718,7 @@ country_event = {
 	}
 }
 
+
 # Republic of the Rif Proclaimed
 country_event = {
 	id = ww1_rif.3
@@ -491,68 +1728,28 @@ country_event = {
 	is_triggered_only = yes
 	immediate = {
 		hidden_effect = {
-			every_state = {
-				limit = {
-					OR = {
-						state = 290
-						state = 743
-						state = 887
-					}
-				}
-
-				add_claim_by = ROOT
-				add_core_of = RIF
-			}
+			290 = { add_core_of = RIF }
+			743 = { add_claim_by = RIF }
 			division_template = {
-				name = "Guarniciones"
+				name = "Regimiento de guarnición en Marruecos"
 				division_names_group = SPR_GAR_01
 				regiments = {
-					infantry = {
-						x = 0
-						y = 0
-					}
-					infantry = {
-						x = 0
-						y = 1
-					}
-					infantry = {
-						x = 0
-						y = 2
-					}
-					infantry = {
-						x = 1
-						y = 0
-					}
+					infantry = { x = 0 y = 0 }
+					infantry = { x = 0 y = 1 }
+					infantry = { x = 1 y = 0 }
+					infantry = { x = 1 y = 1 }
 				}
 			}
 			RIF = {
 				division_template = {
 					name = "Tribesmen"
 					regiments = {
-						militia = {
-							x = 0
-							y = 0
-						}
-						militia = {
-							x = 0
-							y = 1
-						}
-						militia = {
-							x = 1
-							y = 1
-						}
-						militia = {
-							x = 1
-							y = 0
-						}
-						militia = {
-							x = 2
-							y = 0
-						}
-						militia = {
-							x = 2
-							y = 1
-						}
+						irregular_infantry = { x = 0 y = 0 }
+						irregular_infantry = { x = 0 y = 1 }
+						irregular_infantry = { x = 0 y = 1 }
+						irregular_infantry = { x = 1 y = 0 }
+						irregular_infantry = { x = 1 y = 1 }
+						irregular_infantry = { x = 1 y = 2 }
 					}
 				}
 			}
@@ -565,17 +1762,29 @@ country_event = {
 			transfer_state = 290
 			hidden_effect = {
 				PREV = {
-					set_province_controller = 10113
+					set_province_controller = 4761
 					set_province_controller = 12100
 					743 = {
 						create_unit = {
-							division = "name = \"Guarnición de Melilla\" division_template = \"Guarniciones\" start_experience_factor = 0.3 start_equipment_factor = 1.0"
+							division = "name = \"Guarnición de Melilla\" division_template = \"Regimiento de guarnición en Marruecos\" start_experience_factor = 0.3 start_equipment_factor = 1.0"
 							owner = ROOT
 							prioritize_location = 12082
 							allow_spawning_on_enemy_provs = yes
 						}
 						create_unit = {
-							division = "name = \"Guarnición de Ceuta\" division_template = \"Guarniciones\" start_experience_factor = 0.3 start_equipment_factor = 1.0"
+							division = "name = \"Guarnición de Ceuta\" division_template = \"Regimiento de guarnición en Marruecos\" start_experience_factor = 0.3 start_equipment_factor = 1.0"
+							owner = ROOT
+							prioritize_location = 9945
+							allow_spawning_on_enemy_provs = yes
+						}
+						create_unit = {
+							division = "name = \"Guarnición de Melilla\" division_template = \"Regimiento de guarnición en Marruecos\" start_experience_factor = 0.3 start_equipment_factor = 1.0"
+							owner = ROOT
+							prioritize_location = 12082
+							allow_spawning_on_enemy_provs = yes
+						}
+						create_unit = {
+							division = "name = \"Guarnición de Ceuta\" division_template = \"Regimiento de guarnición en Marruecos\" start_experience_factor = 0.3 start_equipment_factor = 1.0"
 							owner = ROOT
 							prioritize_location = 9945
 							allow_spawning_on_enemy_provs = yes
@@ -583,6 +1792,18 @@ country_event = {
 					}
 				}
 				290 = {
+					create_unit = {
+						division = "name = \"Axdir tribesmen\" division_template = \"Tribesmen\" start_experience_factor = 1.0 start_equipment_factor = 1.0"
+						owner = RIF
+						prioritize_location = 7215
+						allow_spawning_on_enemy_provs = yes
+					}
+					create_unit = {
+						division = "name = \"Chauen tribesmen\" division_template = \"Tribesmen\" start_experience_factor = 1.0 start_equipment_factor = 1.0"
+						owner = RIF
+						prioritize_location = 12087
+						allow_spawning_on_enemy_provs = yes
+					}
 					create_unit = {
 						division = "name = \"Axdir tribesmen\" division_template = \"Tribesmen\" start_experience_factor = 1.0 start_equipment_factor = 1.0"
 						owner = RIF
@@ -613,16 +1834,16 @@ country_event = {
 			hidden_effect = {
 				PREV = {
 					set_province_controller = 10113
-					set_province_controller = 12100
+					set_province_controller = 4761
 					743 = {
 						create_unit = {
-							division = "name = \"Guarnición de Melilla\" division_template = \"Guarniciones\" start_experience_factor = 0.3 start_equipment_factor = 1.0"
+							division = "name = \"Guarnición de Melilla\" division_template = \"Regimiento de guarnición en Marruecos\" start_experience_factor = 0.3 start_equipment_factor = 1.0"
 							owner = ROOT
 							prioritize_location = 12082
 							allow_spawning_on_enemy_provs = yes
 						}
 						create_unit = {
-							division = "name = \"Guarnición de Ceuta\" division_template = \"Guarniciones\" start_experience_factor = 0.3 start_equipment_factor = 1.0"
+							division = "name = \"Guarnición de Ceuta\" division_template = \"Regimiento de guarnición en Marruecos\" start_experience_factor = 0.3 start_equipment_factor = 1.0"
 							owner = ROOT
 							prioritize_location = 9945
 							allow_spawning_on_enemy_provs = yes
@@ -667,6 +1888,28 @@ country_event = {
 			target = RIF
 			type = topple_government
 		}
+		MOR = {
+			add_victory_points = {
+				province = 10070
+				value = 5
+			}
+			add_victory_points = {
+				province = 7069
+				value = -5
+			}
+			set_capital = {
+				state = 462
+			}
+		}
+		if = {
+			limit = { has_subject = MOR }
+			MOR = {
+				add_to_war = {
+					targeted_alliance = ROOT
+					enemy = RIF
+				}
+			}
+		}
 	}
 }
 
@@ -700,6 +1943,8 @@ country_event = {
 		add_war_support = 0.20
 		add_stability = 0.15
 		add_political_power = 250
-		remove_country_leader_trait = standing_alone
+		remove_ideas = standing_alone
 	}
 }
+
+

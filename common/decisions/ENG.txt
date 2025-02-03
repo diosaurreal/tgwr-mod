@@ -18,11 +18,18 @@ ENG_imperial_federation_coring = {
 
 		state_target = yes
 
-		targets = { 464 465 468 276 682 683 467 469 470 472 471 473 740 739 284 723 285 517 518 519 522 674 520 521 547 }
-
+		target_array = controlled_states
 		target_trigger = {
 			FROM = {
 				is_owned_by = ROOT
+				OR = {
+					is_core_of = AST
+					is_core_of = CAN
+					is_core_of = NZL
+					is_core_of = NFL
+					is_core_of = SAF
+					state = 547
+				}
 				NOT = {
 					is_core_of = ROOT
 				}
@@ -48,7 +55,7 @@ ENG_imperial_federation_coring = {
 		}
 
 		complete_effect = {
-		add_political_power = -10
+			add_political_power = -10
 		}
 
 		remove_effect = {
@@ -197,14 +204,16 @@ ENG_pacification_of_darfur = {
 			hidden_trigger = { NOT = { has_country_flag = ENG_pacification_in_progress } }
 		}
 		cancel_trigger = {
-			if = {
-				limit = {
-					ENG = {	is_ai = no }
-				}
+			OR = {
 				divisions_in_state = {
 					state = 827	
 					size < 1
 				}
+				827 = { is_controlled_by_ROOT_or_ally = no }
+			}
+			hidden_trigger = {
+				is_ai = no
+				is_debug = no
 			}
 		}
 		highlight_states = {
@@ -260,14 +269,16 @@ ENG_pacification_of_darfur = {
 			hidden_trigger = { NOT = { has_country_flag = ENG_pacification_in_progress } }
 		}
 		cancel_trigger = {
-			if = {
-				limit = {
-					ENG = {	is_ai = no }
-				}
+			OR = {
 				divisions_in_state = {
 					state = 827	
 					size < 2
 				}
+				827 = { is_controlled_by_ROOT_or_ally = no }
+			}
+			hidden_trigger = {
+				is_ai = no
+				is_debug = no
 			}
 		}
 		highlight_states = {
@@ -324,14 +335,16 @@ ENG_pacification_of_darfur = {
 			hidden_trigger = { NOT = { has_country_flag = ENG_pacification_in_progress } }
 		}
 		cancel_trigger = {
-			if = {
-				limit = {
-					ENG = {	is_ai = no }
-				}
+			OR = {
 				divisions_in_state = {
 					state = 827	
 					size < 3
 				}
+				827 = { is_controlled_by_ROOT_or_ally = no }
+			}
+			hidden_trigger = {
+				is_ai = no
+				is_debug = no
 			}
 		}
 		highlight_states = {
@@ -457,6 +470,12 @@ political_actions = {
 			UGA = { 
 				set_cosmetic_tag = UGA_israel_uganda_cosmetic 
 				hidden_effect = {
+					ROOT = {
+						set_autonomy = {
+							target = PREV
+							autonomy_state = autonomy_integrated_puppet
+						}
+					}
 					set_popularities = {
 						democratic = 27
 						neutrality = 47
@@ -468,6 +487,11 @@ political_actions = {
 						elections_allowed = no
 					}
 					add_ideas = ISR_jewish_colonisation
+					set_party_name = {
+						ideology = neutrality
+						name = UGA_colonial_administration_party
+						long_name = UGA_colonial_administration_party
+					}
 				}
 			}
 			set_global_flag = israel_uganda
@@ -521,10 +545,13 @@ political_actions = {
 			original_tag = ENG
 		}
 
-		visible = {
+		activation = {
+			has_global_flag = great_war
+			is_ai = no
+			has_war = yes
+			has_capitulated = no
 			has_country_flag = ENG_shell_crisis
 		}
-
 		available = {
 			OR = {
 				num_of_military_factories > eng_shell_variable #check event ww1_england.217 to tweak as balance demands.
@@ -540,9 +567,15 @@ political_actions = {
 
 		timeout_effect = {
 			add_war_support = -0.15
-			add_popularity = {
-				ideology = democratic
-				popularity = -0.15
+			if = {
+				limit = { has_government = democratic }
+				add_popularity = {
+					ideology = democratic
+					popularity = -0.15
+				}
+			}
+			else = {
+				add_stability = -0.10
 			}
 			add_timed_idea = {
 			    idea = ENG_shell_shortage
@@ -563,9 +596,15 @@ political_actions = {
 		}
 
 		complete_effect = {
-			add_popularity = {
-				ideology = democratic
-				popularity = 0.05
+			if = {
+				limit = { has_government = democratic }
+				add_popularity = {
+					ideology = democratic
+					popularity = 0.05
+				}
+			}
+			else = {
+				add_political_power = 75
 			}
 		}
 
@@ -582,11 +621,11 @@ political_actions = {
 		}
 
 		available = {
-			has_war = no			
+			has_war = no
 		}
 
 		visible = {
-			has_subject = EGY
+			has_subject = FROM
 			has_global_flag = egyptian_revolution_suppressed
 		}
 		
@@ -599,42 +638,40 @@ political_actions = {
 		cost = 50
 
 		complete_effect = {
-			EGY = {
+			FROM = {
 				set_cosmetic_tag = EGY_kingdom
 				if = {
 					limit = {
 						has_government = democratic
 					}
-					set_country_leader_ideology = autocracy
-				}	
-			}
-			EGY = {
-				set_cosmetic_tag = EGY_kingdom
+					set_country_leader_ideology = semi_constitutional_monarchy
+				}
 				add_ideas = ENG_british_officers_independent_egypt
 				country_lock_all_division_template = no	
 				add_popularity = {
 					ideology = democratic
 					popularity = 0.3
 				}
+				every_owned_state = {
+					set_demilitarized_zone = no
+				}
 			}
 			if = {
 				limit = {
-					has_dlc = "Together for Victory"
 					NOT = {
-						EGY = {
+						FROM = {
 							has_autonomy_state = autonomy_dominion
 						}
 					}
 				}
 				set_autonomy = {
-					target = EGY
+					target = FROM
 					autonomy_state = autonomy_dominion
 				}
 				hidden_effect = {
-					EGY = {
+					FROM = {
 						set_politics = {
 							ruling_party = neutrality
-							last_election = "1910.1.1"
 							election_frequency = 48
 							elections_allowed = no
 						}
@@ -644,8 +681,8 @@ political_actions = {
 							democratic = 48
 							neutrality = 52
 						}
-						set_country_leader_ideology = autocracy
-					}					
+						set_country_leader_ideology = semi_constitutional_monarchy
+					}
 				}
 			}
 		}
@@ -753,66 +790,7 @@ political_actions = {
 		}
 
 	}
-	ENG_darfur_expedition = {
-		
-		icon = generic_prepare_civil_war
-		
-		allowed = {
-			original_tag = ENG
-		}
-		target_trigger = {
-			FROM = {
-				tag = DAR
-			}
-		}
-		visible = {
-			is_subject = no
-			has_country_flag = darfur_free
-			is_neighbor_of = DAR
-			DAR = {
-				is_subject = no
-			}
-			NOT = { 
-				has_war_with = DAR
-				owns_state = 827 
-				has_country_flag = great_war_loser
-			}
-		}
-		available = {
-			is_subject = no
-			NOT = { is_in_faction_with = DAR }
-			command_power > 19
-			if = {
-				limit = {
-					has_global_flag = great_war_ends
-				}
-				has_global_flag = interbellum
-			}
-		}
-		cost = 20
-		complete_effect = {
-			add_command_power = -20
-			declare_war_on = {
-				target = DAR
-				type = annex_everything
-			}
-			add_state_claim = 827
-			hidden_effect = {
-				DAR = {
-					set_rule = {
-						can_join_factions = no
-					}
-				}
-			}
-		}
-		ai_will_do = {
-			factor = 100
-			modifier = {
-				factor = 0
-				surrender_progress > 0.1
-			}
-		}
-	}
+
 	ENG_invoke_the_alliance_of_1373 = {
 
 		icon = GFX_decision_hol_exchange_intelligence_data
@@ -876,7 +854,7 @@ political_actions = {
 			}
 		}
 		
-		days_remove = 500
+		days_remove = 30
 
 		complete_effect = {
 			set_country_flag = british_mission_to_portugal
@@ -891,7 +869,29 @@ political_actions = {
 		}
 
 		ai_will_do = {
-			factor = 1000
+			base = 0
+			modifier = {
+				add = 1000
+				is_historical_focus_on = yes
+				OR = {
+					GER = { has_completed_focus = GER_strait_blockade }
+					date > 1916.2.1
+				}
+			}
+			modifier = {
+				add = 1000
+				any_other_country = {
+					has_war_with = ROOT
+					any_state = {
+						is_controlled_by = PREV
+						OR = {
+							region = 41
+							region = 209
+							region = 210
+						}
+					}
+				}
+			}
 		}
 	}
 	ENG_engage_french_civil_war = {
@@ -911,6 +911,7 @@ political_actions = {
 			has_war_support > 0.5
 			has_stability > 0.5
 			has_global_flag = frankfurt_treaty
+			NOT = { has_idea = idea_armistice }
 		}
 		visible = {
 			is_historical_focus_on = no
@@ -975,6 +976,87 @@ political_actions = {
 			}
 		}
 	}
+	ENG_call_japan_to_invasion = {
+
+		icon = GFX_decision_hol_exchange_intelligence_data
+
+		target_trigger = {
+			FROM = {
+				tag = JAP
+			}
+		}
+	
+		allowed = {
+			tag = ENG
+		}
+		
+		available = {
+			FROM = {
+				OR = {
+					has_government = ROOT
+					has_government = neutrality
+				}
+				is_in_faction = no
+				is_subject = no
+			}
+			any_other_country = {
+				is_major = yes
+				has_war_with = ROOT
+			}
+			NOT = { has_war_with = USA } #they excluded USA from their posisble enemy, which can trigger the war participation
+		}
+
+		cost = 25
+		
+		visible = {
+			is_in_faction = yes
+			is_subject = no
+			NOT = { has_global_flag = great_war_ends }
+			FROM = {
+				exists = yes
+				NOT = {
+					has_war_with = ROOT
+					is_in_faction_with = ROOT
+				}
+				has_guaranteed = ROOT
+				is_guaranteed_by = ROOT
+			}
+		}
+
+		cancel_trigger = {
+			FROM = {
+				OR = {
+					exists = no
+					has_war_with = ROOT
+					is_in_faction_with = ROOT
+					is_subject = yes
+					NOT = {
+						has_government = ROOT
+						has_government = neutrality
+					}
+					has_global_flag = great_war_ends
+				}
+			}
+		}
+		
+		days_remove = 30
+
+		remove_effect = {
+			FROM = { country_event = generic.5 }
+		}
+
+		ai_will_do = {
+			factor = 1000
+			modifier = {
+				factor = 0
+				has_wargoal_against = FROM
+			}
+			modifier = {
+				factor = 0
+				FROM = { has_country_flag = tokyo_pact }
+			}
+		}
+	}
 }
 operations = {
 	ENG_split_persia_with_russia = {
@@ -982,45 +1064,77 @@ operations = {
 		allowed = {
 			tag = ENG
 		}
-		target_trigger = {
-			FROM = {
-				tag = PER
-			}
-		}
-		fire_only_once = yes
-		available = {
+		# target_trigger = {
+		# 	FROM = {
+		# 		tag = PER
+		# 	}
+		# }
+		fire_only_once = no
+		is_good = yes
+		days_mission_timeout = 140
+		activation = {
+			has_capitulated = no
 			is_subject = no
-			is_in_faction_with = RUS
-			NOT = {
-				has_country_flag = great_war_loser 
-				has_war_with = PER
-			}
 			RUS = {
-				exists = yes 
-				NOT = { has_war_with = PER }
-			}			
-		    PER = {
-				exists = yes 
-				is_subject = no 
-				is_major = no
-				OR = {
-					is_in_faction_with = ENG
-					is_in_faction = no
-				}
-			}
-		}
-		visible = {
-			has_war_with = TUR
-			any_state = {
-				has_dynamic_modifier = { modifier = per_british_sphere }
-			}
-			RUS = {
+				is_in_faction_with = ROOT
 				NOT = {
+					has_war_with = PER
+					tag = SOV
 					has_war_with = SOV
 				}
 			}
+			NOT = {
+				has_global_flag = rus_eng_partition_of_persia
+				has_country_flag = great_war_loser
+				has_war_with = PER
+			}
+			PER = {
+				exists = yes
+				is_subject = no 
+				is_major = no
+				OR = {
+					is_in_faction_with = ROOT
+					is_in_faction = no
+				}
+				has_idea = PER_idea_foreign_reliance
+			}
+			any_state = {
+				has_dynamic_modifier = { modifier = per_british_sphere }
+			}
+			OR = {
+				has_war_with = TUR
+				PER = { has_war_with = TUR }
+			}
+			has_global_flag = great_war
+			date > 1914.1.1
 		}
-		complete_effect = {
+		available = {
+			OR = {
+				is_subject = yes
+				has_capitulated = yes
+				has_global_flag = great_war_ends
+				PER = {
+					NOT = {
+						has_idea = PER_idea_foreign_reliance
+					}
+				}
+				NOT = {
+					has_war_with = TUR
+					PER = { has_war_with = TUR }
+				}
+				RUS = {
+					OR = {
+						has_war_with = PER
+						tag = SOV
+						has_war_with = SOV
+						NOT = {
+							is_in_faction_with = ROOT
+						}
+					}
+				}
+			}
+		}
+		remove_effect = {
 			add_state_claim = 413
 			add_state_claim = 410
 			RUS = {
@@ -1032,32 +1146,13 @@ operations = {
 				add_state_claim = 877
 			}
 			hidden_effect = {
-				random_state = {
+				every_state = {
 					limit = {
 						is_owned_by = PER
 						OR =  {
 							state = 413
-							state = 412
 							state = 410
 						}
-						
-					}
-					prioritize = {
-						413
-					}
-					transfer_state_to = ENG
-				}
-				random_state = {
-					limit = {
-						is_owned_by = PER
-						OR =  {
-							state = 412
-							state = 410
-						}
-						
-					}
-					prioritize = {
-						410
 					}
 					transfer_state_to = ENG
 				}
@@ -1074,85 +1169,7 @@ operations = {
 				}
 				RUS = { country_event = ww1_russia.72 }
 			}
-			PER = { 
-				country_event = { id = ww1_persia.5 days = 1 hours = 4 }
-			}
 			set_global_flag = rus_eng_partition_of_persia
-		}
-		ai_will_do = { 
-			base = 50
-			modifier = { 	
-				OR = {
-					NOT = { 
-						PER = { has_war_with = TUR } 
-						has_war_with = TUR
-					}
-					date < 1915.5.1
-				}
-				factor = 0
-			}
-		}
-	}	
-	ENG_send_knox_to_russia = {
-
-		icon = GFX_decision_generic_army_support
-
-		allowed = {
-			tag = ENG
-		}
-
-		target_trigger = {
-			FROM = {
-				tag = RUS
-			}
-		}
-
-		available = {
-			NOT = {
-				has_war_with = FROM
-			}
-			FROM = {
-				OR = {
-					NOT = {
-						has_government = communism
-					}
-					has_government = ROOT
-					has_government = neutrality
-				}
-			}
-		}
-
-		custom_cost_trigger = {
-			command_power > 14
-		}
-		custom_cost_text = decision_cost_CP_15
-
-		visible = {
-			NOT = {
-				has_global_flag = great_war_ends
-				has_war_with = FROM
-			}
-			FROM = { is_subject = no }
-			has_character = ENG_alfred_knox
-			ENG_alfred_knox = {
-				is_unit_leader = yes
-			}
-		}
-
-		complete_effect = {
-			FROM = { country_event = { id = ww1_england.209 hours = 5 } }
-			hidden_effect = {
-				add_command_power = -15
-			}
-			add_war_support = 0.02
-		}
-
-		ai_will_do = {
-			factor = 100
-			modifier = {
-				factor = 0
-				date < 1911.1.6
-			}
 		}
 	}
 	ENG_afghanistan_war_timer = {
@@ -1196,6 +1213,151 @@ operations = {
 		days_mission_timeout = 128
 		is_good = no
 	}
+	ENG_darfur_expedition = {
+		
+		icon = generic_prepare_civil_war
+		
+		allowed = {
+			original_tag = ENG
+		}
+		target_trigger = {
+			FROM = {
+				tag = DAR
+			}
+		}
+		visible = {
+			is_subject = no
+			FROM = {
+				is_subject = no
+				is_neighbor_of_subject = yes
+			}
+			NOT = { 
+				has_war_with = FROM
+				owns_state = 827
+				has_country_flag = great_war_loser
+				has_idea = idea_armistice
+			}
+		}
+		available = {
+			has_capitulated = no
+			NOT = { is_in_faction_with = FROM }
+			command_power > 19
+			if = {
+				limit = {
+					has_global_flag = great_war_ends
+				}
+				has_global_flag = interbellum
+			}
+		}
+		cost = 0
+		custom_cost_trigger = {
+			command_power > 9
+		}
+		custom_cost_text = command_power_more_than_10
+		complete_effect = {
+			add_command_power = -10
+			declare_war_on = {
+				target = DAR
+				type = annex_everything
+			}
+			if = {
+				limit = {
+					has_subject = EGY
+				}
+				EGY = {
+					add_to_war = {
+						targeted_alliance = ROOT
+						enemy = DAR
+					}
+				}
+			}
+			# add_state_claim = 827
+		}
+		ai_will_do = {
+			factor = 1000
+			modifier = {
+				factor = 0
+				surrender_progress > 0.1
+			}
+			modifier = {
+				factor = 0
+				has_government = communism
+			}
+		}
+	}
+	ENG_annex_kurdistan = {
+		
+		icon = generic_prepare_civil_war
+		
+		allowed = {
+			original_tag = ENG
+		}
+		target_trigger = {
+			FROM = {
+				tag = KUR
+			}
+		}
+		visible = {
+			is_subject = no
+			FROM = {
+				is_subject = no
+				is_neighbor_of_subject = yes
+			}
+			NOT = { 
+				has_war_with = FROM
+				has_country_flag = great_war_loser
+				has_idea = idea_army_restrictions
+				has_active_mission = frankfurt_armistice_mission
+				has_active_mission = compiegne_armistice_mission
+				has_active_mission = frankfurt_conference
+				has_active_mission = versallies_conference
+			}
+		}
+		available = {
+			has_war = no
+			has_capitulated = no
+			NOT = { is_in_faction_with = FROM }
+			command_power > 19
+		}
+		cost = 0
+		custom_cost_trigger = {
+			command_power > 9
+		}
+		custom_cost_text = command_power_more_than_10
+		complete_effect = {
+			add_command_power = -10
+			declare_war_on = {
+				target = FROM
+				type = annex_everything
+			}
+			if = {
+				limit = {
+					has_subject = IRQ
+				}
+				IRQ = {
+					add_to_war = {
+						targeted_alliance = ROOT
+						enemy = FROM
+					}
+				}
+			}
+		}
+		ai_will_do = {
+			factor = 1000
+			modifier = {
+				factor = 0
+				surrender_progress > 0.1
+			}
+			modifier = {
+				factor = 0
+				has_government = communism
+			}
+			modifier = {
+				factor = 0
+				date < 1924.4.1
+			}
+		}
+	}
 }
 
 ENG_interwar_entente_category = {
@@ -1214,6 +1376,7 @@ ENG_interwar_entente_category = {
 			has_war = no
 			FROM = {
 				has_war = no
+				NOT = { has_idea = standing_alone }
 			}
 		}
 		visible = {
@@ -1238,18 +1401,28 @@ ENG_interwar_entente_category = {
 					tag = CAN
 					tag = SRD
 					tag = AST
-					original_tag = FRA
+					AND = {
+						original_tag = FRA
+						NOT = {
+							has_government = fascism
+							has_government = communism
+						}
+					}
 					tag = SAF
 					tag = NZL
 					tag = KEN
 					tag = ZIM
-					tag = NIR					
+					tag = NIR
 					original_tag = ITA
 					tag = SIC
 					tag = POR
+					AND = {
+						original_tag = RAJ
+						has_country_flag = RAJ_british_remnants_flag
+					}
 				}
 				is_subject = no
-				is_in_faction = no		
+				is_in_faction = no
 				NOT = {
 					tag = ROOT
 					has_government = communism
@@ -1262,6 +1435,54 @@ ENG_interwar_entente_category = {
 		cost = 25
 		complete_effect = {
 			FROM = {
+				hidden_effect = {
+					if = {
+						limit = {
+							is_ai = yes
+							OR = {
+								original_tag = FRA
+								tag = CAN
+								tag = AST
+								tag = NZL
+								tag = SAF
+								AND = {
+									tag = SRD
+									has_government = neutrality
+								}
+								AND = {
+									tag = ITA
+									has_government = neutrality
+								}
+								AND = {
+									tag = RAJ
+									has_country_flag = RAJ_british_remnants_flag
+								}
+							}
+						}
+						add_ai_strategy = {
+							type = alliance
+							id = ROOT
+							value = 200
+						}
+					}
+					if = {
+						limit = {
+							is_historical_focus_on = no
+							is_ai = yes
+						}
+						random_list = {
+							4 = {
+								add_ai_strategy = {
+									type = alliance
+									id = ROOT
+									value = 200
+								}
+							}
+							6 = {
+							}
+						}
+					}
+				}
 				country_event = generic.5
 			}
 		}
@@ -1275,7 +1496,6 @@ ENG_interwar_entente_category = {
 						tag = CAN
 						tag = AST
 						tag = NZL
-						tag = POR
 						AND = {
 							tag = SRD
 							has_government = neutrality
@@ -1284,9 +1504,63 @@ ENG_interwar_entente_category = {
 							tag = ITA
 							has_government = neutrality
 						}
+						AND = {
+							tag = RAJ
+							has_country_flag = RAJ_british_remnants_flag
+						}
 					}
 				}
 			}
+		}
+	}
+	ENG_merge_two_interwar_entente = {
+		icon = GFX_decision_eng_ally_imperialist_coup
+		allowed = {
+			always = yes
+		}
+		available = {
+			NOT = {
+				has_war_with = FROM
+			}
+			all_enemy_country = {
+				NOT = { is_in_faction_with = FROM }
+			}
+		}
+		visible = {
+			is_ai = no
+			is_faction_leader = yes
+			OR = {
+				has_country_flag = FRA_nationalist_france_flag
+				has_country_flag = imperial_entente_formed
+			}
+			FROM = {
+				is_ai = no
+				OR = {
+					is_subject = no
+					is_subject_of = ROOT
+				}
+			}
+		}
+		target_trigger = {
+			FROM = {
+				is_faction_leader = yes
+				OR = {
+					has_country_flag = FRA_nationalist_france_flag
+					has_country_flag = imperial_entente_formed
+				}
+			}
+		}
+		fire_only_once = yes
+		complete_effect = {
+			FROM = {
+				every_other_country = {
+					limit = {
+						is_in_faction_with = PREV
+					}
+					ROOT = { add_to_faction = PREV }
+				}
+			}
+			ROOT = { add_to_faction = FROM }
 		}
 	}
 }
@@ -1429,14 +1703,96 @@ ENG_british_civil_war_category = {
 		days_mission_timeout = 365
 		is_good = no
 	}
+	ENG_FRA_intervene_in_civil_war = {
+		icon = GFX_decision_generic_prepare_civil_war
+		allowed = {
+			original_tag = FRA
+		}
+		available = {
+			has_global_flag = british_civil_war
+			any_country = {
+				original_tag = ENG
+				has_country_flag = ENG_socialist_britain_flag
+				has_war_with = BRE
+			}
+			has_war = no
+			is_subject = no
+		}
+		visible = {
+			is_faction_leader = yes
+			OR = {
+				has_government = communism
+				has_country_leader_ideology = national_syndicalism
+			}
+			has_global_flag = british_civil_war
+			any_country = {
+				original_tag = ENG
+				has_country_flag = ENG_socialist_britain_flag
+				has_war_with = BRE
+			}
+			is_subject = no
+			FROM = {
+				OR = {
+					has_government = communism
+					has_country_leader_ideology = national_syndicalism
+				}
+			}
+		}
+		fire_only_once = yes
+		cost = 125
+		days_remove = 15
+		target_trigger = {
+			FROM = {
+				original_tag = ENG
+				has_country_flag = ENG_socialist_britain_flag
+			}				
+		}
+		cancel_if_not_visible = yes
+		remove_effect = {
+			add_to_faction = FROM
+			add_to_war = {
+				targeted_alliance = FROM
+				enemy = BRE
+			}
+			add_named_threat = {
+				threat = 3
+				name = ENG_FRA_intervene_in_civil_war
+			}
+		}
+		ai_will_do = {
+			base = 100
+			modifier = {
+				factor = 0
+				has_opinion = {
+					target = FROM
+					value < -20
+				}
+			}
+			modifier = {
+				factor = 0
+				has_war = yes
+			}
+			modifier = {
+				factor = 0
+				has_stability < 0.3
+			}
+			modifier = {
+				factor = 0
+				has_war_support < 0.3
+			}
+		}
+	}
 }
+#If removing this decision causes no bugs after the RCW update, just remove it - keeping it just in case we need it
 GER_agadir_crisis = {
 	ENG_agadir_involvement = {
 		icon = GFX_decision_generic_naval
 		allowed = {
 			tag = ENG
+			always = no
 		}
 		available = {
+			always = no
 			NOT = {
 				has_global_flag = agadir_crisis_ends
 				has_global_flag = great_war
@@ -1446,6 +1802,7 @@ GER_agadir_crisis = {
 			GER = { has_completed_focus = GER_moroccan_crisis }
 		}
 		visible = {
+			always = no
 			has_global_flag = agadir_crisis
 			NOT = {
 				has_global_flag = great_war
@@ -1462,7 +1819,10 @@ GER_agadir_crisis = {
 			}
 		}
 		fire_only_once = yes
-		days_remove = 10
+		days_remove = 5
+		complete_effect = {
+			add_state_claim = 887
+		}
 		remove_effect = {
 			FRA = { country_event = ww1_morocco.16 }
 			GER = { country_event = ww1_morocco.16 }
@@ -1509,15 +1869,26 @@ foreign_influence = {
 		}
 		available = {
 			has_war = no
-			NIR = { has_war = no }
+			FROM = { has_war = no }
 		}
 		visible = {
 			is_subject = no
-			NIR = {
-				has_cosmetic_tag = NIR_orange_order
+			FROM = {
+				# has_cosmetic_tag = NIR_orange_order
 				is_subject = no
 			}
-			NOT = { has_government = communism }
+			NOT = {
+				has_government = communism
+				has_idea = ENG_general_strike
+				has_idea = ENG_general_strike_cw
+			}
+		}
+		cancel_if_not_visible = yes
+		cancel_trigger = {
+			OR = {
+				has_war = yes
+				FROM = { has_war = yes }
+			}
 		}
 		cost = 0
 		days_remove = 120
@@ -1526,12 +1897,105 @@ foreign_influence = {
 		}
 		fire_only_once = no
 		remove_effect = {
-			NIR = { country_event = orange.4 }
+			FROM = { country_event = orange.4 }
 		}
 	}
 }
 
 GER_great_war = {
+	unlock_armored_cars_for_ENG = {
+		visible = {
+			is_ai = yes
+			tag = ENG
+		}
+		available = {
+			has_tech = improved_armored_car
+		}
+		fire_only_once = yes
+		complete_effect = {
+			create_equipment_variant = {
+				name = "Rolls Royce Mk I" 
+				type = armored_car_equipment_3
+				parent_version = 0
+				modules = {
+					main_armament_slot = tank_heavy_machine_gun
+					turret_type_slot = armored_car_one_man_tank_turret
+					suspension_type_slot = tank_wheeled_suspension
+					armor_type_slot = tank_riveted_armor
+					engine_type_slot = early_tank_gasoline_engine
+				}
+			}
+		}
+		ai_will_do = {
+			factor = 500
+		}
+	}
+	ENG_send_knox_to_russia = {
+
+		icon = GFX_decision_generic_army_support
+
+		allowed = {
+			tag = ENG
+		}
+
+		target_trigger = {
+			FROM = {
+				tag = RUS
+			}
+		}
+
+		available = {
+			NOT = {
+				has_war_with = FROM
+			}
+			FROM = {
+				has_war = yes
+				OR = {
+					NOT = {
+						has_government = communism
+					}
+					has_government = ROOT
+					has_government = neutrality
+				}
+				is_in_faction_with = ROOT
+			}
+		}
+
+		custom_cost_trigger = {
+			command_power > 14
+		}
+		custom_cost_text = decision_cost_CP_15
+
+		visible = {
+			NOT = {
+				has_global_flag = great_war_ends
+				has_war_with = FROM
+			}
+			FROM = { is_subject = no }
+			has_character = ENG_alfred_knox
+			ENG_alfred_knox = {
+				is_unit_leader = yes
+			}
+		}
+
+		complete_effect = {
+			FROM = { country_event = { id = ww1_england.209 hours = 5 } }
+			hidden_effect = {
+				add_command_power = -15
+			}
+			add_war_support = 0.02
+		}
+
+		ai_will_do = {
+			factor = 100
+			modifier = {
+				factor = 0
+				date < 1911.1.6
+			}
+		}
+
+		fire_only_once = yes
+	}
 	ENG_losing_naval_supremacy_timeout = {
 		icon = GFX_decision_generic_naval
 		allowed = {
@@ -1649,6 +2113,222 @@ GER_great_war = {
 		}
 		complete_effect = {
 			remove_ideas = ENG_homeland_under_attack
+		}
+	}
+}
+peace_deals = {
+	ENG_sue_for_peace_IRE = {
+		icon = GFX_decision_eng_trade_unions_support
+		allowed = {
+			tag = ENG
+		}
+		available = {
+			OR = {
+				any_enemy_country = {
+					is_major = yes
+				}
+				has_civil_war = yes
+				any_enemy_country = {
+					original_tag = ROOT
+				}
+			}
+		}
+		visible = {
+			has_global_flag = irish_war_of_independence
+			is_subject = no
+			has_war_with = FROM
+			FROM = {
+				is_subject = no
+			}
+		}
+		target_trigger = {
+			FROM = {
+				tag = IRE
+			}
+		}
+		fire_only_once = yes
+		ai_will_do = {
+			base = 0
+			modifier = {
+				add = 500
+				FROM = { controls_state = 113 }
+				FROM = { controls_state = 119 }
+				FROM = { controls_state = 134 }
+				FROM = { controls_state = 135 }
+			}
+		}
+		complete_effect = {
+			every_owned_state = {
+				limit = { is_core_of = FROM }
+				transfer_state_to = FROM
+			}
+			white_peace = FROM
+		}
+	}
+	ENG_sue_for_peace_AFG = {
+		icon = GFX_decision_eng_trade_unions_support
+		allowed = {
+			OR = {
+				original_tag = ENG
+				original_tag = RAJ
+			}
+		}
+		available = {
+			FROM = { surrender_progress < 0.01 }
+		}
+		visible = {
+			is_subject = no
+			has_war_with = FROM
+			OR = {
+				has_subject = RAJ
+				is_neighbor_of = FROM
+			}
+		}
+		target_trigger = {
+			FROM = {
+				tag = AFG
+			}
+		}
+		fire_only_once = yes
+		ai_will_do = {
+			base = 0
+			# raj is failed
+			modifier = {
+				add = 500
+				original_tag = RAJ
+				surrender_progress > 0.4
+			}
+			# durand line is failed
+			modifier = {
+				add = 500
+				440 = {
+					is_owned_or_subject_trigger = yes
+					is_controlled_by_FROM_or_ally = yes
+				}
+				441 = {
+					is_owned_or_subject_trigger = yes
+					is_controlled_by_FROM_or_ally = yes
+				}
+				442 = {
+					is_owned_or_subject_trigger = yes
+					is_controlled_by_FROM_or_ally = yes
+				}
+				443 = {
+					is_owned_or_subject_trigger = yes
+					is_controlled_by_FROM_or_ally = yes
+				}
+				444 = {
+					is_owned_or_subject_trigger = yes
+					is_controlled_by_FROM_or_ally = yes
+				}
+				445 = {
+					is_owned_or_subject_trigger = yes
+					is_controlled_by_FROM_or_ally = yes
+				}
+			}
+			# afghans invaded britain lol
+			modifier = {
+				add = 500
+				original_tag = ENG
+				any_owned_state = {
+					is_core_of = ROOT
+					is_controlled_by = FROM
+				}
+			}
+		}
+		complete_effect = {
+			white_peace = FROM
+			hidden_effect = {
+				every_other_country = {
+					limit = {
+						OR = {
+							is_in_faction_with = ROOT
+							is_subject_of = ROOT
+						}
+						has_war_with = FROM
+					}
+					white_peace = FROM
+				}
+			}
+			every_state = {
+				limit = {
+					OR = {
+						is_core_of = FROM
+						state = 442
+						state = 445
+					}
+					is_owned_or_subject_trigger = yes
+				}
+				transfer_state_to = FROM
+			}
+		}
+	}
+}
+
+foreign_politics = {
+	ENG_cancel_chinde_concession = {
+		icon = GFX_decision_eng_trade_unions_demand
+		allowed = {
+			original_tag = ENG
+		}
+		visible = {
+			owns_state = 924
+		}
+		available = {
+			544 = { is_owned_and_controlled_by = FROM }
+			924 = { is_owned_and_controlled_by = ROOT }
+		}
+		target_trigger = {
+			FROM = {
+				owns_state = 971
+				NOT = {
+					tag = ROOT
+					is_subject_of = ROOT
+					has_war_with = ROOT
+				}
+			}
+		}
+		highlight_states = {
+			highlight_state_targets = {
+				state = 544
+				state = 924
+			}
+		}
+		fire_only_once = yes
+		complete_effect = {
+			FROM = {
+				effect_tooltip = {
+					transfer_state = 924
+				}
+				hidden_effect = {
+					country_event = {
+						id = ww1_england.250
+						hours = 3
+					}
+				}
+			}
+		}
+		ai_will_do = {
+			base = 1
+			modifier = {
+				factor = 0
+				date < 1919.1.1
+			}
+			modifier = {
+				factor = 0
+				has_opinion = {
+					target = FROM
+					value < -25
+				}
+			}
+			modifier = {
+				factor = 0
+				has_war = yes
+			}
+			modifier = {
+				factor = 0
+				has_government = fascism
+			}
 		}
 	}
 }

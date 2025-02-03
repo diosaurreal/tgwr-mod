@@ -1,4 +1,5 @@
 add_namespace = garibaldi
+
 #Victor Emmannuel abdicates
 country_event = {
 	id = garibaldi.1
@@ -28,11 +29,13 @@ country_event = {
 		name = garibaldi.1.a
 		ITA_vittorio_emanuele_iii = {
 			remove_country_leader_role = {
-				ideology = autocracy
+				ideology = semi_constitutional_monarchy
 			}
 		}
-		promote_character = ITA_umberto_ii
-		add_country_leader_trait = unpopular_monarch
+		ITA_umberto_ii = {
+			promote_character = semi_constitutional_monarchy
+			add_country_leader_trait = unpopular_monarch
+		}
 		hidden_effect = {
 			if = {
 				limit = {
@@ -55,14 +58,6 @@ country_event = {
 			country_event = {
 				id = garibaldi.5
 				days = 19
-			}
-			SRD = {
-				SRD_vittorio_emanuele_iii = {
-					remove_country_leader_role = {
-						ideology = autocracy
-					}
-				}
-				promote_character = SRD_umberto_ii
 			}
 		}
 	}
@@ -178,6 +173,7 @@ country_event = {
 							has_character = ITA_costantino_lazzari
 							has_character = ITA_alceste_de_ambris
 							has_character = ITA_randolfo_pacciardi
+							has_character = ITA_argo_secondari
 							has_character = ITA_edmondo_rossoni
 							has_character = ITA_arnaldo_azzi
 						}
@@ -205,6 +201,9 @@ country_event = {
 					ITA_randolfo_pacciardi = {
 						set_nationality = SRI
 					}
+					ITA_argo_secondari = {
+						set_nationality = SRI
+					}
 					ITA_edmondo_rossoni = {
 						set_nationality = SRI
 					}
@@ -229,10 +228,10 @@ country_event = {
 				limit = {
 					OR = {
 						state = 158
-						state = 159
+						# state = 159
 						state = 161
 						state = 162
-						state = 160
+						# state = 160
 						state = 833
 						state = 39
 						state = 834
@@ -260,22 +259,10 @@ country_event = {
 					division_names_group = ITA_GAR_01
 					template_counter = 69
 					regiments = {
-						militia = {
-							x = 0
-							y = 0
-						}
-						militia = {
-							x = 0
-							y = 1
-						}
-						militia = {
-							x = 0
-							y = 2
-						}
-						militia = {
-							x = 0
-							y = 3
-						}
+						militia = { x = 0 y = 0 }
+						militia = { x = 0 y = 1  }
+						militia = { x = 0 y = 2 }
+						militia = { x = 0 y = 3 }
 					}
 				}
 			}
@@ -384,6 +371,10 @@ country_event = {
 						}
 					}
 				}
+				set_division_template_lock = {
+					division_template = "Avanguardie Repubblicane"
+					is_locked = no
+				}
 			}
 			ITS = {
 				declare_war_on = {
@@ -394,7 +385,51 @@ country_event = {
 			}
 			EMI = {
 				add_state_core = 833
-			}	
+			}
+			SRI = {
+				if = {
+					limit = {
+						strength_ratio = {
+							tag = ROI
+							ratio < 0.5
+						}
+					}
+					every_owned_state = {
+						create_unit = {
+							division = "division_template = \"Guardie Rosse\" start_experience_factor = 0.3"
+							owner = PREV
+							allow_spawning_on_enemy_provs = yes
+						}
+					}
+				}
+				if = {
+					limit = {
+						strength_ratio = {
+							tag = ROI
+							ratio < 0.5
+						}
+					}
+					every_owned_state = {
+						create_unit = {
+							division = "division_template = \"Guardie Rosse\" start_experience_factor = 0.3"
+							owner = PREV
+							allow_spawning_on_enemy_provs = yes
+						}
+					}
+				}
+				if = {
+					limit = {
+						159 = { owner = { original_tag = ITA } }
+					}
+					set_state_controller = 159
+				}
+				if = {
+					limit = {
+						160 = { owner = { original_tag = ITA } }
+					}
+					set_state_controller = 160
+				}
+			}
 		}
 	}
 	option = {
@@ -402,9 +437,7 @@ country_event = {
 	}
 	option = {
 		name = garibaldi.4.b
-		ai_chance = {
-			factor = 0
-		}
+		trigger = { is_ai = no }
 		SRI = {
 			change_tag_from = ROOT
 		}
@@ -472,21 +505,34 @@ country_event = {
 				set_character_name = ITA_emanuele_filiberto_i
 				promote_leader = yes
 				set_nationality = SRD
+				add_country_leader_role = {
+					promote_leader = yes
+					country_leader = {
+						ideology = semi_constitutional_monarchy
+						traits = { duke_of_aosta }
+					}
+				}
+			}
+			ITA_amedeo_di_savoy_aosta = {
+				set_nationality = SRD
 			}
 			ITA_luigi_amedeo = {
 				set_nationality = SRD
 			}
-			SRD = {
-				retire_character = SRD_umberto_ii
-				SRD_emanuele_filiberto_i = {
-					add_country_leader_role = {
-						promote_leader = yes
-						country_leader = {
-							ideology = autocracy
-						}
-					}
+			if = {
+				limit = { #he can be a king of albania
+					has_character = ITA_vittorio_emanuele_di_savoy_aosta
 				}
-			}	
+				ITA_vittorio_emanuele_di_savoy_aosta = {
+					set_nationality = SRD
+				}
+			}
+			ITA_umberto_ii = {
+				set_nationality = SRD
+			}
+			ITA_vittorio_emanuele_iii = {
+				set_nationality = SRD
+			}
 		}
 	}
 	option = {
@@ -562,7 +608,8 @@ country_event = {
 				create_country_leader = {
 					name = "ITA_provisional_government_of_naples"
 					picture = "gfx/leaders/ITA/ITA_Provisional_Government_of_Naples.png"
-					ideology = oligarchism
+					ideology = semi_constitutional_monarchy
+					traits = { ITA_regency_council }
 				}
 				load_focus_tree = {
 					tree = italian_focus
@@ -577,6 +624,9 @@ country_event = {
 						state = 117
 						state = 156
 						state = 157
+						state = 163
+						state = 513
+						state = 1006
 					}
 					is_controlled_by = ROI
 				}
@@ -595,7 +645,17 @@ country_event = {
 				}
 				set_capital = { state = 117 }
 				add_ideas = ITA_death_before_surrender
-				add_ideas = ITA_idea_mafia				#The mafia was the strongest in Sicily.
+				if = {
+					limit = {
+						NOT = { has_dlc = "By Blood Alone" }
+					}
+					add_ideas = ITA_idea_mafia
+					#The mafia was the strongest in Sicily.
+				}
+				else = {
+					country_event = BBA_italy_democratic_events.03 #mafia spawns
+				}
+				
 				add_ideas = extensive_conscription
 				if = {
 					limit = {
@@ -614,6 +674,13 @@ country_event = {
 					set_province_controller = 923
 					set_province_controller = 11882
 				}
+				if = {
+					limit = {
+						country_exists = PAP
+					}
+					give_guarantee = PAP
+				}
+
 				ROOT = {
 					every_unit_leader = {
 						limit = {
@@ -689,18 +756,9 @@ country_event = {
 					division_names_group = ITA_INF_01
 					override_model = ITA_infantry_entity
 					regiments = {
-						militia = {
-							x = 0
-							y = 0
-						}
-						militia = {
-							x = 0
-							y = 1
-						}
-						militia = {
-							x = 0
-							y = 2
-						}
+						militia = { x = 0 y = 0 }
+						militia = { x = 0 y = 1 }
+						militia = { x = 0 y = 2 }
 					}
 				}
 				add_popularity = {
@@ -875,6 +933,17 @@ country_event = {
 			}
 			if = {
 				limit = {
+					owns_state = 871
+				}
+				every_other_country = {
+					limit = {
+						owns_state = 44
+					}
+					transfer_state = 44
+				}
+			}
+			if = {
+				limit = {
 					ETH = {
 						exists = yes
 						has_war = no
@@ -901,6 +970,12 @@ country_event = {
 						}
 					}
 				}
+			}
+			every_owned_state = {
+				limit = {
+					is_core_of = ALB
+				}
+				transfer_state_to = ALB
 			}
 			every_owned_state = {
 				limit = {
@@ -1004,21 +1079,50 @@ country_event = {
 				}
 			}
 			set_global_flag = italian_civil_war
+			ITS = {
+				division_template = {
+					name = "Reggimenti degli Monarchica Italiana"
+					division_names_group = ITA_INF_01
+					override_model = ITA_infantry_entity
+					regiments = {
+						militia = { x = 0 y = 0 }
+						militia = { x = 0 y = 1 }
+						militia = { x = 0 y = 2 }
+					}
+				}
+				every_owned_state = {
+					create_unit = {
+						division = "division_template = \"Reggimenti degli Monarchica Italiana\" start_experience_factor = 0.3"
+						owner = PREV
+						allow_spawning_on_enemy_provs = yes
+					}
+				}
+				if = {
+					limit = {
+						strength_ratio = {
+							tag = ROOT
+							ratio < 0.5
+						}
+					}
+					every_owned_state = {
+						create_unit = {
+							division = "division_template = \"Reggimenti degli Monarchica Italiana\" start_experience_factor = 0.3"
+							owner = PREV
+							allow_spawning_on_enemy_provs = yes
+						}
+					}
+				}
+			}
 		}
 	}
 	#stay as republic
 	option = {
 		name = garibaldi.6.a
-		ai_chance = {
-			factor = 100
-		}
 	}
 	#For King and Stuff
 	option = {
 		name = garibaldi.6.b
-		ai_chance = {
-			factor = 0
-		}
+		trigger = { is_ai = no }
 		ITS = {
 			change_tag_from = ROOT
 		}
@@ -1055,13 +1159,23 @@ country_event = {
 	option = {
 		name = garibaldi.8.a
 		add_stability = 0.1
+		hidden_effect = {
+			retire_ideology_leader = neutrality
+		}
 		# Ferdinant III of Bourbon-Two Sicilies
-		add_country_leader_role = {
-			character = ITA_ferdinando_iii
-			promote_leader = yes
-			country_leader = {
-				ideology = autocracy
-			}		
+		ITA_ferdinando_iii = {
+			if = {
+				limit = { has_ideology = semi_constitutional_monarchy }
+				promote_character = semi_constitutional_monarchy
+			}
+			else = {
+				add_country_leader_role = {
+					promote_leader = yes
+					country_leader = {
+						ideology = semi_constitutional_monarchy
+					}
+				}
+			}
 		}
 		set_party_name = {
 			ideology = neutrality
@@ -1076,28 +1190,55 @@ country_event = {
 	id = garibaldi.9
 	title = garibaldi.9.t
 	desc = garibaldi.9.desc
-	picture = GFX_report_event_gre_city_devastated
+	picture = GFX_report_event_ITA_italian_civil_war
 	is_triggered_only = yes
 	immediate = {
 		hidden_effect = {
 			set_capital = { state = 114 }
 			set_country_flag = ROI_exiled_to_sardinia
+			random_other_country = {
+				limit = { controls_province = 9904 }
+				set_state_owner = 2
+			}
+			if = {
+				limit = {
+					has_guaranteed = SMR
+				}
+				diplomatic_relation = {
+					country = SMR
+					relation = guarantee
+					active = no
+				}
+			}
+			if = {
+				limit = {
+					has_guaranteed = PAP
+				}
+				diplomatic_relation = {
+					country = PAP
+					relation = guarantee
+					active = no
+				}
+			}
 		}
 	}
 	option = {
 		name = garibaldi.9.a
 		ai_chance = {
-			factor = 10
+			base = 10
 		}
-		ROI = {
-			set_politics = {
-				ruling_party = fascism
-			}
-			add_popularity = {
-				ideology = democratic
-				popularity = -0.3
-			}
-			hidden_effect = {
+		set_politics = {
+			ruling_party = fascism
+		}
+		add_popularity = {
+			ideology = democratic
+			popularity = -0.3
+		}
+		hidden_effect = {
+			if = {
+				limit = {
+					has_focus_tree = italian_focus
+				}
 				unlock_national_focus = ITA_vittoria_mutilata
 				unlock_national_focus = ITA_fascismo_movimento
 				unlock_national_focus = ITA_mussolini_cult
@@ -1110,110 +1251,93 @@ country_event = {
 	option = {
 		name = garibaldi.9.b
 		ai_chance = {
-			factor = 15
+			base = 15
 		}
-		ROI = {
-			add_war_support = 0.03
-			add_stability = -0.07
-		}
+		add_war_support = 0.03
+		add_stability = -0.07
 	}
 	option = {
 		ai_chance = {
-			factor = 30
+			base = 30
+			modifier = {
+				add = 100
+				GER = { has_country_flag = great_war_winner }
+			}
 		}
 		name = garibaldi.9.c
-		every_owned_state = {
-			limit = {
-				is_owned_by = ROI
-				is_fully_controlled_by = SRI
-			}
-			SRI = {
-				transfer_state = PREV
-			}
-		}
-		every_state = {
-			limit = {
-				is_owned_by = ROI
-				is_fully_controlled_by = ITS
-			}
-			ITS = {
-				transfer_state = PREV
-			}
-		}
-		every_state = {
-			limit = {
-				is_owned_by = ROI
-				is_controlled_by = SRI
-			}
-			SRI = {
-				transfer_state = PREV
-			}
-		}
-		every_state = {
-			limit = {
-				is_owned_by = ROI
-				is_controlled_by = ITS
-			}
-			ITS = {
-				transfer_state = PREV
-			}
-		}
-		every_state = {
-			limit = {
-				is_owned_by = ROI
-				is_core_of = ROI
-				NOT = {
-					state = 114
-				}
-			}
-			ITS = {
-				transfer_state = PREV
-			}
+		effect_tooltip = {
+			SRD = { change_tag_from = ROOT }
 		}
 		hidden_effect = {
+			every_owned_state = {
+				limit = {
+					is_controlled_by = SRI
+				}
+				transfer_state_to = SRI
+				SRI = {
+					transfer_state = PREV
+				}
+			}
+			every_state = {
+				limit = {
+					is_controlled_by = ITS
+				}
+				transfer_state_to = ITS
+			}
+			every_owned_state = {
+				limit = {
+					is_core_of = ROOT
+					NOT = { state = 114 }
+				}
+				transfer_state_to = ITS
+			}
 			every_state = {
 				limit = {
 					OR = {
-						is_core_of = ROI
-						is_claimed_by = ROI
+						is_core_of = ROOT
+						is_claimed_by = ROOT
 					}
 				}
-				remove_core_of = ROI
-				remove_claim_by = ROI
+				remove_core_of = ROOT
+				remove_claim_by = ROOT
+			}
+			every_character = {
+				set_nationality = SRD
+			}
+			every_unit_leader = {
+				set_nationality = SRD
+			}
+			transfer_navy = {
+				target = SRD
 			}
 			SRD = {
-				transfer_state = 114
 				add_state_core = 114
-				inherit_technology = ROI
-				ROI = {
-					every_unit_leader = {
-						set_nationality = SRD
-					}
-				}
+				transfer_state = 114
+				inherit_technology = ROOT
 				set_politics = {
 					ruling_party = neutrality
 					elections_allowed = no
 				} 
 				annex_country = {
-					target = ROI
+					target = ROOT
 					transfer_troops = yes
 				}
 				delete_unit_template_and_units = {
 					division_template = "Avanguardie Repubblicane"
 					disband = yes
 				}
-				change_tag_from = ROOT
 				every_state = {
 					teleport_armies = {
 						to_state_array = owned_controlled_states
 					}
 				}
+				change_tag_from = ROOT
 			}
 		}
 	}
 	option = {
 		ai_chance = {
-			factor = 30
+			base = 30
 		}
 		name = garibaldi.9.d
 		ITS = {
@@ -1277,13 +1401,13 @@ country_event = {
 #
 #			if = {
 #				limit = {
-#					AUH = {
+#					AUS = {
 #						exists = yes
 #						NOT = { has_war_with = SRI }
 #					}
 #				}
 #
-#				AUH = {
+#				AUS = {
 #					country_event = { id = garibaldi.11 days = 3 }
 #				}
 #			}
@@ -1451,7 +1575,6 @@ news_event = {
 			every_country = {
 				limit = {
 					OR = {
-						tag = AUH
 						tag = AUS
 						#tag = FRA
 						#tag = HUN
@@ -1854,16 +1977,20 @@ news_event = {
 				every_state = {
 					limit = {
 						OR = {
+							is_owned_by = PAP
 							is_owned_by = SRI
 							is_owned_by = ROI
 							is_owned_by = ITS
 							is_owned_by = ITA
 						}
-						state = 2			
+						OR = {
+							state = 2
+							state = 1001
+						}		
 					}
 					PAP = {
-						transfer_state = PREV
 						add_state_core = PREV
+						transfer_state = PREV
 					}
 				}
 			}
@@ -1876,6 +2003,22 @@ news_event = {
 				inherit_technology = ITS
 				ITS = {
 					add_to_faction = PAP
+				}
+				PAP = {
+					set_research_slots = 3
+					remove_ideas = PAP_captivus_vaticani					
+					if = {
+						limit = {
+							has_idea = closed_economy
+						}
+						add_ideas = limited_exports
+					}	
+					if = {
+						limit = {
+							has_idea = isolation
+						}
+						add_ideas = civilian_economy
+					}
 				}
 			}
 			every_state = {
@@ -1923,7 +2066,7 @@ country_event = {
 			modifier = {
 				factor = 0
 				OR = {
-					owns_state = 151
+					owns_state = 159
 					owns_state = 158
 					owns_state = 114
 				}
@@ -1932,30 +2075,16 @@ country_event = {
 		hidden_effect = {
 			if = {
 				limit = {
-					is_faction_leader = yes
+					owns_state = 1001
 				}
-				set_faction_name = italian_federation
-			}			
-			every_unit_leader = {
-				set_nationality = SIC
-			}
-			every_state = {
-				remove_core_of = ITS
-				remove_claim_by = ITS
-			}
-			SIC = {
-				inherit_technology = ITS
-				annex_country = {
-					target = ITS
-					transfer_troops = yes
+				PAP = {
+					add_state_core = 1001
+					transfer_state = 1001
 				}
-				change_tag_from = ITS
 			}
 			if = {
 				limit = {
-					SIC = {
-						owns_state = 2
-					}
+					owns_state = 2
 				}
 				PAP = {
 					add_state_core = 2
@@ -1964,9 +2093,7 @@ country_event = {
 			}
 			if = {
 				limit = {
-					SIC = {
-						owns_state = 835
-					}
+					owns_state = 835
 				}
 				PAP = {
 					add_state_core = 835
@@ -1975,139 +2102,166 @@ country_event = {
 			}
 			if = {
 				limit = {
-					SIC = {
-						owns_state = 161
-					}
+					owns_state = 161
 				}
 				PAP = {
 					add_state_core = 161
 					transfer_state = 161
 				}
 			}
-			if = {
-				limit = {
-					PAP = {
-						exists = yes
-					}
-					NOT = {
-						has_global_flag = catholic_crusader_is_here
-					}
-				}
-				SIC = {
-					puppet = PAP
-				}
+			every_unit_leader = {
+				set_nationality = SIC
 			}
-			if = {
-				limit = {
-					SIC = {
+			every_state = {
+				remove_core_of = ROOT
+				remove_claim_by = ROOT
+			}
+			transfer_navy = {
+				target = SIC
+			}
+			every_character = {
+				set_nationality = SIC
+			}
+			# if = {
+			# 	limit = {
+			# 		is_faction_leader = yes
+			# 	}
+			# 	every_other_country = {
+			# 		limit = {
+			# 			is_in_faction_with = ROOT
+			# 		}
+			# 		SIC = {
+			# 			create_faction = italian_federation
+			# 			add_to_faction = PREV
+			# 		}
+			# 	}
+			# }
+			SIC = {
+				if = {
+					limit = {
+						PREV = { is_in_faction_with = ITA }
+					}
+					set_truce = {
+						target = ITA
+						days = 365
+					}
+					diplomatic_relation = {
+						country = PREV
+						relation = non_aggression_pact
+						active = yes
+					}
+				}
+				take_all_subjects_ROOT = yes
+				inherit_technology = ROOT
+				annex_country = {
+					target = ROOT
+					transfer_troops = yes
+				}
+				if = {
+					limit = {
+						country_exists = PAP
+						is_neighbor_of = PAP
+						NOT = { has_global_flag = catholic_crusader_is_here }
+					}
+					set_autonomy = {
+						target = PAP
+						autonomy_state = autonomy_dominion
+					}
+				}
+				if = {
+					limit = {
 						owns_state = 162
 					}
-				}
-				TUS = {
-					add_state_core = 162
-					transfer_state = 162
-				}
-				SIC = {
+					TUS = {
+						add_state_core = 162
+						transfer_state = 162
+					}
 					puppet = TUS
 				}
-			}
-			if = {
-				limit = {
-					SIC = {
+				if = {
+					limit = {
 						owns_state = 833
 					}
-				}
-				EMI = {
-					add_state_core = 833
-					transfer_state = 833
-				}
-				SIC = {
+					EMI = {
+						add_state_core = 833
+						transfer_state = 833
+					}
 					puppet = EMI
 				}
-			}
-			if = {
-				limit = {
-					SIC = {
+				if = {
+					limit = {
 						owns_state = 114
+						NOT = { country_exists = SRD }
 					}
-				}
-				SRD = {
-					add_state_core = 114
-					transfer_state = 114
-					if = {
-						limit = {
-							SIC = {
-								owns_state = 158
+					SRD = {
+						add_state_core = 114
+						transfer_state = 114
+						if = {
+							limit = {
+								SIC = {
+									owns_state = 158
+								}
 							}
+							add_state_core = 158
+							transfer_state = 158
+							set_cosmetic_tag = SRD_PIE
 						}
-						add_state_core = 158
-						transfer_state = 158
-						set_cosmetic_tag = SRD_PIE
 					}
-				}
-				SIC = {
 					puppet = SRD
 				}
-			}
-			if = {
-				limit = {
-					SIC = {
+				if = {
+					limit = {
 						owns_state = 160
+						NOT = { country_exists = VNC }
 					}
-				}
-				VNC = {
-					add_state_core = 160
-					transfer_state = 160
-					if = {
-						limit = {
-							SIC = {
-								owns_state = 159
+					VNC = {
+						add_state_core = 160
+						transfer_state = 160
+						if = {
+							limit = {
+								SIC = {
+									owns_state = 159
+								}
 							}
+							add_state_core = 159
+							transfer_state = 159
+							set_cosmetic_tag = VNC_LOM
 						}
-						add_state_core = 159
-						transfer_state = 159
 					}
-				}
-				SIC = {
 					puppet = VNC
 				}
+				if = {
+					limit = {
+						owns_state = 115
+						NOT = { owns_state = 117 }
+					}
+					set_cosmetic_tag = SIC_ONLY
+					set_capital = { state = 115 }
+				}
+				if = {
+					limit = {
+						NOT = { owns_state = 115 }
+					}
+					set_cosmetic_tag = SIC_NAPLES
+				}
 			}
-			if = {
+			every_possible_country = {
 				limit = {
-					SIC = {
-						controls_state = 115
-						NOT = {
-							any_state = {
-								NOT = {
-									state = 115
-								}
-								is_core_of = SIC
-								is_controlled_by = SIC
-							}
-						}
+					OR = {
+						has_character = ITA_gabriele_d_annunzio
+						has_character = ITA_antonio_salandra
+						has_character = ITA_antonino_paterne_castello
 					}
 				}
-				set_cosmetic_tag = SIC_ONLY
-				set_capital = { state = 115 }
-			}
-			if = {
-				limit = {
-					SIC = {
-						NOT = {
-							owns_state = 115
-						}
-					}
+				ITA_gabriele_d_annunzio = {
+					set_nationality = SIC
 				}
-				set_cosmetic_tag = SIC_NAPLES
-			}
-			ITA_gabriele_d_annunzio = {
-				set_nationality = SIC
-			}
-			ITA_antonio_salandra = {
-				set_nationality = SIC
-			}
-			ITA_antonino_paterne_castello = {
-				set_nationality = SIC
+				ITA_antonio_salandra = {
+					set_nationality = SIC
+				}
+				ITA_antonino_paterne_castello = {
+					set_nationality = SIC
+				}
 			}
 			SIC = {
 				ITA_vittorio_emanuele_orlando = {
@@ -2116,6 +2270,7 @@ country_event = {
 				ITA_gabriele_d_annunzio = {
 					promote_character = yes
 				}
+				change_tag_from = ROOT
 			}
 		}
 	}
@@ -2134,111 +2289,128 @@ country_event = {
 }
 
 # Sardinia or not
-country_event = {
-	id = garibaldi.20
-	title = garibaldi.20.t
-	desc = garibaldi.20.d
-	fire_only_once = yes
-	mean_time_to_happen = {
-		days = 56
-	}
-	trigger = {
-		original_tag = ITA
-		has_global_flag = italian_civil_war
-		has_country_flag = ITA_republican_italy_flag
-		has_war = no
-		owns_state = 114
-		all_owned_state = {
-			OR = {
-				state = 114
-				state = 158
-				state = 834
-				state = 735
-			}
-		}
-		NOT = {
-			has_government = fascism
-		}
-	}
-	option = {
-		name = garibaldi.20.a
-		ai_chance = {
-			factor = 70
-		}
-		set_cosmetic_tag = SRD
-		add_stability = 0.2
-		hidden_effect = {
-			drop_cosmetic_tag = yes
-			every_unit_leader = {
-				set_nationality = SRD
-			}
-			every_state = {
-				limit = {
-					OR = {
-						is_core_of = ROI
-						is_claimed_by = ROI
-					}
-				}
-				remove_core_of = ROI
-				remove_claim_by = ROI
-			}
-			SRD = {
-				add_state_core = 114
-				inherit_technology = ROI
-				annex_country = {
-					target = ROI
-					transfer_troops = yes
-				}
-				add_stability = 0.2
-				change_tag_from = ROOT
-				if = {
-					limit = {
-						SRD = {
-							owns_state = 158
-						}
-					}
-					set_cosmetic_tag = SRD_PIE
-					add_state_core = 158
-					add_state_core = 834
-					add_state_core = 735
-				}
-				if = {
-					limit = {
-						is_in_faction = no
-						is_subject = no
-					}
-					if = {
-						limit = {
-							ITS = {
-								is_faction_leader = yes
-							}
-						}
-						ITS = {
-							add_to_faction = SRD
-						}
-					}
-					else_if = {
-						limit = {
-							SIC = {
-								is_faction_leader = yes
-							}
-						}
-						SIC = {
-							add_to_faction = SRD
-						}
-					}
-				}			
-			}
-		}
-	}
-	option = {
-		name = garibaldi.20.b
-		ai_chance = {
-			factor = 0
-		}
-		add_stability = -0.1
-	}
-}
+# country_event = {
+# 	id = garibaldi.20
+# 	title = garibaldi.20.t
+# 	desc = garibaldi.20.d
+# 	fire_only_once = yes
+# 	mean_time_to_happen = {
+# 		days = 56
+# 	}
+# 	trigger = {
+# 		original_tag = ITA
+# 		has_global_flag = italian_civil_war
+# 		has_country_flag = ITA_republican_italy_flag
+# 		has_war = no
+# 		owns_state = 114
+# 		all_owned_state = {
+# 			OR = {
+# 				state = 114
+# 				state = 158
+# 				state = 834
+# 				state = 735
+# 			}
+# 		}
+# 		NOT = {
+# 			has_government = fascism
+# 		}
+# 	}
+# 	option = {
+# 		name = garibaldi.20.a
+# 		ai_chance = {
+# 			factor = 70
+# 		}
+# 		set_cosmetic_tag = SRD
+# 		add_stability = 0.2
+# 		hidden_effect = {
+# 			drop_cosmetic_tag = yes
+# 			every_unit_leader = {
+# 				set_nationality = SRD
+# 			}
+# 			every_state = {
+# 				limit = {
+# 					OR = {
+# 						is_core_of = ROI
+# 						is_claimed_by = ROI
+# 					}
+# 				}
+# 				remove_core_of = ROI
+# 				remove_claim_by = ROI
+# 			}
+# 			if = {
+# 				limit = {
+# 					has_government = neutrality
+# 				}
+# 				SRD = {
+# 					set_politics = {
+# 						ruling_party = neutrality
+# 						elections_allowed = no
+# 					}
+# 					set_popularities = {
+# 						neutrality = 55
+# 						fascism = 15
+# 						communism = 0
+# 						democratic = 40
+# 					}
+# 				}
+# 			}
+# 			SRD = {
+# 				add_state_core = 114
+# 				inherit_technology = ROI
+# 				annex_country = {
+# 					target = ROI
+# 					transfer_troops = yes
+# 				}
+# 				add_stability = 0.2
+# 				change_tag_from = ROOT
+# 				if = {
+# 					limit = {
+# 						SRD = {
+# 							owns_state = 158
+# 						}
+# 					}
+# 					set_cosmetic_tag = SRD_PIE
+# 					add_state_core = 158
+# 					add_state_core = 834
+# 					add_state_core = 735
+# 				}
+# 				if = {
+# 					limit = {
+# 						is_in_faction = no
+# 						is_subject = no
+# 					}
+# 					if = {
+# 						limit = {
+# 							ITS = {
+# 								is_faction_leader = yes
+# 							}
+# 						}
+# 						ITS = {
+# 							add_to_faction = SRD
+# 						}
+# 					}
+# 					else_if = {
+# 						limit = {
+# 							SIC = {
+# 								is_faction_leader = yes
+# 							}
+# 						}
+# 						SIC = {
+# 							add_to_faction = SRD
+# 						}
+# 					}
+# 				}			
+# 			}
+# 		}
+# 	}
+# 	option = {
+# 		name = garibaldi.20.b
+# 		ai_chance = {
+# 			factor = 0
+# 		}
+# 		add_stability = -0.1
+# 	}
+# }
 
 # Italian Federation
 country_event = {
@@ -3202,5 +3374,240 @@ news_event = {
 	}
 	option = {
 		name = garibaldi.33.a
+	}
+}
+
+# Socialist San Marino?
+country_event = {
+	id = garibaldi.34
+	title = garibaldi.34.t
+	desc = garibaldi.34.d
+	picture = GFX_report_event_ITA_partisans
+	trigger = {
+		original_tag = ITA
+		has_government = communism
+		SMR = {
+			is_subject = no
+			is_neighbor_of = ROOT
+			NOT = {
+				has_war_with = ROOT
+				has_government = communism
+				has_country_leader_ideology = social_democracy
+			}
+		}
+	}
+	fire_only_once = yes
+	option = {
+		name = garibaldi.34.a
+		SMR = {
+			custom_effect_tooltip = if_they_accept_newline_tt
+			effect_tooltip = {
+				meta_effect = {
+					text = {
+						set_politics = {
+							ruling_party = democratic
+							last_election = "[CURRENT_DATE]"
+							elections_allowed = yes
+						}
+					}
+					CURRENT_DATE = "[?global.date.GetDateStringNoHour]"
+				}
+				set_country_leader_ideology = social_democracy
+				ROOT = {
+					give_guarantee = PREV
+					give_market_access = PREV
+				}
+				every_other_country = {
+					limit = {
+						is_italian_nation = yes
+						NOT = {
+							has_government = communism
+							has_country_leader_ideology = social_democracy
+						}
+					}
+					PREV = { send_embargo = PREV }
+				}
+			}
+			custom_effect_tooltip = if_they_refuse_newline_tt
+			effect_tooltip = {
+				ROOT = {
+					add_state_core = 999
+					create_wargoal = {
+						target = PREV
+						type = annex_everything
+					}
+				}
+			}
+			hidden_effect = {
+				country_event = {
+					id = garibaldi.35
+					hours = 3
+				}
+			}
+		}
+	}
+}
+
+# Socialist Italy demands socialist San Marino
+country_event = {
+	id = garibaldi.35
+	title = garibaldi.35.t
+	desc = garibaldi.35.d
+	picture = GFX_report_event_ITA_partisans
+	is_triggered_only = yes
+	option = {
+		name = garibaldi.35.a
+		ai_chance = {
+			factor = 70
+			modifier = {
+				factor = 0
+				OR = {
+					has_government = neutrality
+					has_government = fascism
+				}
+			}
+		}
+		meta_effect = {
+			text = {
+				set_politics = {
+					ruling_party = democratic
+					last_election = "[CURRENT_DATE]"
+					elections_allowed = yes
+				}
+			}
+			CURRENT_DATE = "[?global.date.GetDateStringNoHour]"
+		}
+		set_country_leader_ideology = social_democracy
+		FROM = {
+			give_guarantee = ROOT
+			give_market_access = ROOT
+			hidden_effect = {
+				add_opinion_modifier = {
+					target = ROOT
+					modifier = HOI4TGW_Opinion_diplomats_bonus
+				}
+			}
+		}
+		every_other_country = {
+			limit = {
+				is_italian_nation = yes
+				NOT = {
+					has_government = communism
+					has_country_leader_ideology = social_democracy
+				}
+			}
+			PREV = { send_embargo = PREV }
+		}
+	}
+	option = {
+		name = garibaldi.35.b
+		ai_chance = {
+			base = 0
+			modifier = {
+				add = 70
+				OR = {
+					has_government = neutrality
+					has_government = fascism
+				}
+			}
+		}
+		FROM = {
+			add_state_core = 999
+			create_wargoal = {
+				target = ROOT
+				type = annex_everything
+			}
+		}
+	}
+}
+
+# Emanuele Filiberto Dies
+country_event = {
+	id = garibaldi.36
+	title = {
+		text = garibaldi.36.t
+		trigger = {
+			NOT = {
+				has_country_leader = {
+					character = ITA_emanuele_filiberto
+					ruling_only = yes
+				}
+			}
+		}
+	}
+	title = {
+		text = garibaldi.36.c
+		trigger = {
+			has_country_leader = {
+				character = ITA_emanuele_filiberto
+				ruling_only = yes
+			}
+		}
+	}
+	desc = {
+		text = garibaldi.36.d
+		trigger = {
+			NOT = {
+				has_country_leader = {
+					character = ITA_emanuele_filiberto
+					ruling_only = yes
+				}
+			}
+		}
+	}
+	desc = {
+		text = garibaldi.36.e
+		trigger = {
+			has_country_leader = {
+				character = ITA_emanuele_filiberto
+				ruling_only = yes
+			}
+		}
+	}
+	picture = GFX_report_event_europe_funeral
+	fire_only_once = yes
+	trigger = {
+		has_character = ITA_emanuele_filiberto
+		date > 1931.6.1
+	}
+	mean_time_to_happen = {
+		days = 30
+	}
+	option = {
+		name = garibaldi.36.a
+		trigger = {
+			NOT = {
+				has_country_leader = {
+					character = ITA_emanuele_filiberto
+					ruling_only = yes
+				}
+			}
+		}
+		retire_character = ITA_emanuele_filiberto
+	}
+	option = {
+		name = garibaldi.36.b
+		trigger = {
+			has_country_leader = {
+				character = ITA_emanuele_filiberto
+				ruling_only = yes
+			}
+		}
+		hidden_effect = {
+			ITA_amedeo_di_savoy_aosta = {
+				add_country_leader_role = {
+					promote_leader = yes
+					country_leader = {
+						ideology = semi_constitutional_monarchy
+						traits = { duke_of_aosta }
+					}
+				}
+			}
+		}
+		retire_character = ITA_emanuele_filiberto
+		promote_character = ITA_amedeo_di_savoy_aosta
+		ITA_amedeo_di_savoy_aosta = {
+			set_character_name = ITA_amedeo_i
+		}
 	}
 }

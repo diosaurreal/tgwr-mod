@@ -1,42 +1,4 @@
-political_actions = {
-	CAN_britain_seize_the_power = {
-		icon = GFX_decision_eng_support_imperialist_coup
-		allowed = {
-			OR = {
-				original_tag = CAN
-				original_tag = AST
-			}
-		}
-		available = {
-			neutrality > 0.5
-		}
-		visible = {
-			NOT = {
-				has_government = neutrality
-			}	
-			has_country_flag = has_british_monarchy
-			is_subject = no
-			has_capitulated = no
-		}
-		fire_only_once = yes
-		ai_will_do = {
-			base = 0
-			modifier = {
-				add = 100
-				neutrality > 0.6
-			}
-		}
-		complete_effect = {
-			set_politics = {
-				ruling_party = neutrality
-				elections_allowed = no
-			}
-			swap_ideas = {
-			    remove_idea = ENG_imperial_refuge
-			    add_idea = ENG_imperial_refuge_neutrality
-			}
-		}
-	}
+operations = {
 	CAN_bring_king_home = {
 		icon = eng_abdication_crisis
 		allowed = {
@@ -103,6 +65,25 @@ political_actions = {
 		}
 		visible = {
 			has_country_flag = has_british_monarchy
+		}
+		highlight_states = {
+			highlight_state_targets = {
+				state = 120
+				state = 121
+				state = 122
+				state = 123
+				state = 125
+				state = 126
+				state = 127
+				state = 128
+				state = 129
+				state = 130
+				state = 131
+				state = 132
+				state = 133
+				state = 136
+				state = 338
+			}
 		}
 		fire_only_once = yes
 		days_remove = 50
@@ -184,6 +165,7 @@ ENG_interwar_entente_category = {
 				is_in_faction = no
 				has_war = no
 				has_civil_war = no
+				NOT = { has_idea = standing_alone }
 			}
 		}
 		visible = {
@@ -202,42 +184,125 @@ ENG_interwar_entente_category = {
 		ai_will_do = {
 			factor = 1000
 		}
+		days_remove = 70
 		target_trigger = {
 			FROM = {
 				original_tag = FRA
 				NOT = {
+					has_government = fascism
 					has_government = communism
 					has_country_flag = FRA_socialist_france_flag
 				}
 			}
 		}
-		complete_effect = {
-			create_faction = entente
+		cancel_if_not_visible = yes
+		remove_effect = {
 			if = {
 				limit = {
-					FROM = {
-						is_faction_leader = yes
-					}
+					FROM = { is_faction_leader = yes }
 				}	
 				if = {
 					limit = {
 						is_in_faction_with = FROM
+						FROM = { is_ai = yes }
 					}
 					set_faction_leader = yes
-					else = {
-						FROM = {
-							country_event = {
-								id = generic.2
-								hours = 1
-							}
+				}
+				else = {
+					FROM = {
+						country_event = {
+							id = generic.2
+							hours = 1
 						}
 					}
 				}
-				else = {
-					create_faction = entente
-					FROM = {
-						country_event = ww1_france.28
+			}
+			else = {
+				set_global_flag = imperial_entente_formed
+				create_faction = entente
+				FROM = {
+					country_event = {
+						id = generic.5
+						hours = 1
 					}
+				}
+			}
+		}
+	}
+}
+
+foreign_politics = {
+	CAN_newfoundland_annex = {
+		icon = GFX_decision_eng_support_imperialist_coup
+		allowed = {
+			original_tag = NFL
+		}
+		target_trigger = {
+			FROM = {
+				tag = CAN
+			}
+		}
+		available = {
+			OR = {
+				is_subject = no
+				is_subject_of = FROM
+			}
+		}
+		visible = {
+			is_neighbor_of = FROM
+			NOT = {
+				has_war_with = FROM
+			}
+			has_capitulated = no
+		}
+		highlight_states = {
+			highlight_state_targets = {
+				state = 331
+				state = 332
+			}
+		}
+		fire_only_once = yes
+		ai_will_do = {
+			base = 0
+			modifier = {
+				add = 100
+				NOT = { has_government = communism }
+				FROM = { has_country_flag = has_british_monarchy }
+			}
+			modifier = {
+				add = 100
+				has_government = communism
+				FROM = { has_government = communism }
+			}
+			modifier = {
+				add = 100
+				is_subject = no
+				has_government = FROM
+				has_opinion = {
+					target = FROM
+					value > 50
+				}
+			}
+		}
+		complete_effect = {
+			FROM = {
+				annex_country = {
+					target = ROOT
+					transfer_troops = yes
+				}
+				add_state_core = 331
+				add_state_core = 332
+				if = {
+					limit = {
+						is_ai = yes
+					}
+					if = {
+						limit = { ROOT = { is_ai = no } }
+						change_tag_from = ROOT
+					}
+				}
+				else = {
+					ROOT = { custom_effect_tooltip = GAME_OVER_TT }
 				}
 			}
 		}

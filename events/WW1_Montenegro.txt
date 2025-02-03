@@ -48,7 +48,7 @@ country_event = {
 	}
 	trigger = {
 		tag = MNT
-		has_war_with = AUH
+		has_war_with = AUS
 		is_in_faction_with = SER
 		has_capitulated = yes
 	}
@@ -61,28 +61,37 @@ country_event = {
 country_event = {
 	id = ww1_montenegro.4
 	title = ww1_montenegro.4.t
-	desc = ww1_montenegro.4.d
+	desc = {
+		text = ww1_montenegro.4.d
+		trigger = {
+			has_country_flag = great_war_loser
+		}
+	}
+	desc = {
+		text = ww1_montenegro.4.d
+		trigger = {
+			NOT = { has_country_flag = great_war_loser }
+		}
+	}
+	picture = GFX_report_event_generic_parliament
 	trigger = {
 		tag = MNT
-		has_capitulated = no
+		has_war = no
 		has_country_leader = {
 			character = MNT_nikola_i
-			ruling_only = yes
 		}
-		has_country_flag = Montenegro_capitulated
 		has_global_flag = great_war_ends
-		NOT = {
+		OR = {
+			has_country_flag = great_war_loser
 			AND = {
+				has_country_flag = Montenegro_capitulated
 				has_country_flag = great_war_winner
-				SER = {
-					has_country_flag = great_war_loser
-				}
 			}
 		}
 		is_subject = no
 	}
 	mean_time_to_happen = {
-		days = 0
+		days = 15
 	}
 	option = {
 		name = ww1_montenegro.4.a
@@ -100,20 +109,16 @@ country_event = {
 			add_country_leader_role = {
 				promote_leader = yes
 				country_leader = {
-					ideology = conservatism
+					ideology = liberal_conservatism
 				}
 			}
 		}
 		hidden_effect = {
-			country_event = {
-				id = ww1_montenegro.6
-				days = 5
-			}
-			MNT_crown_prince_danilo = {
+			MNT_danilo_petrovic_njegos = {
 				remove_unit_leader_role = yes
-				promote_character = autocracy
+				promote_character = semi_constitutional_monarchy
 				set_character_name = {
-					name = "MNT_danilo_i"
+					name = "MNT_danilo_ii"
 				}
 			}
 		}
@@ -159,6 +164,22 @@ country_event = {
 		name = ww1_montenegro.7.a
 		MNT = {
 			every_unit_leader = {
+				limit = {
+					NOT = {
+						has_trait = trait_royal
+						has_trait = trait_royalist
+					}
+				}
+				hidden_effect = {
+					remove_any_country_role_from_character = yes					
+					if = {
+						limit = {
+							is_field_marshal = no
+						}
+						demote_leader = yes
+						remove_unit_leader_trait = recently_promoted
+					}
+				}	
 				set_nationality = SER
 			}
 			every_owned_state = {
@@ -172,6 +193,24 @@ country_event = {
 			target = MNT
 			transfer_troops = yes
 		}
+		hidden_effect = {
+			MNT = {
+				set_politics = {
+					ruling_party = neutrality
+					long_name = MNT_zeleni_party_long
+					name = MNT_zeleni_party
+					elections_allowed = no
+				}
+				set_party_name = {
+					ideology = fascism
+					long_name = MNT_zeleni_party_long
+					name = MNT_zeleni_party
+				}
+				promote_character = MNT_krsto_popovic	
+				promote_character = MNT_jovan_plamenac			
+				promote_character = MNT_novica_radovic
+			}	
+		}	
 		ai_chance = {
 			factor = 100
 		}
@@ -194,18 +233,18 @@ country_event = {
 	fire_only_once = yes
 	trigger = {
 		tag = MNT
-		has_war_with = AUH
+		has_war_with = AUS
 		has_war_together_with = SER
 		has_capitulated = yes
 		SER = {
-			has_war_with = AUH
+			has_war_with = AUS
 			has_capitulated = yes
 		}
 	}
 	option = {
 		#yes, this is perfect opportunity
 		name = ww1_montenegro.8.a
-		AUH = {
+		AUS = {
 			country_event = ww1_montenegro.9
 		}
 		add_stability = -0.2
@@ -244,7 +283,7 @@ country_event = {
 				limit = {
 					has_war_with = MNT
 					NOT = {
-						has_war_with = AUH
+						has_war_with = AUS
 					}
 				}
 				white_peace = PREV
@@ -265,7 +304,7 @@ country_event = {
 		every_state = {
 			limit = {
 				is_owned_by = SER
-				is_controlled_by = AUH
+				is_controlled_by = AUS
 			}
 			MNT = {
 				set_state_controller = PREV
@@ -277,20 +316,10 @@ country_event = {
 			}
 			add_core_of = SER
 		}
-		if = {
-			limit = {
-				has_dlc = "Together for Victory"
-			}
-			set_autonomy = {
-				target = MNT
-				autonomy_state = autonomy_dominion
-				freedom_level = 0.4
-			}
-			else = {
-				GER = {
-					add_to_faction = MNT
-				}
-			}
+		set_autonomy = {
+			target = MNT
+			autonomy_state = autonomy_dominion
+			freedom_level = 0.4
 		}
 		SER = {
 			country_event = ww1_montenegro.10
@@ -350,12 +379,11 @@ country_event = {
 		tag = MNT
 		has_cosmetic_tag = MNT_principality
 		date > 1910.8.28
-		NOT = { has_global_flag = kingdom_of_montenegro }
+		has_start_date < 1914.1.1
 	}
 	fire_only_once = yes
 	immediate = {
 		hidden_effect = {
-			set_global_flag = kingdom_of_montenegro
 			MNT = { drop_cosmetic_tag = yes }
 		}
 	}
@@ -364,5 +392,38 @@ country_event = {
 		effect_tooltip = {
 			set_cosmetic_tag = MNT
 		}
+		news_event = ww1_montenegro.17
+		hidden_effect = {
+			SER = {
+				country_event = ww1_montenegro.16
+			}
+		}
+	}
+}
+
+###Serbia notified
+country_event = {
+	id = ww1_montenegro.16
+	title = ww1_montenegro.16.t
+	desc = ww1_montenegro.16.d
+	picture = GFX_report_event_generic_parliament
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_montenegro.16.a
+		add_war_support = 0.03
+	}
+}
+###news event
+news_event = {
+	id = ww1_montenegro.17
+	title = ww1_montenegro.17.t
+	desc = ww1_montenegro.17.d
+	picture = GFX_news_event_montenegro_kingdom
+	is_triggered_only = yes
+	fire_only_once = yes
+	major = yes
+	option = {
+		name = ww1_montenegro.17.a
 	}
 }

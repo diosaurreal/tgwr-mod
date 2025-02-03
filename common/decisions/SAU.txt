@@ -1,10 +1,12 @@
-operations = {
+
+SAU_arabian_conquest = { 
 	SAU_conquer_al_hasa = {
 		icon = border_war
 		allowed = {
-			original_tag = SAU
+			original_tag = SAU			
 		}
 		visible = {
+			date > 1912.12.13
 			NOT = {
 				owns_state = 804
 			}
@@ -22,13 +24,20 @@ operations = {
 			804 = {
 				is_owned_and_controlled_by = FROM
 			}
-			num_divisions_in_states = {
-    			count < 1
-    			states = { 804 }
-				exclude = { irregular_infantry irregular_cavalry }
-			}
+			# saud did this even they had garrison there
 			FROM = {
-				has_war = yes
+				OR = {
+					num_divisions_in_states = {
+						count < 1
+						states = { 804 }
+						exclude = { irregular_infantry irregular_cavalry }
+					}
+					#ww1
+					has_war_with = GER
+					has_war_with = FRA
+					#balkan
+					has_global_flag = kis_firstbalkanwar_victory
+				}
 				NOT = {
 					owns_state = 656
 					owns_state = 904
@@ -36,30 +45,45 @@ operations = {
 					has_subject = ROOT
 				}
 			}
+			NOT = {
+				has_idea = idea_army_restrictions
+				has_active_mission = frankfurt_conference
+				has_active_mission = versallies_conference
+			}
 		}
 		highlight_states = {
 			highlight_state_targets = {
 				state = 804
 			}
 		}
+		cost = 25
 		ai_will_do = {
-			factor = 100
+			base = 100
 			modifier = {
-				factor = 0
-				date < 1913.1.1
+				add = 1000
+				FROM = { has_war = yes }
+			}
+			modifier = {
+				add = 1000
+				FROM = {
+					num_divisions_in_states = {
+						count < 1
+						states = { 804 }
+						exclude = { irregular_infantry irregular_cavalry }
+					}
+				}
 			}
 			modifier = {
 				factor = 0
-				NOT = {
-					has_global_flag = kis_firstbalkanwar_victory
-					has_global_flag = great_war
-				}
+				date < 1913.5.1
+				NOT = { has_global_flag = kis_firstbalkanwar_victory }
 			}
 		}
 		fire_only_once = yes
 		complete_effect = {
 			effect_tooltip = {
 				transfer_state = 804
+				country_event = ww1_nejd.46
 				FROM = {
 					if = {
 						limit = { has_subject = QAT }
@@ -69,9 +93,10 @@ operations = {
 				if = {
 					limit = {
 						NOT = {
+							has_cosmetic_tag = SAU_nejd_and_hasa
+							has_cosmetic_tag = SAU_sultanate
 							has_cosmetic_tag = SAU_nejd_and_hejaz
 							has_cosmetic_tag = SAU_saudi_arabia
-							has_cosmetic_tag = SAU_sultanate
 						}
 					}
 					set_cosmetic_tag = SAU_nejd_and_hasa
@@ -92,26 +117,35 @@ operations = {
 		visible = {
 			is_subject = no
 			NOT = {
-				owns_state = 904
+				owns_state = 905
 			}
 			292 = {
 				is_owned_and_controlled_by = ROOT
 			}
+			TUR = {
+				has_country_flag = great_war_loser
+			}
 		}
 		target_trigger = {
 			FROM = {
-				owns_state = 904
+				owns_state = 905
 			}
 		}
 		available = {
 			has_war = no
 			owns_state = 804
+			NOT = {
+				has_idea = idea_army_restrictions
+				has_active_mission = frankfurt_conference
+				has_active_mission = versallies_conference
+			}
 		}
 		highlight_states = {
 			highlight_state_targets = {
-				state = 904
+				state = 905
 			}
 		}
+		war_with_target_on_complete = yes
 		ai_will_do = {
 			factor = 100
 			modifier = {
@@ -119,6 +153,7 @@ operations = {
 				date < 1919.1.1
 			}
 		}
+		cost = 25
 		fire_only_once = yes
 		complete_effect = {
 			if = {
@@ -160,18 +195,16 @@ operations = {
 			}
 		}
 		available = {
-			NOT = {
-				has_country_flag = great_war_loser
-			}
 			292 = {
 				is_owned_and_controlled_by = ROOT
 			}
-			OR = {
-				strength_ratio = {
-					tag = FROM
-					ratio > 1
-				}
-				FROM = { has_country_flag = great_war_loser }
+			TUR = {
+				has_country_flag = great_war_loser 
+			}
+			NOT = {
+				has_idea = idea_army_restrictions
+				has_active_mission = frankfurt_conference
+				has_active_mission = versallies_conference
 			}
 		}
 		ai_will_do = {
@@ -197,21 +230,37 @@ operations = {
 				}
 			}
 		}
-		war_with_on_remove = JBS
+		war_with_target_on_remove = yes
 		target_trigger = {
 			FROM = {
 				tag = JBS
 			}
 		}
+		cost = 25
 		fire_only_once = yes
 		days_remove = 45
 		complete_effect = {
+			if = {
+				limit = {
+					is_subject_of = ENG
+				}
+				ENG = { end_puppet = ROOT }
+			}
 			every_state = {
 				limit = {
 					is_owned_by = FROM
 					is_core_of = FROM
 				}
 				add_claim_by = ROOT
+			}
+			FROM = {
+				every_state = {
+					limit = {
+						is_owned_by = ROOT
+						is_core_of = ROOT
+					}
+					add_claim_by = PREV
+				}
 			}
 		}
 		remove_effect = {
@@ -221,8 +270,70 @@ operations = {
 			}
 		}
 	}
+	SAU_annex_al_jawf = {
+		icon = border_war
+		allowed = {
+			OR = {
+				original_tag = SAU
+				original_tag = JBS
+			}
+		}
+		state_target = yes
+		target_trigger = {
+			FROM = {
+				state = 915
+			}
+		}
+		highlight_states = {
+			highlight_state_targets = {
+				state = 915
+			}
+		}
+		visible = {
+			is_subject = no
+			791 = { is_owned_and_controlled_by = ROOT }
+			NOT = { owns_state = 915 }
+			915 = {
+				owner = {
+					controls_state = 915
+					NOT = {
+						has_war_with = ROOT
+						is_in_faction_with = ROOT
+					}
+				}
+			}
+		}
+		available = {
+			has_war = no
+		}
+		fire_only_once = yes
+		complete_effect = {
+			start_border_war = {
+				change_state_after_war = no
+				attacker = {
+					state = 791
+					num_provinces = 3
+					on_win = ww1_nejd.32
+					on_lose =  ww1_nejd.33
+				}
+				defender = {
+					state = 915
+					num_provinces = 4
+					on_win = ww1_nejd.34
+					on_lose = ww1_nejd.35
+				}
+			}
+		}
+		ai_will_do = {
+			factor = 1000
+			modifier = {
+				factor = 0
+				original_tag = JBS
+			}
+		}
+	}
 	SAU_declare_sultanate = {
-		icon = infiltrate_state
+		icon = GFX_decision_ITA_reorganize_ascari
 		allowed = {
 			original_tag = SAU
 		}
@@ -238,7 +349,7 @@ operations = {
 			OR = {
 				has_full_control_of_state = 791
 				has_subject = JBS
-			}	
+			}
 		}
 		ai_will_do = {
 			factor = 100
@@ -246,46 +357,21 @@ operations = {
 		fire_only_once = yes
 		complete_effect = {
 			hidden_effect = {
-				every_other_country = {
+				if = {
 					limit = {
-						owns_state = 554
-						NOT = {
-							is_subject_of = PREV
-							has_war_with = PREV
-						}
+						NOT = { has_global_flag = set_up_sykes_picot_anizah_border }
+						has_global_flag = sykes_picot
+						ENG = { has_country_flag = great_war_winner }
+						915 = { is_owned_or_subject_trigger = yes }
 					}
-					transfer_state = 831
-					831 = { remove_core_of = JBS }
-				}
-				every_other_country = {
-					limit = {
-						owns_state = 455
-						NOT = {
-							is_subject_of = PREV
-							has_war_with = PREV
-						}
-					}
-					transfer_state = 832
-					832 = { remove_core_of = JBS }
-				}
-				every_other_country = {
-					limit = {
-						owns_state = 291
-						NOT = {
-							is_subject_of = PREV
-							has_war_with = PREV
-						}
-					}
-					transfer_state = 675
-					675 = { remove_core_of = JBS }
+					set_up_sykes_picot_anizah_border = yes
 				}
 			}
 			every_state = {
 				limit = {
 					is_core_of = JBS
 				}
-				remove_core_of = JBS
-				add_core_of = PREV
+				add_core_of = ROOT
 			}
 			if = {
 				limit = {
@@ -296,7 +382,16 @@ operations = {
 					transfer_troops = yes
 				}
 			}
-			set_cosmetic_tag = SAU_sultanate
+			if = {
+				limit = {
+					NOT = {
+						has_cosmetic_tag = SAU_sultanate
+						has_cosmetic_tag = SAU_nejd_and_hejaz
+						has_cosmetic_tag = SAU_saudi_arabia
+					}
+				}
+				set_cosmetic_tag = SAU_sultanate
+			}
 		}
 	}
 	SAU_unite_HJZ = {
@@ -309,19 +404,19 @@ operations = {
 			NOT = {
 				has_subject = FROM
 			}
+			# has_country_flag = hjz_preparation
 		}
 		available = {
-			JBS = { exists = no }
-			292 = {
-				is_owned_and_controlled_by = ROOT
+			NOT = {
+				has_idea = idea_army_restrictions
+				has_active_mission = frankfurt_conference
+				has_active_mission = versallies_conference
 			}
-			791 = {
-				is_owned_and_controlled_by = ROOT
-			}
+			# removed condition, since klhurma stuffi is unfinished
 			strength_ratio = {
 				tag = FROM
-				ratio > 1
-			}
+				ratio > 0.8
+			}		
 		}
 		ai_will_do = {
 			factor = 100
@@ -332,7 +427,7 @@ operations = {
 					AND = {
 						is_in_faction = yes
 						is_faction_leader = no
-					}					
+					}
 				}
 			}
 			modifier = {
@@ -341,7 +436,7 @@ operations = {
 					OR = {
 						is_subject = yes
 						is_in_faction = yes
-					}				
+					}
 				}
 			}
 			modifier = {
@@ -349,12 +444,13 @@ operations = {
 				NOT = { has_global_flag = interbellum }
 			}
 		}
-		war_with_on_remove = HJZ
+		war_with_target_on_remove = yes
 		target_trigger = {
 			FROM = {
 				tag = HJZ
 			}
 		}
+		cost = 25
 		fire_only_once = yes
 		days_remove = 45
 		complete_effect = {
@@ -374,7 +470,7 @@ operations = {
 		}
 	}
 	SAU_declare_kingdom_of_hejaz_and_nejd = {
-		icon = infiltrate_state
+		icon = GFX_decision_ITA_reorganize_ascari
 		allowed = {
 			original_tag = SAU
 		}
@@ -383,9 +479,14 @@ operations = {
 				OR = {
 					exists = no
 					is_subject_of = PREV
-				}		
+				}
 			}
-			has_cosmetic_tag = SAU_sultanate
+			791 = {
+				is_owned_by = ROOT
+				is_core_of = ROOT
+				# NOT = { is_core_of = JBS }
+			}
+			# has_cosmetic_tag = SAU_sultanate
 		}
 		visible = {
 			OR = {
@@ -401,14 +502,26 @@ operations = {
 		}
 		fire_only_once = yes
 		complete_effect = {
-			every_state = {
-				limit = {
-					is_core_of = HJZ
+			hidden_effect = {
+				if = {
+					limit = {
+						NOT = { has_global_flag = set_up_sykes_picot_anizah_border }
+						has_global_flag = sykes_picot
+						ENG = { has_country_flag = great_war_winner }
+						915 = { is_owned_or_subject_trigger = yes }
+					}
+					set_up_sykes_picot_anizah_border = yes
 				}
-				add_core_of = SAU
-				remove_core_of = HJZ
 			}
-			set_cosmetic_tag = SAU_nejd_and_hejaz
+			if = {
+				limit = {
+					NOT = {
+						has_cosmetic_tag = SAU_nejd_and_hejaz
+						has_cosmetic_tag = SAU_saudi_arabia
+					}
+				}
+				set_cosmetic_tag = SAU_nejd_and_hejaz
+			}
 			if = {
 				limit = {
 					has_subject = HJZ
@@ -417,6 +530,15 @@ operations = {
 					target = HJZ
 					transfer_troops = yes
 				}
+			}
+			every_owned_state = {
+				limit = {
+					is_core_of = HJZ
+					NOT = {
+						is_core_of = SAU
+					}	
+				}
+				add_core_of = SAU
 			}
 		}
 	}
@@ -430,21 +552,33 @@ operations = {
 			NOT = {
 				has_subject = FROM
 			}
+			TUR = {
+				has_country_flag = great_war_loser 
+			}
 		}
 		available = {
-			JBS = {
-				exists = no
+			NOT = {
+				has_idea = idea_army_restrictions
+				has_active_mission = frankfurt_conference
+				has_active_mission = versallies_conference
 			}
-			HJZ = {
-				exists = no
-			}
+			JBS = { exists = no }
 			292 = {
 				is_owned_and_controlled_by = ROOT
+				is_core_of = ROOT
+			}
+			791 = {
+				is_owned_and_controlled_by = ROOT
+				is_core_of = ROOT
+			}
+			679 = {
+				is_owned_and_controlled_by = ROOT
+				is_core_of = ROOT
 			}
 			strength_ratio = {
 				tag = FROM
-				ratio > 1
-			}
+				ratio > 0.8
+			}		
 		}
 		ai_will_do = {
 			factor = 100
@@ -472,12 +606,13 @@ operations = {
 				NOT = { has_global_flag = interbellum }
 			}
 		}
-		war_with_on_remove = ASR
+		war_with_target_on_remove = yes
 		target_trigger = {
 			FROM = {
 				tag = ASR
 			}
 		}
+		cost = 25
 		fire_only_once = yes
 		days_remove = 45
 		complete_effect = {
@@ -497,7 +632,7 @@ operations = {
 		}
 	}
 	SAU_declare_saudi_arabia = {
-		icon = infiltrate_state
+		icon = GFX_decision_ITA_reorganize_ascari
 		allowed = {
 			original_tag = SAU
 		}
@@ -510,21 +645,9 @@ operations = {
 				}
 			}
 			HJZ = {
-				OR = {
-					exists = no
-					is_subject_of = PREV
-				}
-			}
-			HJZ = {
-				OR = {
-					exists = no
-					is_subject_of = PREV
-				}
+				exists = no
 			}
 			292 = {
-				is_fully_controlled_by = SAU
-			}
-			678 = {
 				is_fully_controlled_by = SAU
 			}
 			662 = {
@@ -539,7 +662,16 @@ operations = {
 			791 = {
 				is_fully_controlled_by = SAU
 			}
+			804 = {
+				is_fully_controlled_by = SAU
+			}
 			878 = {
+				is_fully_controlled_by = SAU
+			}
+			915 = {
+				is_fully_controlled_by = SAU
+			}
+			918 = {
 				is_fully_controlled_by = SAU
 			}
 		}
@@ -551,30 +683,26 @@ operations = {
 		}
 		fire_only_once = yes
 		complete_effect = {
-			every_owned_state = {
-				limit = {
-					OR = {
-						is_core_of = ASR
-						is_core_of = OMA
-						is_core_of = YEM
-						is_core_of = QAT
-						is_core_of = KUW
-						is_core_of = UAE
-						is_core_of = IRQ
-						is_core_of = PAL
-						is_core_of = SYR
-						is_core_of = JOR
-						state = 904
-						state = 905
-					}				
-				}
-				add_core_of = SAU
+			hidden_effect = {
 				if = {
 					limit = {
-						is_core_of = ASR
+						NOT = { has_global_flag = set_up_sykes_picot_anizah_border }
+						has_global_flag = sykes_picot
+						ENG = { has_country_flag = great_war_winner }
+						915 = { is_owned_or_subject_trigger = yes }
 					}
-					remove_core_of = ASR
+					set_up_sykes_picot_anizah_border = yes
 				}
+			}
+			every_owned_state = {
+				limit = {
+					is_arabian_peninsula_core = yes
+					NOT = {
+						state = 678
+						is_core_of = SAU
+					}	
+				}
+				add_core_of = SAU
 			}
 			if = {
 				limit = {
@@ -589,6 +717,860 @@ operations = {
 			news_event = {
 				id = interwar_news.19
 				hours = 3
+			}
+		}
+	}
+	SAU_unite_NAJ = {
+		icon = border_war
+		allowed = {
+			original_tag = SAU
+		}
+		target_trigger = {
+			FROM = {
+				owns_state = 929
+			}
+		}
+		war_with_target_on_complete = yes
+		visible = {
+			owns_state = 292
+			NOT = {
+				has_war_with = FROM
+			}
+		}
+		available = {
+			is_subject = no
+			has_war = no
+			FROM = {
+				is_subject = no
+			}
+			NOT = {
+				has_idea = idea_army_restrictions
+				has_active_mission = frankfurt_conference
+				has_active_mission = versallies_conference
+			}
+		}
+		ai_will_do = {
+			factor = 100
+			modifier = {
+				factor = 0
+				date < 1934.1.1
+			}
+			modifier = {
+				factor = 0
+				strength_ratio = {
+					tag = FROM
+					ratio > 1.0
+				}
+			}
+		}
+		cost = 75
+		fire_only_once = yes
+		complete_effect = {
+			add_state_core = 929
+			start_border_war = {
+				change_state_after_war = no
+				attacker = {
+					state = 292
+					num_provinces = 3
+					on_win = ww1_yemen.6
+					on_lose =  ww1_yemen.7
+				}
+				defender = {
+					state = 929
+					num_provinces = 1
+					on_win =  ww1_yemen.8
+					on_lose =  ww1_yemen.9
+				}
+			}
+		}
+	}
+	SAU_solidify_control_in_empty_quarter = {
+		icon = GFX_decision_generic_operation
+		allowed = {
+			is_arabian_peninsula_tag = yes
+		}
+		visible = {
+			owns_state = 292
+			owns_state = 929
+			678 = { NOT = { is_core_of = ROOT } }
+		}
+		cancel_if_not_visible = yes
+		state_target = yes
+		target_trigger = {
+			FROM = {
+				state = 678
+			}
+		}
+		highlight_states = {
+			highlight_state_targets = {
+				state = 678
+			}
+		}
+		available = {
+			controls_state = 292
+			controls_state = 929
+		}
+		ai_will_do = {
+			base = 100
+		}
+		fire_only_once = no
+		days_remove = 120
+		cost = 75
+		remove_effect = {
+			transfer_state = 678
+			add_state_core = 678
+			hidden_effect = {
+				every_other_country = {
+					limit = {
+						678 = { is_core_of = PREV }
+					}
+					remove_state_core = 678
+				}
+			}
+		}
+	}
+	SAU_Raid_Mesopotamia = {
+		name = SAU_Raid_Mesopotamia
+		icon = border_war
+		visible = {
+			OR={
+				has_country_flag = ARB_gui_kuw_selected
+				has_country_flag = ARB_gui_trb_selected
+				has_country_flag = ARB_gui_jbs_selected
+			}
+			has_completed_focus = SAU_northern_raids
+		}
+		available = {
+			
+		}
+		highlight_states = {
+			highlight_state_targets = {
+				state = 291
+				state = 874
+			}
+		}
+		custom_cost_trigger = {
+			command_power > 9
+		}
+		custom_cost_text = decision_cost_CP_10
+		ai_will_do = {
+			base = 100
+		}
+		days_remove = 300
+		days_re_enable = 150
+		complete_effect = {
+			hidden_effect = {
+				add_command_power = -10
+			}
+			add_political_power = 100
+			add_ideas = SAU_mesopotamia_raid
+			KUW={
+				add_opinion_modifier = {
+					target = SAU
+					modifier = small_decrease
+				}
+			}
+			JBS={
+				add_opinion_modifier = {
+					target = SAU
+					modifier = small_decrease
+				}
+			}
+			AMR={
+				add_opinion_modifier = {
+					target = SAU
+					modifier = small_decrease
+				}
+			}
+		}
+		remove_effect = {
+			remove_ideas = SAU_mesopotamia_raid
+			TUR={
+				add_opinion_modifier = {
+					target = SAU
+					modifier = large_decrease
+				}
+			}
+			291={
+				add_manpower = -100
+			}
+		}
+	}
+	SAU_Raid_Jordan = {
+		name = SAU_Raid_Jordan
+		icon = border_war
+		visible = {
+			has_country_flag = ARB_gui_trb_selected
+			has_completed_focus = SAU_northern_raids
+		}
+		available = {
+			
+		}
+		highlight_states = {
+			highlight_state_targets = {
+				state = 455
+			}
+		}
+		custom_cost_trigger = {
+			command_power > 9
+		}
+		custom_cost_text = decision_cost_CP_10
+		ai_will_do = {
+			base = 100
+		}
+		days_remove = 300
+		days_re_enable = 150
+		complete_effect = {
+			hidden_effect = {
+				add_command_power = -10
+			}
+			add_political_power = 100
+			add_ideas = SAU_jordan_raid
+			RWL={
+				add_opinion_modifier = {
+					target = SAU
+					modifier = small_decrease
+				}
+			}
+			JBS={
+				add_opinion_modifier = {
+					target = SAU
+					modifier = small_decrease
+				}
+			}
+		}
+		remove_effect = {
+			remove_ideas = SAU_jordan_raid
+			TUR={
+				add_opinion_modifier = {
+					target = SAU
+					modifier = large_decrease
+				}
+			}
+			
+			455={
+				add_manpower = -100
+			}
+		}
+	}
+	SAU_Settle_Najran_Tribes = {
+		icon = border_war
+		visible = {
+			has_completed_focus = SAU_settle_tribes
+		}
+		available = {
+			
+		}
+		highlight_states = {
+			highlight_state_targets = {
+				state = 929
+			}
+		}
+		cost = 100
+		ai_will_do = {
+			base = 100
+		}
+		days_remove = 500
+		days_re_enable = 50
+		remove_effect = {
+			929={
+				add_manpower = 1000
+			}
+		}
+	}
+	SAU_Settle_Hasa_Tribes = {
+		icon = border_war
+		visible = {
+			has_completed_focus = SAU_settle_tribes
+		}
+		available = {
+			
+		}
+		highlight_states = {
+			highlight_state_targets = {
+				state = 804
+			}
+		}
+		cost = 100
+		ai_will_do = {
+			base = 100
+		}
+		days_remove = 500
+		days_re_enable = 50
+		remove_effect = {
+			804={
+				add_manpower = 5000
+			}
+		}
+	}
+	SAU_Settle_Qassim_Tribes = {
+		icon = border_war
+		visible = {
+			has_completed_focus = SAU_settle_tribes
+		}
+		available = {
+			
+		}
+		highlight_states = {
+			highlight_state_targets = {
+				state = 918
+			}
+		}
+		cost = 100
+		ai_will_do = {
+			base = 100
+		}
+		days_remove = 500
+		days_re_enable = 50
+		remove_effect = {
+			918={
+				add_manpower = 2000
+			}
+		}
+	}
+	SAU_Settle_Hail_Tribes = {
+		icon = border_war
+		visible = {
+			has_completed_focus = SAU_settle_tribes
+		}
+		available = {
+			
+		}
+		highlight_states = {
+			highlight_state_targets = {
+				state = 791
+			}
+		}
+		cost = 100
+		ai_will_do = {
+			base = 100
+		}
+		days_remove = 500
+		days_re_enable = 50
+		remove_effect = {
+			791={
+				add_manpower = 3000
+			}
+		}
+	}
+}
+crisis = {
+	SAU_Ikhwan_revolt_mission = {
+		icon = revolt
+		allowed = {
+			original_tag = SAU
+		}
+		visible = {
+			original_tag = SAU
+			has_completed_focus = SAU_get_rid_of_ikhwan
+		}
+		
+		available = {		
+			has_stability > 0.6
+		}
+		
+		activation = {
+			original_tag = SAU
+			has_completed_focus = SAU_get_rid_of_ikhwan
+		}
+		
+		timeout_effect = {
+			
+			country_event = {
+				id = ww1_nejd.41
+				days = 5
+			}
+		}
+		
+		fire_only_once = yes
+		days_mission_timeout = 600  
+		is_good = no
+	}
+	SAU_Abdulrahman_returns = {
+		icon = GFX_decision_generic_monarchy
+		allowed = {
+			original_tag = SAU
+		}
+		visible = {
+			original_tag = SAU
+			has_country_flag = SAU_BOP_START
+			NOT={
+				date > 1914.1.1
+			}
+		}
+		
+		available = {		
+			has_country_flag = SAU_BOP_OVER
+		}
+		
+		activation = {
+			original_tag = SAU
+			has_country_flag = SAU_BOP_START
+		}
+		
+		timeout_effect = {
+			country_event = {
+				id = ww1_nejd.40
+				days = 5
+			}
+		}
+		
+		fire_only_once = yes
+		days_mission_timeout = 1250  
+		is_good = no
+	}
+	SAU_ottoman_saudi_treaty_timer = {
+		icon = GFX_decision_generic_protection
+		allowed = {
+			OR = {
+				original_tag = SAU
+				original_tag = TUR
+			}
+		}
+		days_mission_timeout = 365
+		activation = {
+			SAU = {
+				owns_state = 804
+				NOT = {
+					has_war_with = TUR
+				}
+			}
+			804 = { is_claimed_by = TUR }
+			TUR = {
+				has_capitulated = no
+			}
+			NOT = {
+				has_global_flag = great_war
+				TUR = {
+					has_idea = idea_army_restrictions
+					has_country_flag = great_war_loser
+				}
+				has_global_flag = ottoman_saudi_in_progress
+				has_global_flag = ottoman_saudi_treaty
+			}
+		}
+		available = {
+			OR = {
+				has_global_flag = great_war
+				SAU = {
+					has_war_with = TUR
+				}
+				NOT = { country_exists = SAU }
+				NOT = { country_exists = TUR }
+				TUR = { has_subject = SAU }
+				TUR = { is_subject = yes }
+
+				has_global_flag = ottoman_gave_up_alhasa
+				SAU = {
+					is_subject_of = ENG
+				}
+				TUR = {
+					has_wargoal_against = SAU
+				}
+				TUR = {
+					has_capitulated = yes
+				}
+			}
+		}
+		fire_only_once = yes
+		is_good = no
+		timeout_effect = {
+			if = {
+				limit = {
+					has_global_flag = ottoman_saudi_in_progress
+				}
+				effect_tooltip = {
+					TUR = { puppet = SAU }
+				}
+				hidden_effect = {
+					if = {
+						limit = { tag = SAU }
+						get_current_government_type = yes
+						TUR = {
+							set_autonomy = {
+								target = ROOT
+								autonomy_state = autonomy_tgwr_ottoman_emirate
+							}
+						}
+						restore_previous_government_type = yes
+						add_ideas = TUR_wavering_ottoman_influence
+					}
+				}
+			}
+			else = {
+				effect_tooltip = {
+					TUR = {
+						add_opinion_modifier = {
+							target = SAU
+							modifier = large_decrease
+						}
+					}
+					add_opinion_modifier = {
+						target = TUR
+						modifier = large_decrease
+					}
+				}
+				hidden_effect = {
+					if = {
+						limit = { tag = TUR }
+						add_opinion_modifier = {
+							target = SAU
+							modifier = large_decrease
+						}
+						SAU={
+							add_opinion_modifier = {
+								target = TUR
+								modifier = large_decrease
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	SAU_give_in_TUR = {
+		icon = GFX_decision_generic_operation
+		allowed = {
+			original_tag = SAU
+		}
+		visible = {
+			has_active_mission = SAU_ottoman_saudi_treaty_timer
+			is_subject = no
+			NOT = {
+				has_global_flag = ottoman_saudi_in_progress
+				has_war_with = TUR
+			}
+		}
+		target_trigger = {
+			FROM = {
+				tag = TUR
+			}
+		}
+		available = {
+			ENG = {
+				OR = {
+					has_war = yes
+					is_subject = yes
+					# not in arabia
+					NOT = {
+						any_owned_state = {
+							region = 196
+						}
+					}
+				}
+			}
+		}
+		ai_will_do = {
+			base = 100
+		}
+		fire_only_once = yes
+		cost = 0
+		complete_effect = {
+			set_global_flag = ottoman_saudi_in_progress
+		}
+	}
+	SAU_khurma_negotiations = {
+		icon = GFX_decision_generic_protection
+		allowed = {
+			OR = {
+				original_tag = SAU
+				original_tag = HJZ
+			}
+		}
+		days_mission_timeout = 365
+		activation = {
+			always = no
+		}
+		available = {
+			has_country_flag = khurma_negotiations_conclude
+		}
+		fire_only_once = yes
+		is_good = no
+		timeout_effect = {
+			#temporary
+			hidden_effect = {
+				HJZ = {
+					set_country_flag = khurma_negotiations_failed
+				}
+				SAU = {
+					set_country_flag = khurma_negotiations_failed
+				}
+			}
+		}
+	}
+}
+SAU_Dynasty_Dispute_category={
+	SAU_support_urban_merchants = {
+		icon = GFX_decision_gre_investment_decisions
+		allowed = {
+			original_tag = SAU
+		}
+		visible = {
+		}
+		highlight_states = {
+			highlight_state_targets = {
+				state = 292
+			}
+		}
+		days_remove = 100
+		custom_cost_trigger = {
+			num_of_civilian_factories > 1
+		}
+		custom_cost_text = decision_cost_1_civ
+		complete_effect = {
+			292={
+				add_building_construction = {
+					type = industrial_complex
+					level = 1
+					instant_build = yes
+				}
+			}
+		}
+		remove_effect = {
+			292={
+				remove_building = {
+					type = industrial_complex
+					level = 1
+				}
+			}
+			add_stability = 0.05
+			add_power_balance_value = {
+				id = SAU_Dynasty_Dispute
+				value = 0.05
+			}
+			increase_SAU_Urban = yes
+			decrease_SAU_Tribal = yes
+		}
+	}
+	SAU_recruit_city_fighters={
+		icon = GFX_decision_generic_army_support
+		allowed = {
+			original_tag = SAU
+		}
+		days_remove = 75
+		custom_cost_trigger = {
+			command_power > 9
+		}
+		custom_cost_text = decision_cost_CP_10
+		complete_effect = {
+			add_manpower = 1000
+			add_power_balance_value = {
+				id = SAU_Dynasty_Dispute
+				value = 0.05
+			}
+			increase_SAU_Urban = yes
+			decrease_SAU_Tribal = yes
+			hidden_effect = {
+				add_command_power = -10
+			}
+		}
+	}
+	SAU_free_slaves ={
+		icon = GFX_decision_generic_arrest
+		allowed = {
+			original_tag = SAU
+		}
+		days_remove = 125
+		cost = 50
+		complete_effect = {
+			add_stability = 0.01
+			add_power_balance_value = {
+				id = SAU_Dynasty_Dispute
+				value = 0.05
+			}
+			increase_SAU_Urban = yes
+			decrease_SAU_Tribal = yes
+		}
+	}
+	SAU_rally_allies ={
+		icon = GFX_decision_generic_civil_support
+		allowed = {
+			original_tag = SAU
+		}
+		days_remove = 200
+		cost = 100
+		complete_effect = {
+			add_stability = 0.1
+			add_war_support = 0.1
+			add_power_balance_value = {
+				id = SAU_Dynasty_Dispute
+				value = 0.05
+			}
+			increase_SAU_Urban = yes
+			increase_SAU_Tribal = yes
+		}
+	}
+	SAU_blind_eye_on_slaves ={
+		icon = GFX_decision_generic_arrest
+		allowed = {
+			original_tag = SAU
+		}
+		days_remove = 125
+		cost = 50
+		complete_effect = {
+			add_stability = 0.01
+			add_power_balance_value = {
+				id = SAU_Dynasty_Dispute
+				value = -0.05
+			}
+			decrease_SAU_Urban = yes
+			increase_SAU_Tribal = yes
+		}
+	}
+	SAU_recruit_tribal_fighters={
+		icon = GFX_decision_generic_army_support
+		allowed = {
+			original_tag = SAU
+		}
+		days_remove = 75
+		custom_cost_trigger = {
+			command_power > 9
+		}
+		custom_cost_text = decision_cost_CP_10
+		complete_effect = {
+			add_manpower = 5000
+			add_power_balance_value = {
+				id = SAU_Dynasty_Dispute
+				value = -0.05
+			}
+			decrease_SAU_Urban = yes
+			increase_SAU_Tribal = yes
+			hidden_effect = {
+				add_command_power = -10
+			}
+		}
+	}
+	SAU_support_tribal_merchants = {
+		icon = GFX_decision_gre_investment_decisions
+		allowed = {
+			original_tag = SAU
+		}
+		visible = {
+			controls_state = 918
+		}
+		highlight_states = {
+			highlight_state_targets = {
+				state = 918
+			}
+		}
+		days_remove = 100
+		custom_cost_trigger = {
+			num_of_civilian_factories > 1
+		}
+		custom_cost_text = decision_cost_1_civ
+		complete_effect = {
+			292={
+				add_building_construction = {
+					type = industrial_complex
+					level = 1
+					instant_build = yes
+				}
+			}
+		}
+		remove_effect = {
+			292={
+				remove_building = {
+					type = industrial_complex
+					level = 1
+				}
+			}
+			add_stability = 0.05
+			add_power_balance_value = {
+				id = SAU_Dynasty_Dispute
+				value = -0.05
+			}
+			decrease_SAU_Urban = yes
+			increase_SAU_Tribal = yes
+		}
+	}
+	SAU_rally_ikhwan ={
+		icon = GFX_decision_generic_prepare_civil_war
+		allowed = {
+			original_tag = SAU
+		}
+		days_remove = 200
+		cost = 100
+		complete_effect = {
+			add_stability = -0.05
+			add_war_support = 0.1
+			add_power_balance_value = {
+				id = SAU_Dynasty_Dispute
+				value = -0.05
+			}
+			add_popularity = {
+				ideology = fascism
+				popularity = 0.1
+			}
+			increase_SAU_Urban = yes
+			increase_SAU_Tribal = yes
+		}
+	}
+	
+}
+WWI_Rashidi_conflict_category={
+	
+	SAU_attack_hail = {
+		icon = border_war
+		allowed = {
+			tag = SAU
+		}
+		available = {
+			has_global_flag = great_war_ends
+		}
+		visible = {
+			NOT = {
+				has_country_flag = JBS_attack_qassim_flag
+			}
+			tag = SAU
+		}
+		ai_will_do = {
+			factor = 100
+		}
+		days_re_enable = 5
+		days_remove = 50
+		complete_effect = {
+			set_country_flag = SAU_attack_hail_flag
+			791={
+				set_border_war = yes
+			}
+		}
+		remove_effect = {
+			clr_country_flag = SAU_attack_hail_flag
+			791={
+				set_border_war = no
+			}
+		}
+	}
+
+	JBS_attack_qassim = {
+		icon = border_war
+		allowed = {
+			tag = SAU
+		}
+		available = {
+			has_global_flag = great_war_ends
+		}
+		visible = {
+			NOT = {
+				has_country_flag = SAU_attack_hail_flag
+			}
+			tag = SAU
+		}
+		ai_will_do = {
+			factor = 100
+		}
+		days_re_enable = 5
+		days_remove = 50
+		complete_effect = {
+			set_country_flag = JBS_attack_qassim_flag
+			918={
+				set_border_war = yes
+			}
+		}
+		remove_effect = {
+			clr_country_flag = JBS_attack_qassim_flag
+			918={
+				set_border_war = no
 			}
 		}
 	}

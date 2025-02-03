@@ -1,0 +1,208 @@
+on_actions = {
+
+	# on_startup = {
+	# 	effect = {
+	# 		# League of Nations Members
+	# 		IF = {
+	# 			limit = {
+	# 				date < 1939.1.1 # don't bother with LoN after 1939
+	# 			}
+	# 			every_country = {
+	# 				limit = {
+	# 					OR = {
+	# 						### Original Members
+	# 						tag = ARG
+	# 						tag = BEL
+	# 						tag = BOL
+	# 						tag = ENG
+	# 						tag = AST
+	# 						tag = CAN
+	# 						tag = RAJ
+	# 						tag = NZL
+	# 						tag = SAF
+	# 						tag = CHI
+	# 						tag = COL
+	# 						tag = CUB
+	# 						tag = CZE
+	# 						tag = DEN
+	# 						tag = FRA
+	# 						tag = GRE
+	# 						tag = HAI
+	# 						tag = ITA
+	# 						tag = LIB
+	# 						tag = HOL
+	# 						tag = NOR
+	# 						tag = PAN
+	# 						tag = PER
+	# 						tag = PRU
+	# 						tag = POL
+	# 						tag = POR
+	# 						tag = ROM
+	# 						tag = SIA
+	# 						tag = SPR
+	# 						tag = SWE
+	# 						tag = SWI
+	# 						tag = URU
+	# 						tag = VEN
+	# 						tag = YUG
+	# 						### 1920
+	# 						tag = AUS
+	# 						tag = BUL
+	# 						tag = COS
+	# 						tag = FIN
+	# 						tag = LUX
+	# 						tag = ALB
+	# 						### 1921
+	# 						tag = EST
+	# 						tag = LAT
+	# 						tag = LIT
+	# 						### 1922
+	# 						tag = HUN
+	# 						### 1923
+	# 						tag = IRE
+	# 						tag = ETH
+	# 						### 1924
+	# 						tag = DOM
+	# 						### 1931
+	# 						tag = MEX
+	# 						### 1932
+	# 						tag = TUR
+	# 						tag = IRQ
+	# 						### 1934
+	# 						tag = SOV
+	# 						tag = AFG
+	# 						tag = ECU
+	# 					}
+	# 				}
+	# 				add_ideas = league_of_nations_member_idea
+	# 			}
+
+	# 		}
+	# 	}
+	# }
+
+	#ROOT = attacking side
+	#FROM = defending side
+	#fired when two countries end up at war with each other (on_war is fired when a country goes to war against anyone and is not fired again when it enters war against another country unless it went to peace first)
+	on_declare_war = {
+   	# Disable LoN if more members go to war with each other
+		effect = {
+			IF = {
+				limit = {
+					has_global_flag = league_of_nations
+					NOT = { has_global_flag = LoN_disbanded_flag }
+					FROM = {
+						is_major = yes
+						is_league_of_nations_member = yes
+					}
+					ROOT = {
+						is_major = yes
+						is_league_of_nations_member = yes
+					}
+				}
+				set_global_flag = LoN_disbanded_flag
+				set_variable = { global.LoN_attacker_country = ROOT }
+				set_variable = { global.LoN_defender_country = FROM }
+				# clear_array = global.league_of_nations
+				news_event = { id = bba_news.0 hours = 4 random_hours = 8}
+			}
+		}
+	}
+
+	#ROOT is new controller #FROM is old controller #FROM.FROM is state ID
+	on_state_control_changed = {
+		#Mafia State modifiers
+		effect = {
+			if = {
+				limit = {
+					FROM.FROM = {
+						ITA_state_has_any_version_of_mafia_rising_modifier = yes
+					}
+					ROOT = {
+						original_tag = ITA
+						# has_completed_focus = ITA_cooperate_with_the_mafia
+					}
+				}
+				if = {
+					limit = {
+						has_dynamic_modifier = { modifier = ITA_mafia_on_the_rise_no_lar }
+					}
+					remove_dynamic_modifier = { modifier = ITA_mafia_on_the_rise_no_lar }
+					add_dynamic_modifier = { modifier = ITA_established_mafia_no_lar }
+				}
+				else = {
+					remove_dynamic_modifier = { modifier = ITA_mafia_on_the_rise }
+					add_dynamic_modifier = { modifier = ITA_established_mafia }
+				}
+			}
+			else_if = {
+				limit = {
+					FROM.FROM = {
+						ITA_state_has_any_version_of_mafia_rising_modifier = yes
+					}
+					ROOT = {
+						NOT = { original_tag = ITA }
+					}
+				}
+				if = {
+					limit = {
+						has_dynamic_modifier = { modifier = ITA_established_mafia_no_lar }
+					}
+					remove_dynamic_modifier = { modifier = ITA_established_mafia_no_lar }
+					add_dynamic_modifier = { modifier = ITA_mafia_on_the_rise_no_lar }
+				}
+				else = {
+					remove_dynamic_modifier = { modifier = ITA_established_mafia }
+					add_dynamic_modifier = { modifier = ITA_mafia_on_the_rise }
+				}
+			}
+		}
+
+	}
+	
+	on_peace = {
+		effect = {
+			# Ethiopia switch law
+			IF = {
+				limit = {
+					original_tag = ETH
+					has_idea = ETH_chitet_law
+				}
+				swap_ideas = {
+					remove_idea = ETH_chitet_law
+					add_idea = ETH_chitet_law_peace_time
+				}
+				set_division_force_allow_recruiting = {
+					division_template = "Chitet Sefari"
+					force_allow_recruiting = no
+				}
+			}
+		}
+	}
+
+#ROOT = country that joined a war
+	#on_war is fired when a country goes to war against anyone and is not fired again when it enters war against another country unless it went to peace first
+	on_war = { 
+		effect = {
+			IF = {
+				limit = {
+					original_tag = ETH
+					has_idea = ETH_chitet_law_peace_time
+				}
+				swap_ideas = {
+					remove_idea = ETH_chitet_law_peace_time
+					add_idea = ETH_chitet_law
+				}
+				set_division_force_allow_recruiting = {
+					division_template = "Chitet Sefari"
+					force_allow_recruiting = yes
+				}
+
+			}
+		}
+	}	
+
+}
+
+
+

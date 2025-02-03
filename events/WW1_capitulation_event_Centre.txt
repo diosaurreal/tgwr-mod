@@ -18,7 +18,7 @@ country_event = {
 
 	option = {
 		name = ww1_centre_capitulation.1.a
-		custom_effect_tooltip = ww1_capitulation.1.a.tt
+		custom_effect_tooltip = compiegne_armistice_message
 		hidden_effect = {
 			every_country = {
 				limit = {
@@ -41,13 +41,12 @@ country_event = {
 						is_in_faction_with = FRA
 						has_country_flag = member_of_entente
 						has_country_flag = member_of_central_powers
-						AND = {
-							tag = RUS
+						tag = SOV
+						is_in_faction_with = SOV
+						is_subject_of = SOV
+						any_country = {
+							original_tag = RUS
 							has_war_with = SOV
-						}
-						AND = {
-							tag = SOV
-							has_war_with = RUS
 						}
 					}
 					has_war_with = GER
@@ -58,17 +57,47 @@ country_event = {
 				}
 				country_event =  ww1_centre_capitulation.12
 			}
-			add_threat = -10
+			add_named_threat = {
+				threat = -10
+				name = GER_capitulation
+			}
 		}
 		set_global_flag = france_accepts_GER_capitulation
 		
 		news_event = { id = ww1_centre_capitulation.2 }
+		hidden_effect = {
+			GER = {
+				if = {
+					limit = {
+						AND = {
+							has_global_flag = russian_civil_war
+							209 = {
+								is_controlled_by = GER
+							}
+							country_exists = SOV
+							SOV = {
+								has_war = yes
+								any_enemy_country = {
+									is_russian_tag = yes
+								}
+							}
+						}
+					}
+					country_event = {
+						id = ww1_nwa.17
+						days = 1
+					}
+				}
+			}
+		}
 	}
 	option = { #НЕ ПРИНИМАТЬ (для игроков)
 		name = ww1_centre_capitulation.1.b
-		custom_effect_tooltip = ww1_capitulation.1.b.tt
+		custom_effect_tooltip = no_scripted_peace_warning_tt
 		trigger = {
 			is_ai = no
+			#why would you resist lol
+			NOT = { has_idea = FRA_interim_government }
 		}
 		news_event = { id = ww1_centre_capitulation.3 }
 	}
@@ -94,6 +123,19 @@ news_event = {
 			}	
 		}
 		ai_chance = { factor = 100 }
+		if = {
+			limit = {
+				has_game_rule = {
+					rule = rule_superevent
+					option = DEFAULT
+				}
+				is_ai = no
+			}
+			hidden_effect = {
+				play_song = "SE_fra_victory"
+				set_country_flag = se_fra_victory
+			}
+		}
 	}
 	option = {
 		name = ww1_centre_capitulation.2.b
@@ -104,6 +146,19 @@ news_event = {
 			}
 		}
 		ai_chance = { factor = 100 }
+		if = {
+			limit = {
+				has_game_rule = {
+					rule = rule_superevent
+					option = DEFAULT
+				}
+				is_ai = no
+			}
+			hidden_effect = {
+				play_song = "SE_fra_victory"
+				set_country_flag = se_fra_victory
+			}
+		}
 	}
 	option = {
 		name = ww1_centre_capitulation.2.c
@@ -116,6 +171,19 @@ news_event = {
 			}
 		}
 		ai_chance = { factor = 100 }
+		if = {
+			limit = {
+				has_game_rule = {
+					rule = rule_superevent
+					option = DEFAULT
+				}
+				is_ai = no
+			}
+			hidden_effect = {
+				play_song = "SE_fra_victory"
+				set_country_flag = se_fra_victory
+			}
+		}
 	}
 }
 
@@ -212,22 +280,35 @@ country_event = {
 		}
 		NOT = {
 			has_country_flag = interbellum
-		}	
+		}
+		NOT = {
+			tag = ROM
+		}
+	}
+	
+	immediate = {
+		set_country_flag = interbellum
+		set_global_flag = interbellum
 	}
 
 	mean_time_to_happen = {
-		days = 5
+		days = 0
 	}
 
 	option = {
 		name = ww1_centre_capitulation.6.a
-		set_country_flag = interbellum
-		set_global_flag = interbellum
 		add_ideas = interwar_recovery
 		activate_mission = mission_interwar_demobilization
 		if = {
 			limit = { has_country_flag = great_war_loser }
 			add_ideas = disarmed_nation
+		}
+		if = {
+			limit = {
+				tag = FRA 
+				has_country_flag = great_war_winner
+			}
+			country_event = league_of_nations.6
 		}
 		if = {
 			limit = {

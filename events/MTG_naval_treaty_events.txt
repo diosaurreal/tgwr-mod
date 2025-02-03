@@ -1,5 +1,114 @@
 ﻿add_namespace = MTG_naval_treaty
 
+### tgwr first washington naval treaty 
+
+# Country invited to join naval treaty
+country_event = {
+	id = MTG_naval_treaty.12
+	title = MTG_naval_treaty.12.t
+	desc = MTG_naval_treaty.12.desc
+	picture = GFX_report_event_usa_heavy_cruiser
+
+	is_triggered_only = yes
+
+	option = { #accept
+		name = MTG_naval_treaty.1.a 
+		ai_chance = {
+			factor = 70
+			modifier = {
+				has_government = democratic
+				factor = 5
+			}
+			modifier = {
+				has_government = fascism
+				factor = 0.25
+			}
+			modifier = {
+				has_country_flag = say_yes_to_this_event
+				factor = 8000
+			}
+		}
+		add_ideas = MTG_washington_naval_treaty_adherent
+		modify_global_flag = {
+			flag = MTG_naval_treaty_signatories
+			value = 1
+		}
+		setup_authorized_tons = yes
+		calculate_navy_tons = yes
+		every_other_country = {
+			limit = {
+				has_naval_treaty_trigger = yes
+			}
+			country_event = { id = MTG_naval_treaty.13 days = 3 }
+			add_ai_strategy = {
+				type = protect
+				id = PREV
+				value = 100
+			}
+		}
+	}
+	option = { #refuse
+		name = MTG_naval_treaty.1.b 
+		ai_chance = {
+			factor = 30
+			modifier = {
+				has_country_flag = say_yes_to_this_event
+				factor = 0
+			}
+		}
+		set_country_flag = MTG_refused_naval_treaty
+		every_other_country = {
+			limit = {
+				has_naval_treaty_trigger = yes
+			}
+			add_opinion_modifier = {
+				target = PREV
+				modifier = refused_naval_treaty
+			}
+			country_event = { id = MTG_naval_treaty.14 days = 3 }
+			add_ai_strategy = {
+				type = contain
+				id = PREV
+				value = 100
+			}
+		}
+	}
+}
+#country accepts naval treaty
+country_event = {
+	id = MTG_naval_treaty.13
+	title = MTG_naval_treaty.2.t
+	desc = MTG_naval_treaty.2.desc
+	picture = GFX_report_event_naval_treaty
+
+	is_triggered_only = yes
+
+	option = { #great
+		name = MTG_naval_treaty.2.a 
+		effect_tooltip = {
+			FROM = {
+				add_ideas = MTG_washington_naval_treaty_adherent
+			}
+		}
+	}
+}
+#country refuses naval treaty
+country_event = {
+	id = MTG_naval_treaty.14
+	title = MTG_naval_treaty.3.t
+	desc = MTG_naval_treaty.3.desc
+	picture = GFX_report_event_usa_heavy_cruiser
+
+	is_triggered_only = yes
+
+	option = { #bad end
+		name = MTG_naval_treaty.3.a 
+	}
+}
+
+
+
+
 # Country invited to join naval treaty
 country_event = {
 	id = MTG_naval_treaty.1
@@ -321,5 +430,34 @@ country_event = {
 	
 	option = { #great
 		name = MTG_naval_treaty.11.a 
+	}
+}
+
+#auto update navy size
+country_event = {
+	id = MTG_naval_treaty.100
+	hidden = yes
+	mean_time_to_happen = {
+		days = 14
+	}
+	trigger = {
+		any_country = {
+			OR = {
+				has_country_flag = MTG_naval_treaty_adherent
+				has_idea = MTG_naval_treaty_adherent
+			}
+		}
+	}
+	immediate = {
+		set_global_flag = MTG_TGWR_navy_checker_has_been_activated
+		every_country = {
+			limit = {
+				OR = {
+					has_country_flag = MTG_naval_treaty_adherent
+					has_idea = MTG_naval_treaty_adherent
+				}
+			}
+			calculate_navy_tons = yes
+		}
 	}
 }

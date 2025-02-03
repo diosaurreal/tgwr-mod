@@ -312,29 +312,64 @@ country_event = {
 	}
 }
 
-###hidden event to reload focus tree because Paradox is cuck
-country_event = {
+# Notification event that leader has been killed in action
+unit_leader_event = {
 	id = ww1_generic.6
-	hidden = yes
+	title = ww1_generic.6.t
+	desc = ww1_generic.6.d
+	
+	picture = GFX_report_event_military_planning
+
 	is_triggered_only = yes
+
+	option = {
+		name = ww1_generic.6.a
+		retire_character = FROM	
+	}	
+}
+
+# Notification event that leader has died from sickness
+unit_leader_event = {
+	id = ww1_generic.7
+	title = ww1_generic.7.t
+	desc = ww1_generic.7.d
+	
+	picture = GFX_report_event_military_planning
+
+	is_triggered_only = yes
+
 	immediate = {
-		mark_focus_tree_layout_dirty = yes
+		FROM = {
+			set_character_flag = character_died
+		}	
 	}
+
+	option = {
+		name = ww1_generic.6.a
+		retire_character = FROM	
+	}	
 }
 
 #Golira Rise
 country_event = {
-	id = ww1_generic.7
+	id = ww1_generic.8
 	hidden = yes
 	fire_only_once = yes
 	trigger = {
 		tag = COG
 		is_subject = no
-		has_country_leader = { name = "Spinning Gorilla" }
+		has_government = neutrality
 		is_historical_focus_on = no
 	}
 	immediate = {
 		set_cosmetic_tag = COG_Gorilla
+		create_country_leader = {
+			name = "Spinning Gorilla"
+			picture= "GFX_golira"
+			expire="1935.1.1" 
+			ideology=anarcho_primitivism  
+			traits={ german_agent } 
+		}
 		add_manpower = 100000000
 		add_offsite_building = { type = arms_factory level = 25 }
 		295 = {
@@ -442,12 +477,6 @@ news_event = {
 			}
 		}
 	}
-	option = {
-		name = ww1_generic.10.b
-		trigger = {
-			tag = RUS
-		}
-	}
 }
 
 #SPANISH FLU SPREADS
@@ -540,6 +569,7 @@ country_event = {
         NOT = { 
             tag = QIN 
 			tag = SOV
+			tag = AUS
         }
 		NOT = {
 			has_idea = idea_famine
@@ -620,11 +650,11 @@ news_event = {
 			ENG_herbert_george_wells = {
 				add_country_leader_role = {
 					country_leader = {
-						ideology = socialism
+						ideology = social_democracy
 						traits = { ENG_war_of_the_worlds }
 					}
 				}
-				promote_character = socialism
+				promote_character = social_democracy
 			}
 			set_party_name = {
 				ideology = democratic
@@ -673,51 +703,6 @@ news_event = {
 	}
 }
 
-# Comet Sighted
-country_event = {
-	id = ww1_generic.15
-	title = ww1_generic.15.t
-	desc = ww1_generic.15.d
-	picture = GFX_report_event_airplane_factory
-	trigger = {
-		NOT = {
-			has_country_flag = comet
-		}
-		date > 1910.5.10
-		date < 1910.6.10
-	}
-	immediate = {
-		set_country_flag = comet
-	}
-	mean_time_to_happen = {
-		days = 10
-	}
-	option = {
-		name = ww1_generic.15.a
-		add_stability = 0.01
-		trigger = {
-			NOT = {
-				original_tag = QIN
-				original_tag = MEX
-				original_tag = TUR
-				original_tag = KOR
-			}
-		}
-	}
-	option = {
-		name = ww1_generic.15.b
-		add_stability = -0.01
-		trigger = {
-			OR = {
-				original_tag = QIN
-				original_tag = MEX
-				original_tag = TUR
-				original_tag = KOR
-			}
-		}
-	}
-}
-
 # FARM CRISIS 
 country_event = {
 	id = ww1_generic.16
@@ -727,36 +712,29 @@ country_event = {
 	trigger = {
 		NOT = {
 			has_country_flag = farm_crisis_after_war
-		}
-		NOT = {
 			has_idea = idea_farm_crisis
+			has_idea = idea_farm_crisis_2
+			has_government = communism
+			has_idea = closed_economy
 		}
+		date > 1917.3.1
+		has_global_flag = great_war_ends
+		num_of_civilian_factories > 30
 		OR = {
+			has_country_flag = great_war_loser
+			has_country_flag = great_war_winner
 			AND = {
-				date > 1920.3.1
-				GER = {
-					has_war = no
+				capital_scope = {
+					is_on_continent = europe
 				}
-				has_global_flag = great_war
-				NOT = {
-					any_country = {
+				any_neighbor_country = {
+					OR = {
 						has_country_flag = great_war_loser
+						has_country_flag = great_war_winner
+						has_idea = idea_farm_crisis
 					}
 				}
 			}
-			AND = {
-				date > 1917.3.1
-				any_country = {
-					has_country_flag = great_war_loser
-				}
-			}
-		}
-		num_of_civilian_factories > 30
-		NOT = {
-			has_government = communism
-		}
-		NOT = {
-			has_idea = closed_economy
 		}
 	}
 	mean_time_to_happen = {
@@ -773,6 +751,9 @@ country_event = {
 	}
 	option = {
 		name = ww1_generic.16.a
+		effect_tooltip = {
+			add_ideas = idea_farm_crisis
+		}
 	}
 }
 
@@ -969,102 +950,6 @@ country_event = {
 	}
 }
 
-# Random factory events
-country_event = {
-	id = ww1_generic.20
-	hidden = yes
-	trigger = {
-		num_of_factories > 15
-		NOT = {
-			has_country_flag = random_factory_event
-		}
-		NOT = {
-			has_country_flag = fire_protection
-		}
-	}
-	mean_time_to_happen = {
-		days = 210
-	}
-	immediate = {
-		set_country_flag = {
-			flag = random_factory_event
-			days = 400
-			value = 1
-		}
-		random_list = {
-			90 = {
-				modifier = {
-					factor = 1.5
-					has_stability > 0.75
-				}
-				clr_country_flag = random_factory_event
-			}
-			5 = {
-				modifier = {
-					factor = 0.75
-					has_war_support < 0.5
-				}
-				country_event = {
-					id = ww1_generic.21
-					days = 60
-					random = 60
-				}
-			}
-			5 = {
-				country_event = {
-					id = ww1_generic.22
-					days = 60
-					random = 60
-				}
-			}
-		}
-	}
-}
-
-# FIRE ON MILITARY FACTORY
-#################
-country_event = {
-	id = ww1_generic.21
-	title = ww1_generic.21.t
-	desc = ww1_generic.21.d
-	picture = GFX_report_event_generic_ruins
-	is_triggered_only = yes
-	option = {
-		name = ww1_generic.21.a
-		random_owned_state = {
-			limit = {
-				arms_factory > 0
-			}
-			damage_building = {
-				type = arms_factory
-				damage = 1
-			}
-		}
-	}
-}
-
-# FIRE ON CIVILIAN FACTORY
-#################
-country_event = {
-	id = ww1_generic.22
-	title = ww1_generic.22.t
-	desc = ww1_generic.22.d
-	picture = GFX_report_event_generic_ruins
-	is_triggered_only = yes
-	option = {
-		name = ww1_generic.22.a
-		random_owned_state = {
-			limit = {
-				industrial_complex > 0
-			}
-			damage_building = {
-				type = industrial_complex
-				damage = 1
-			}
-		}
-	}
-}
-
 # ARMY EPIDEMIC
 ##################
 country_event = {
@@ -1157,6 +1042,7 @@ country_event = {
 			has_idea = idea_mass_desertion
 		}
 		has_manpower > 50000
+		has_war_support < 0.5
 	}
 	mean_time_to_happen = {
 		days = 210
@@ -1528,7 +1414,7 @@ country_event = {
 		ai_chance = {
 			factor = 20
 			modifier = {
-				threat > 20
+				threat > 0.2
 				factor = 2
 			}
 			modifier = {
@@ -1563,7 +1449,7 @@ country_event = {
 				factor = 2
 			}
 			modifier = {
-				threat < 20
+				threat < 0.2
 				factor = 2
 			}
 		}
@@ -1682,5 +1568,558 @@ country_event = {
 				level = 1
 			}
 		}
+	}
+}
+
+###generic situation political event
+country_event = {
+	title = ww1_generic.106.t
+	desc = ww1_generic.106.d
+	id = ww1_generic.106
+	picture = GFX_report_event_generic_sign_treaty1
+	is_triggered_only = yes
+	option = {
+		name = ww1_generic.106.a
+	
+	}
+	option = {
+		name = ww1_generic.106.b
+		add_popularity = {
+			ideology = ROOT
+			popularity = -0.05
+		}
+	}
+}
+
+###generic asking for claims
+country_event = {
+	title = ww1_generic.107.t
+	desc = ww1_generic.107.d
+	id = ww1_generic.107
+	picture = GFX_report_event_generic_sign_treaty1
+	is_triggered_only = yes
+	option = {
+		name = ww1_generic.107.a
+		ai_chance = {
+			factor = 50
+		}
+		FROM = {
+			country_event = {
+				id = ww1_generic.108
+				days = 3
+			}
+		}
+	}
+	option = {
+		name = ww1_generic.107.b
+		every_owned_state = {
+			limit = {
+				is_claimed_by = FROM
+			}
+			transfer_state_to = FROM
+		}
+		FROM = {
+			country_event = {
+				id = ww1_generic.109
+				days = 2
+			}
+		}
+		ai_chance = {
+			factor = 1
+			modifier = {
+				has_war = yes
+				add = 10
+			}
+			modifier = {
+				is_in_faction_with = FROM
+				add = 5
+			}
+			modifier = {
+				has_war = yes
+				surrender_progress > 0.25
+				add = 20
+			}
+			modifier = {
+				FROM = {
+					is_in_faction = yes
+				}
+				add = 5
+			}
+		}
+	}
+}
+
+
+###generic refused claims
+country_event = {
+	title = ww1_generic.108.t
+	desc = ww1_generic.108.d
+	id = ww1_generic.108
+	picture = GFX_report_event_generic_sign_treaty1
+	is_triggered_only = yes
+	option = {
+		name = ww1_generic.108.a
+		ai_chance = {
+			factor = 50
+		}
+	}
+}
+###generic accepted claims
+country_event = {
+	title = ww1_generic.109.t
+	desc = ww1_generic.109.d
+	id = ww1_generic.109
+	picture = GFX_report_event_generic_sign_treaty1
+	is_triggered_only = yes
+	option = {
+		name = ww1_generic.109.a
+		ai_chance = {
+			factor = 50
+		}
+	}
+}
+
+#########################################################
+
+
+###generic ask for defensive alliance
+country_event = {
+	title = ww1_generic.110.t
+	desc = ww1_generic.110.d
+	id = ww1_generic.110
+	picture = GFX_report_event_generic_sign_treaty1
+	is_triggered_only = yes
+	option = {
+		name = ww1_generic.110.a
+		ai_chance = {
+			factor = 75
+		}
+		FROM = {
+			country_event = {
+				id = ww1_generic.112
+				days = 3
+			}
+		}
+		effect_tooltip = {
+			give_guarantee = FROM
+			FROM = {
+				give_guarantee = ROOT
+			}
+		}
+	}
+	option = {
+		name = ww1_generic.110.b
+		FROM = {
+			country_event = {
+				id = ww1_generic.111
+				days = 2
+			}
+		}
+		ai_chance = {
+			factor = 1
+			modifier = {
+				NOT = {
+					FROM = {
+						has_government = ROOT
+					}
+				}
+				add = 15
+			}
+			modifier = {
+				has_opinion	= {
+					target = FROM
+					value < 20
+				}
+				add = 10
+			}
+			modifier = {
+				has_opinion	= {
+					target = FROM
+					value < 10
+				}
+				add = 10
+			}
+			modifier = {
+				has_opinion	= {
+					target = FROM
+					value < 0
+				}
+				add = 10
+			}
+			modifier = {
+				threat < 0.3
+				add = 10
+			}
+		}
+	}
+}
+
+###generic accepted claims
+country_event = {
+	title = ww1_generic.112.t
+	desc = ww1_generic.112.d
+	id = ww1_generic.112
+	picture = GFX_report_event_generic_sign_treaty1
+	is_triggered_only = yes
+	option = {
+		name = ww1_generic.112.a
+		FROM = {
+			give_guarantee = ROOT
+		}
+		give_guarantee = FROM
+	}
+}
+
+###generic refused claims
+country_event = {
+	title = ww1_generic.111.t
+	desc = ww1_generic.111.d
+	id = ww1_generic.111
+	picture = GFX_report_event_generic_sign_treaty1
+	is_triggered_only = yes
+	option = {
+		name = ww1_generic.111.a
+	}
+}
+
+###great war is finished, this event will lower event count for every countries
+country_event = {
+	title = ww1_generic.113.t
+	desc = ww1_generic.113.d
+	id = ww1_generic.113
+	picture = GFX_report_event_generic_sign_treaty1
+	trigger = {
+		has_country_flag = interbellum
+		NOT = {
+			AND = {
+				tag = AUS # Austria-hungary will be dismantled and puppies will have the event
+				has_country_flag = great_war_loser
+			}
+		}
+		NOT = {
+			is_china_or_warlord_no_tt = yes #chinese civil war
+			#is_major = no
+		}
+		NOT = {
+			any_other_country = {	#dont demobilize twice
+				original_tag = ROOT
+				has_country_flag = WW1_demobilization
+			}
+		}
+		has_global_flag = great_war_ends
+		has_war = no
+		NOT = {
+			has_country_flag = WW1_demobilization
+		}
+		NOT = {
+			has_global_flag = end_of_demobilization_period
+		}
+		NOT = {
+			tag = ROM
+		}
+	}
+	mean_time_to_happen = {
+		days = 2
+	}
+	option = {
+		name = ww1_generic.113.a
+		if = {
+			limit = {
+				NOT = {
+					has_global_flag = demobilization_period_timer
+				}
+			}
+			country_event = {
+				id = ww1_generic.115
+				days = 360
+			}
+			set_global_flag = demobilization_period_timer
+		}
+		post_ww1_demobilization_effect = yes
+	}
+}
+
+###great war is finished, destruction of old equipment types
+country_event = {
+	title = ww1_generic.114.t
+	desc = ww1_generic.114.d
+	id = ww1_generic.114
+	picture = GFX_report_event_generic_sign_treaty1
+	trigger = {
+		NOT = {
+			any_other_country = {	#dont demobilize twice
+				original_tag = ROOT
+				has_country_flag = WW1_old_equipment_destruction
+			}
+		}
+		NOT = {
+			#tag = ROM
+			is_china_or_warlord_no_tt = yes #chinese civil war
+		}
+		has_global_flag = great_war_ends
+		has_war = no
+		has_country_flag = WW1_demobilization
+		NOT = {
+			has_country_flag = WW1_old_equipment_destruction
+		}
+		has_global_flag = end_of_demobilization_period
+		
+	}
+	mean_time_to_happen = {
+		days = 2
+	}
+	option = {
+		name = ww1_generic.113.a
+		set_country_flag = WW1_old_equipment_destruction
+		##everyone lose old equipment
+		add_equipment_to_stockpile = {
+			type = infantry_equipment
+			amount = -850000
+		}
+		add_equipment_to_stockpile = {
+			type = artillery_equipment
+			amount = -850000
+		}
+		add_equipment_to_stockpile = {
+			type = anti_air_equipment
+			amount = -350000
+		}
+		add_equipment_to_stockpile = {
+			type = anti_tank_equipment
+			amount = -350000
+		}
+		add_equipment_to_stockpile = {
+			type = support_equipment
+			amount = -850000
+		}
+		add_equipment_to_stockpile = {
+			type = motorized_equipment
+			amount = -850000
+		}
+		add_equipment_to_stockpile = {
+			type = armored_car_equipment
+			amount = -450000
+		}
+		#air forces
+		add_equipment_to_stockpile = {
+			type = fighter_equipment
+			amount = -450000
+		}
+		add_equipment_to_stockpile = {
+			type = cv_fighter_equipment
+			amount = -450000
+		}
+		add_equipment_to_stockpile = {
+			type = CAS_equipment
+			amount = -450000
+		}
+		add_equipment_to_stockpile = {
+			type = nav_bomber_equipment
+			amount = -450000
+		}
+		add_equipment_to_stockpile = {
+			type = tac_bomber_equipment
+			amount = -450000
+		}
+		add_equipment_to_stockpile = {
+			type = strat_bomber_equipment
+			amount = -450000
+		}
+		add_equipment_to_stockpile = {
+			type = scout_plane_equipment
+			amount = -450000
+		}
+		#misc
+		add_equipment_to_stockpile = {
+			type = railway_gun_equipment
+			amount = -450000
+		}
+		
+		
+	}
+
+}
+
+###end of demobilization period
+country_event = {
+	title = ww1_generic.115.t
+	desc = ww1_generic.115.d
+	id = ww1_generic.115
+	hidden = yes
+	picture = GFX_report_event_generic_sign_treaty1
+	is_triggered_only = yes
+	immediate = {
+		set_global_flag = end_of_demobilization_period
+	}
+}
+
+###generic ask to become protectorate puppet
+country_event = {
+	title = ww1_generic.116.t
+	desc = ww1_generic.116.d
+	id = ww1_generic.116
+	picture = GFX_report_event_generic_sign_treaty1
+	is_triggered_only = yes
+	option = {
+		name = ww1_generic.116.a
+		ai_chance = {
+			factor = 200
+		}
+		FROM = {
+			country_event = {
+				id = ww1_generic.117
+				days = 3
+			}
+		}
+		effect_tooltip = {
+			set_autonomy = {
+				target = FROM
+				autonomous_state = autonomy_tgwr_protectorate
+				freedom_level = 0.2
+			}
+		}
+	}
+	option = {
+		name = ww1_generic.116.b
+		FROM = {
+			country_event = {
+				id = ww1_generic.118
+				days = 2
+			}
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+}
+
+###generic accepted
+country_event = {
+	title = ww1_generic.117.t
+	desc = ww1_generic.117.d
+	id = ww1_generic.117
+	picture = GFX_report_event_generic_sign_treaty1
+	is_triggered_only = yes
+	option = {
+		name = ww1_generic.117.a
+		get_current_government_type = yes
+		FROM = {
+			ROOT = { set_country_flag = protectorate }
+			set_autonomy = {
+				target = ROOT
+				autonomous_state = autonomy_tgwr_protectorate
+				freedom_level = 0.2
+			}
+		}
+		restore_previous_government_type = yes
+	}
+}
+
+###generic refused
+country_event = {
+	title = ww1_generic.118.t
+	desc = ww1_generic.118.d
+	id = ww1_generic.118
+	picture = GFX_report_event_generic_sign_treaty1
+	is_triggered_only = yes
+	option = {
+		name = ww1_generic.118.a
+	}
+}
+
+
+###generic ask for military access
+country_event = {
+	title = ww1_generic.119.t
+	desc = ww1_generic.119.d
+	id = ww1_generic.119
+	picture = GFX_report_event_generic_sign_treaty1
+	is_triggered_only = yes
+	option = {
+		name = ww1_generic.119.a
+		ai_chance = {
+			factor = 90
+		}
+		FROM = {
+			country_event = {
+				id = ww1_generic.120
+				days = 3
+			}
+		}
+		effect_tooltip = {
+			give_military_access = FROM
+		}
+	}
+	option = {
+		name = ww1_generic.119.b
+		FROM = {
+			country_event = {
+				id = ww1_generic.121
+				days = 2
+			}
+		}
+		ai_chance = {
+			factor = 1
+			modifier = {
+				NOT = {
+					FROM = {
+						has_government = ROOT
+					}
+				}
+				add = 30
+			}
+			modifier = {
+				has_opinion	= {
+					target = FROM
+					value < 20
+				}
+				add = 10
+			}
+			modifier = {
+				has_opinion	= {
+					target = FROM
+					value < 10
+				}
+				add = 20
+			}
+			modifier = {
+				has_opinion	= {
+					target = FROM
+					value < 0
+				}
+				add = 20
+			}
+			modifier = {
+				threat < 0.3
+				add = 10
+			}
+		}
+	}
+}
+
+###generic accepted claims
+country_event = {
+	title = ww1_generic.120.t
+	desc = ww1_generic.120.d
+	id = ww1_generic.120
+	picture = GFX_report_event_generic_sign_treaty1
+	is_triggered_only = yes
+	option = {
+		name = ww1_generic.120.a
+		FROM = {
+			give_military_access = ROOT
+		}
+	}
+}
+
+###generic refused claims
+country_event = {
+	title = ww1_generic.121.t
+	desc = ww1_generic.121.d
+	id = ww1_generic.121
+	picture = GFX_report_event_generic_sign_treaty1
+	is_triggered_only = yes
+	option = {
+		name = ww1_generic.121.a
 	}
 }

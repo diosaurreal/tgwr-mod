@@ -1,39 +1,468 @@
 ﻿add_namespace = ww1_southafrica
+
+#Maritz rebellion
 country_event = {
 	id = ww1_southafrica.1
-	title = ww1_southafrica.1.t	#Boer Rebellion against South Africa
-	desc = ww1_southafrica.1.d	#Boers in in the Transvaal have rebelled against South Africa's decision to join the Entente. They stand ready to fight South Africa
-	# picture = ww1_southafrica_2
-	picture = GFX_report_event_saf_coup
+	title = ww1_southafrica.1.t	
+	desc = ww1_southafrica.1.d
+	picture = GFX_report_event_saf_civil_war
 	fire_only_once = yes
 	mean_time_to_happen = {
-		days = 1
+		days = 45
+		modifier = {
+			factor = 0.1
+			NOT = {
+				has_character = SAF_koos_de_larey
+			}
+		}
 	}
 	trigger = {
 		tag = SAF
 		has_war_with = GER
 		date > 1910.5.6
 		NOT = {
-			has_country_flag = boer_rebellion
+			has_global_flag = boer_rebellion
+			has_government = fascism
+			has_global_flag = great_war_ends
 		}
-		owns_state = 275
-		has_full_control_of_state = 275
+		owns_state = 1049
+		has_full_control_of_state = 1049
+	}
+	immediate = {
+		hidden_effect = {
+			set_global_flag = boer_rebellion
+			if = {
+				limit = {
+					SAF_christiaan_beyers = { is_hired_as_advisor = yes }
+				}
+				custom_effect_tooltip = remove_chief_of_army
+				deactivate_advisor = SAF_christiaan_beyers
+				activate_advisor = SAF_john_collyer
+			}
+			start_civil_war = {
+				ideology = fascism
+				size = 0
+				navy_ratio = 0
+				keep_all_characters = yes
+				states = { 1049 }
+				set_country_flag = boer_rebellion
+				add_ideas = standing_alone
+				PREV = {
+					SAF_manie_maritz = {
+						set_nationality = PREV.PREV
+					}
+					SAF_christiaan_de_wet = {
+						set_nationality = PREV.PREV
+					}
+					SAF_jopie_fourie = {
+						set_nationality = PREV.PREV
+					}
+					SAF_christiaan_beyers = {
+						set_nationality = PREV.PREV
+					}
+					if = {
+						limit = {
+							has_character = SAF_koos_de_larey
+						}
+						SAF_koos_de_larey = {
+							set_nationality = PREV.PREV
+						}
+					}
+					set_state_controller = 1049
+				}
+				set_province_controller = 5231
+				set_province_controller = 12064
+				promote_character = SAF_christiaan_de_wet
+				promote_character = SAF_manie_maritz
+				activate_advisor = SAF_christiaan_beyers
+				division_template = {
+					name = "Boer Revolters"
+					division_names_group = SAF_GAR_01
+					regiments = {
+						militia = { x = 0 y = 0 }
+					}
+				}
+				1049 = {
+					create_unit = {
+						division = "name = \"Maritz's Troops\" division_template = \"Boer Revolters\" start_experience_factor = 0.5"
+						owner = PREV
+						allow_spawning_on_enemy_provs = yes
+						prioritize_location = 5231
+					}
+					create_unit = {
+						division = "name = \"Fourie's Troops\" division_template = \"Boer Revolters\" start_experience_factor = 0.5"
+						owner = PREV
+						allow_spawning_on_enemy_provs = yes
+						prioritize_location = 12064
+					}
+				}					
+				if = {
+					limit = {
+						PREV = {
+							owns_state = 275
+						}
+					}
+					set_province_controller = 2213
+					275 = {		
+						create_unit = {
+							division = "name = \"Maritz's Troops\" division_template = \"Boer Revolters\" start_experience_factor = 0.5"
+							owner = PREV
+							allow_spawning_on_enemy_provs = yes
+							prioritize_location = 2213
+						}					
+					}
+				}
+			}
+			division_template = {
+				name = "Loyalist Brigades"
+				regiments = {
+					militia = { x = 0 y = 0 }
+				}
+				is_locked = yes
+			}
+			random_owned_state = {
+				create_unit = {
+					division = "name = \"Pretoria Garrison\" division_template = \"Loyalist Brigades\" start_experience_factor = 0.5"
+					owner = PREV
+					allow_spawning_on_enemy_provs = yes
+					prioritize_location = 10400
+				}
+				create_unit = {
+					division = "name = \"Durban Garrison\" division_template = \"Loyalist Brigades\" start_experience_factor = 0.5"
+					owner = PREV
+					allow_spawning_on_enemy_provs = yes
+					prioritize_location = 1468
+				}
+				create_unit = {
+					division = "name = \"Cape Town Garrison\" division_template = \"Loyalist Brigades\" start_experience_factor = 0.5"
+					owner = PREV
+					allow_spawning_on_enemy_provs = yes
+					prioritize_location = 12589
+				}
+			}
+			news_event = {
+				id = ww1_southafrica.4
+				hours = 3
+			}
+		}
+	}
+	option = {
+		name = ww1_southafrica.1.a
+		effect_tooltip = {
+			start_civil_war = {
+				ideology = fascism
+				size = 0.10
+			}
+		}
+	}
+	option = {
+		name = ww1_southafrica.1.b
+		trigger = { is_ai = no }
+		effect_tooltip = {
+			start_civil_war = {
+				ideology = fascism
+				size = 0.10
+			}
+		}
+		random_other_country = {
+			limit = {
+				original_tag = SAF
+				has_country_flag = boer_rebellion
+			}
+			change_tag_from = ROOT
+		}
+	}
+}
+
+# Koos De Larey has been Shot!
+country_event = {
+	id = ww1_southafrica.2
+	title = ww1_southafrica.2.t
+	desc = ww1_southafrica.2.d
+	picture = GFX_report_event_generic_funeral
+	trigger = {
+		tag = SAF
+		date > 1914.7.1
+		has_character = SAF_koos_de_larey
+	}
+	fire_only_once = yes
+	mean_time_to_happen = {
+		days = 60
+		modifier = {
+			factor = 0.1
+			has_war_with = GER
+		}
 	}
 	option = {
 		name = ww1_southafrica.2.a
-		set_country_flag = boer_rebellion
-		# SAF={
-		# 	remove_unit_leader=78011
-		# 	remove_unit_leader=78013
-		# }
-		custom_effect_tooltip = remove_chief_of_army
+		retire_character = SAF_koos_de_larey
+	}
+}
+
+# Maritz rebellion ends
+country_event = {
+	id = ww1_southafrica.3
+	title = ww1_southafrica.3.t
+	desc = ww1_southafrica.3.d
+	picture = GFX_report_event_saf_civil_war
+	is_triggered_only = yes
+	immediate = {
 		hidden_effect = {
-			deactivate_advisor = SAF_christiaan_beyers
-			GER = {
-				set_state_controller = 275
-				# load_oob = "Boer_1914"
+			random_other_country = {
+				limit = {
+					original_tag = SAF
+					has_country_flag = boer_rebellion
+				}
+				every_character = {
+					set_nationality = ROOT
+				}
+				ROOT = {
+					annex_country = {
+						target = PREV
+					}
+				}
+			}
+			promote_character = SAF_manie_maritz
+			promote_character = SAF_christiaan_de_wet
+		}
+	}
+	option = {
+		name = ww1_southafrica.3.a
+		delete_unit_template_and_units = {
+			division_template = "Loyalist Brigades"
+			disband = no
+		}
+		retire_character = SAF_christiaan_beyers #kia
+		retire_character = SAF_jopie_fourie #capital punishment
+		effect_tooltip = {
+			SAF_manie_maritz = {
+				remove_unit_leader_role = yes
+			}
+			SAF_christiaan_de_wet = {
+				remove_unit_leader_role = yes
 			}
 		}
-		activate_advisor = SAF_john_collyer
+		if = {
+			limit = {
+				has_character = SAF_koos_de_larey
+			}
+			SAF_koos_de_larey = {
+				remove_unit_leader_role = yes
+			}
+		}
+	}
+}
+
+# Maritz Rebellion news
+news_event = {
+	id = ww1_southafrica.4
+	title = ww1_southafrica.4.t
+	desc = ww1_southafrica.4.desc
+	picture = GFX_news_event_saf_civil_war
+	is_triggered_only = yes
+	major = yes
+	option = {
+		name = ww1_southafrica.4.a
+		trigger = {
+			has_country_flag = boer_rebellion
+		}
+	}
+	option = {
+		name = ww1_southafrica.4.b
+		trigger = {
+			any_enemy_country = {
+				has_country_flag = boer_rebellion
+			}
+		}
+	}
+	option = {
+		name = ww1_southafrica.4.c
+		trigger = {
+			any_enemy_country = {
+				any_enemy_country = {
+					has_country_flag = boer_rebellion
+				}
+			}
+		}
+	}
+	option = {
+		name = ww1_southafrica.4.d
+		trigger = {
+			NOT = {
+				has_country_flag = boer_rebellion
+				any_enemy_country = {
+					has_country_flag = boer_rebellion
+				}
+				any_enemy_country = {
+					any_enemy_country = {
+						has_country_flag = boer_rebellion
+					}
+				}
+			}
+		}
+	}
+}
+
+# Christiaan de Wet
+country_event = {
+	id = ww1_southafrica.5
+	title = ww1_southafrica.5.t
+	desc = {
+		text = ww1_southafrica.5.d
+		trigger = {
+			NOT = {
+				has_global_flag = boer_rebellion
+				has_country_leader = {
+					character = SAF_christiaan_de_wet
+					ruling_only = yes
+				}
+			}
+		}
+	}
+	desc = {
+		text = ww1_southafrica.5.d_2
+		trigger = {
+			has_global_flag = boer_rebellion
+			NOT = {
+				has_country_leader = {
+					character = SAF_christiaan_de_wet
+					ruling_only = yes
+				}
+			}
+		}
+	}
+	desc = {
+		text = ww1_southafrica.5.d_3
+		trigger = {
+			has_country_leader = {
+				character = SAF_christiaan_de_wet
+				ruling_only = yes
+			}
+		}
+	}
+	desc = ww1_southafrica.5.d
+	picture = GFX_report_event_generic_funeral
+	trigger = {
+		original_tag = SAF
+		date > 1922.1.1
+		has_character = SAF_christiaan_de_wet
+	}
+	fire_only_once = yes
+	mean_time_to_happen = {
+		days = 30
+	}
+	option = {
+		name = ww1_southafrica.5.a
+		retire_character = SAF_christiaan_de_wet
+	}
+}
+
+# Louis Botha Death
+country_event = {
+	id = ww1_southafrica.6
+	title = ww1_southafrica.6.t
+	desc = ww1_southafrica.6.d
+	picture = GFX_report_event_europe_funeral
+	fire_only_once = yes
+	trigger = {
+		tag = SAF
+		date > 1919.8.1
+		has_character = SAF_louis_botha
+	}
+	immediate = {
+		hidden_effect = {
+			retire_character = SAF_louis_botha
+			promote_character = SAF_jan_smuts
+		}
+	}
+	mean_time_to_happen = { days = 27 }
+	option = {
+		name = ww1_southafrica.5.a
+		effect_tooltip = {
+			promote_character = SAF_jan_smuts
+		}
+	}
+}
+
+# South African Party lost the elections
+country_event = {
+	id = ww1_southafrica.7
+	title = ww1_southafrica.7.t
+	desc = ww1_southafrica.7.d
+	picture = GFX_report_event_election_vote
+	fire_only_once = yes
+	trigger = {
+		tag = SAF
+		date > 1924.7.1
+		has_government = democratic
+		has_country_leader = {
+			character = SAF_jan_smuts
+		}
+	}
+	mean_time_to_happen = { days = 30 }
+	option = {
+		name = ww1_southafrica.7.a
+		promote_character = SAF_j_b_m_hertzog
+		set_party_name = {
+			ideology = democratic
+			long_name = SAF_national_party_long
+			name = SAF_national_party
+		}
+	}
+}
+
+# New flag - 1912
+country_event = {
+	id = ww1_southafrica.8
+	title = ww1_southafrica.8.t
+	desc = ww1_southafrica.8.d
+	picture = GFX_report_event_royal_parade
+	fire_only_once = yes
+	trigger = {
+		tag = SAF
+		date > 1912.1.1
+		has_start_date < 1914.1.1
+		has_government = democratic
+		NOT = {
+			has_cosmetic_tag = SAF_CAP
+			has_cosmetic_tag = SAF_1912
+			has_cosmetic_tag = SAF_1928
+		}
+	}
+	mean_time_to_happen = { days = 60 }
+	option = {
+		name = ww1_southafrica.8.a
+		set_cosmetic_tag = SAF_1912
+		set_country_flag = SAF_1912
+		add_political_power = 10
+	}
+}
+
+# New flag - 1928
+country_event = {
+	id = ww1_southafrica.9
+	title = ww1_southafrica.9.t
+	desc = ww1_southafrica.9.d
+	picture = GFX_report_event_royal_parade
+	fire_only_once = yes
+	trigger = {
+		tag = SAF
+		date > 1928.4.1
+		has_government = democratic
+		has_country_leader = {
+			character = SAF_j_b_m_hertzog
+		}
+		NOT = {
+			has_cosmetic_tag = SAF_CAP
+			has_cosmetic_tag = SAF_1928
+		}
+	}
+	mean_time_to_happen = { days = 27 }
+	option = {
+		name = ww1_southafrica.9.a
+		clr_country_flag = SAF_1912
+		set_cosmetic_tag = SAF_1928
+		set_country_flag = SAF_1928
+		add_stability = 0.05
 	}
 }

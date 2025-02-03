@@ -1,0 +1,2007 @@
+add_namespace = ww1_brest_litovsk
+####################	BREST-LITOVSK TREATY ####################
+# SOVIETS OFFER TREATY. ANSWER OF GERMANY.
+#######################
+country_event = {
+	id = ww1_brest_litovsk.1
+	title = ww1_brest_litovsk.1.t
+	desc = ww1_brest_litovsk.1.d
+	picture = GFX_report_event_generic_conference
+	is_triggered_only = yes
+	trigger = {
+		NOT = {
+			has_global_flag = compiegne_armistice
+		}
+	}
+	fire_only_once = yes
+	option = {
+		name = ww1_brest_litovsk.1.a
+		# FROM = SOVIET RUSSIA
+		# ROOT = GERMAN EMPIRE
+		effect_tooltip = {
+			add_ideas = RUS_idea_armistice_cp
+			FROM = { add_ideas = RUS_idea_armistice_rus }
+		}
+		hidden_effect = {
+			save_global_event_target_as = brest_litovsk_ger
+			FROM = {
+				save_global_event_target_as = brest_litovsk_rus
+				# Notify Russia that Germans accepted the Armistice
+				country_event = {
+					id = ww1_brest_litovsk.2
+					days = 3
+				}
+				# moved from .6
+				activate_mission = RUS_demobilizing_army_timer
+			}
+			every_country = {
+				limit = {
+					has_war_with = ROOT
+					OR = {
+						tag = FROM
+						tag = UKR
+						is_in_faction_with = FROM
+						is_subject_of = FROM
+					}
+				}
+				add_ideas = RUS_idea_armistice_rus
+			}
+			every_country = {
+				limit = {
+					has_war_with = FROM
+					OR = {
+						tag = ROOT
+						is_in_faction_with = ROOT
+						is_subject_of = ROOT
+					}
+				}
+				add_ideas = RUS_idea_armistice_cp
+			}
+			# First decision: Baltics and Poland
+			country_event = {
+				id = ww1_brest_litovsk.4
+				days = 14
+			}
+			# Brest-Litovsk Negotiations news
+			news_event = {
+				id = ww1_brest_litovsk.101
+				days = 7
+			}
+			set_global_flag = russia_ask_for_brest_litovsk
+		}
+		every_state = {
+			limit = {
+				is_owned_by = RUS
+				OR = {
+					NOT = {
+						is_fully_controlled_by = RUS
+						is_fully_controlled_by = GER
+					}
+					AND = {
+						OR = {
+							is_controlled_by = GER
+							is_controlled_by = AUS
+						}
+						any_neighbor_state = {
+							is_fully_controlled_by = RUS
+						}
+					}
+				}
+			}
+			add_dynamic_modifier = {
+				modifier = RUS_armistice_effect
+			}
+		}
+		every_state = {
+			limit = {
+				is_owned_by = UKR
+				OR = {
+					NOT = {
+						is_fully_controlled_by = UKR
+						is_fully_controlled_by = GER
+					}
+					AND = {
+						OR = {
+							is_controlled_by = GER
+							is_controlled_by = AUS
+						}
+						any_neighbor_state = {
+							is_fully_controlled_by = UKR
+						}
+					}
+				}
+			}
+			add_dynamic_modifier = {
+				modifier = RUS_armistice_effect
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+	}
+	option = {
+		name = ww1_brest_litovsk.1.b
+		add_stability = -0.25
+		add_political_power = -200
+		hidden_effect = {
+			set_global_flag = brest_treaty_denounced
+			FROM = {
+				country_event = {
+					id = ww1_brest_litovsk.3
+					days = 3
+				}
+			}
+			news_event = {
+				id = ww1_brest_litovsk.100
+				days = 7
+			}
+		}
+		ai_chance = {
+			base = 0
+		}
+	}
+}
+#Germany accepts litovsk treaty - russia
+country_event = {
+	id = ww1_brest_litovsk.2
+	title = ww1_brest_litovsk.2.t
+	desc = ww1_brest_litovsk.2.d
+	picture = GFX_report_event_generic_conference
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_brest_litovsk.2.a
+		ai_chance = {
+			factor = 100
+		}
+	}
+}
+#Germany refuses litovsk treaty - russia
+country_event = {
+	id = ww1_brest_litovsk.3
+	title = ww1_brest_litovsk.3.t
+	desc = ww1_brest_litovsk.3.d
+	picture = GFX_report_event_generic_conference
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_brest_litovsk.3.a
+		ai_chance = {
+			factor = 100
+		}
+	}
+}
+# BREST TREATY: BALTICS + POLAND
+########################
+country_event = {
+	id = ww1_brest_litovsk.4
+	title = ww1_brest_litovsk.4.t
+	desc = ww1_brest_litovsk.4.d
+	picture = GFX_report_event_generic_conference
+	fire_only_once = yes
+	is_triggered_only = yes
+	trigger = {
+		NOT = {
+			has_global_flag = compiegne_armistice
+		}
+	}
+	mean_time_to_happen = {
+		days = 1
+	}
+	option = {
+		name = ww1_brest_litovsk.4.a
+		hidden_effect = {
+			set_global_flag = brest_litovsk_first_demand_puppet
+			event_target:brest_litovsk_rus = {
+				country_event = {
+					id = ww1_brest_litovsk.5
+					days = 3
+				}
+			}
+		}
+		custom_effect_tooltip = historical_tt
+		custom_effect_tooltip = agree_effect_tooltip
+		effect_tooltip = {
+			puppet = COU
+			puppet = LIT
+			puppet = POL
+		}
+		trigger = {
+			COU = {
+				OR = {
+					exists = no
+					is_subject_of = ROOT
+					is_subject_of = event_target:brest_litovsk_rus
+				}
+			}
+			LIT = {
+				OR = {
+					exists = no
+					is_subject_of = ROOT
+					is_subject_of = event_target:brest_litovsk_rus
+				}
+			}
+			POL = {
+				OR = {
+					exists = no
+					is_subject_of = ROOT
+					is_subject_of = event_target:brest_litovsk_rus
+				}
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+	}
+	option = {
+		name = ww1_brest_litovsk.4.b
+		hidden_effect = {
+			set_global_flag = brest_litovsk_first_demand_annex
+			event_target:brest_litovsk_rus = {
+				country_event = {
+					id = ww1_brest_litovsk.5
+				}
+			}
+		}
+		custom_effect_tooltip = agree_effect_tooltip
+		effect_tooltip = {
+			every_other_country = {
+				limit = {
+					is_subject_of = RUS
+					OR = {
+						original_tag = EST
+						original_tag = LAT
+						original_tag = LIT
+						original_tag = POL
+					}
+				}
+				ROOT = {
+					annex_country = {
+						target = PREV
+					}
+				}
+			}
+			event_target:brest_litovsk_rus = {
+				every_state = {
+					limit = {
+						is_owned_or_subject_PREV_trigger = yes
+						OR = {
+							region = 38
+							state = 773
+							is_core_of = COU
+							is_core_of = LIT
+						}
+					}
+					transfer_state_to = ROOT
+				}
+			}
+			add_political_power = -50
+		}
+		trigger = {
+			NOT = {
+				EST = {
+					exists = yes
+				}
+				LAT = {
+					exists = yes
+				}
+				LIT = {
+					exists = yes
+				}
+				POL = {
+					exists = yes
+				}
+			}
+		}
+		ai_chance = {
+			base = 0
+		}
+	}
+	option = {
+		name = ww1_brest_litovsk.4.c
+		hidden_effect = {
+			set_global_flag = brest_litovsk_first_demand_liberate
+			event_target:brest_litovsk_rus = {
+				country_event = {
+					id = ww1_brest_litovsk.5
+				}
+			}
+		}
+		custom_effect_tooltip = agree_effect_tooltip
+		effect_tooltip = {
+			add_political_power = 200
+			event_target:brest_litovsk_rus = {
+				release = POL
+				release = COU
+			}
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				add = 1
+				EST = {
+					exists = yes
+					is_subject = no
+				}
+				LAT = {
+					exists = yes
+					is_subject = no
+				}
+				LIT = {
+					exists = yes
+					is_subject = no
+				}
+				POL = {
+					exists = yes
+					is_subject = no
+				}
+			}
+		}
+	}
+}
+#Russian response to first demands
+country_event = {
+	id = ww1_brest_litovsk.5
+	title = ww1_brest_litovsk.5.t
+	desc = ww1_brest_litovsk.5.d
+	picture = GFX_report_event_generic_conference
+	fire_only_once = yes
+	is_triggered_only = yes
+	trigger = {
+		NOT = {
+			has_global_flag = compiegne_armistice
+		}
+	}
+	option = { 
+		name = ww1_brest_litovsk.5.a
+		hidden_effect = {
+			FROM = {
+				country_event = {
+					id = ww1_brest_litovsk.6
+					days = 30
+				}
+			}
+			set_global_flag = brest_treaty_denounced
+			news_event = {
+				id = ww1_brest_litovsk.100
+				days = 30
+			}
+		}
+		ai_chance = {
+			base = 1000
+		}
+	}
+	# removed for now, adding later in rcw 2.0
+	# option = {
+	# 	name = ww1_brest_litovsk.5.b
+	# 	custom_effect_tooltip = unforseen_consequences
+	# 	#retire_character = SOV_vladimir_lenin
+	# 	effect_tooltip = {
+	# 		FROM = {
+	# 			puppet = COU
+	# 			puppet = LIT
+	# 			puppet = POL
+	# 		}
+	# 		white_peace = FROM
+	# 	}
+	# 	hidden_effect = {
+	# 		if = {
+	# 			limit = {
+	# 				has_global_flag = brest_litovsk_first_demand_liberate
+	# 			}
+	# 			release = COU
+	# 			release = LIT
+	# 			release = POL
+	# 		}
+	# 		else_if = {
+	# 			limit = {
+	# 				has_global_flag = brest_litovsk_first_demand_annex
+	# 			}
+	# 			every_other_country = {
+	# 				limit = {
+	# 					is_subject_of = ROOT
+	# 					OR = {
+	# 						original_tag = COU
+	# 						original_tag = LIT
+	# 						original_tag = POL
+	# 					}
+	# 				}
+	# 				FROM = {
+	# 					annex_country = {
+	# 						target = PREV
+	# 					}
+	# 				}
+	# 			}
+	# 			every_state = {
+	# 				limit = {
+	# 					is_owned_or_subject_PREV_trigger = yes
+	# 					OR = {
+	# 						region = 38
+	# 						state = 773
+	# 						is_core_of = COU
+	# 						is_core_of = LIT
+	# 					}
+	# 				}
+	# 				transfer_state_to = FROM
+	# 			}
+	# 		}
+	# 		else = {
+	# 			FROM = {
+	# 				GER_release_COU = yes
+	# 				GER_release_LIT = yes
+	# 				GER_release_POL = yes
+	# 			}
+	# 		}
+	# 		remove_ideas = RUS_idea_armistice_rus
+			
+	# 		every_other_country = {
+	# 			limit = {
+	# 				has_idea = RUS_idea_armistice_cp
+	# 			}
+	# 			remove_ideas = RUS_idea_armistice_cp
+	# 		}
+	# 		every_other_country = {
+	# 			limit = {
+	# 				has_war_with = FROM
+	# 			}
+	# 			diplomatic_relation = {
+	# 				country = ROOT
+	# 				relation = military_access
+	# 				active = no
+	# 			}
+	# 		}
+			
+	# 		# Peace with Persia
+	# 		if = {
+	# 			limit = {
+	# 				any_other_country = {
+	# 					original_tag = PER
+	# 					has_war_with = ROOT
+	# 				}
+	# 			}
+	# 			every_other_country = {
+	# 				limit = {
+	# 					original_tag = PER
+	# 					has_war_with = RUS
+	# 				}
+	# 				white_peace = PREV
+	# 				GEO = { white_peace = PREV }
+	# 				AZR = { white_peace = PREV }
+	# 				ARM = { white_peace = PREV }
+	# 			}
+	# 			country_event = {
+	# 				id = ww1_russia.9
+	# 				days = 35
+	# 			}
+	# 		}
+	# 		every_state = {
+	# 			limit = {
+	# 				is_core_of = PER
+	# 				NOT = { is_core_of = RUS }
+	# 				OR = {
+	# 					is_owned_by = ROOT
+	# 					is_owned_by = GEO
+	# 				}
+	# 			}
+	# 			remove_russian_claims = yes
+	# 			transfer_state_to = PER
+	# 		}
+
+	# 		every_country = {
+	# 			limit = {
+	# 				OR = {
+	# 					tag = event_target:brest_litovsk_ger
+	# 					is_in_faction_with = event_target:brest_litovsk_ger
+	# 					is_subject_of = event_target:brest_litovsk_ger
+	# 					has_country_flag = member_of_central_powers
+	# 					has_subject = event_target:brest_litovsk_ger
+	# 				}
+	# 			}
+	# 			every_country = {
+	# 				limit = {
+	# 					has_war_with = PREV
+	# 					OR = {
+	# 						is_in_faction_with = event_target:brest_litovsk_rus
+	# 						tag = event_target:brest_litovsk_rus
+	# 						is_subject_of = event_target:brest_litovsk_rus
+	# 						is_in_russian_civil_war = yes
+	# 						#iskolata
+	# 						has_country_flag = LAT_iskolata
+	# 						has_cosmetic_tag = LAT_iskolata
+	# 					}
+	# 				}
+	# 				white_peace = PREV
+	# 				set_truce = {
+	# 					target = PREV
+	# 					days = 365
+	# 				}
+	# 			}
+	# 		}
+	# 		clear_iskolata = yes
+	# 	}
+	# 	add_stability = -0.25
+	# 	add_political_power = -200
+	# 	ai_chance = {
+	# 		base = 0
+	# 	}
+	# }
+}
+# Operation Faustschlag
+country_event = {
+	id = ww1_brest_litovsk.6
+	title = ww1_brest_litovsk.6.t
+	desc = ww1_brest_litovsk.6.d
+	picture = GFX_report_event_german_troops
+	fire_only_once = yes
+	is_triggered_only = yes
+	trigger = {
+		NOT = {
+			has_global_flag = compiegne_armistice
+		}
+	}
+	option = {
+		name = ww1_brest_litovsk.6.a
+		hidden_effect = {
+			FROM = {
+				remove_ideas = RUS_idea_armistice_rus
+				country_event = ww1_brest_litovsk.7
+			}
+			every_country = {
+				limit = {
+					has_idea = RUS_idea_armistice_cp
+				}
+				remove_ideas = RUS_idea_armistice_cp
+			}
+			every_other_country = {
+				limit = {
+					original_tag = UKR
+					has_idea = standing_alone
+				}
+				# remove_ideas = standing_alone
+				if = {
+					limit = {
+						has_government = communism
+					}
+					add_to_war = {
+						targeted_alliance = FROM
+						enemy = ROOT
+					}
+				}
+				else = {
+					add_to_war = {
+						targeted_alliance = ROOT
+						enemy = FROM
+					}
+				}
+			}
+		}
+		if = {
+			limit = {
+				190 = { is_controlled_by_ROOT_or_ally = yes }
+			}
+			GER_release_COU = yes
+		}
+		if = {
+			limit = {
+				189 = { is_controlled_by_ROOT_or_ally = yes }
+				11 = { is_controlled_by_ROOT_or_ally = yes }
+				784 = { is_controlled_by_ROOT_or_ally = yes }
+				773 = { is_controlled_by_ROOT_or_ally = yes }
+				97 = { is_controlled_by_ROOT_or_ally = yes }
+				1017 = { is_controlled_by_ROOT_or_ally = yes }
+			}
+			GER_release_LIT = yes
+		}
+		if = {
+			limit = {
+				13 = { is_controlled_by_ROOT_or_ally = yes }
+				191 = { is_controlled_by_ROOT_or_ally = yes }
+				12 = { is_controlled_by_ROOT_or_ally = yes }
+			}
+			GER_release_UBD = yes
+		}
+		if = {
+			limit = {
+				87 = { is_controlled_by_ROOT_or_ally = yes }
+				90 = { is_controlled_by_ROOT_or_ally = yes }
+				92 = { is_controlled_by_ROOT_or_ally = yes }
+				98 = { is_controlled_by_ROOT_or_ally = yes }
+				10 = { is_controlled_by_ROOT_or_ally = yes }
+			}
+			GER_release_POL = yes
+		}
+		ai_chance = {
+			base = 100
+		}
+	}
+}
+#################### BREST-LITOVSK TREATY ####################
+# 			OPERATION FAUSTSCHLAG RUSSIANS					 #
+##############################################################
+country_event = {
+	id = ww1_brest_litovsk.7
+	title = ww1_brest_litovsk.7.t
+	desc = ww1_brest_litovsk.7.d
+	picture = GFX_report_event_german_troops
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_brest_litovsk.7.a
+		hidden_effect = {
+			country_event = {
+				id = ww1_brest_litovsk.8
+				days = 14
+			}
+		}
+		ai_chance = {
+			factor = 100
+		}
+	}
+}
+#################### BREST-LITOVSK TREATY ####################
+# 			SOVIETS ARE FORCED BACK TO TABLE AGAIN			 #
+##############################################################
+country_event = {
+	id = ww1_brest_litovsk.8
+	title = ww1_brest_litovsk.8.t
+	desc = ww1_brest_litovsk.8.d
+	picture = GFX_report_event_generic_conference
+	is_triggered_only = yes
+	trigger = {
+		NOT = {
+			has_global_flag = compiegne_armistice
+		}
+	}
+	fire_only_once = yes
+	option = {
+		name = ww1_brest_litovsk.8.a
+		effect_tooltip = {
+			add_ideas = RUS_idea_armistice_rus
+			event_target:brest_litovsk_ger = { add_ideas = RUS_idea_armistice_cp }
+		}
+		hidden_effect = {
+			add_ideas = RUS_idea_armistice_rus
+			every_country = {
+				limit = {
+					has_war_with = ROOT
+					OR = {
+						tag = event_target:brest_litovsk_ger
+						is_in_faction_with = event_target:brest_litovsk_ger
+						is_subject_of = event_target:brest_litovsk_ger
+					}
+				}
+				add_ideas = RUS_idea_armistice_cp
+			}
+			event_target:brest_litovsk_ger = {
+				country_event = ww1_brest_litovsk.9
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+	}
+	option = {
+		name = ww1_brest_litovsk.8.b
+		custom_effect_tooltip = unforseen_consequences
+		retire_character = SOV_vladimir_lenin
+		add_stability = -0.25
+		add_political_power = -200
+		ai_chance = {
+			base = 0
+		}
+	}
+}
+#Russians come back for peace
+country_event = {
+	id = ww1_brest_litovsk.9
+	title = ww1_brest_litovsk.9.t
+	desc = ww1_brest_litovsk.9.d
+	picture = GFX_report_event_generic_conference
+	is_triggered_only = yes
+	trigger = {
+		NOT = {
+			has_global_flag = compiegne_armistice
+		}
+	}
+	fire_only_once = yes
+	option = {
+		name = ww1_brest_litovsk.9.a
+		effect_tooltip = {
+			add_ideas = RUS_idea_armistice_cp
+			FROM = { add_ideas = RUS_idea_armistice_rus }
+		}
+		country_event = ww1_brest_litovsk.10
+		ai_chance = {
+			factor = 100
+		}
+	}
+}
+# BREST TREATY: POLAND
+########################
+country_event = {
+	id = ww1_brest_litovsk.10
+	title = ww1_brest_litovsk.10.t
+	desc = ww1_brest_litovsk.10.d
+	picture = GFX_report_event_generic_conference
+	fire_only_once = yes
+	is_triggered_only = yes
+	trigger = {
+		NOT = {
+			has_global_flag = compiegne_armistice
+		}
+	}
+	mean_time_to_happen = {
+		days = 1
+	}
+	immediate = {
+		set_global_flag = kis_brestlitovsk
+	}
+	option = {
+		name = ww1_brest_litovsk.10.a
+		custom_effect_tooltip = agree_effect_tooltip
+		effect_tooltip = {
+			puppet = POL
+		}
+		hidden_effect = {
+			set_global_flag = brest_litovsk_poland_1
+			event_target:brest_litovsk_rus = {
+				country_event = {
+					id = ww1_brest_litovsk.11
+					days = 3
+				}
+			}
+		}
+		ai_chance = {
+			factor = 100
+		}
+		trigger = {
+			POL = {
+				OR = {
+					exists = no
+					is_subject_of = event_target:brest_litovsk_rus
+					is_subject_of = ROOT
+				}
+			}
+		}
+	}
+	option = {
+		name = ww1_brest_litovsk.10.b
+		custom_effect_tooltip = agree_effect_tooltip
+		effect_tooltip = {
+			if = {
+				limit = {
+					event_target:brest_litovsk_rus = { has_subject = POL }
+				}
+				annex_country = {
+					target = POL
+				}
+			}
+			every_state = {
+				limit = {
+					is_owned_by = event_target:brest_litovsk_rus
+					is_core_of = POL
+				}
+				transfer_state_to = ROOT
+			}
+			add_political_power = -20
+		}
+		hidden_effect = {
+			set_global_flag = brest_litovsk_poland_2		
+			event_target:brest_litovsk_rusevent_target:brest_litovsk_rus = {
+				country_event = {
+					id = ww1_brest_litovsk.11
+					days = 3
+				}
+			}
+		}
+		trigger = {
+			POL = {
+				OR = {
+					exists = no
+					is_subject_of = event_target:brest_litovsk_rus
+				}
+			}
+		}
+		ai_chance = {
+			base = 0
+		}
+	}
+	option = {
+		name = ww1_brest_litovsk.10.c
+		custom_effect_tooltip = agree_effect_tooltip
+		effect_tooltip = {
+			add_political_power = 150
+			release = POL
+		}
+		hidden_effect = {
+			set_global_flag = brest_litovsk_poland_3
+			event_target:brest_litovsk_rus = {
+				country_event = {
+					id = ww1_brest_litovsk.11
+					days = 3
+				}
+			}
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				add = 1
+				POL = {
+					OR = {
+						exists = no
+						is_subject_of = event_target:brest_litovsk_rus
+					}
+				}
+			}
+		}
+		trigger = {
+			NOT = { has_subject = POL }
+		}
+	}
+}
+# POLAND: ANSWER OF SOVIET RUSSIA
+################
+country_event = {
+	id = ww1_brest_litovsk.11
+	title = ww1_brest_litovsk.11.t
+	desc = ww1_brest_litovsk.11.d
+	picture = GFX_report_event_generic_conference
+	fire_only_once = yes
+	is_triggered_only = yes
+	trigger = {
+		NOT = {
+			has_global_flag = compiegne_armistice
+		}
+	}
+	option = {
+		name = ww1_brest_litovsk.11.a
+		trigger = {
+			has_global_flag = brest_litovsk_poland_1
+		}
+		effect_tooltip = {
+			FROM = { puppet = POL }
+		}
+		hidden_effect = {
+			FROM = {
+				GER_release_POL = yes
+				country_event = {
+					id = ww1_brest_litovsk.12
+					days = 3
+				}
+			}
+			every_state = {
+				limit = {
+					region = 38
+				}
+				teleport_armies = {
+					limit = {
+						OR = {
+							tag = ROOT
+							is_in_faction_with = ROOT
+							is_subject_of = ROOT
+						}
+					}
+					to_state = 206
+				}
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+	}
+	option = {
+		name = ww1_brest_litovsk.11.a
+		trigger = {
+			has_global_flag = brest_litovsk_poland_2
+		}
+		effect_tooltip = {
+			every_state = {
+				limit = {
+					is_owned_or_subject_trigger = yes
+					is_core_of = POL
+				}
+				transfer_state_to = FROM
+			}
+		}
+		hidden_effect = {
+			FROM = {
+				add_political_power = -20
+				every_state = {
+					limit = {
+						is_owned_or_subject_trigger = yes
+						is_core_of = POL
+					}
+					transfer_state_to = PREV
+				}
+				if = {
+					limit = {
+						ROOT = { has_subject = POL }
+					}
+					annex_country = {
+						target = POL
+					}
+				}
+				country_event = {
+					id = ww1_brest_litovsk.12
+					days = 3
+				}
+			}
+			set_global_flag = poland_released
+			every_state = {
+				limit = {
+					is_core_of = POL
+				}
+				remove_russian_cores = yes
+				remove_russian_claims = yes
+			}
+		}
+		ai_chance = {
+			base = 10
+		}
+	}
+	option = {
+		name = ww1_brest_litovsk.11.a
+		trigger = {
+			has_global_flag = brest_litovsk_poland_3
+		}
+		effect_tooltip = {
+			release = POL
+		}
+		hidden_effect = {
+			FROM = {
+				add_political_power = 150
+				every_state = {
+					limit = {
+						is_owned_or_subject_trigger = yes
+						is_core_of = POL
+					}
+					transfer_state_to = POL
+				}
+				if = {
+					limit = {
+						ROOT = { has_subject = POL }
+					}
+					end_puppet = POL
+				}
+				country_event = {
+					id = ww1_brest_litovsk.12
+					days = 3
+				}
+			}
+			set_global_flag = poland_released
+			every_state = {
+				limit = {
+					is_core_of = POL
+				}
+				remove_russian_cores = yes
+				remove_russian_claims = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+	}
+	# option = {
+	# 	name = ww1_brest_litovsk.11.e
+	# 	GER = {
+	# 		country_event = {
+	# 			id = ww1_brest_litovsk.6
+	# 		}
+	# 	}
+	# 	set_global_flag = brest_treaty_denounced
+	# 	news_event = {
+	# 		id = ww1_brest_litovsk.100
+	# 	}
+	# 	ai_chance = {
+	# 		factor = 1
+	# 	}
+	# }
+}
+# BREST TREATY: BALTICS
+########################
+country_event = {
+	id = ww1_brest_litovsk.12
+	title = ww1_brest_litovsk.12.t
+	desc = ww1_brest_litovsk.12.d
+	picture = GFX_report_event_generic_conference
+	fire_only_once = yes
+	is_triggered_only = yes
+	trigger = {
+		NOT = {
+			has_global_flag = compiegne_armistice
+		}
+	}
+	# trigger = {
+	# 	tag = GER
+	# 	has_global_flag = brest_litovsk
+	# 	RUS = {
+	# 		NOT = {
+	# 			has_completed_focus = SOV_decree_on_peace
+	# 		}
+	# 		focus_progress = {
+	# 			focus = SOV_decree_on_peace
+	# 			progress > 0.3
+	# 		}
+	# 	}
+	# 	OR = {
+	# 		NOT = { has_subject = UBD }
+	# 		NOT = { has_subject = LIT }
+	# 		AND = {
+	# 			NOT = {
+	# 				has_subject = COU
+	# 				UBD = { owns_state = 190 }
+	# 			}
+	# 		}
+	# 	}
+	# }
+	mean_time_to_happen = {
+		days = 1
+	}
+	option = {
+		name = ww1_brest_litovsk.12.a
+		hidden_effect = {
+			set_global_flag = brest_litovsk_baltic_1
+			FROM = {
+				country_event = {
+					id = ww1_brest_litovsk.13
+					days = 3
+				}
+			}
+		}
+		custom_effect_tooltip = agree_effect_tooltip
+		effect_tooltip = {
+			puppet = COU
+			puppet = UBD
+			puppet = LIT
+		}
+		trigger = {
+			LIT = {
+				OR = {
+					exists = no
+					is_subject_of = ROOT
+					is_subject_of = FROM
+				}
+			}
+			LAT = {
+				OR = {
+					exists = no
+					is_subject_of = ROOT
+					is_subject_of = FROM
+					has_cosmetic_tag = LAT_iskolata
+				}
+			}
+			EST = {
+				OR = {
+					exists = no
+					is_subject_of = ROOT
+					is_subject_of = FROM
+				}
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+	}
+	option = {
+		name = ww1_brest_litovsk.12.b
+		hidden_effect = {
+			set_global_flag = brest_litovsk_baltic_2
+			FROM = {
+				country_event = {
+					id = ww1_brest_litovsk.13
+					days = 3
+				}
+			}
+		}
+		custom_effect_tooltip = agree_effect_tooltip
+		effect_tooltip = {
+			if = {
+				limit = {
+					FROM = { has_subject = EST }
+				}
+				annex_country = {
+					target = EST
+				}
+			}
+			if = {
+				limit = {
+					FROM = { has_subject = LAT }
+				}
+				annex_country = {
+					target = LAT
+				}
+			}
+			if = {
+				limit = {
+					FROM = { has_subject = LIT }
+				}
+				annex_country = {
+					target = LIT
+				}
+			}
+			every_state = {
+				limit = {
+					is_owned_or_subject_FROM_trigger = yes
+					OR = {
+						is_core_of = EST
+						is_core_of = LAT
+						is_core_of = LIT
+						state = 97
+						state = 773
+						state = 1015
+						state = 1017
+					}
+					NOT = { state = 96 }
+				}
+				transfer_state_to = ROOT
+			}
+			add_political_power = -30
+		}
+		trigger = {
+			NOT = {
+				EST = {
+					exists = yes
+					is_subject = no
+				}
+				LAT = {
+					exists = yes
+					is_subject = no
+				}
+				LIT = {
+					exists = yes
+					is_subject = no
+				}
+				has_subject = COU
+				has_subject = LIT
+				has_subject = UBD
+			}
+		}
+		ai_chance = {
+			base = 0
+		}
+	}
+	option = {
+		name = ww1_brest_litovsk.12.c
+		hidden_effect = {
+			set_global_flag = brest_litovsk_baltic_3
+			FROM = {
+				country_event = {
+					id = ww1_brest_litovsk.13
+					days = 3
+				}
+			}
+		}
+		custom_effect_tooltip = agree_effect_tooltip
+		effect_tooltip = {
+			add_political_power = 200
+			release = LIT
+			release = LAT
+			release = EST
+		}
+		ai_chance = {
+			base = 0
+		}
+		trigger = {
+			NOT = {
+				has_subject = COU
+				has_subject = LIT
+				has_subject = UBD
+				has_subject = EST
+				has_subject = LAT
+			}
+		}
+	}
+}
+# BALTIC: ANSWER OF SOVIET RUSSIA
+################
+country_event = {
+	id = ww1_brest_litovsk.13
+	title = ww1_brest_litovsk.13.t
+	desc = ww1_brest_litovsk.13.d
+	picture = GFX_report_event_generic_conference
+	fire_only_once = yes
+	is_triggered_only = yes
+	trigger = {
+		NOT = {
+			has_global_flag = compiegne_armistice
+		}
+	}
+	option = {
+		name = ww1_brest_litovsk.13.a
+		trigger = {
+			has_global_flag = brest_litovsk_baltic_1
+		}
+		effect_tooltip = {
+			FROM = {
+				puppet = COU
+				puppet = UBD
+				puppet = LIT
+			}
+		}
+		LAT = {
+			if = {
+				limit = {
+					is_in_faction_with = ROOT
+				}
+				leave_faction = yes
+			}
+		}
+		hidden_effect = {
+			FROM = {
+				GER_release_COU = yes
+				GER_release_UBD = yes
+				GER_release_LIT = yes
+				# germany has decision
+				# UBD = {
+				# 	annex_country = {
+				# 		target = COU
+				# 	}
+				# }
+				every_state = {
+					limit = {
+						OR = {
+							state = 94
+							state = 95
+							state = 96
+							state = 194
+							state = 204
+							state = 206
+							state = 209
+							state = 913
+							state = 925
+							state = 944
+							state = 945
+							state = 947
+						}
+					}
+					add_claim_by = FROM
+				}
+			}
+			country_event = {
+				id = ww1_brest_litovsk.15
+				days = 15
+			}
+			every_state = {
+				limit = {
+					OR = {
+						is_owned_by = COU
+						is_owned_by = UBD
+						is_owned_by = LIT
+					}
+				}
+				teleport_armies = {
+					limit = {
+						OR = {
+							tag = ROOT
+							is_in_faction_with = ROOT
+							is_subject_of = ROOT
+						}
+					}
+					to_state = 209
+				}
+			}
+			#belarus revolt cut out
+			# country_event = { 
+			# 	id = ww1_russia.9
+			# 	days = 10
+			# }
+			clear_iskolata = yes
+		}
+		ai_chance = {
+			base = 100
+		}
+	}
+	option = {
+		name = ww1_brest_litovsk.13.a
+		trigger = {
+			has_global_flag = brest_litovsk_baltic_2
+		}
+		LAT = {
+			if = {
+				limit = {
+					is_in_faction_with = ROOT
+				}
+				leave_faction = yes
+			}
+		}
+		FROM = {
+			every_state = {
+				limit = {
+					is_owned_or_subject_trigger = yes
+					OR = {
+						is_core_of = EST
+						is_core_of = LAT
+						is_core_of = LIT
+						state = 97
+						state = 773
+						state = 1015
+						state = 1017
+					}
+					NOT = { state = 96 }
+				}
+				transfer_state_to = PREV
+				remove_russian_claims = yes
+				remove_russian_cores = yes
+			}
+			every_other_country = {
+				limit = {
+					is_subject_of = ROOT
+					OR = {
+						original_tag = EST
+						original_tag = LAT
+						original_tag = LIT
+					}
+				}
+				PREV = {
+					annex_country = {
+						target = PREV
+					}
+				}
+			}
+			add_political_power = -30
+		}
+		hidden_effect = {
+			country_event = {
+				id = ww1_brest_litovsk.15
+				days = 15
+			}
+			clear_iskolata = yes
+		}
+		ai_chance = {
+			base = 10
+		}
+	}
+	option = {
+		name = ww1_brest_litovsk.13.a
+		trigger = {
+			has_global_flag = brest_litovsk_baltic_3
+		}
+		LAT = {
+			if = {
+				limit = {
+					is_in_faction_with = ROOT
+				}
+				leave_faction = yes
+			}
+		}
+		FROM = {
+			country_event = ww1_brest_litovsk.17
+			add_political_power = 200
+			ROOT = {
+				release = LIT
+				release = LAT
+				release = EST
+				if = {
+					limit = { has_subject = LIT }
+					end_puppet = LIT
+				}
+				if = {
+					limit = { has_subject = LAT }
+					end_puppet = LAT
+				}
+				if = {
+					limit = { has_subject = EST }
+					end_puppet = EST
+				}
+			}
+		}
+		hidden_effect = {
+			country_event = {
+				id = ww1_brest_litovsk.15
+				days = 15
+			}
+			clear_iskolata = yes
+			every_state = {
+				limit = {
+					OR = {
+						is_core_of = LIT
+						is_core_of = LAT
+						is_core_of = EST
+						state = 97
+						state = 773
+						state = 1015
+						state = 1017
+					}
+					NOT = {
+						state = 96
+					}
+				}
+				remove_russian_cores = yes
+				remove_russian_claims = yes
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+	}
+	# option = {
+	# 	name = ww1_brest_litovsk.13.e
+	# 	GER = {
+	# 		country_event = {
+	# 			id = ww1_brest_litovsk.6
+	# 		}
+	# 	}
+	# 	set_global_flag = brest_treaty_denounced
+	# 	news_event = {
+	# 		id = ww1_brest_litovsk.100
+	# 	}
+	# 	ai_chance = {
+	# 		factor = 1
+	# 	}
+	# }
+}
+#Brest litovsk is finished
+country_event = {
+	id = ww1_brest_litovsk.15
+	title = ww1_brest_litovsk.15.t
+	desc = ww1_brest_litovsk.15.d
+	picture = GFX_report_event_generic_conference
+	is_triggered_only = yes
+	fire_only_once = yes
+	trigger = {
+		NOT = {
+			has_global_flag = compiegne_armistice
+		}
+	}
+	option = {
+		name = ww1_brest_litovsk.15.a
+		hidden_effect = {
+			set_global_flag = brest_litovsk_finished
+			remove_ideas = RUS_idea_armistice_rus
+			every_country = {
+				limit = {
+					has_idea = RUS_idea_armistice_rus
+				}
+				remove_ideas = RUS_idea_armistice_rus
+			}
+			event_target:brest_litovsk_ger = {
+				country_event = {
+					id = ww1_brest_litovsk.16
+					days = 3
+				}
+			}
+			every_country = {
+				limit = {
+					has_idea = RUS_idea_armistice_cp
+				}
+				remove_ideas = RUS_idea_armistice_cp
+			}
+			every_other_country = {
+				limit = {
+					has_war_with = event_target:brest_litovsk_ger
+					has_military_access_to = event_target:brest_litovsk_rus
+				}
+				diplomatic_relation = {
+					country = event_target:brest_litovsk_rus
+					relation = military_access
+					active = no
+				}
+			}
+			if = {
+				limit = {
+					TUR = {
+						is_in_faction_with = event_target:brest_litovsk_ger
+					}
+				}
+				every_state = {
+					limit = {
+						is_owned_or_subject_trigger = yes
+						# OR = {
+						# 	is_owned_by = RUS
+						# 	is_owned_by = SOV
+						# 	is_owned_by = MOU
+						# }
+						is_core_of = TUR
+					}
+					transfer_state_to = TUR
+				}
+			}
+		}
+		news_event = { id = ww1_brest_litovsk.102 }	
+		every_country = {
+			limit = {
+				OR = {
+					tag = event_target:brest_litovsk_ger
+					tag = PRG
+					is_in_faction_with = event_target:brest_litovsk_ger
+					is_subject_of = event_target:brest_litovsk_ger
+					has_country_flag = member_of_central_powers
+					has_subject = event_target:brest_litovsk_ger
+				}
+			}
+			every_country = {
+				limit = {
+					has_war_with = PREV
+					OR = {
+						is_in_faction_with = event_target:brest_litovsk_rus
+						tag = event_target:brest_litovsk_rus
+						is_subject_of = event_target:brest_litovsk_rus
+						is_in_russian_civil_war = yes
+					} 
+				}
+				white_peace = PREV
+				set_truce = {
+					target = PREV
+					days = 365
+				}
+			}
+			if = {
+				limit = {
+					has_war = no
+					has_global_flag = great_war_ends
+				}
+				add_ideas = idea_armistice
+			}
+		}
+		diplomatic_relation = {
+			country = event_target:brest_litovsk_ger
+			relation = non_aggression_pact
+		}	
+		hidden_effect = {
+			if = {
+				limit = {
+					GEO = {
+						OR = {
+							has_cosmetic_tag = GEO_TSCN_commissariat
+							has_cosmetic_tag = GEO_TSCN_committee
+							has_cosmetic_tag = GEO_TSCN
+							has_cosmetic_tag = GEO_TSCN_communism
+						}
+						is_in_faction_with = ROOT
+					}
+				}
+				if = {
+					limit = {
+						has_subject = GEO
+					}
+					end_puppet = GEO
+				}
+				GEO = {
+					leave_faction = yes
+					add_ideas = standing_alone
+				}
+				if = {
+					limit = {
+						NOT = {
+							TUR = {
+								is_in_faction_with = event_target:brest_litovsk_ger
+							}
+						}
+					}
+					every_country = {
+						limit = {
+							has_war_with = GEO
+							OR = {
+								is_in_faction_with = event_target:brest_litovsk_ger
+								tag = event_target:brest_litovsk_ger
+							}
+						}
+						white_peace = GEO
+					}
+				}
+			}
+			every_state = {
+				limit = {
+					is_claimed_by = event_target:brest_litovsk_ger
+					OR = {
+						is_owned_or_subject_trigger = yes
+						owner = {
+							OR = {
+								is_in_russian_civil_war = yes
+								original_tag = DON
+								original_tag = KUB
+							}
+						}
+					}
+				}
+				transfer_state_to = event_target:brest_litovsk_ger
+				# remove_russian_cores = yes
+				remove_russian_claims = yes
+			}	
+		}
+		ai_chance = {
+			base = 100
+		}
+	}
+}
+#Brest Litovsk, Triumphant Conclusion - Germany
+country_event = {
+	id = ww1_brest_litovsk.16
+	title = ww1_brest_litovsk.16.t
+	desc = ww1_brest_litovsk.16.d
+	picture = GFX_report_event_generic_conference
+	is_triggered_only = yes
+	trigger = {
+		NOT = {
+			has_global_flag = compiegne_armistice
+		}
+	}
+	fire_only_once = yes
+	option = {
+		name = ww1_brest_litovsk.16.a
+		ai_chance = {
+			factor = 100
+		}
+	}
+}
+
+# BREST TREATY: UKRAINE
+#######################
+country_event = {
+	id = ww1_brest_litovsk.17
+	title = ww1_brest_litovsk.17.t
+	desc = ww1_brest_litovsk.17.d
+	picture = GFX_report_event_generic_conference
+	fire_only_once = yes
+	is_triggered_only = yes
+	trigger = {
+		NOT = {
+			has_global_flag = compiegne_armistice
+		}
+	}
+	option = {
+		name = ww1_brest_litovsk.17.a
+		hidden_effect = {
+			white_peace = UKR
+		}
+		set_global_flag = ukr_ger_bread_peace 
+		UKR = {
+			get_current_government_type = yes
+			set_country_flag = protectorate
+			ROOT = {
+				set_autonomy = {
+					target = UKR
+					autonomy_state = autonomy_tgwr_informal_protectorate
+					end_civil_wars = no
+					end_wars = no
+				}
+			}
+			restore_previous_government_type = yes
+			hidden_effect = {
+				if = {
+					limit = {
+						UPR = {
+							exists = yes 
+						}
+					}
+					UPR = {
+						add_ideas = standing_alone	
+						set_rule = {
+							can_join_factions = no
+						}
+						leave_faction = yes
+						OVERLORD = { end_puppet = PREV }
+						give_military_access = RUS
+					}
+				}
+			}
+			every_other_country = {
+				limit = {
+					OR = {
+						tag = SOV
+						AND = {
+							is_in_faction_with = SOV
+							NOT = {
+								tag = UPR
+							}
+						}
+					}
+				}
+				white_peace = UKR
+			}
+			every_state = {
+				limit = {
+					OR = {
+						state = 94
+						state = 194
+						state = 222
+						state = 240
+						state = 241
+					}
+				}
+				add_claim_by = PREV
+			}
+			add_ideas = UKR_idea_bread_peace
+		}
+		if = {
+			limit = {
+				has_active_mission = GER_mission_famine_timer_early
+			}
+			add_days_mission_timeout = {
+				mission = GER_mission_famine_timer_early
+				days = 90
+			}
+			else = {
+				add_days_mission_timeout = {
+					mission = GER_mission_famine_timer
+					days = 70
+				}
+			}
+		}
+		hidden_effect = {
+			UKR = {
+				remove_ideas = RUS_idea_armistice_cp
+				remove_ideas = standing_alone
+				every_state = {
+					limit = {
+						OR = {
+							is_claimed_by = PREV
+							is_core_of = PREV
+						}
+						NOT = {
+							is_owned_by = PREV
+							state = 222
+							state = 240
+							state = 94
+							state = 194
+							state = 241
+						}
+						owner = {
+							OR = {
+								is_in_russian_civil_war = yes
+								has_war_with = PREV.PREV
+								is_in_faction_with = RUS
+								is_subject_of = RUS
+							}
+							NOT = {
+								is_in_faction_with = PREV.PREV
+							}
+						}
+					}
+					if = {
+						limit = {
+							controller = {
+								NOT = { original_tag = UKR }
+							}
+						}
+						transfer_state_to = PREV
+					}
+					if = {
+						limit = {
+							is_russian_core = yes
+						}
+						remove_russian_cores = yes
+						remove_russian_claims = yes
+					}
+				}
+				load_oob = "UKR_cp_army"
+			}
+			country_event = {
+				id = ww1_ukraine.1
+				days = 90
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+	}
+}
+# GERMANY CONTINUES WAR
+########################
+news_event = {
+	id = ww1_brest_litovsk.100
+	title = ww1_brest_litovsk.100.t
+	desc = ww1_brest_litovsk.100.d
+	picture = ww1_russia_5
+	major = yes
+	is_triggered_only = yes
+	trigger = {
+		NOT = {
+			has_global_flag = compiegne_armistice
+		}
+	}
+	option = {
+		name = ww1_brest_litovsk.100.a
+		trigger = {
+			OR = {
+				tag = event_target:brest_litovsk_ger
+				is_subject_of = event_target:brest_litovsk_ger
+				is_in_faction_with = event_target:brest_litovsk_ger
+			}
+		}
+		ai_chance = {
+			factor = 100
+		}
+	}
+	option = {
+		name = ww1_brest_litovsk.100.b
+		trigger = {
+			NOT = {
+				tag = event_target:brest_litovsk_ger
+				is_subject_of = event_target:brest_litovsk_ger
+				is_in_faction_with = event_target:brest_litovsk_ger
+			}
+		}
+		ai_chance = {
+			factor = 100
+		}
+	}
+}
+
+# GERMANY AGREE SOVIET DEAL
+########################
+news_event = {
+	id = ww1_brest_litovsk.101
+	title = ww1_brest_litovsk.101.t
+	desc = ww1_brest_litovsk.101.d
+	picture = ww1_russia_6
+	major = yes
+	is_triggered_only = yes
+	trigger = {
+		NOT = {
+			has_global_flag = compiegne_armistice
+		}
+	}
+	immediate = {
+		set_global_flag = brest_litovsk
+		set_global_flag = russ_kapitulation
+	}
+	option = {
+		name = ww1_brest_litovsk.101.a
+		trigger = {
+			OR = {
+				tag = event_target:brest_litovsk_rus
+				tag = event_target:brest_litovsk_ger
+			}
+		}
+		hidden_effect = {
+			# it is bad to assign an effect in news event since player just can turn off
+		}
+		ai_chance = {
+			factor = 100
+		}
+	}
+	option = {
+		name = ww1_brest_litovsk.101.b
+		trigger = {
+			NOT = {
+				tag = event_target:brest_litovsk_rus
+				tag = event_target:brest_litovsk_ger
+			}
+		}
+		ai_chance = {
+			factor = 100
+		}
+	}
+}
+
+# BREST TREATY - NEWS
+#######################
+news_event = {
+	id = ww1_brest_litovsk.102
+	title = ww1_brest_litovsk.102.t
+	desc = ww1_brest_litovsk.102.d
+	picture = ww1_russia_6
+	major = yes
+	is_triggered_only = yes
+	trigger = {
+		NOT = {
+			has_global_flag = compiegne_armistice
+		}
+	}
+	option = {
+		name = ww1_brest_litovsk.102.a
+		ai_chance = {
+			factor = 100
+		}
+	}
+}
+
+# BELARUSSIAN REVOLT
+########################
+# country_event = {
+# 	id = ww1_russia.9
+# 	fire_only_once = yes
+# 	is_triggered_only = yes
+# 	# trigger = {
+# 	# 	has_global_flag = brest_litovsk
+# 	# 	country_exists = UKR
+# 	# 	RUS = {
+# 	# 		NOT = {
+# 	# 			has_completed_focus = SOV_decree_on_peace
+# 	# 		}
+# 	# 		focus_progress = {
+# 	# 			focus = SOV_decree_on_peace
+# 	# 			progress > 0.5
+# 	# 		}
+# 	# 	}
+# 	# }
+# 	mean_time_to_happen = {
+# 		days = 1
+# 	}
+# 	hidden = yes
+# 	immediate = {
+# 		every_state = {
+# 			limit = {
+# 				owner = { is_russian_tag = yes }
+# 				OR = {
+# 					state = 94
+# 					state = 95
+# 					state = 206
+# 					state = 194
+# 					state = 808
+# 					state = 204
+# 					state = 241
+# 					state = 243
+# 				}
+# 			}
+# 			transfer_state_to = BLR
+# 		}
+# 		BLR = {
+# 			load_oob = "BLR_1918"
+# 			inherit_technology = RUS
+# 		}
+# 		if = {
+# 			limit = {
+# 				GER = {
+# 					has_war_with = RUS
+# 				}
+# 			}
+# 			GER = {
+# 				diplomatic_relation = {
+# 					country = BLR
+# 					relation = military_access
+# 					active = yes
+# 				}
+# 			}
+# 			RUS = {
+# 				diplomatic_relation = {
+# 					country = BLR
+# 					relation = military_access
+# 					active = yes
+# 				}
+# 			}
+# 			every_country = {
+# 				limit = {
+# 					OR = {
+# 						tag = GER
+# 						is_in_faction_with = GER
+# 						is_subject_of = GER
+# 					}
+# 					capital_scope = {
+# 						is_on_continent = europe
+# 					}
+# 				}
+# 				country_event = {
+# 					id = ww1_russia.11
+# 					days = 1
+# 				}
+# 			}
+# 		}
+# 		every_country = {
+# 			limit = {
+# 				OR = {
+# 					tag = RUS
+# 					is_in_faction_with = RUS
+# 					is_subject_of = RUS
+# 				}
+# 				OR = {
+# 					capital_scope = {
+# 						is_on_continent = europe
+# 					}
+# 					is_in_russian_civil_war = yes
+# 				}
+# 			}
+# 			country_event = {
+# 				id = ww1_russia.11
+# 				days = 1
+# 			}
+# 		}
+# 	}
+# }
+
+# # BELARUS - NEWS
+# #######################
+# country_event = {
+# 	id = ww1_russia.11
+# 	title = ww1_russia.11.t
+# 	desc = ww1_russia.11.d
+# 	picture = GFX_report_event_generic_military_parade
+# 	is_triggered_only = yes
+# 	option = {
+# 		name = ww1_russia.11.a
+# 		ai_chance = {
+# 			factor = 100
+# 		}
+# 	}
+# }

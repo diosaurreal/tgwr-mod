@@ -10,10 +10,23 @@ country_event = {
 		OR = {
 			has_cosmetic_tag = GEO_TSCN_commissariat
 			has_cosmetic_tag = GEO_TSCN
+			has_cosmetic_tag = GEO_TSCN_committee
 			has_cosmetic_tag = GEO_TSCN_communism
 		}
-		ARM = { exists = yes }
-		AZR = { exists = yes }
+		ARM = {
+			exists = yes
+			owns_state = 230
+			NOT = { has_war_with = ROOT }
+		}
+		AZR = {
+			exists = yes
+			owns_state = 229
+			NOT = { has_war_with = ROOT }
+		}
+	}
+	# armenia can pop up because of hard corded transfer, so wait some days
+	mean_time_to_happen = {
+		days = 60
 	}
 	immediate = {
         every_state = {
@@ -29,7 +42,27 @@ country_event = {
 					state = 233
 				}
 			}
-			ROOT = { remove_state_core = PREV }
+			if = {
+				limit = {
+					NOT = {
+						state = 816
+						state = 748
+						state = 231
+						state = 233
+					}
+				}
+				remove_core_of = ROOT
+			}
+			if = {
+				limit = {
+					has_dynamic_modifier = {
+						modifier = GEO_transcaucasia_modifier
+					}
+				}
+				remove_dynamic_modifier = {
+					modifier = GEO_transcaucasia_modifier
+				}
+			}
 		}
 		drop_cosmetic_tag = yes
 		set_party_name = {
@@ -40,7 +73,7 @@ country_event = {
 		set_research_slots = 2
 		set_stability = 0.56
 		GEO_noe_ramishvili = {
-			promote_character = socialism
+			promote_character = social_democracy
 			promote_character = authoritarian_democracy
 		}
 	}
@@ -71,7 +104,7 @@ country_event = {
 			name = GEO_TSCN_neutrality_party 
 		}
 		GEO_nikoloz_chkheidze = {
-			promote_character = socialism
+			promote_character = social_democracy
 		}
 	}
 }
@@ -124,7 +157,7 @@ country_event = {
 # Georgia Asks For Protection
 country_event = {
 	id = ww1_georgia.4
-	title = ww1_ottoman.113.t
+	title = ww1_georgia.4.t
 	desc = ww1_georgia.4.d
 	picture = GFX_report_event_generic_conference
 	is_triggered_only = yes
@@ -177,6 +210,12 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_georgia.7.a
+		if = {
+			limit = {
+				has_subject = GEO
+			}
+			end_puppet = GEO
+		}
 		diplomatic_relation = {
 			country = GEO
 			relation = guarantee
@@ -302,8 +341,468 @@ country_event = {
 	option = {
 		name = ww1_georgia.10.a
 		GEO_noe_zhordania = {
-			promote_character = socialism
+			promote_character = social_democracy
 			promote_character = authoritarian_democracy
+		}
+	}
+}
+
+# Georgia Declares Independence
+country_event = {
+	id = ww1_georgia.11
+	title = ww1_georgia.11.t
+	desc = ww1_georgia.11.d
+	picture = GFX_report_event_generic_parliament
+	is_triggered_only = yes
+	# trigger = {
+	# 	tag = GEO
+	# 	OR = {
+	# 		has_cosmetic_tag = GEO_TSCN
+	# 		has_cosmetic_tag = GEO_TSCN_commissariat
+	# 	}
+	# 	NOT = {
+	# 		has_global_flag = caucasus_collapsed
+	# 	}
+	# 	OR = {
+	# 		surrender_progress > 0.3
+	# 		any_enemy_country = {
+	# 			original_tag = TUR
+	# 		}
+	# 	}
+	# }
+	# fire_only_once = yes
+	# mean_time_to_happen = {
+	# 	days = 34
+	# 	modifier = {
+	# 		factor = 0
+	# 		surrender_progress > 0.5
+	# 	}
+	# 	modifier = {
+	# 		factor = 0
+	# 		has_global_flag = brest_litovsk_finished
+	# 	}
+	# }
+	immediate = {
+		hidden_effect = {
+			set_global_flag = caucasus_collapsed
+			set_country_flag = post_transcaucasia
+			every_other_country = {
+				limit = {
+					original_tag = PER
+					is_in_faction = no
+					is_subject = no
+				}
+				white_peace = ROOT
+			}
+			GEO_withdraw_from_persia = yes
+			# Remove divisions
+			every_state = {
+				ROOT = {
+					delete_unit = {
+						state = PREV
+					}
+				}
+			}
+			# Remove cores
+			every_state = {
+				limit = {
+					is_core_of = GEO
+					NOT = {
+						state = 855
+						state = 816
+						state = 748
+						state = 231
+						state = 233
+						state = 1068
+						state = 1069
+					}
+				}
+				remove_core_of = ROOT
+			}
+			# Armenia
+			if = {
+				limit = {
+					NOT = { country_exists = ARM }
+				}
+				ARM = { set_country_flag = post_transcaucasia add_ideas = standing_alone }
+			}
+			every_state = {
+				limit = {
+					OR = {
+						is_core_of = ARM
+						state = 230
+						state = 818
+						state = 938
+						state = 939
+					}
+					NOT = { is_core_of = ROOT }
+				}
+				add_core_of = ARM #why armenian cores got remove always????
+				if = {
+					limit = {
+						OR = {
+							is_controlled_by_ROOT_or_ally = yes
+							state = 230
+							state = 939
+						}
+						NOT = { state = 818 } #
+					}
+					transfer_state_to = ARM
+					else_if = {
+						limit = {
+							is_owned_by = ROOT
+						}
+						set_state_owner_to = ARM
+					}
+				}
+			}
+			ARM = {
+				if = {
+					limit = { has_country_flag = post_transcaucasia }
+					load_oob = "ARM_1918"
+				}
+			}
+			# Azerbaijan
+			if = {
+				limit = {
+					NOT = { country_exists = AZR }
+				}
+				AZR = { set_country_flag = post_transcaucasia add_ideas = standing_alone }
+			}
+			every_owned_state = {
+				limit = {
+					is_core_of = AZR
+					NOT = { is_core_of = ROOT }
+				}
+				if = {
+					limit = {
+						OR = {
+							ROOT = { has_war = no }	
+							is_controlled_by_ROOT_or_ally = yes
+						}
+					}
+					transfer_state_to = AZR
+					else = {
+						set_state_owner_to = AZR
+					}
+				}
+			}
+			AZR = {
+				if = {
+					limit = { has_country_flag = post_transcaucasia }
+					load_oob = "AZR_1918"
+				}
+			}
+			transfer_ship = {
+				prefer_name = "Kars"
+				type = destroyer
+				target = AZR
+			}
+			transfer_ship = {
+				prefer_name = "Ardagan"
+				type = destroyer
+				target = AZR
+			}
+			# Georgia
+			load_oob = "GEO_1918"
+			drop_cosmetic_tag = yes
+			add_ideas = standing_alone
+			set_party_name = {
+				ideology = neutrality
+				long_name = GEO_neutrality_party
+				name = GEO_neutrality_party
+			}
+			set_research_slots = 2
+			set_stability = 0.56
+			GEO_noe_zhordania = {
+				promote_character = authoritarian_democracy
+				promote_character = social_democracy
+			}
+			if = {
+				limit = {
+					has_global_flag = great_war
+					NOT = { has_global_flag = great_war_ends }
+				}
+				# to make sure they wont surrender and call vanilla peace
+				# only affects when in the great war as you see
+				# with batum they anyway leaves
+				FRA = {
+					add_to_faction = ROOT
+					add_to_faction = ARM
+					add_to_faction = AZR
+				}
+			}
+			else_if = {
+				limit = {
+					has_war = no
+				}
+				every_country = {
+					limit = {
+						has_war = no
+						is_in_faction = yes
+						has_country_flag = post_transcaucasia
+					}
+					leave_faction = yes
+				}
+			}
+			every_other_country = {
+				limit = {
+					has_war_with = ROOT
+					is_russian_tag = no
+				}
+				ARM = {
+					add_to_war = {
+						targeted_alliance = ROOT
+						enemy = PREV
+					}
+				}
+				AZR = {
+					add_to_war = {
+						targeted_alliance = ROOT
+						enemy = PREV
+					}
+				}
+			}
+			# call the treaty of batum
+			if = {
+				limit = {
+					any_enemy_country = {
+						original_tag = TUR
+					}
+				}
+				random_other_country = {
+					limit = {
+						original_tag = TUR
+						has_war_with = ROOT
+					}
+					country_event = {
+						id = ww1_ottoman.112
+						days = 1
+					}
+				}
+			}
+			# rare case but what if there is no ottomans but still in war
+			else = {
+				every_country = {
+					limit = {
+						has_country_flag = post_transcaucasia
+					}
+					every_enemy_country = {
+						limit = {
+							NOT = { is_neighbor_of = PREV }
+						}
+						white_peace = PREV
+					}
+				}
+			}
+			every_country = {
+				limit = {
+					has_country_flag = post_transcaucasia
+					has_war = no
+					has_idea = standing_alone
+				}
+				remove_ideas = standing_alone
+			}
+		}
+	}
+	option = {
+		# Play as Georgia
+		name = ww1_georgia.11.a
+		country_event = { id = ww1_georgia.12 days = 10 }
+	}
+	option = {
+		# Play as Armenia
+		name = ww1_georgia.11.b
+		trigger = { is_ai = no ARM = { has_country_flag = post_transcaucasia } }
+		ARM = {
+			change_tag_from = ROOT
+		}
+	}
+	option = {
+		# Play as Azerbaijan
+		name = ww1_georgia.11.c
+		trigger = { is_ai = no AZR = { has_country_flag = post_transcaucasia } }
+		AZR = {
+			change_tag_from = ROOT
+		}
+	}
+}
+
+
+
+# German Troops in Georgia
+country_event = {
+	id = ww1_georgia.12
+	title = ww1_georgia.12.t
+	desc = ww1_georgia.12.d
+	picture = GFX_report_event_soldiers_marching
+	trigger = {
+		tag = GER
+		NOT = {
+			has_global_flag = GER_capitulation
+		}
+		GEO = {
+			has_global_flag = caucasus_collapsed
+			has_country_flag = post_transcaucasia
+			is_subject = no
+			NOT = {
+				has_war_with = ROOT
+			}
+		}
+	}
+	fire_only_once = yes
+	mean_time_to_happen = { days = 0 }
+	option = {
+		name = ww1_georgia.12.a
+		effect_tooltip = {
+			set_autonomy = {
+				target = GEO
+				autonomous_state = autonomy_tgwr_informal_protectorate
+			}
+		}
+		hidden_effect = {
+			GEO = { remove_ideas = standing_alone }
+			GEO = {
+				set_country_flag = protectorate
+				get_current_government_type = yes
+			}
+			set_autonomy = {
+				target = GEO
+				autonomous_state = autonomy_tgwr_informal_protectorate
+				freedom_level = 0.6
+			}
+			GEO = {
+				restore_previous_government_type = yes
+				set_country_flag = german_protection_on_georgia
+			}
+			reverse_add_opinion_modifier = {
+				target = GEO
+				modifier = small_decrease
+			}
+		}
+		ai_chance = {
+			base = 10
+		}
+	}
+	option = {
+		name = ww1_georgia.4.b
+		ai_chance = {
+			base = 0
+		}
+		hidden_effect = {
+			GEO = { remove_ideas = standing_alone }
+		}
+	}
+}
+
+# Georgia Annexes Sochi
+country_event = {
+	id = ww1_georgia.13
+	title = ww1_georgia.13.t
+	desc = ww1_georgia.13.d
+	picture = GFX_report_event_generic_battle
+	is_triggered_only = yes
+	option = {
+		name = ww1_georgia.13.a
+		add_stability = 0.02
+		add_war_support = 0.05
+		effect_tooltip = {
+			transfer_state = 233
+		}
+	}
+}
+
+# Georgia Fails to Annex Sochi
+country_event = {
+	id = ww1_georgia.14
+	title = ww1_georgia.14.t
+	desc = ww1_georgia.14.d
+	picture = GFX_report_event_generic_battle
+	is_triggered_only = yes
+	option = {
+		name = ww1_georgia.14.a
+		add_stability = -0.02
+		add_war_support = -0.05
+	}
+}
+
+# Russia Repels Georgian Attack
+country_event = {
+	id = ww1_georgia.15
+	title = ww1_georgia.15.t
+	desc = ww1_georgia.15.d
+	picture = GFX_report_event_generic_battle
+	is_triggered_only = yes
+	option = {
+		name = ww1_georgia.15.a
+		add_stability = 0.02
+		add_war_support = 0.1
+	}
+}
+
+# Russia Faills to Repel Georgian Attack
+country_event = {
+	id = ww1_georgia.16
+	title = ww1_georgia.16.t
+	desc = ww1_georgia.16.d
+	picture = GFX_report_event_generic_battle
+	is_triggered_only = yes
+	option = {
+		name = ww1_georgia.16.a
+		if = {
+			limit = {
+				any_owned_state = {
+					NOT = { state = 233 }
+				}
+			}
+			add_stability = -0.02
+			add_war_support = -0.1
+		}
+		else = {
+			custom_effect_tooltip = GAME_OVER_TT
+		}
+		1068 = {
+			owner = {
+				transfer_state = 233
+			}
+		}
+	}
+}
+
+# Georgia is now under British occupation
+country_event = {
+	id = ww1_georgia.17
+	title = ww1_georgia.17.t
+	desc = ww1_georgia.17.d
+	picture = GFX_report_event_generic_peaceful_annexation
+	trigger = {
+		tag = GEO
+		has_capitulated = yes
+		has_war_with = ENG
+		is_subject_of = GER
+		has_global_flag = mudros_armistice
+		NOT = {
+			has_global_flag = GER_capitulation
+			has_global_flag = FRA_capitulation
+			has_global_flag = compiegne_armistice
+			has_global_flag = frankfurt_armistice
+			has_cosmetic_tag = GEO_kingdom
+		}
+	}
+	fire_only_once = yes
+	option = {
+		name = ww1_georgia.17.a
+		clear_all_relations_except_wars = yes
+		every_enemy_country = {
+			white_peace = ROOT
+			set_truce = {
+				target = ROOT
+				days = 365
+			}
+			ROOT = { give_military_access = PREV }
+		}
+		ENG = {
+			give_guarantee = PREV
 		}
 	}
 }

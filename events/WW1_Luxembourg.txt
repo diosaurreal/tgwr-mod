@@ -6,20 +6,20 @@ country_event = {
 	id = ww1_luxembourg.1
 	title = ww1_luxembourg.1.t
 	desc = ww1_luxembourg.1.d
-	picture = GFX_report_event_royal_parade
+	picture = GFX_report_event_generic_funeral
 	mean_time_to_happen = {
 		days = 24
 	}
 	trigger = {
 		tag = LUX
 		date > 1912.2.1
-		LUX = {
-			has_character = LUX_william_iv
-			NOT = {
-				has_country_flag = william_dead
-			}
+		has_start_date < 1914.1.1
+		has_character = LUX_william_iv
+		NOT = {
+			has_country_flag = william_dead
 		}
 	}
+	fire_only_once = yes
 	immediate = {
 		set_country_flag = william_dead
 	}
@@ -41,7 +41,7 @@ country_event = {
 	desc = {
 		text = ww1_luxembourg.2.d
 		trigger = {
-			has_country_flag = great_war_winner
+			NOT = { has_country_flag = great_war_loser }
 		}
 	}
 	desc = {
@@ -53,14 +53,10 @@ country_event = {
 	picture = GFX_report_event_royal_parade
 	trigger = {
 		tag = LUX
-		GER = {
-			has_country_flag = great_war_loser
-		}
-		OR = {
-			has_country_flag = great_war_loser
-			has_country_flag = great_war_winner
-		}
+		has_global_flag = great_war_ends
+		GER = { has_country_flag = great_war_loser }
 		NOT = {
+			has_country_flag = great_war_loser
 			has_government = communism
 		}
 		has_country_leader = {
@@ -86,7 +82,7 @@ country_event = {
 		}	
 		LUX_marieadelaide = {
 			remove_country_leader_role = {
-				ideology = autocracy
+				ideology = semi_constitutional_monarchy
 			}
 		}
 		promote_character = LUX_charlotte
@@ -109,7 +105,8 @@ country_event = {
 	}
 	mean_time_to_happen = {
 	    days = 20	
-	}	
+	}
+	fire_only_once = yes
 	option = {
 		name = ww1_luxembourg.3.a
 		set_party_name = {
@@ -139,6 +136,7 @@ country_event = {
 	mean_time_to_happen = {
 	    days = 15
 	}
+	fire_only_once = yes
 	option = {
 		name = ww1_luxembourg.4.a
 		set_party_name = {
@@ -147,5 +145,218 @@ country_event = {
 			name = LUX_democratic_party
 		}
 		promote_character = LUX_joseph_bech
+	}
+}
+
+# German Invasion, what should we do!?
+country_event = {
+	id = ww1_luxembourg.5
+	title = ww1_luxembourg.5.t
+	desc = ww1_luxembourg.5.d
+	trigger = {
+		tag = LUX
+		has_war_with = GER
+		has_global_flag = great_war
+		# has_capitulated = no
+		NOT = {
+			has_global_flag = GER_capitulation
+			has_global_flag = FRA_capitulation
+		}
+	}
+	mean_time_to_happen = {
+	    days = 0
+	}
+	fire_only_once = yes
+	option = {
+		name = ww1_luxembourg.5.a
+		custom_effect_tooltip = historical_tt
+		add_political_power = -200
+		add_stability = -0.15
+		hidden_effect = {
+			set_global_flag = luxembourg_submitted
+			8 = {
+				teleport_armies = {
+					limit = {
+						has_war_with = GER
+					}
+					to_state = 17
+				}
+				set_state_controller_to = ROOT
+			}
+			get_current_government_type = yes
+		}
+		GER = {
+			set_autonomy = {
+				target = ROOT
+				autonomous_state = autonomy_integrated_puppet
+			}
+		}
+		hidden_effect = {
+			restore_previous_government_type = yes
+			add_ideas = LUX_occupation
+			add_ideas = disarmed_nation
+			add_ideas = civilian_economy
+		}
+		custom_effect_tooltip = LUX_occupation_tt
+		ai_chance = {
+			base = 70
+		}
+	}
+	option = {
+		name = ww1_luxembourg.5.b
+		add_political_power = -100
+		add_war_support = 0.02
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+				is_historical_focus_on = yes
+			}
+		}
+	}
+}
+
+# Decision over liberated Luxembourg
+country_event = {
+	id = ww1_luxembourg.6
+	title = ww1_luxembourg.6.t
+	desc = ww1_luxembourg.6.d
+	picture = GFX_report_event_generic_conference
+	is_triggered_only = yes
+	option = {
+		name = ww1_luxembourg.6.a
+		give_guarantee = LUX
+		ai_chance = {
+			base = 100
+			modifier = {
+				add = -1000
+				8 = {
+					OR = {
+						is_claimed_by = ROOT
+						is_core_of = ROOT
+					}
+				}
+			}
+			modifier = {
+				add = -1000
+				907 = {
+					owner = {
+						NOT = { tag = ROOT }
+						has_country_flag = great_war_winner
+						8 = {
+							OR = {
+								is_claimed_by = PREV
+								is_core_of = PREV
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	option = {
+		name = ww1_luxembourg.6.b
+		trigger = {
+			907 = {
+				owner = {
+					NOT = { tag = ROOT }
+					has_country_flag = great_war_winner
+				}
+			}
+		}
+		add_political_power = -10
+		907 = {
+			owner = {
+				annex_country = {
+					target = LUX
+					transfer_troops = yes
+				}
+			}
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				add = 1000
+				907 = {
+					owner = {
+						NOT = { tag = ROOT }
+						has_country_flag = great_war_winner
+						8 = {
+							OR = {
+								is_claimed_by = PREV
+								is_core_of = PREV
+							}
+						}
+					}
+				}
+			}
+			modifier = {
+				add = -1000
+				8 = {
+					OR = {
+						is_claimed_by = ROOT
+						is_core_of = ROOT
+					}
+				}
+			}
+			modifier = {
+				add = -100
+				is_historical_focus_on = yes
+			}
+		}
+	}
+	option = {
+		name = ww1_luxembourg.6.c
+		trigger = {
+			8 = {
+				OR = {
+					is_claimed_by = ROOT
+					is_core_of = ROOT
+				}
+			}
+		}
+		add_political_power = -25
+		annex_country = {
+			target = LUX
+			transfer_troops = yes
+		}
+		ai_chance = {
+			base = 2000
+		}
+	}
+}
+
+# Death of Paul Eyschen
+#######################
+country_event = {
+	id = ww1_luxembourg.7
+	title = ww1_luxembourg.7.t
+	desc = ww1_luxembourg.7.d
+	picture = GFX_report_event_generic_funeral
+	trigger = {
+		tag = LUX
+		date > 1915.10.1
+		has_character = LUX_paul_eyschen
+		LUX_paul_eyschen = {
+			OR = {
+				is_hired_as_advisor = yes
+				is_country_leader = yes
+			}	
+		}
+	}
+	mean_time_to_happen = {
+		days = 11
+	}
+	fire_only_once = yes
+	immediate = {
+		hidden_effect = {
+			deactivate_advisor = LUX_paul_eyschen
+		}	
+	}
+	option = {
+		name = ww1_luxembourg.7.a
+		add_stability = -0.1
+		add_political_power = -50
+		retire_character = LUX_paul_eyschen	
 	}
 }

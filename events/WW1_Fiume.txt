@@ -27,8 +27,7 @@ country_event = {
 					remove_country_leader_trait = ita_the_poet
 					remove_country_leader_trait = italian_dandy
 					add_country_leader_trait = ita_comandante
-					add_country_leader_trait = italian_dandy
-					add_country_leader_trait = standing_alone
+					add_country_leader_trait = italian_dandy					
 					set_portraits = {
 						civilian = {
 							large="gfx/leaders/ITA/ITA_Gabriele_D_Annunzio_general.png"
@@ -45,7 +44,8 @@ country_event = {
 							is_country_leader = yes	
 						}
 					}
-				}	
+				}
+				add_ideas = standing_alone		
 			}
 			FIU = {
 				transfer_state = 513
@@ -168,11 +168,18 @@ country_event = {
 	desc = ww1_fiume.3.desc
 	picture = GFX_report_event_generic_conference
 	is_triggered_only = yes
+	immediate = {
+		hidden_effect = {
+			FIU = {
+				set_cosmetic_tag = FIU_regency #had to be put somewhere
+			}	
+		}	
+	}	
 	option = {
 		# Neutralize Fiume and demand city of Zara
 		name = ww1_fiume.3.a
 		custom_effect_tooltip = event_historical_option_tt
-		set_country_flag = fiume_histoirical
+		set_country_flag = fiume_historical
 		add_political_power = -25
 		custom_effect_tooltip = ww1_fiume.3.tt
 		effect_tooltip = {
@@ -180,12 +187,22 @@ country_event = {
 				limit = {
 					OR = {
 						state = 103
-						state = 163
+						state = 1006
 					}
 				}
 				208 = {
 					owner = {
 						transfer_state = PREV.PREV
+					}
+				}
+			}
+			if = {
+				limit = {
+					owns_state = 163
+				}
+				208 = {
+					owner = {
+						transfer_state = 163
 					}
 				}
 			}
@@ -244,6 +261,8 @@ country_event = {
 						state = 163
 						state = 513
 						state = 736
+						state = 1010
+						state = 1006
 					}
 				}
 				208 = {
@@ -301,6 +320,7 @@ country_event = {
 		effect_tooltip = {
 			transfer_state = 103
 			transfer_state = 163
+			transfer_state = 1006
 			create_wargoal = {
 				target = FIU
 				type = annex_everything
@@ -356,6 +376,7 @@ country_event = {
 			transfer_state = 103
 			transfer_state = 163
 			transfer_state = 208
+			transfer_state = 1006
 			create_wargoal = {
 				target = FIU
 				type = annex_everything
@@ -407,7 +428,30 @@ country_event = {
 country_event = {
 	id = ww1_fiume.4
 	title = ww1_fiume.4.t
-	desc = ww1_fiume.4.d
+	desc = {
+		text = ww1_fiume.4.d
+		trigger = {
+			FROM = { has_country_flag = fiume_withdraw }
+		}
+	}
+	desc = {
+		text = ww1_fiume.4.d1
+		trigger = {
+			FROM = { has_country_flag = fiume_historical }
+		}
+	}
+	desc = {
+		text = ww1_fiume.4.d2
+		trigger = {
+			FROM = { has_country_flag = fiume_demand }
+		}
+	}
+	desc = {
+		text = ww1_fiume.4.d3
+		trigger = {
+			FROM = { has_country_flag = fiume_annex }
+		}
+	}
 	picture = GFX_report_event_generic_conference
 	is_triggered_only = yes
 	option = {
@@ -429,14 +473,26 @@ country_event = {
 						state = 103
 						state = 163
 						state = 208
+						state = 1006
 					}
 				}
 				transfer_state_to = FROM
 			}
 			FROM = {
-				create_wargoal = {
-					target = FIU
-					type = annex_everything
+				start_border_war = {
+					change_state_after_war = no
+					attacker = {
+						state = 736
+						num_provinces = 1
+						on_win = ww1_fiume.5
+						on_lose = ww1_fiume.6
+					}
+					defender = {
+						state = 513
+						num_provinces = 1
+						on_win = ww1_fiume.6
+						on_lose = ww1_fiume.5
+					}
 				}
 			}
 			add_political_power = -200
@@ -451,15 +507,32 @@ country_event = {
 					owns_or_subject_of = yes
 					OR = {
 						state = 103
-						state = 163
+						state = 1006
 					}
 				}
 				transfer_state_to = FROM
 			}
 			FROM = {
-				create_wargoal = {
-					target = FIU
-					type = annex_everything
+				if = {
+					limit = {
+						owns_state = 163
+					}
+					163 = { transfer_state_to = ROOT }
+				}
+				start_border_war = {
+					change_state_after_war = no
+					attacker = {
+						state = 736
+						num_provinces = 1
+						on_win = ww1_fiume.5
+						on_lose = ww1_fiume.6
+					}
+					defender = {
+						state = 513
+						num_provinces = 1
+						on_win = ww1_fiume.6
+						on_lose = ww1_fiume.5
+					}
 				}
 			}
 			add_political_power = -100
@@ -471,48 +544,31 @@ country_event = {
 					is_owned_by = FROM
 					OR = {
 						state = 103
-						state = 163
+						state = 1006
 					}
 				}
 				transfer_state_to = ROOT
 			}
-			FIU = {
-				set_politics = {
-					ruling_party = neutrality
-					elections_allowed = no
-				}
-				add_popularity = {
-					ideology = neutrality
-					popularity = 0.45
-				}
-				every_other_country = {
+			FROM = {
+				if = {
 					limit = {
-						is_neighbor_of = PREV
-						NOT = { has_war_with = PREV }
+						owns_state = 163
 					}
-					diplomatic_relation = {
-						country = PREV
-						relation = non_aggression_pact
-					}
-					give_guarantee = PREV
+					163 = { transfer_state_to = ROOT }
 				}
-				drop_cosmetic_tag = yes
-				hidden_effect = {
-					ITA_gabriele_d_annunzio = {
-						set_nationality = ITA
+				start_border_war = {
+					change_state_after_war = no
+					attacker = {
+						state = 736
+						num_provinces = 1
+						on_win = ww1_fiume.5
+						on_lose = ww1_fiume.6
 					}
-					ITA_alceste_de_ambris = {
-						set_nationality = ITA
-					}
-					ITA_filippo_tommaso_marinetti = {
-						set_nationality = ITA
-					}
-					ITA_maffeo_pantaleoni = {
-						set_nationality = ITA
-					}
-					ITA_gabriele_d_annunzio = {
-						remove_any_country_role_from_character = yes
-						set_nationality = ITA
+					defender = {
+						state = 513
+						num_provinces = 1
+						on_win = ww1_fiume.6
+						on_lose = ww1_fiume.5
 					}
 				}
 			}
@@ -556,7 +612,7 @@ country_event = {
 			base = 80
 			modifier = {
 				factor = 0
-				FROM = { has_country_flag = fiume_histoirical }
+				FROM = { has_country_flag = fiume_historical }
 			}
 		}
 	}
@@ -574,6 +630,7 @@ country_event = {
 						state = 163
 						state = 208
 						state = 513
+						state = 1006
 					}
 				}
 				transfer_state_to = ROOT
@@ -585,5 +642,108 @@ country_event = {
 		}
 		add_political_power = 100
 		add_stability = 0.10
+	}
+}
+
+# Fiume pacified
+country_event = {
+	id = ww1_fiume.5
+	title = ww1_fiume.5.t
+	desc = ww1_fiume.5.d
+	is_triggered_only = yes
+	picture = GFX_report_event_generic_peaceful_annexation
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					has_country_flag = fiume_historical
+				}
+				set_global_flag = free_state_fiume
+				FIU = {
+					set_politics = {
+						ruling_party = neutrality
+						elections_allowed = no
+					}
+					add_popularity = {
+						ideology = neutrality
+						popularity = 0.45
+					}
+					every_other_country = {
+						limit = {
+							is_neighbor_of = PREV
+							NOT = { has_war_with = PREV }
+						}
+						diplomatic_relation = {
+							country = PREV
+							relation = non_aggression_pact
+						}
+						give_guarantee = PREV
+					}
+					drop_cosmetic_tag = yes
+					if = {
+						limit = { has_global_flag = league_of_nations }
+						join_the_league_of_nations = yes
+					}
+					ITA_alceste_de_ambris = {
+						set_nationality = ITA
+					}
+					ITA_filippo_tommaso_marinetti = {
+						set_nationality = ITA
+					}
+					ITA_maffeo_pantaleoni = {
+						set_nationality = ITA
+					}
+					ITA_gabriele_d_annunzio = {
+						remove_any_country_role_from_character = yes
+						set_nationality = ITA
+					}
+					ITA = { give_guarantee = FIU }
+				}
+				else = {
+					ITA = {
+						annex_country = {
+							target = FIU
+						}
+					}
+				}
+			}
+		}
+	}
+	option = {
+		name = ww1_fiume.5.a
+		give_guarantee = FIU
+	}
+}
+
+# Italian troops failed to march in Fiume
+country_event = {
+	id = ww1_fiume.6
+	title = ww1_fiume.6.t
+	desc = ww1_fiume.6.d
+	is_triggered_only = yes
+	picture = GFX_report_event_ITA_italian_civil_war
+	option = {
+		name = ww1_fiume.6.a
+		trigger = { tag = FIU }
+		add_political_power = 25
+	}
+	option = {
+		name = ww1_fiume.6.b
+		trigger = { NOT = { tag = FIU } }
+		add_political_power = -25
+		ai_chance = { factor = 30 }
+	}
+	option = {
+		name = ww1_fiume.6.c
+		trigger = {
+			NOT = { tag = FIU }
+			has_war_support > 0.50
+			threat > 0.15
+		}
+		declare_war_on = {
+			target = FIU
+			type = annex_everything
+		}
+		ai_chance = { factor = 10 }
 	}
 }

@@ -1,4 +1,5 @@
 ﻿add_namespace = ww1_persia
+
 country_event = {
 	title = ww1_persia.1.t
 	desc = ww1_persia.1.d
@@ -42,7 +43,41 @@ country_event = {
 	title = ww1_persia.5.t
 	desc = ww1_persia.5.d
 	picture = GFX_report_event_american_hunger_march
-	is_triggered_only = yes
+	fire_only_once = yes
+	trigger = {
+		tag = PER
+		OR = {
+			# is_in_faction_with = FRA
+			any_other_country = {
+				any_owned_state = {
+					is_core_of = PER
+					NOT = {
+						state = 413
+						state = 419
+						state = 877
+					}
+				}
+				has_war_with = GER
+			}
+		}
+		has_global_flag = great_war
+		NOT = {
+			has_global_flag = great_war_ends
+			has_global_flag = persian_gendarmerie_revolt
+		}
+		has_idea = PER_idea_government_gendarmerie
+		any_neighbor_country = {
+			has_war = yes
+			is_in_faction_with = GER
+		}
+	}
+	mean_time_to_happen = {
+		days = 365
+		modifier = {
+			factor = 0.1
+			has_global_flag = rus_eng_partition_of_persia
+		}
+	}
 	option = {
 		name = ww1_persia.5.a
 		trigger = {
@@ -50,35 +85,29 @@ country_event = {
 			    has_government = fascism
 			}
 		}
-		add_country_leader_trait = standing_alone
+		add_ideas = standing_alone
+		remove_ideas = PER_idea_government_gendarmerie
 		start_civil_war = {
 			ideology = fascism
 			size = 0.6
-			capital = 411
-			states = all
-			states_filter = {
-				NOT = {
-					state = 266
-					state = 416
-					state = 418
-				}
-			}
-			keep_political_leader = yes
-			keep_political_party_members = yes
-			keep_unit_leaders_trigger = { 
-				NOT = {
-					has_id = 189287
-				}
-			}
+			capital = 421
+			states = {
+				421
+			}	
+			keep_all_characters = yes
 			hidden_effect = {
-				create_country_leader = {
-					name = PER_persian_central_government
-					picture = "gfx/leaders/PER/PER_gendarmerie.png"					
-					ideology = stratocracy
-					traits = {
-						standing_alone
+				ROOT = {
+					SWE_harald_hjalmarson = {
+						set_nationality = PREV.PREV
 					}
+					PER_nezam_us_saltaneh = {
+						set_nationality = PREV.PREV
+						promote_character = stratocracy
+						promote_leader = yes
+					}	
 				}
+				add_ideas = PER_idea_government_gendarmerie
+				add_ideas = standing_alone
 				set_popularities = {
 					democratic = 35
 					neutrality = 10
@@ -102,10 +131,24 @@ country_event = {
 				declare_war_on = {
 					target = ENG
 					type = take_core_state
+					generator = { 410 }
 				}
+				if = {
+					limit = {
+						ENG = {
+							has_subject = ARB
+						}
+					}
+					declare_war_on = {
+						target = ARB
+						type = annex_everything
+					}
+				}
+				add_state_claim = 413
 				declare_war_on = {
 					target = RUS
 					type = take_core_state
+					generator = { 420 }
 				}
 				add_ideas = PER_idea_civil_war
 				ROOT = {
@@ -114,6 +157,12 @@ country_event = {
 			}
 		}
 		set_global_flag = persian_gendarmerie_revolt
+		hidden_effect = {
+			news_event = {
+				id = ww1_persia.8
+				hours = 3
+			}
+		}
 		ai_chance = {
 			factor = 100
 		}
@@ -124,6 +173,17 @@ country_event = {
 			target = ENG
 			type = take_core_state
 		}
+		if = {
+			limit = {
+				ENG = {
+					has_subject = ARB
+				}			
+			}
+			declare_war_on = {
+				target = ARB
+				type = annex_everything
+			}
+		}
 		declare_war_on = {
 			target = RUS
 			type = take_core_state
@@ -133,6 +193,13 @@ country_event = {
 			popularity = 0.1
 		}
 		add_war_support = 0.1
+		hidden_effect = {
+			set_country_flag = PER_gendarmerie_flag
+			news_event = {
+				id = ww1_persia.8
+				hours = 3
+			}
+		}
 		ai_chance = {
 			base = 10
 			modifier = {
@@ -159,15 +226,20 @@ country_event = {
 			has_government = fascism
 		}
 		OR = {
-			is_subject_of = GER
-			is_subject_of = ENG
+			is_subject = yes
 			AND = {
 				is_subject = no
 				any_state = {
-					is_core_of = PER
-					is_owned_by = ENG
+					is_core_of = ROOT
+					owner = {
+						NOT = { original_tag = ENG }
+						PREV = { is_core_of = PREV }
+					}
 				}
 			}
+		}
+		NOT = {
+			has_country_flag = PER_gendarmerie_flag
 		}
 	}
 	mean_time_to_happen = {
@@ -195,6 +267,23 @@ country_event = {
 					transfer_state = PREV
 				}
 			}
+			if = {
+				limit = {
+					ENG = {	has_subject = ARB }
+				}
+				ARB = {
+					clr_country_flag = protectorate
+					get_current_government_type = yes
+					PER = {
+						set_autonomy = {
+							target = ARB
+							autonomous_state = autonomy_integrated_puppet
+							freedom_level = 0.9
+						}
+					}	
+					restore_previous_government_type = yes
+				}			
+			}
 		}
 	}
 	option = {
@@ -202,9 +291,15 @@ country_event = {
 		hidden_effect = {
 			if = {
 				limit = {
-					has_idea = idea_victors_of_wwi
+					has_idea = idea_victors_of_wwi_entente
 				}
-				remove_ideas = idea_victors_of_wwi
+				remove_ideas = idea_victors_of_wwi_entente
+			}
+			if = {
+				limit = {
+					has_idea = idea_victors_of_wwi_cp
+				}
+				remove_ideas = idea_victors_of_wwi_cp
 			}
 			if = {
 				limit = {
@@ -218,6 +313,7 @@ country_event = {
 				}
 				remove_ideas = idea_army_restrictions
 			}
+			set_country_flag = PER_pahlavi_flag
 		}
 		set_politics = {
 			ruling_party = neutrality
@@ -225,7 +321,7 @@ country_event = {
 		}
 		PER_ahmad_shah_qajar = {
 			remove_country_leader_role = {
-				ideology = autocracy
+				ideology = semi_constitutional_monarchy
 			}
 		}
 		PER_reza_khan = {
@@ -238,7 +334,7 @@ country_event = {
 			add_country_leader_role = {
 				promote_leader = yes
 				country_leader = {
-					ideology = despotism
+					ideology = personalistic_dictatorship
 				}
 			}
 		}
@@ -289,7 +385,7 @@ country_event = {
 				add_country_leader_role = {
 					promote_leader = yes
 					country_leader = {
-						ideology = despotism
+						ideology = personalistic_dictatorship
 					}
 				}
 			}
@@ -349,52 +445,347 @@ country_event = {
 		}
 		PER_reza_khan = {
 			remove_country_leader_role = {
-				ideology = despotism
+				ideology = personalistic_dictatorship
 			}
 			set_character_name = PER_reza_shah_pahlavi
 			add_country_leader_role = {
 				promote_leader = yes
 				country_leader = {
-					ideology = autocracy
+					ideology = absolute_monarchy
 				}
 			}
 		}
 	}
 }
 
-# No need to uprise, war is over
-# and if they keep to fight, they break entente neutrality
-country_event = {
+# Persian Gendarmerie news
+news_event = {
 	id = ww1_persia.8
-	picture = GFX_report_event_tur_turkish_soldiers
-	trigger = {
-		tag = PER
-		any_other_country = {
-			original_tag = PER
-			has_country_flag = PER_gendarmerie_flag
-			has_war_with = ROOT
-		}
-		OR = {
-			has_global_flag = GER_capitulation
-			has_global_flag = FRA_capitulation
+	title = ww1_persia.8.t
+	desc = ww1_persia.8.d
+	picture = GFX_news_event_persian_gendarmerie
+	is_triggered_only = yes
+	major = yes
+	option = {
+		name = ww1_persia.8.a
+		trigger = { has_country_flag = PER_gendarmerie_flag }
+	}
+	option = {
+		name = ww1_persia.8.b
+		trigger = {
+			OR = {
+				original_tag = PER
+				any_owned_state = {
+					is_core_of = PER
+				}
+			}
+			NOT = { has_country_flag = PER_gendarmerie_flag }
 		}
 	}
-	mean_time_to_happen = { days = 0 }
-	fire_only_once = yes
-	hidden = yes
-	immediate = {
-		random_other_country = {
-			limit = {
+	option = {
+		name = ww1_persia.8.c
+		trigger = {
+			NOT = {
 				original_tag = PER
+				any_owned_state = {
+					is_core_of = PER
+				}
 				has_country_flag = PER_gendarmerie_flag
-				has_war_with = ROOT
 			}
-			ROOT = {
-				annex_country = {
-					target = PREV
-					transfer_troops = yes
+		}
+	}
+}
+
+# Government Gendarmerie formed
+country_event = {
+	id = ww1_persia.9
+	title = ww1_persia.9.t
+	desc = ww1_persia.9.d
+	picture = GFX_report_event_swedish_soldier
+	fire_only_once = yes
+	mean_time_to_happen = { days = 15 }
+	trigger = {
+		tag = PER
+		date > 1911.8.1
+		has_start_date < 1914.1.1	
+		NOT = {
+			has_idea = PER_idea_government_gendarmerie
+			has_character = SWE_harald_hjalmarson
+			has_country_flag = persian_gendarmerie_formed
+		}
+	}	
+	option = {
+		name = ww1_persia.9.a
+		every_possible_country = {
+			limit = { has_character = SWE_harald_hjalmarson }
+			SWE_harald_hjalmarson = { set_nationality = ROOT }
+		}
+		add_ideas = PER_idea_government_gendarmerie
+		set_country_flag = persian_gendarmerie_formed
+	}
+}
+
+# Withdraw from Persia
+country_event = {
+	id = ww1_persia.10
+	title = ww1_persia.10.t
+	desc = ww1_persia.10.d
+	picture = GFX_report_event_generic_peaceful_annexation
+	fire_only_once = yes
+	mean_time_to_happen = { days = 70 }
+	trigger = {
+		has_global_flag = interbellum
+		has_global_flag = russian_revolution
+		NOT = { has_country_flag = great_war_loser }
+		any_owned_state = {
+			OR = {
+				is_core_of = PER
+				is_core_of = ARB
+			}
+			NOT = { is_core_of = ROOT }
+		}
+		PER = {
+			has_war = no
+			NOT = {
+				has_country_flag = great_war_loser
+				has_country_flag = PER_gendarmerie_flag
+				has_country_flag = PER_pahlavi_flag
+			}
+			is_subject = no
+		}
+	}
+	option = {
+		name = ww1_persia.10.a
+		every_owned_state = {
+			limit = {
+				OR = {
+					is_core_of = PER
+					is_core_of = ARB
+				}
+				NOT = { is_core_of = ROOT }
+			}
+			transfer_state_to = PER
+		}
+		if = {
+			limit = {
+				has_country_flag = great_war_winner
+				original_tag = ENG
+				NOT = { has_government = communism }
+			}
+			effect_tooltip = {
+				PER = { set_country_flag = protectorate }
+				set_autonomy = {
+					target = PER
+					autonomy_state = autonomy_tgwr_informal_protectorate
+				}
+			}
+			hidden_effect = {
+				PER = {
+					country_event = {
+						id = ww1_persia.11
+						hours = 10
+					}
+				}
+			}
+		}
+	}
+}
+
+# British supervision again
+country_event = {
+	id = ww1_persia.11
+	title = ww1_persia.11.t
+	desc = ww1_persia.11.d
+	picture = GFX_report_event_generic_peaceful_annexation
+	is_triggered_only = yes
+	option = {
+		name = ww1_persia.11.a
+		if = {
+			limit = {
+				has_subject = ARB
+			}
+			ARB = { set_country_flag = to_be_puppeted }
+		}
+		hidden_effect = {
+			get_current_government_type = yes
+		}
+		FROM = {
+			ROOT = { set_country_flag = protectorate }
+			set_autonomy = {
+				target = ROOT
+				autonomy_state = autonomy_tgwr_informal_protectorate
+			}
+		}
+		hidden_effect = {
+			restore_previous_government_type = yes
+		}
+		if = {
+			limit = {
+				NOT = { has_idea = PER_idea_nationalised_oil }
+			}
+			add_ideas = PER_idea_nationalised_oil
+		}
+		every_subject_country = {
+			limit = {
+				OR = {
+					owns_state = 413
+					owns_state = 412
+				}
+			}
+			if = {
+				limit = {
+					NOT = { has_idea = PER_idea_nationalised_oil }
+				}
+				add_ideas = PER_idea_nationalised_oil
+			}
+		}
+		if = {
+			limit = {
+				ARB = {
+					exists = yes
+					has_country_flag = to_be_puppeted
+				}
+			}
+			ARB = { get_current_government_type = yes }
+			set_autonomy = {
+				target = ARB
+				autonomy_state = autonomy_integrated_puppet
+			}
+			ARB = { restore_previous_government_type = yes }
+		}
+		if = {
+			limit = {
+				OR = {
+					owns_state = 413
+					any_subject_country = {
+						owns_state = 413
+					}
+				}			
+			}
+			413 = {
+				OWNER = {
+					give_resource_rights = {
+						receiver = ENG
+						state = 413
+					}
 				}
 			}
 		}	
+		if = {
+			limit = {
+				OR = {
+					owns_state = 412
+					any_subject_country = {
+						owns_state = 412
+					}
+				}			
+			}
+			412 = {
+				OWNER = {
+					give_resource_rights = {
+						receiver = ENG
+						state = 412
+					}
+				}
+			}
+		}
+	}
+}
+
+# Khorasan Revolt
+country_event = {
+	id = ww1_persia.12
+	title = ww1_persia.12.t
+	desc = ww1_persia.12.d
+	picture = GFX_report_event_tur_kurdish_guerillas
+	trigger = {
+		tag = PER
+		has_war = no
+		is_subject = no
+		has_country_flag = PER_pahlavi_flag
+		owns_state = 416
+	}
+	fire_only_once = yes
+	option = {
+		name = ww1_persia.12.a
+		set_global_flag = autonomous_khorasan
+		start_civil_war = {
+			ideology = fascism
+			capital = 416
+			states = { 416 }
+			size = 0.05
+			keep_all_characters = yes
+			set_country_flag = PER_khorasan_flag
+			set_cosmetic_tag = PER_khorasan
+			ROOT = {
+				PER_mohammad_taqi_pessian = {
+					set_nationality = PREV.PREV
+					add_country_leader_role = {
+						promote_leader = yes
+						country_leader = {
+							ideology = stratocracy
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+# British Oil Concessions
+country_event = {
+	id = ww1_persia.13
+	title = ww1_persia.13.t
+	desc = ww1_persia.13.d
+	picture = GFX_report_event_british_inspect_troops
+	is_triggered_only = yes
+	option = {
+		name = ww1_persia.13.a
+		add_ideas = PER_idea_nationalised_oil
+		every_subject_country = {
+			limit = {
+				OR = {
+					owns_state = 413
+					owns_state = 412
+				}
+			}
+			add_ideas = PER_idea_nationalised_oil
+		}
+		if = {
+			limit = {
+				OR = {
+					owns_state = 413
+					any_subject_country = {
+						owns_state = 413
+					}
+				}			
+			}
+			413 = {
+				OWNER = {
+					give_resource_rights = {
+						receiver = ENG
+						state = 413
+					}
+				}
+			}
+		}	
+		if = {
+			limit = {
+				OR = {
+					owns_state = 412
+					any_subject_country = {
+						owns_state = 412
+					}
+				}			
+			}
+			412 = {
+				OWNER = {
+					give_resource_rights = {
+						receiver = ENG
+						state = 412
+					}
+				}
+			}
+		}
 	}
 }

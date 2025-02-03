@@ -1,5 +1,6 @@
 peace_deals = {
 	ITA_sue_for_peace_TUR = {
+		name = sue_for_peace_TUR
 		icon = GFX_decision_eng_trade_unions_support	
 		allowed = {
 			tag = ITA
@@ -112,7 +113,9 @@ peace_deals = {
 				}
 				ITA = {
 					has_full_control_of_state = 448
+					has_full_control_of_state = 1060
 					has_full_control_of_state = 450
+					has_full_control_of_state = 1061
 					has_full_control_of_state = 661
 				}
 			}
@@ -124,9 +127,24 @@ peace_deals = {
 			NOT = { has_global_flag = great_war }
 		}
 		timeout_effect = {
-			ITA = {
-				set_country_flag = ITA_libyan_war_mission_timeout
-				country_event = { id = ww1_italianturkish.2 }
+			if = {
+				limit = {
+					ITA = {
+						any_controlled_state = {
+							is_core_of = LBA
+						}
+					}
+				}
+				ITA = {
+					set_country_flag = ITA_libyan_war_mission_timeout
+					country_event = { id = ww1_italianturkish.11 }
+				}
+				else = {
+					ITA = {
+						set_country_flag = ITA_libyan_war_mission_timeout
+						country_event = { id = ww1_italianturkish.2 }
+					}
+				}
 			}
 		}
 		fire_only_once = yes
@@ -134,60 +152,172 @@ peace_deals = {
 		is_good = no
 	}
 
-	ITA_sue_for_peace_AUH = {	
-		icon = GFX_decision_eng_trade_unions_support	
+	ITA_sue_for_peace_LBA = {
+		name = sue_for_peace_FROM
+		icon = GFX_decision_eng_trade_unions_support
 		allowed = {
 			tag = ITA
 		}
-		available = {
-			has_war_with = AUH
-			has_global_flag = brothers_war
-			surrender_progress > 0.1
-			OR = {
-				NOT = { has_global_flag = great_war }
-				has_global_flag = interbellum
+		target_trigger = {
+			FROM = {
+				tag = LBA
 			}
 		}
 		visible = {
-			has_war_with = AUH
-			has_global_flag = brothers_war
+			is_subject = no
+			has_war_with = FROM
+			FROM = { is_subject = no }
+			has_global_flag = great_war
+			NOT = { has_global_flag = great_war_ends }
+		}
+		available = {
 			OR = {
-				NOT = { has_global_flag = great_war }
-				has_global_flag = interbellum
+				FROM = {
+					OR = {
+						controls_province = 11954 #Bengazi
+						controls_province = 1149 #Trablus
+					}
+				}
+				surrender_progress > 0.30
 			}
 		}
 		fire_only_once = yes
 		ai_will_do = {
-			base = 0
-			modifier = {
-				add = 500
-				OR = {
-					surrender_progress > 0.3
+			base = 1000
+		}
+		complete_effect = {
+			FROM = {
+				if = {
+					limit = {
+						is_in_faction = yes
+					}
+					leave_faction = yes
+				}
+				white_peace = ROOT
+				hidden_effect = {
+					every_enemy_country = {
+						limit = {
+							is_in_faction_with = ROOT
+						}
+						white_peace = PREV
+					}
+				}
+			}
+			every_owned_state = {
+				limit = {
+					is_core_of = LBA
+					NOT = {
+						state = 448
+						state = 450
+					}
+				}
+				transfer_state_to = FROM
+			}
+		}
+	}
+	
+	ITA_return_rhodes_mission = {
+		# After Treaty of Ouchy
+		icon = GFX_decision_infiltrate_state
+		allowed = {
+			OR = {
+				tag = ITA
+				tag = TUR
+			}
+		}		
+		available = {
+			OR = {
+				TUR = {
+					OR = {
+						has_war = yes
+						has_country_flag = great_war_loser
+						NOT = { owns_state = 342 }
+					}
+				}
+				ITA = {
+					NOT = {
+						owns_state = 164
+						owns_state = 899
+					}
 				}
 			}
 		}
-		complete_effect = {
-			AUH = { country_event = ww1_auh.28 }
+		activation = {
+			# Italo-Turkish War ended
+			has_global_flag = italo_turkish_war_ends
+			ITA = {
+				OR = {
+					owns_state = 164
+					owns_state = 899
+				}
+				NOT = { has_war_with = TUR }
+			}
+			# Turkish side is able to be returned with islands
+			TUR = {
+				has_war = no
+				NOT = {
+					has_country_flag = great_war_loser
+				}
+				owns_state = 342
+			}
+			NOT = {
+				has_global_flag = treaty_of_ouchy_concluded
+			}
 		}
+		timeout_effect = {
+			every_state = {
+				limit = {
+					owner = {
+						OR = {
+							tag = ITA
+							is_subject_of = ITA
+						}
+					}
+					OR = {
+						state = 164
+						state = 899
+					}
+				}
+				transfer_state_to = TUR
+			}
+			set_global_flag = treaty_of_ouchy_concluded
+		}
+		fire_only_once = no
+		is_good = yes
+		days_mission_timeout = 600
 	}
 }
-foreign_politics = {
+operations = {
 	ITA_claim_corsica = {
 		icon = GFX_decision_eng_trade_unions_demand
 		allowed = {
-			original_tag = ITA
+			is_italian_nation = yes
 		}
 		available = {
-			has_war_with = FRA
-			NOT = { owns_state = 1 }
+			1 = {
+				NOT = {
+					is_claimed_by = ROOT
+					is_core_of = ROOT
+				}
+			}
 		}
 		ai_will_do = {
 			factor = 100
 		}
 		cost = 25
 		visible = {
-			has_war_with = FRA
-			NOT = { owns_state = 1 }
+			any_enemy_country = {
+				owns_state = 1
+			}
+			114 = {
+				is_core_of = ROOT
+				is_owned_by = ROOT
+			}
+		}
+		highlight_states = {
+			highlight_state_targets = {
+				state = 1
+			}
 		}
 		fire_only_once = yes
 		complete_effect = {
@@ -279,13 +409,7 @@ ITA_italian_civil_war_decisions = {
 		}
 		available = {
 			controls_state = 114
-			NOT = {
-				any_state = {
-					NOT = { state = 114 }
-					is_core_of = ROOT
-					is_controlled_by = ROOT
-				}
-			}
+			surrender_progress > 0.5
 		}
 		visible = {
 			has_global_flag = italian_civil_war
@@ -298,6 +422,11 @@ ITA_italian_civil_war_decisions = {
 				has_war_with = ROOT
 			}
 			controls_state = 114
+		}
+		highlight_states = {
+			highlight_state_targets = {
+				state = 144
+			}
 		}
 		fire_only_once = yes
 		ai_will_do = {
@@ -318,43 +447,22 @@ ITA_italian_civil_war_decisions = {
 			original_tag = ITA
 		}
 		available = {
-			has_country_leader_ideology = oligarchism
+			is_subject = no
+			has_capitulated = no
 		}
 		visible = {
 			has_country_flag = ITA_monarchist_italy_flag
-			has_country_leader_ideology = oligarchism
+			has_country_leader_with_trait = ITA_regency_council
 		}
 		cost = 50
-		fire_only_once = yes
+		fire_only_once = no
 		days_remove = 40
 		ai_will_do = {
 			factor = 1000
 		}
+		cancel_if_not_visible = yes
 		remove_effect = {
 			country_event = { id = garibaldi.8 }
-		}
-	}
-	ITS_remove_mafia = {
-		icon = GFX_decision_SWI_expand_covert_operations
-		allowed = {
-			original_tag = ITA
-		}
-		available = {
-			has_country_flag = ITA_monarchist_italy_flag
-			has_idea = ITA_idea_mafia
-		}
-		visible = {
-			has_country_flag = ITA_monarchist_italy_flag
-			has_idea = ITA_idea_mafia
-		}
-		cost = 100
-		fire_only_once = no
-		days_remove = 180
-		ai_will_do = {
-			factor = 10
-		}
-		remove_effect = {
-			remove_ideas = ITA_idea_mafia
 		}
 	}
 	ITA_civil_war_timer = {
@@ -653,6 +761,7 @@ ITA_italian_civil_war_decisions = {
 			is_subject = no
 		}
 		visible = {
+			is_faction_leader = yes
 			NOT = { has_government = democratic }	
 			has_global_flag = italian_civil_war
 			any_country = {
@@ -689,7 +798,7 @@ ITA_italian_civil_war_decisions = {
 			}
 		}
 		fire_only_once = yes
-		cost = 50
+		cost = 125
 		days_remove = 15
 		target_trigger = {
 			FROM = {
@@ -842,27 +951,18 @@ interwar_decisions = {
 	ITA_fiume_timer = {
 		icon = GFX_decision_eng_blackshirt_march
 		allowed = {
-			always = yes
+			OR = {
+				original_tag = ITA
+				original_tag = FIU
+				original_tag = CRO
+				original_tag = SER
+				original_tag = BOS
+				original_tag = SLV
+			}
 		}
 		days_mission_timeout = 200
 		visible = {
-			OR = {
-				tag = ITA
-				tag = FIU
-				AND = {
-					OR = {
-						tag = CRO
-						tag = SER
-					}
-					OR = {
-						owns_state = 208
-						any_other_country = {
-							is_subject_of = PREV
-							owns_state = 208
-						}
-					}
-				}
-			}
+			is_neighbor_of = FIU
 		}
 		activation = {
 			NOT = { has_global_flag = treaty_of_rapallo_1920 }
@@ -895,10 +995,469 @@ interwar_decisions = {
 				ITA = { country_event = ww1_fiume.3 }
 			}
 			hidden_effect = {
-				set_global_flag = treaty_of_rapallo_1920
 				if = {
 					limit = { tag = ITA }
+					set_global_flag = treaty_of_rapallo_1920
 					country_event = ww1_fiume.3
+				}
+			}
+		}
+	}
+	ITA_valona_timer = {
+		icon = GFX_decision_eng_blackshirt_march
+		allowed = {
+			OR = {
+				original_tag = ITA
+				original_tag = ALB
+				original_tag = GRE
+			}
+		}
+		days_mission_timeout = 200
+		visible = {
+			OR = {
+				controls_state = 44
+				controls_state = 803
+				controls_state = 871
+			}
+		}
+		activation = {
+			has_global_flag = valona_war
+			NOT = { has_global_flag = valona_war_end }
+			OR = {
+				has_active_mission = versallies_conference
+				has_active_mission = frankfurt_conference
+			}
+			ITA = {
+				OR = {
+					owns_state = 44
+					owns_state = 871
+				}
+				has_capitulated = no
+				NOT = {
+					has_country_flag = great_war_loser
+					has_subject = ALB
+				}
+			}
+		}
+		available = {
+			ITA = {
+				OR = {
+					is_subject = yes
+					has_capitulated = yes
+					has_war_with = ALB
+					NOT = {
+						owns_state = 44
+						owns_state = 871
+					}
+					has_subject = ALB
+				}
+			}
+		}
+		fire_only_once = no
+		is_good = no
+		timeout_effect = {
+			effect_tooltip = {
+				every_state = {
+					limit = {
+						is_owned_by = ITA
+						is_core_of = ALB
+					}
+					transfer_state_to = ALB
+				}
+			}
+			hidden_effect = {
+				set_global_flag = valona_war_end
+				every_state = {
+					limit = {
+						is_core_of = ALB
+						is_demilitarized_zone = yes
+					}
+					set_demilitarized_zone = no
+				}
+				if = {
+					limit = { tag = ITA }
+					country_event = ww1_albania.20
+				}
+			}
+		}
+	}
+	ITA_tyrol_timer = {
+		icon = GFX_decision_eng_blackshirt_march
+		allowed = {
+			always = yes
+		}
+		days_mission_timeout = 400
+		visible = {
+			OR = {
+				owns_state = 4
+				owns_state = 39
+				owns_state = 153
+			}
+		}
+		activation = {
+			OR = {
+				owns_state = 4
+				owns_state = 39
+				owns_state = 153
+			}
+			ITA = {
+				has_country_flag = great_war_winner
+				owns_state = 153
+				has_war = no
+			}
+			4 = {
+				owner = {
+					has_country_flag = great_war_loser
+					has_war = no
+					NOT = {
+						is_subject_of = ITA
+					}
+				}
+			}
+		}
+		available = {
+			ITA = {
+				OR = {
+					is_subject = yes
+					has_capitulated = yes
+					has_war_with = AUS
+					NOT = {
+						owns_state = 153
+					}
+					has_subject = AUS
+				}
+			}
+		}
+		fire_only_once = no
+		is_good = no
+		timeout_effect = {
+			4 = {
+				owner = {
+					transfer_state = 153
+				}
+			}
+		}
+	}
+	ITA_fix_roman_question = {
+		target_trigger = {
+			FROM = {
+				tag = PAP
+			}
+		}
+		allowed = {
+			original_tag = ITA
+		}
+		visible = {
+			has_idea = ITA_roman_question
+			controls_state = 2
+			is_neighbor_of = FROM
+			NOT = {
+				has_idea = ITA_lateran_treaty
+			}
+			FROM = {
+				has_government = neutrality
+			}
+			has_global_flag = interbellum
+		}
+		available = {
+			has_capitulated = no
+			is_subject = no
+			NOT = {
+				has_government = communism
+				has_war_with = FROM
+			}
+			FROM = {
+				has_country_leader = {
+					character = PAP_pius_xii
+				}	
+			}	
+		}
+		fire_only_once = yes
+		days_remove = 925 
+		remove_effect = {
+			FROM = {
+				remove_opinion_modifier = {
+					target = ROOT
+					modifier = ITA_roman_question
+				}
+				add_opinion_modifier = {
+					target = ROOT
+					modifier = HOI4TGW_Opinion_improved_diplomatic_relations
+				}
+				break_embargo = ROOT
+				set_cosmetic_tag = PAP_vatican
+				remove_ideas = PAP_captivus_vaticani
+				add_popularity = {
+					ideology = ROOT
+					popularity = 0.10
+				}
+				if = {
+					limit = {
+						has_idea = closed_economy
+					}
+					add_ideas = limited_exports
+				}	
+				if = {
+					limit = {
+						has_idea = isolation
+					}
+					add_ideas = civilian_economy
+				}
+				every_state = {
+					limit = {
+						is_claimed_by = PREV
+						NOT = {
+							is_owned_by = PREV
+						}
+					}
+					remove_claim_by = PREV		
+				}
+			}
+			give_guarantee = FROM
+			1001 = {
+				set_state_name = VATICAN_CITY_STATE
+			}
+			set_province_name = {
+				id = 3164
+				name = VATICAN_CITY_STATE
+			}
+			add_ideas = ITA_lateran_treaty
+			set_global_flag = ITA_lateran_treaty
+		}
+		ai_will_do = {
+			factor = 10
+			modifier = {
+				factor = 0
+				date < 1926.8.1
+			}
+			modifier = {
+				factor = 0
+				FROM = {
+					NOT = {
+						has_country_leader = {
+							character = PAP_pius_xii
+							ruling_only = yes
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+ITA_italian_mafia_dec_cat = {
+	ITA_suppress_mafia_in_state = {
+		icon = GFX_decision_oppression
+		target_trigger = {
+			FROM = {
+				ITA_state_has_any_version_of_mafia_rising_modifier = yes
+			}
+		}
+		target_root_trigger = {
+			any_controlled_state = {
+				ITA_state_has_any_version_of_mafia_rising_modifier = yes
+			}
+			OR = {
+				NOT = { has_focus_tree = italian_focus }
+				has_country_flag = ITA_monarchist_italy_flag
+				has_completed_focus = ITA_fight_against_mafia
+			}
+		}
+		state_target = yes
+		on_map_mode = map_only
+
+		custom_cost_trigger = {
+			has_equipment = {
+				infantry_equipment > 499
+			}
+			has_manpower > 999
+			command_power > 24
+		}
+		custom_cost_text = decision_cost_ie_500_MP_500_CP_25
+
+		days_remove = 90
+
+		available = {
+			FROM = {
+				ITA_state_has_any_version_of_mafia_rising_modifier = yes
+			}
+		}
+
+		complete_effect = {
+			hidden_effect = {
+				add_equipment_to_stockpile = { 
+					type = infantry_equipment
+					amount = -500
+				}
+				add_manpower = -1000
+				add_command_power = -25
+			}
+		}
+
+		remove_effect = {
+			FROM = {
+				if = {
+					limit = {
+						has_dynamic_modifier = { modifier = ITA_mafia_on_the_rise }
+					}
+					remove_dynamic_modifier = { modifier = ITA_mafia_on_the_rise }
+				}
+				else = {
+					remove_dynamic_modifier = { modifier = ITA_mafia_on_the_rise_no_lar }
+				}
+			}
+		}
+
+		ai_will_do = {
+			base = 0.1
+		}
+	}
+	ITS_remove_mafia = {
+		icon = GFX_decision_SWI_expand_covert_operations
+		allowed = {
+			original_tag = ITA
+		}
+		available = {
+			has_country_flag = ITA_monarchist_italy_flag
+			has_idea = ITA_idea_mafia
+		}
+		visible = {
+			has_country_flag = ITA_monarchist_italy_flag
+			has_idea = ITA_idea_mafia
+		}
+		cost = 100
+		fire_only_once = no
+		days_remove = 180
+		ai_will_do = {
+			factor = 10
+		}
+		remove_effect = {
+			remove_ideas = ITA_idea_mafia
+		}
+	}
+	ITS_cooperate_mafia = {
+		name = ITA_cooperate_with_the_mafia
+		desc = ITA_cooperate_with_the_mafia_desc
+		icon = GFX_decision_SWI_expand_covert_operations
+		allowed = {
+			original_tag = ITA
+		}
+		available = {
+		}
+		visible = {
+			has_country_flag = ITA_monarchist_italy_flag
+			any_controlled_state = {
+				ITA_state_has_any_version_of_mafia_rising_modifier = yes
+			}
+		}
+		cancel_if_not_visible = yes
+		cost = 100
+		fire_only_once = no
+		days_remove = 180
+		ai_will_do = {
+			factor = 10
+		}
+		remove_effect = {
+			custom_effect_tooltip = ITA_cooperate_with_the_mafia_dm_tt
+			if = {
+				limit = {
+					has_dlc = "La Resistance"
+				}
+				effect_tooltip = {
+					remove_dynamic_modifier = { modifier = ITA_mafia_on_the_rise }
+					add_dynamic_modifier = { modifier = ITA_established_mafia }
+				}
+				hidden_effect = {
+					every_controlled_state = {
+						limit = {
+							has_dynamic_modifier = { modifier = ITA_mafia_on_the_rise }
+						}
+						remove_dynamic_modifier = { modifier = ITA_mafia_on_the_rise }
+						add_dynamic_modifier = { modifier = ITA_established_mafia }
+					}
+				}
+			}
+			else = {
+				effect_tooltip = {
+					remove_dynamic_modifier = { modifier = ITA_mafia_on_the_rise_no_lar }
+					add_dynamic_modifier = { modifier = ITA_established_mafia_no_lar }
+				}
+				hidden_effect = {
+					every_controlled_state = {
+						limit = {
+							has_dynamic_modifier = { modifier = ITA_mafia_on_the_rise_no_lar }
+						}
+						remove_dynamic_modifier = { modifier = ITA_mafia_on_the_rise_no_lar }
+						add_dynamic_modifier = { modifier = ITA_established_mafia_no_lar }
+					}
+				}
+			}
+		}
+	}
+}
+
+foreign_influence = {
+	ITA_annex_TRP = {
+		name = annex_FROM
+		icon = GFX_decision_eng_trade_unions_demand
+		allowed = {
+			original_tag = ITA
+		}
+		target_trigger = {
+			FROM = {
+				tag = TRP
+				is_neighbor_of = ROOT
+				OR = {
+					is_subject = no
+					is_subject_of = ROOT
+				}
+				NOT = {
+					has_war_with = ROOT
+				}
+			}
+		}
+		available = {
+			controls_state = 448
+			is_subject = no
+			has_capitulated = no
+			OR = {
+				has_subject = FROM
+				FROM = { has_idea = TRP_civil_war }
+			}
+			hidden_trigger = {
+				NOT = {
+					has_active_mission = compiegne_armistice_mission
+					has_active_mission = frankfurt_armistice_mission
+					has_active_mission = versallies_conference
+					has_active_mission = frankfurt_conference
+				}
+			}
+		}
+		visible = {
+			NOT = {
+				has_country_flag = great_war_loser
+			}
+		}
+		fire_only_once = yes
+		complete_effect = {
+			annex_country = {
+				target = FROM
+			}
+		}
+		cost = 100
+		ai_will_do = {
+			factor = 200
+			modifier = {
+				factor = 0
+				NOT = {
+					FROM = { has_idea = TRP_civil_war }
+				}
+			}
+			modifier = {
+				factor = 0
+				NOT = {
+					has_global_flag = frankfurt_treaty
+					has_global_flag = versallies_treaty
 				}
 			}
 		}

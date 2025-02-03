@@ -493,57 +493,6 @@ peace_deals = {
 	# 	}
 	# }
 }
-economy_decisions = {
-	JAP_restore_Mantetsu_control = {
-		icon = infiltrate_state
-
-		allowed = {
-			original_tag = JAP
-		}
-
-		target_trigger = {
-			FROM = {
-				is_china_or_warlord = yes
-				NOT = {
-					gives_military_access_to = ROOT
-					is_in_faction_with = ROOT
-					is_subject_of = ROOT
-				}
-				OR = {
-					controls_state = 716
-					controls_state = 328
-				}
-			}
-		}
-		visible = {
-			hidden_trigger = {
-				is_subject = no
-				has_capitulated = no
-				any_country = {
-					OR = {
-						tag = ROOT
-						is_subject_of = ROOT
-					}				
-					owns_state = 744
-					controls_state = 744
-				}
-			}					
-		}
-
-		days_remove = 5
-
-		ai_will_do = {
-			factor = 100
-		}
-
-		cancel_if_not_visible = yes
-		remove_effect = {
-			FROM = {
-				give_military_access = 	ROOT
-			}
-		}
-	}
-}
 
 JAP_cat_siberian_intervention = {
 	JAP_take_northern_sakhalin = {
@@ -551,31 +500,23 @@ JAP_cat_siberian_intervention = {
 		allowed = {
 			original_tag = JAP
 		}
-		target_trigger = {
-			FROM = {
-				owns_state = 655
-				OR = {
-					has_war_with = ROOT
-					has_government = communism
-					is_subject_of = ROOT
-					is_subject_of = SOV
-					has_country_flag = siberian_intervention
-				}
-			}
+		state_target = yes
+		on_map_mode = map_and_decisions_view
+		targets = {
+			655
 		}
 		visible = {
 			NOT = { has_government = communism }
 			owns_state = 537
 		}
 		available = {
-			controls_state = 537
-			OR = {
-				controls_state = 655
-				any_other_country = {
-					has_country_flag = siberian_intervention
+			controls_state = 537			
+			FROM = {
+				is_controlled_by_FROM_or_subject = yes
+				OWNER = {
 					OR = {
-						controls_state = 409
-						controls_state = 655
+						has_war_with = ROOT
+						is_subject_of = ROOT
 					}
 				}
 			}
@@ -585,7 +526,7 @@ JAP_cat_siberian_intervention = {
 		}
 		fire_only_once = yes
 		complete_effect = {
-			set_state_owner = 655
+			transfer_state = 655
 		}
 	}
 	JAP_start_siberian_intervention = {
@@ -595,31 +536,95 @@ JAP_cat_siberian_intervention = {
 		}
 		target_trigger = {
 			FROM = {
-				tag = SOV
+				is_russian_tag = yes
+				capital_scope = {
+					OR = {
+						region = 148
+						region = 149
+						region = 155
+					}
+				}
+				NOT = {
+					has_war_with = ROOT
+					has_government = communism
+					has_country_flag = siberian_intervention
+				}			
 			}
 		}
+		custom_cost_trigger = {
+			command_power > 9
+		}
+		custom_cost_text = decision_cost_CP_10
 		visible = {
-			NOT = { has_government = communism }
-			owns_state = 537
-			NOT = { has_global_flag = JAP_start_siberian_intervention }
+			country_exists = SOV
+			NOT = { 
+				has_government = communism 
+			}
+			has_global_flag = JAP_start_siberian_intervention
+			FROM = {
+				if = {
+					limit = {
+						is_subject = yes
+					}
+					OVERLORD = {
+						OR = {
+							is_russian_tag = yes
+							tag = ROOT
+						}
+					}
+				}
+			}
 		}
 		available = {
-			controls_state = 537
-			controls_state = 655
-			has_manpower > 7000
+
 		}
 		ai_will_do = {
-			factor = 100
+			base = 100
+			modifier = {
+				factor = 0
+				surrender_progress > 0
+			}
 		}
 		cancel_if_not_visible = yes
-		days_remove = 180
-		fire_only_once = no
-		complete_effect = {
-			add_manpower = -7000
-		}
+		fire_only_once = yes
+		days_remove = 10
 		remove_effect = {
-			set_global_flag = JAP_start_siberian_intervention 
-			country_event = rusrevolt.29
+			FROM = {
+				set_country_flag = siberian_intervention
+				add_opinion_modifier = {
+					target = ROOT
+					modifier = large_increase
+				}
+			}
+			diplomatic_relation = {
+				country = FROM
+				relation = military_access
+				active = yes
+			}
+			diplomatic_relation = {
+				country = FROM
+				relation = guarantee
+				active = yes
+			}
+			add_opinion_modifier = {
+				target = FROM
+				modifier = large_increase
+			}
+			add_ai_strategy = {
+				type = protect
+				id = FROM
+				value = 100
+			}
+			add_ai_strategy = {
+				type = send_volunteers_desire
+				id = FROM
+				value = 100
+			}
+			add_ai_strategy = {
+				type = support
+				id = FROM
+				value = 100
+			}
 		}
 	}
 	JAP_send_manpower_to_siberia = {
@@ -629,27 +634,59 @@ JAP_cat_siberian_intervention = {
 		}
 		target_trigger = {
 			FROM = {
-				original_tag = FER
-				NOT = { has_government = communism }
+				is_russian_tag = yes
+				capital_scope = {
+					OR = {
+						region = 148
+						region = 149
+						region = 155
+					}
+				}
+				NOT = {
+					has_war_with = ROOT
+					has_government = communism
+				}
 				has_country_flag = siberian_intervention
 			}
 		}
 		visible = {
-			NOT = { has_government = communism }
+			NOT = {
+				has_government = communism 
+			}
 			has_global_flag = JAP_start_siberian_intervention
-			NOT = { has_global_flag = siberian_intervention_expelled }
+			FROM = {
+				if = {
+					limit = {
+						is_subject = yes
+					}
+					OVERLORD = {
+						OR = {
+							is_russian_tag = yes
+							tag = ROOT
+						}
+					}
+				}
+			}
 		}
 		available = {
-			has_manpower > 3000
+			has_manpower > 2999
 			FROM = { has_capitulated = no }
 		}
+		days_re_enable = 50
 		ai_will_do = {
-			base = 0
+			base = 100
 			modifier = {
-				add = 100
-				FROM = {
-					has_manpower < 30000
-				}
+				factor = 0
+				OR = {
+					surrender_progress > 0
+					has_manpower < 100000
+					FROM = { 
+						OR = {
+							has_manpower > 9999
+							has_war = no
+						}					
+					}			
+				}	
 			}
 		}
 		fire_only_once = no
@@ -666,8 +703,18 @@ JAP_cat_siberian_intervention = {
 		}
 		target_trigger = {
 			FROM = {
-				original_tag = FER
-				NOT = { has_government = communism }
+				is_russian_tag = yes
+				capital_scope = {
+					OR = {
+						region = 148
+						region = 149
+						region = 155
+					}
+				}
+				NOT = {
+					has_war_with = ROOT
+					has_government = communism
+				}
 				has_country_flag = siberian_intervention
 			}
 		}
@@ -675,9 +722,23 @@ JAP_cat_siberian_intervention = {
 			FROM = { has_capitulated = no }
 		}
 		visible = {
-			NOT = { has_government = communism }
+			NOT = {
+				has_government = communism 
+			}
 			has_global_flag = JAP_start_siberian_intervention
-			NOT = { has_global_flag = siberian_intervention_expelled }
+			FROM = {
+				if = {
+					limit = {
+						is_subject = yes
+					}
+					OVERLORD = {
+						OR = {
+							is_russian_tag = yes
+							tag = ROOT
+						}
+					}
+				}
+			}
 		}
 		fire_only_once = no
 		custom_cost_trigger = {
@@ -685,14 +746,19 @@ JAP_cat_siberian_intervention = {
 		}
 		custom_cost_text = 2000_infantry_equipment_1
 		ai_will_do = {
-			factor = 100
+			base = 100
 			modifier = {
 				factor = 0
-				has_equipment = { infantry_equipment < 4000 }
-			}
-			modifier = {
-				factor = 0
-				FROM = { has_equipment = { infantry_equipment > 10000 } }
+				OR = {
+					surrender_progress > 0
+					has_equipment = { infantry_equipment < 10000 }
+					FROM = {
+						OR = {
+							has_equipment = { infantry_equipment > 4999 } 
+							has_war = no
+						}					
+					}			
+				}	
 			}
 		}
 		complete_effect = {
@@ -709,116 +775,320 @@ JAP_cat_siberian_intervention = {
 		allowed = {
 			original_tag = JAP
 		}
-		activation = {
-			has_global_flag = JAP_start_siberian_intervention
-			country_exists = FER
-		}
-		available = {
-			OR = {
-				NOT = { country_exists = FER }
-				is_subject = yes
-				has_capitulated = yes
-				any_other_country = {
-					original_tag = FER
-					has_country_flag = siberian_intervention
-					OR = {
-						has_capitulated = yes
-						NOT = { has_war_with = SOV }
-						is_subject_of = SOV
-					}
-				}
-				exists = no
-				NOT = { country_exists = SOV }
+		target_trigger = {
+			FROM = {
+				is_russian_tag = yes
+				has_country_flag = siberian_intervention
 			}
 		}
-		cancel_if_not_visible = yes
 		visible = {
 			has_global_flag = JAP_start_siberian_intervention
-			NOT = { has_global_flag = siberian_intervention_expelled }
-		}
-		timeout_effect = {
-			set_global_flag = siberian_intervention_expelled
-			hidden_effect = {
-				random_other_country = {
-					limit = {
-						original_tag = FER
-						has_country_flag = siberian_intervention
-					}
-					retire_ideology_leader = neutrality
-				}
-				every_possible_country = {
-					limit = {
-						has_character = JAP_otani_kikuzo
-					}
-					JAP_otani_kikuzo = { set_nationality = ROOT }
-				}
-			}
 		}
 		complete_effect = {
-			set_global_flag = siberian_intervention_expelled
-			hidden_effect = {
-				random_other_country = {
-					limit = {
-						original_tag = FER
-						has_country_flag = siberian_intervention
-					}
-					retire_ideology_leader = neutrality
+			FROM = {
+				clr_country_flag = siberian_intervention
+				remove_opinion_modifier = {
+					target = ROOT
+					modifier = large_increase
 				}
-				every_possible_country = {
-					limit = {
-						has_character = JAP_otani_kikuzo
+			}
+			diplomatic_relation = {
+				country = FROM
+				relation = military_access
+				active = no
+			}
+			diplomatic_relation = {
+				country = FROM
+				relation = guarantee
+				active = no
+			}
+			remove_opinion_modifier = {
+				target = FROM
+				modifier = large_increase
+			}
+			add_ai_strategy = {
+				type = protect
+				id = FROM
+				value = -100
+			}
+			add_ai_strategy = {
+				type = send_volunteers_desire
+				id = FROM
+				value = -100
+			}
+			add_ai_strategy = {
+				type = support
+				id = FROM
+				value = -100
+			}
+		}
+		ai_will_do = {
+			base = 0
+			modifier = {
+				add = 100
+				OR = {
+					surrender_progress > 0
+					NOT = {
+						country_exists = SOV
 					}
-					JAP_otani_kikuzo = { set_nationality = ROOT }
-				}
+					FROM = {
+						has_government = communism
+					}
+					has_government = communism
+				}			
 			}
 		}
 		fire_only_once = no
-		is_good = no
-		days_mission_timeout = 1200
 	}
-	JAP_puppet_siberia = {
-		icon = ger_military_buildup
+	# JAP_puppet_siberia = {
+	# 	icon = ger_military_buildup
+	# 	allowed = {
+	# 		original_tag = JAP
+	# 	}
+	# 	target_trigger = {
+	# 		FROM = {
+	# 			is_russian_tag = yes
+	# 			capital_scope = {
+	# 				is_on_continent = asia
+	# 			}
+	# 			NOT = { has_government = communism }
+	# 			has_country_flag = siberian_intervention
+	# 		}
+	# 	}
+	# 	available = {
+	# 		has_capitulated = no
+	# 		is_subject = no
+	# 		OR = {
+	# 			has_war = no
+	# 			ROOT = { has_war_with = SOV }
+	# 		}
+	# 		NOT = { country_exists = SOV }
+	# 		FROM = {
+	# 			has_capitulated = no
+	# 			is_subject = no
+	# 			OR = {
+	# 				has_war = no
+	# 				ROOT = { has_war_with = SOV }
+	# 			}
+	# 			NOT = {
+	# 				has_war_with = ROOT
+	# 			}
+	# 		} 
+	# 	}
+	# 	visible = {
+	# 		NOT = { has_government = communism }
+	# 		has_global_flag = JAP_start_siberian_intervention
+	# 	}
+	# 	fire_only_once = no
+	# 	cost = 120
+	# 	ai_will_do = {
+	# 		factor = 100
+	# 	}
+	# 	complete_effect = {
+	# 		puppet = FROM
+	# 	}
+	# }
+}
+
+foreign_politics = {
+	# JAP_demand_shantung = {
+	# 	icon = GFX_decision_eng_trade_unions_demand
+	# 	allowed = {
+	# 		original_tag = JAP
+	# 	}
+	# 	target_trigger = {
+	# 		FROM = {
+	# 			is_china_or_warlord_no_tt = yes
+	# 			owns_state = 872
+	# 		}
+	# 	}
+	# 	visible = {
+	# 		NOT = {
+	# 			has_war_with = FROM
+	# 			has_subject = FROM
+	# 		}
+	# 		is_subject = no
+	# 		has_capitulated = no
+	# 		872 = { is_claimed_by = ROOT }
+	# 	}
+	# 	available = {
+	# 		has_global_flag = great_war
+	# 		NOT = { has_global_flag = great_war_ends }
+	# 	}
+	# 	fire_only_once = yes
+	# 	complete_effect = {
+	# 		FROM = {
+	# 			#country_event = 
+	# 		}
+	# 	}
+	# }
+}
+
+operations = {
+	JAP_invade_kiautschou_mission_activate = {
+		icon = GFX_decision_generic_operation
 		allowed = {
 			original_tag = JAP
 		}
 		target_trigger = {
 			FROM = {
-				original_tag = FER
-				NOT = { has_government = communism }
-				has_country_flag = siberian_intervention
+				tag = GER
+				owns_state = 745
+			}
+		}
+		available = {
+			has_completed_focus = JAP_ww1_Siege_of_Tsingtao
+			FROM = {
+				controls_state = 745
+			}
+		}
+		visible = {
+			has_capitulated = no
+			is_subject = no
+			has_war_with = FROM
+			872 = {
+				owner = {
+					NOT = {
+						has_war_with = ROOT
+						has_war_with = FROM
+					}
+				}
+			}
+			NOT = {
+				has_global_flag = kiautschou_mission_fired
+			}
+		}
+		days_remove = 70
+		cancel_if_not_visible = yes
+		cancel_trigger = {
+			OR = {
+				has_war = no
+				has_capitulated = yes
+				is_subject = yes
+				NOT = { has_war_with = FROM }
+				FROM = {
+					NOT = { controls_state = 745 }
+				}
+				controls_state = 745
+				872 = {
+					owns_or_subject_of = yes
+				}
+			}
+		}
+		fire_only_once = no
+		custom_cost_trigger = {
+			command_power > 40
+		}
+		custom_cost_text = decision_cost_CP_40
+		ai_will_do = {
+			factor = 1000
+			# need to secure the homeland
+			modifier = {
+				factor = 0
+				surrender_progress > 0.05
+			}
+			# navy is gone
+			modifier = {
+				factor = 0
+				has_navy_size = {
+					size < 30
+				}
+			}
+			# no war
+			modifier = {
+				factor = 0
+				has_war_support < 0.30
+			}
+		}
+		cancel_effect = {
+			add_command_power = 20
+		}
+		remove_effect = {
+			custom_effect_tooltip = JAP_invade_kiautschou_mission_tt
+			hidden_effect = {
+				set_global_flag = kiautschou_mission_fired
+				add_named_threat = {
+					threat = 5
+					name = kiautschou_mission_fired
+				}
+				# Transfer Schantung
+				if = {
+					limit = {
+						872 = { owns_or_subject_of = no }
+					}
+					# Chinese reaction
+					872 = { owner = { country_event = ww1_kiautschou.3 } }
+				}
+				# first they control every provinces
+				FROM = { transfer_state = 872 }
+				set_state_owner = 872
+				# German reaction
+				FROM = {
+					country_event = ww1_kiautschou.5
+				}
+				country_event = ww1_kiautschou.2
+			}
+		}
+		highlight_states = {
+			highlight_state_targets = {
+				state = 745
+				state = 872
+			}
+		}
+	}
+	JAP_seize_shandong_anyway = {
+		icon = GFX_decision_generic_operation
+		allowed = {
+			original_tag = JAP
+		}
+		target_trigger = {
+			FROM = {
+				owns_state = 872
+				NOT = {
+					has_war_with = ROOT
+				}
+			}
+		}
+		visible = {
+			controls_state = 745
+			is_subject = no
+			NOT = {
+				owns_state = 872
+				has_global_flag = kiautschou_mission_fired
+			}
+			745 = {
+				owner = {
+					has_war_with = ROOT
+				}
 			}
 		}
 		available = {
 			has_capitulated = no
-			is_subject = no
-			OR = {
-				has_war = no
-				ROOT = { has_war_with = SOV }
-			}
-			NOT = { country_exists = SOV }
-			FROM = {
-				has_capitulated = no
-				is_subject = no
-				OR = {
-					has_war = no
-					ROOT = { has_war_with = SOV }
-				}
-				NOT = {
-					has_war_with = ROOT
-				}
-			} 
 		}
-		visible = {
-			NOT = { has_government = communism }
-			has_global_flag = JAP_start_siberian_intervention
-		}
-		fire_only_once = no
-		cost = 120
-		ai_will_do = {
-			factor = 100
-		}
+		fire_only_once = yes
+		cost = 40
 		complete_effect = {
-			puppet = FROM
+			# Transfer Schantung
+			if = {
+				limit = {
+					872 = { owns_or_subject_of = no }
+				}
+				add_named_threat = {
+					threat = 5
+					name = kiautschou_mission_fired
+				}
+				# Chinese reaction
+				872 = { owner = { country_event = ww1_kiautschou.3 } }
+			}
+			transfer_state = 872
+		}
+		highlight_states = {
+			highlight_state_targets = {
+				state = 872
+			}
+		}
+		ai_will_do = {
+			factor = 1000
 		}
 	}
 }

@@ -1,17 +1,172 @@
 ﻿add_namespace = ww1_turkestan
 
-#collapse of the Kokand government
+# Turkestan Autonomy
+###################
 country_event = {
 	id = ww1_turkestan.1
 	title = ww1_turkestan.1.t
 	desc = ww1_turkestan.1.d
 	picture = GFX_report_event_generic_military_parade
-
 	is_triggered_only = yes
-	
+	trigger = {
+		any_owned_state = {
+			NOT = {
+				state = 584
+				state = 587
+			}
+			is_core_of = TRK
+		}
+		TRK = {
+			exists = no
+		}
+	}
+	immediate = {
+		hidden_effect = {
+			every_state = {
+				limit = {
+					NOT = {
+						state = 584
+						state = 587
+					}
+					is_core_of = TRK
+					OR = {
+						is_owned_by = RUS
+						is_owned_by = RUS
+					}
+				}
+				TRK = {
+					transfer_state = PREV
+				}
+			}
+			TRK = {				
+				inherit_technology = RUS
+				delete_obsolete_russian_templates = yes
+				load_oob = "TRK_1918"
+				add_ideas = {
+					disarmed_nation
+				}
+			}
+			set_global_flag = basmach_released
+		}
+	}
 	option = {
 		name = ww1_turkestan.1.a
-		ai_chance = { factor = 100 }
+		effect_tooltip = {
+			release = TRK
+		}
+	}
+	option = {
+		name = ww1_turkestan.1.b
+		TRK = {
+			change_tag_from = ROOT
+		}
+		trigger = {
+			is_ai = no
+		}
+	}
+}
+
+#collapse of the Kokand government
+country_event = {
+	id = ww1_turkestan.2
+	title = ww1_turkestan.2.t
+	desc = ww1_turkestan.2.d
+	picture = GFX_report_event_generic_military_parade
+
+	is_triggered_only = yes
+
+	immediate = {
+		hidden_effect = {
+			start_civil_war = { 
+				ideology = SOV 
+				size = 0.7
+				states = { 
+					585 589 586
+				}
+				capital = 585
+				keep_unit_leaders_trigger = {
+					always = yes
+				}
+				set_cosmetic_tag = SOV_puppet
+				load_focus_tree = empty_focus
+			}
+			random_country = {
+				limit= {
+					original_tag = TRK
+					has_government = SOV
+				}
+				SOV = {
+					if = {
+						limit = {
+							owns_state = 584
+						}
+						PREV = {
+							transfer_state = 584
+						}
+					}
+					puppet = {
+						target = PREV
+						end_civil_wars = no
+						end_wars = no
+					}
+					SOV_ivan_belov = {
+						set_nationality = PREV
+					}	
+					declare_war_on = {
+						target = TRK
+						type = annex_everything
+					}
+				}
+				BUK = {
+					give_military_access = PREV
+				}
+			}
+		}	
+	}
+	
+	option = {
+		name = ww1_turkestan.2.a
+		ai_chance = { base = 100 }
+		set_politics = {
+            ruling_party = fascism
+			elections_allowed = no
+        }
+		add_popularity = {
+		    ideology = fascism
+		    popularity = 0.3
+		}
+		add_popularity = {
+		    ideology = democratic
+		    popularity = -0.5
+		}
+		add_popularity = {
+		    ideology = communism
+		    popularity = -0.5
+		}
+		if = {
+			limit = {
+				BUK = { 
+				    has_war_with = SOV
+				}
+			}
+			create_faction = basmachi_movement
+			add_to_faction = BUK
+        }
+        if = {
+			limit = {
+				KHI = { 
+				    has_war_with = SOV
+				}
+			}
+			create_faction = basmachi_movement
+			add_to_faction = KHI
+        }			
+	}
+	option = {
+		name = ww1_turkestan.2.b
+		trigger = {
+			is_ai = no
+		}
 		create_faction = basmachi_movement
 		set_politics = {
             ruling_party = fascism
@@ -40,6 +195,139 @@ country_event = {
 				}
 			}
 			add_to_faction = KHI
-        }			
+        }	
+		random_country = {
+			limit= {
+				original_tag = TRK
+				has_government = SOV
+			}
+			change_tag_from = ROOT
+		}		
+	}
+}
+
+# Askhabad Uprising
+country_event = {
+	id = ww1_turkestan.101
+	title = ww1_turkestan.101.t
+	desc = ww1_turkestan.101.d
+	picture = GFX_report_event_generic_military_parade
+	
+	trigger = {
+		tag = SOV
+		has_government = communism
+		has_country_flag = czechoslovak_revolt
+		584 = {
+			owns_or_subject_of = yes
+		}
+	}
+
+	mean_time_to_happen = {
+		days = 20
+	}
+
+	immediate = {
+		hidden_effect = {
+			every_state = {
+				limit = {
+					OR = {
+						state = 584
+						state = 587
+					}
+				}
+				add_core_of = TRC
+			}
+			584 = {
+				transfer_state_to = TRC
+			}
+			TRC = {
+				add_ideas = RUS_russian_civil_war
+				inherit_technology = SIB
+				delete_obsolete_russian_templates = yes
+				hidden_effect = { ENG = { country_event = { id = ww1_turkestan.102 days = 10 } } }
+				declare_war_on = {
+					target = SOV
+					type = civil_war
+				}
+				load_oob = TRC_uprising			
+			}
+			SOV = {
+				send_equipment = {
+					equipment = infantry_equipment
+					amount = 5000
+					target = TRC
+				}
+			}
+		}
+	}
+	
+	fire_only_once = yes
+	
+	option = {
+		name = ww1_turkestan.101.a
+		ai_chance = {
+			factor = 999
+		}
+	}
+	option = {
+		name = ww1_turkestan.101.b
+		trigger = {
+			is_ai = no
+		}
+		TRC = { change_tag_from = ROOT }
+	}
+}
+
+# British Intervention
+country_event = {
+	id = ww1_turkestan.102
+	title = ww1_turkestan.102.t
+	desc = ww1_turkestan.102.d
+	picture = GFX_report_event_generic_military_parade
+	
+	trigger = {
+		tag = ENG
+		NOT = {
+			has_government = communism
+			has_country_flag = great_war_loser
+		}
+		RUS = {
+			has_government = communism
+			has_country_flag = czechoslovak_revolt
+		}
+	}
+	is_triggered_only = yes
+	
+	fire_only_once = yes
+	
+	option = {
+		name = ww1_turkestan.102.a
+		if = {
+			limit = {
+				has_subject = RAJ
+			}	
+			RAJ = {
+				RAJ_wilfrid_malleson = {
+					set_nationality = TRC
+				}
+			}
+			TRC = {
+				give_military_access = RAJ
+			}
+		}	
+		TRC = {
+			give_military_access = ENG
+			complete_national_focus = WHI_reach_to_the_world
+			complete_national_focus = WHI_obligations_to_entente
+		}
+		ai_chance = {
+			factor = 1
+		}
+	}
+	option = {
+		name = ww1_turkestan.102.b
+		ai_chance = {
+			factor = 0
+		}
 	}
 }

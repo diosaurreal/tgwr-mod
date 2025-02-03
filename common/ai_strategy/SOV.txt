@@ -1,5 +1,5 @@
 entente_not_join_russian_alliance = {
-	enable = {
+	allowed = {
 		OR = {
 			original_tag = LUX
 			original_tag = BEL
@@ -9,54 +9,9 @@ entente_not_join_russian_alliance = {
 			original_tag = NOR
 			original_tag = ITA
 		}
-		RUS = { is_in_faction = yes }
 	}
-	
-	abort = {
-		RUS = { is_in_faction = no }
-	}
-	
-	ai_strategy = {
-		type = alliance
-		id = "RUS"
-		value = -500
-	}
-}
-RUS_early_offensive_1914 = {
-	allowed = {
-		original_tag = RUS
-	}
-
-	enable = {
-		original_tag = RUS
-		OR = {
-			has_war_with = GER
-			has_war_with = AUH
-		}
-	}
-	abort = {
-		OR = {
-			date > 1915.1.1
-			SOV = { exists = yes }
-		}
-	}
-	ai_strategy = {
-		type = conquer
-		id = "GER"
-		value = 200
-	}
-	ai_strategy = {
-		type = conquer
-		id = "AUH"
-		value = 200
-	}
-}
-RUS_civil_war = {
-	enable = {
-		SOV = { has_war_with = RUS }
-		RUS = {
-			is_faction_leader = yes
-		}	
+	enable = {		
+		RUS = { is_faction_leader = yes }
 	}
 	
 	abort_when_not_enabled = yes
@@ -67,19 +22,76 @@ RUS_civil_war = {
 		value = -500
 	}
 }
+SOV_dont_leave_german_front = {
+	allowed = {
+		tag = RUS
+	}
+	enable = {
+		tag = SOV
+		has_war_with = GER
+		any_enemy_country = {
+			original_tag = GER
+		}
+		NOT = {
+			has_global_flag = great_war_ends
+		}
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = front_unit_request
+		tag = GER
+		value = 250
+	}
+	ai_strategy = {
+		type = front_control
+		tag = GER
+		ratio = 0.75 # the strategy is enabled only if ratio of the front covered by this strat's targets greater than this ratio 
+		#Le Vrai : It means that Germany wont do anything EXCEPT if France remove a lot of troops
+		priority = 250
+		ordertype = front
+		execution_type = careful
+		execute_order = no
+		manual_attack = yes
+	}
+}
+RUS_civil_war = {
+	allowed = {
+		is_russian_tag = no
+	}
+	enable = {
+		country_exists = SOV
+		has_russian_civil_war = yes
+		NOT = {
+			has_government = communism
+		}	
+	}
+	
+	abort_when_not_enabled = yes
+	
+	ai_strategy = {
+		type = alliance
+		id = "SOV"
+		value = -500
+	}
+}
 UKR_civil_war = {
 	allowed = {
 		original_tag = UKR
 	}
 
 	enable = {
-		tag = UKR
 		has_civil_war = yes
 	}
+	abort_when_not_enabled = yes
 	
 	ai_strategy = {
 		type = alliance
 		id = "RUS"
+		value = -5000
+	}
+	ai_strategy = {
+		type = alliance
+		id = "SIB"
 		value = -5000
 	}
 	ai_strategy = {
@@ -103,12 +115,9 @@ FIN_civil_war = {
 		original_tag = FIN
 	}
 	enable = {
-		original_tag = FIN
 		OR = {
-			SOV = { has_war_with = RUS }
-			FIN = {
-				has_civil_war = yes
-			}
+			country_exists = SOV
+			has_civil_war = yes
 		}
 	}
 	
@@ -119,6 +128,7 @@ FIN_civil_war = {
 			FIN = { has_war_with = SOV }
 		}
 	}
+	abort_when_not_enabled = yes
 	
 	ai_strategy = {
 		type = alliance
@@ -142,7 +152,7 @@ FIN_civil_war = {
 	}
 }
 majors_dont_want_protect_russian_minorities = {
-	enable = {
+	allowed = {
 		OR = {
 			original_tag = ENG
 			original_tag = GER
@@ -152,18 +162,14 @@ majors_dont_want_protect_russian_minorities = {
 			original_tag = SER
 			original_tag = ITA
 			original_tag = TUR
-			is_major = yes
-		}
-		is_faction_leader = yes
-		NOT = {
-			tag = RUS
-			tag = SOV
-		}
-		has_global_flag = october_revolution
-		RUS = {
-			has_war_with = SOV
 		}
 	}	
+	enable = {
+		is_major = yes
+		is_faction_leader = yes
+		has_global_flag = october_revolution
+		country_exists = SOV
+	}
 	abort_when_not_enabled = yes
 	ai_strategy = {
 		type = alliance
@@ -201,62 +207,11 @@ majors_dont_want_protect_russian_minorities = {
 		value = -1000
 	}
 }
-GEO_caucasus_countries = {
-	enable = {
-		OR = {
-			original_tag = GEO
-			original_tag = AZR
-			original_tag = ARM
-		}
-		is_in_faction = no
-		is_subject = no
-		NOT = {
-			has_government = communism
-		}
-		RUS = {
-			has_war_with = SOV
-		}
-	}
-	
-	abort = {
-		OR = {
-			date > 1920.1.1
-			RUS = {
-				has_capitulated = yes
-			}
-			RUS = {
-				surrender_progress > 0.5
-			}
-		}
-	}
-	
-	ai_strategy = {
-		type = alliance
-		id = "RUS"
-		value = 500
-	}
-	ai_strategy = {
-		type = alliance
-		id = "GER"
-		value = -100
-	}
-	ai_strategy = {
-		type = alliance
-		id = "FRA"
-		value = -100
-	}
-	ai_strategy = {
-		type = alliance
-		id = "ENG"
-		value = -100
-	}
-}
 VLN_dont_join = {
 	allowed = {
 		tag = VLN
 	}
 	enable = {
-		tag = VLN
 		has_government = communism
 		is_subject = no
 	}
@@ -265,7 +220,7 @@ VLN_dont_join = {
 	
 	ai_strategy = {
 		type = alliance
-		id = "RUS"
+		id = "SIB"
 		value = -5000
 	}
 	ai_strategy = {
@@ -287,11 +242,12 @@ VLN_dont_invite = {
 	}
 	enable = {
 		VLN = {
+			exists = yes
 			has_government = communism
 		}
 		NOT = {
 			is_in_faction_with = VLN
-			has_country_leader_ideology = anarchist_communism
+			has_country_leader_ideology = anarchism
 			has_country_leader_ideology = anarcho_syndicalism
 		}
 	}
@@ -305,13 +261,16 @@ VLN_dont_invite = {
 	}
 }
 SOV_tsaritsyn_offensive = {
+	allowed = {
+		tag = RUS
+	}
 	enable = {
 		tag = SOV
-		has_war_with = RUS
+		has_war_with = SRA
 	}
 	abort = {
 		OR = {
-			NOT = { has_war_with = RUS }
+			NOT = { has_war_with = SRA }
 			AND = {
 				236 = { is_fully_controlled_by = SOV }
 				217 = { is_fully_controlled_by = SOV }
@@ -320,105 +279,477 @@ SOV_tsaritsyn_offensive = {
 		}
 	}
 	ai_strategy = {
-		type = put_unit_buffers
-		
-		order_id = 1
-		
-		# Tsarytsin
-		states = { 
-			217
-			236
-			265
+		type = front_unit_request
+		country_trigger = {
+			original_tag = RUS
+			has_country_flag = RUS_volunteer_army_tag
 		}
-		ratio = 0.1
-		area = europe
-		subtract_invasions_from_need = no
+		state = 217
+		state = 236
+		state = 265
+
+		value = 100
 	}
 }
-TRK_civil_war = {
+SOV_focus_on_sra = {
+	allowed = {
+		tag = RUS
+	}
 	enable = {
-		TAG = TRK
+		tag = SOV
+		has_war_with = SRA
 		OR = {
-			SOV = { has_war_with = RUS }
-			TRK = {
-				has_civil_war = yes
+			NOT = {
+				has_idea = SOV_war_in_the_caucasus_1
+			}
+			NOT = {
+				has_idea = SOV_war_in_the_caucasus_2
 			}
 		}
 	}
-	
-	abort = {	
-		is_faction_leader = no
-		is_in_faction = yes
-	}
-	
-	ai_strategy = {
-		type = alliance
-		id = "RUS"
-		value = -5000
+	abort = {
+		SRA = {
+			exists = no
+		}
 	}
 	ai_strategy = {
-		type = alliance
-		id = "SOV"
-		value = -5000
+		type = front_unit_request
+		country_trigger = {
+			original_tag = RUS
+			has_country_flag = RUS_volunteer_army_tag
+		}
+		value = 300
+	}
+	ai_strategy = {
+		type = front_unit_request
+		tag = DON
+		value = 300
 	}
 }
-BUK_KHI_civil_war = {
+SOV_sib_is_danger = {
+	allowed = {
+		tag = RUS
+	}
 	enable = {
-		OR = {
-			TAG = BUK
-			TAG = KHI
+		tag = SOV
+		has_war_with = SIB
+	}
+	abort = {
+		SIB = {
+			exists = no
 		}
-		OR = {
-			SOV = { has_war_with = RUS }
-			has_civil_war = yes
+	}
+	ai_strategy = {
+		type = front_unit_request
+		country_trigger = {
+			original_tag = RUS
+			has_country_flag = RUS_siberia_tag
 		}
-		NOT = {
-			has_government = communism
-		}	
-	}
-	
-	abort = {	
-		has_war = no
-		is_in_faction = yes
-	}
-	
-	ai_strategy = {
-		type = alliance
-		id = "RUS"
-		value = -5000
-	}
-	ai_strategy = {
-		type = alliance
-		id = "SOV"
-		value = -5000
-	}
-	ai_strategy = {
-		type = alliance
-		id = "TRK"
-		value = 2000
+		value = 100
 	}
 }
-TRK_civil_war_dont_join = {
+SOV_caucasus_rush_kuban = {
+	allowed = {
+		OR = {
+			tag = BSR
+			tag = STV
+			tag = TER
+		}
+	}
 	enable = {
-		TRK = {
-			is_faction_leader = yes
-		}	
-		NOT = {
-			TAG = BUK
-			TAG = KHI
+		has_war_with = KUB
+		KUB = {
+			has_capitulated = no
 		}
 	}
 	abort_when_not_enabled = yes
-	
+
 	ai_strategy = {
-		type = alliance
-		id = "TRK"
-		value = -200
+		type = front_control
+		state_trigger = {
+			state = 234
+		}
+		tag = KUB
+		priority = 9999
+		ratio = 0.9
+		ordertype = front
+		execution_type = rush
+		manual_attack = yes
+		execute_order = yes
+	}
+	ai_strategy = {
+		type = ignore_army_incompetence
+		value = 9999
+	}
+	# ai_strategy = {
+	# 	type = put_unit_buffers
+	# 	ratio = 0.1
+	# 	states = {
+	# 		941
+	# 	}
+	# 	subtract_fronts_from_need = no
+	# }
+	ai_strategy = {
+		type = front_unit_request
+		state = 234
+		value = 9999
+	}
+	ai_strategy = {
+		type = garrison
+		value = -1000
+	}
+}
+SOV_caucasus_garrison_kuban = {
+	allowed = {
+		OR = {
+			tag = BSR
+			tag = STV
+			tag = TER
+			tag = KUB
+		}
+	}
+	enable = {
+		is_subject_of = SOV
+		SRA = {
+			exists = no
+		}
+		OR = {
+			has_cosmetic_tag = KUB_black_sea_communism
+			has_cosmetic_tag = KUB_north_caucasus_communism
+		}
+	}
+	abort_when_not_enabled = yes
+
+	ai_strategy = {
+		type = put_unit_buffers
+		ratio = 0.8
+		states = {
+			233 234 235 579 940 
+		}
+		subtract_fronts_from_need = no
+	}
+}
+SOV_kom_is_danger = {
+	allowed = {
+		tag = RUS
+	}
+	enable = {
+		tag = SOV
+		has_war_with = KOM
+	}
+	abort = {
+		KOM = {
+			exists = no
+		}
+	}
+	ai_strategy = {
+		type = front_unit_request
+		country_trigger = {
+			original_tag = RUS
+			has_country_flag = RUS_komuch_tag
+		}
+		value = 100
+	}
+}
+SOV_north_is_danger = {
+	allowed = {
+		tag = RUS
+	}
+	enable = {
+		tag = SOV
+		has_war_with = RSO
+	}
+	abort = {
+		RSO = {
+			exists = no
+		}
+	}
+	ai_strategy = {
+		type = front_unit_request
+		country_trigger = {
+			original_tag = RUS
+			has_country_flag = RUS_northern_oblast
+		}
+		value = 50
+	}
+	ai_strategy = {
+		type = front_control
+		country_trigger = {
+			original_tag = RUS
+			has_country_flag = RUS_northern_oblast
+		}
+		priority = 50
+		ordertype = front
+		execution_type = balanced
+		manual_attack = yes
+		execute_order = yes
+	}
+}
+SOV_northwestern_army_front = {
+	allowed = {
+		tag = RUS
+	}
+	enable = {
+		tag = SOV
+		has_war_with = NWA
+	}
+	abort = {
+		NWA = {
+			exists = no
+		}
+	}
+	ai_strategy = {
+		type = front_unit_request
+		country_trigger = {
+			original_tag = RUS
+			has_country_flag = RUS_northwestern_army_tag
+		}
+		value = 100
+	}
+	ai_strategy = {
+		type = front_control
+		country_trigger = {
+			original_tag = RUS
+			has_country_flag = RUS_northwestern_army_tag
+		}
+		priority = 100
+		ordertype = front
+		execution_type = balanced
+		manual_attack = yes
+		execute_order = yes
+	}
+}
+SOV_estonian_front = {
+	allowed = {
+		tag = RUS
+	}
+	enable = {
+		tag = SOV
+		OR = {
+			has_war_with = EST
+			has_war_with = LAT
+			has_war_with = LIT
+		}
+	}
+	abort = {
+		EST = {
+			exists = no
+		}
+		LAT = {
+			exists = no
+		}
+		LIT = {
+			exists = no
+		}
+	}
+	ai_strategy = {
+		type = front_unit_request
+		tag = EST
+		value = 50
+	}
+	ai_strategy = {
+		type = front_unit_request
+		tag = LAT
+		value = 50
+	}
+	ai_strategy = {
+		type = front_unit_request
+		tag = LIT
+		value = 50
+	}
+}
+SOV_dont_ignore_ore = {
+	allowed = {
+		tag = RUS
+	}
+	enable = {
+		tag = SOV
+		has_war_with = ORE
+	}
+	abort = {
+		ORE = {
+			exists = no
+		}
+	}
+	ai_strategy = {
+		type = front_unit_request
+		tag = ORE
+		value = 20
+	}
+}
+SOV_dont_ignore_UCH = {
+	allowed = {
+		tag = RUS
+	}
+	enable = {
+		tag = SOV
+		has_war_with = UCH
+	}
+	abort = {
+		UCH = {
+			exists = no
+		}
+	}
+	ai_strategy = {
+		type = front_unit_request
+		tag = UCH
+		value = 20
+	}
+}
+SOV_ignore_caucasus_1 = {
+	allowed = {
+		is_russian_tag = yes
+	}
+	enable = {
+		OR = {
+			tag = SOV
+			# is_subject_of = SOV
+			# is_in_faction_with = SOV
+		}	
+		has_war_with = SRA
+		SOV = {
+			has_idea = SOV_war_in_the_caucasus_1
+		}	
+		DSR = {
+			exists = yes
+		}
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = front_unit_request
+		country_trigger = {
+			original_tag = RUS
+			has_country_flag = RUS_volunteer_army_tag
+		}
+		value = -9999
+	}
+}
+SOV_ignore_caucasus_2 = {
+	allowed = {
+		is_russian_tag = yes
+	}
+	enable = {
+		OR = {
+			tag = SOV
+			# is_subject_of = SOV
+			# is_in_faction_with = SOV
+		}	
+		has_war_with = SRA
+		SOV = {
+			has_idea = SOV_war_in_the_caucasus_2
+		}
+		DSR = {
+			exists = yes
+		}
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = front_unit_request
+		country_trigger = {
+			original_tag = RUS
+			has_country_flag = RUS_volunteer_army_tag
+		}
+		value = -9999
+	}
+	ai_strategy = {
+		type = front_unit_request
+		tag = DON
+		value = -9999
+	}
+}
+SOV_sra_front = {
+	allowed = {
+		tag = RUS
+	}
+	enable = {
+		tag = SOV
+		has_war_with = SRA
+	}
+	abort_when_not_enabled = yes
+
+	ai_strategy = {
+		type = front_unit_request
+		country_trigger = {
+			original_tag = RUS
+			has_country_flag = RUS_volunteer_army_tag
+		}
+		value = 100
+	}
+}
+SOV_POL_front = {
+	allowed = {
+		tag = RUS
+	}
+	enable = {
+		tag = SOV
+		has_war_with = POL
+		POL = {
+			is_subject = no
+		}
+	}
+	abort_when_not_enabled = yes
+
+	ai_strategy = {
+		type = front_unit_request
+		tag = POL
+		value = 100
+	}
+	ai_strategy = {
+		type = front_control
+		tag = POL
+		ratio = 0.25
+		ordertype = front
+		execution_type = balanced
+		manual_attack = yes
+	}
+}
+SOV_POL_danger_pol = {
+	allowed = {
+		tag = RUS
+	}
+	enable = {
+		tag = SOV
+		has_war_with = POL
+		POL = {
+			is_subject = no
+			OR = {
+				controls_state = 206
+				controls_state = 241
+				controls_state = 202
+				controls_state = 242
+			}
+		}
+	}
+	abort_when_not_enabled = yes
+
+	ai_strategy = {
+		type = front_unit_request
+		country_trigger = {
+			original_tag = RUS
+			has_country_flag = RUS_volunteer_army_tag
+		}
+		value = -20
+	}
+	ai_strategy = {
+		type = front_unit_request
+		country_trigger = {
+			original_tag = RUS
+			has_country_flag = RUS_volunteer_army_tag
+		}
+		value = -20
+	}
+	ai_strategy = {
+		type = front_unit_request
+		tag = POL
+		value = 100
 	}
 }
 SOV_hungaria_romanian_war = {
+	allowed = {
+		tag = RUS
+	}
 	enable = {
-		original_tag = SOV
+		tag = SOV
 		HUN = { has_war_with = ROM }
 		has_global_flag = ROM_HUN_war_1919
 	}
@@ -427,7 +758,7 @@ SOV_hungaria_romanian_war = {
 		OR = {
 			date > 1922.1.1
 			has_global_flag = ROM_HUN_war_1919_end
-			has_war_with = SOV
+			has_war_with = ROM
 			ROM = { exists = no is_subject_of = HUN }
 			HUN = { has_war = no }
 		}
@@ -440,8 +771,10 @@ SOV_hungaria_romanian_war = {
 	}	
 }
 HUN_hungaria_romanian_war = {
-	enable = {
+	allowed = {
 		original_tag = HUN
+	}
+	enable = {
 		has_war_with = ROM
 		has_global_flag = ROM_HUN_war_1919
 	}
@@ -455,6 +788,7 @@ HUN_hungaria_romanian_war = {
 			HUN = { has_war = no }
 		}
 	}
+	abort_when_not_enabled = yes
 	
 	ai_strategy = {
 		type = alliance
@@ -463,8 +797,10 @@ HUN_hungaria_romanian_war = {
 	}	
 }
 dont_join_red_guard_baku_commune = {
-	enable = {
+	allowed = {
 		original_tag = AZR
+	}
+	enable = {
 		OR = {
 			has_cosmetic_tag = AZR_BAK
 			has_cosmetic_tag = AZR_BAK_communism
@@ -497,5 +833,130 @@ dont_join_red_guard_baku_commune = {
 		type = alliance
 		id = "RUS"
 		value = -2000
+	}
+	ai_strategy = {
+		type = alliance
+		id = "SIB"
+		value = -2000
+	}
+}
+
+default_unit_production = {
+	allowed = {
+		original_tag = RUS
+	}
+	enable = {
+		tag = SOV
+	}
+	abort = { always = no }
+	
+	ai_strategy = {
+		type = role_ratio
+		id = paratroopers
+		value = 0
+	}
+
+	ai_strategy = {
+		type = role_ratio
+		id = mountaineers
+		value = 4
+	}
+
+	ai_strategy = {
+		type = role_ratio
+		id = marines
+		value = 0
+	}
+
+	ai_strategy = {
+		type = role_ratio
+		id = armor
+		value = -9999
+	}
+
+	ai_strategy = {
+		type = role_ratio
+		id = infantry
+		value = 80
+	}
+	
+	#Air unit factors
+	ai_strategy = {
+		type = unit_ratio
+		id = fighter
+		value = 80
+	}
+	
+	ai_strategy = {
+		type = unit_ratio
+		id = cas
+		value = 5
+	}
+	
+	ai_strategy = {
+		type = unit_ratio
+		id = tactical_bomber
+		value = 5
+	}
+	
+	ai_strategy = {
+		type = unit_ratio
+		id = strategic_bomber
+		value = 5
+	}
+	
+	ai_strategy = {
+		type = unit_ratio
+		id = naval_bomber
+		value = 5
+	}
+	
+	
+	# Naval unit factors
+	ai_strategy = {
+		type = unit_ratio
+		id = capital_ship
+		value = 10
+	}
+
+	ai_strategy = {
+		type = unit_ratio
+		id = submarine
+		value = 10
+	}
+
+	ai_strategy = {
+		type = unit_ratio
+		id = screen_ship
+		value = 40
+	}
+
+	ai_strategy = {
+		type = unit_ratio
+		id = convoy
+		value = 15
+	}
+	
+	ai_strategy = {
+		type = equipment_production_factor
+		id = fighter
+		value = 35
+	}
+	
+	ai_strategy = {
+		type = equipment_production_factor
+		id = infantry
+		value = 40
+	}
+	
+	ai_strategy = {
+		type = equipment_production_factor
+		id = artillery
+		value = 25
+	}
+	ai_strategy = {
+		type = equipment_production_factor
+		id = armor
+		value = -9999
 	}
 }

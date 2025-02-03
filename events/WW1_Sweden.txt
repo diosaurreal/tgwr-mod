@@ -40,8 +40,10 @@ country_event = {
 		NOT = {
 			has_government = communism
 		}
-		has_global_flag = finnish_civil_war
-		FIN = { has_civil_war = yes }
+		OR = {
+			has_global_flag = finnish_civil_war
+			FIN = { has_civil_war = yes }
+		}
 		any_country = {
 			original_tag = FIN
 			owns_state = 145
@@ -50,8 +52,13 @@ country_event = {
 	mean_time_to_happen = { days = 10 }
 	option = {
 		name = ww1_sweden.2.a
+		custom_effect_tooltip = historical_tt
 		transfer_state = 145
 		set_country_flag = SWE_aland
+		add_named_threat = {
+			name = SWE_aland
+			threat = 1
+		}
 		ai_chance = { factor = 100 }
 	}
 	option = {
@@ -60,41 +67,54 @@ country_event = {
 	}
 }
 
-#Return Aland
+#German Occupation of Aland
 country_event = {
 	id = ww1_sweden.3
 	title = ww1_sweden.3.t
 	desc = ww1_sweden.3.d
-	picture = GFX_report_event_generic_battle
+	picture = GFX_report_event_german_inspect_troops
 	fire_only_once = yes
 	trigger = {
-		tag = SWE
-		has_war = no
-		has_country_flag = SWE_aland
-		has_global_flag = finnish_civil_war
-		FIN = { has_civil_war = no exists = yes }
-		owns_state = 145 
+		tag = GER
+		has_global_flag = ostsee_division
+		any_other_country = {
+			original_tag = FIN
+			NOT = { has_war_with = ROOT }
+			has_idea = GER_idea_german_military_advisors
+		}
+		any_other_country = {
+			has_country_flag = SWE_aland
+			owns_state = 145
+			NOT = { has_war_with = ROOT }
+			NOT = { is_in_faction_with = ROOT }
+		}
+		has_capitulated = no
+		NOT = {
+			has_idea = idea_armistice
+			has_idea = idea_army_restrictions
+			has_global_flag = GER_capitulation
+		}
 	}
 	mean_time_to_happen = { days = 10 }
 	option = {
 		name = ww1_sweden.3.a
-		FIN = { transfer_state = 145 }
 		ai_chance = { factor = 100 }
+		custom_effect_tooltip = historical_tt
+		hidden_effect = {
+			random_other_country = {
+				limit = {
+					owns_state = 145
+				}
+				country_event = {
+					id = ww1_sweden.29
+					hours = 3
+				}
+			}
+		}
+		transfer_state = 145
 	}
 	option = {
 		name = ww1_sweden.3.b
-		GER = {
-			add_opinion_modifier = {
-			target = SWE
-			modifier = small_decrease
-			}
-		}
-		FIN = {
-			add_opinion_modifier = {
-				target = SWE
-				modifier = large_decrease
-			}
-		}
 		ai_chance = { factor = 0 }
 	}
 }
@@ -114,11 +134,17 @@ country_event = {
 		}
 		unlock_national_focus = SWE_courtyard_speech
 		SWE_riksdag = {
-			add_country_leader_role = {
-				promote_leader = yes
-				country_leader = {					
-					ideology = conservatism
-					traits = { cabinet_crisis }
+			if = {
+				limit = { has_ideology = conservatism }
+				promote_character = conservatism
+			}
+			else = {
+				add_country_leader_role = {
+					promote_leader = yes
+					country_leader = {					
+						ideology = conservatism
+						traits = { cabinet_crisis }
+					}
 				}
 			}
 		}
@@ -802,5 +828,364 @@ country_event = {
 				ENG = { puppet = NOR }
 			}
 		}				
+	}
+}
+
+# Sweden notices German occuation of Aland
+country_event = {
+	id = ww1_sweden.29
+	title = ww1_sweden.29.t
+	desc = ww1_sweden.29.d
+	picture = GFX_report_event_german_inspect_troops
+	is_triggered_only = yes
+	option = {
+		name = ww1_sweden.29.a
+		custom_effect_tooltip = historical_tt
+		add_political_power = -25
+		ai_chance = { base = 100 }
+	}
+	option = {
+		name = ww1_sweden.29.b
+		send_embargo = FROM
+		ai_chance = { base = 0 }
+	}
+	option = {
+		name = ww1_sweden.29.c
+		trigger = {
+			is_subject = no
+			has_capitulated = no
+			NOT = {
+				is_in_faction_with = FROM
+				has_idea = idea_armistice
+				has_idea = idea_army_restrictions
+			}
+		}
+		hidden_effect = {
+			add_opinion_modifier = {
+				target = FROM
+				modifier = aland_crisis
+			}
+			FROM = {
+				add_opinion_modifier = {
+					target = ROOT
+					modifier = aland_crisis
+				}
+			}
+		}
+		add_named_threat = {
+			threat = 5
+			name = aland_crisis
+		}
+		create_wargoal = {
+			target = FROM
+			type = take_core_state
+		}
+		ai_chance = { base = 0 }
+	}
+}
+
+# Decision on Aland
+country_event = {
+	id = ww1_sweden.30
+	title = ww1_sweden.30.t
+	desc = ww1_sweden.30.desc
+	picture = GFX_report_event_generic_conference
+	trigger = {
+		OR = {
+			tag = FRA tag = GER
+		}
+		is_subject = no
+		has_war = no
+		has_country_flag = great_war_winner
+		has_global_flag = interbellum
+		OR = {
+			owns_state = 145
+			145 = { owner = { has_country_flag = SWE_aland } }
+		}
+	}
+	fire_only_once = yes
+	option = {
+		name = ww1_sweden.30.a
+		trigger = {
+			any_country = {
+				original_tag = FIN
+				NOT = { has_war_with = ROOT }
+				OR = {
+					NOT = { has_government = communism }
+					has_government = ROOT
+				}
+			}
+		}
+		custom_effect_tooltip = historical_tt
+		random_other_country = {
+			limit = {
+				original_tag = FIN
+				NOT = { has_war_with = ROOT }
+				OR = {
+					NOT = { has_government = communism }
+					has_government = ROOT
+				}
+			}
+			transfer_state = 145
+			add_opinion_modifier = {
+				target = ROOT
+				modifier = transfer_aland
+			}
+		}
+		145 = { set_demilitarized_zone = yes }
+		news_event = { id = ww1_sweden.31 hours = 3 }
+		ai_chance = { base = 100 }
+	}
+	option = {
+		name = ww1_sweden.30.b
+		trigger = {
+			any_country = {
+				original_tag = SWE
+				NOT = { has_war_with = ROOT }
+				OR = {
+					NOT = { has_government = communism }
+					has_government = ROOT
+				}
+			}
+		}
+		random_other_country = {
+			limit = {
+				original_tag = SWE
+				NOT = { has_war_with = ROOT }
+				OR = {
+					NOT = { has_government = communism }
+					has_government = ROOT
+				}
+			}
+			transfer_state = 145
+			add_opinion_modifier = {
+				target = ROOT
+				modifier = transfer_aland
+			}
+		}
+		145 = { set_demilitarized_zone = yes }
+		news_event = { id = ww1_sweden.31 hours = 3 }
+		ai_chance = {
+			base = 75
+			modifier = {
+				factor = 0
+				is_historical_focus_on = yes
+				any_country = {
+					original_tag = FIN
+					NOT = { has_war_with = ROOT }
+					OR = {
+						NOT = { has_government = communism }
+						has_government = ROOT
+					}
+				}
+			}
+		}
+	}
+	option = {
+		name = ww1_sweden.30.c
+		trigger = {
+			any_country = {
+				owns_state = 195
+				NOT = { has_war_with = ROOT }
+				OR = {
+					NOT = { has_government = communism }
+					has_government = ROOT
+				}
+			}
+		}
+		random_other_country = {
+			limit = {
+				owns_state = 195
+				NOT = { has_war_with = ROOT }
+				OR = {
+					NOT = { has_government = communism }
+					has_government = ROOT
+				}
+			}
+			transfer_state = 145
+			add_opinion_modifier = {
+				target = ROOT
+				modifier = transfer_aland
+			}
+		}
+		145 = { set_demilitarized_zone = yes }
+		news_event = { id = ww1_sweden.31 hours = 3 }
+		ai_chance = {
+			base = 20
+			modifier = {
+				factor = 0
+				is_historical_focus_on = yes
+				any_country = {
+					original_tag = FIN
+					NOT = { has_war_with = ROOT }
+					OR = {
+						NOT = { has_government = communism }
+						has_government = ROOT
+					}
+				}
+			}
+		}
+	}
+	option = {
+		name = ww1_sweden.30.d
+		trigger = { owns_state = 145 }
+		add_political_power = -60
+		add_stability = -0.02
+		news_event = { id = ww1_sweden.31 hours = 3 }
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				is_historical_focus_on = yes
+				any_country = {
+					original_tag = FIN
+					NOT = { has_war_with = ROOT }
+					OR = {
+						NOT = { has_government = communism }
+						has_government = ROOT
+					}
+				}
+			}
+		}
+	}
+}
+
+# Decision on Aland news
+news_event = {
+	id = ww1_sweden.31
+	title = ww1_sweden.31.t
+	desc = {
+		text = ww1_sweden.31.d
+		trigger = {
+			145 = {
+				owner = { original_tag = FIN }
+			}
+		}
+	}
+	desc = {
+		text = ww1_sweden.31.e
+		trigger = {
+			145 = {
+				owner = { original_tag = SWE }
+			}
+		}
+	}
+	desc = {
+		text = ww1_sweden.31.f
+		trigger = {
+			145 = {
+				owner = { is_russian_tag = yes }
+			}
+		}
+	}
+	desc = {
+		text = ww1_sweden.31.g
+		trigger = {
+			145 = {
+				owner = { original_tag = GER }
+			}
+		}
+	}
+	picture = GFX_news_event_soldiers_marching
+	major = yes
+	is_triggered_only = yes
+	option = {
+		name = ww1_sweden.31.a
+		trigger = {
+			OR = {
+				owns_state = 145
+				tag = FROM
+			}
+		}
+	}
+	option = {
+		name = ww1_sweden.31.b
+		trigger = {
+			NOT = { owns_state = 145 }
+			OR = {
+				original_tag = SWE
+				original_tag = FIN
+			}
+		}
+	}
+	option = {
+		name = ww1_sweden.31.c
+		trigger = {
+			NOT = {
+				owns_state = 145
+				original_tag = SWE
+				original_tag = FIN
+				tag = FROM
+			}
+		}
+	}
+}
+
+#Leninist influence in Commie Sweden after successful Rus Rev
+country_event = {
+	id = ww1_sweden.32
+	title = ww1_sweden.32.t
+	desc = ww1_sweden.32.d
+	picture = GFX_report_event_lenin_gorki
+	trigger = {
+		original_tag = SWE
+		has_government = communism
+		country_exists = SOV
+		NOT = { 
+			country_exists = RUS 
+			has_country_flag = great_war_loser
+		}
+		has_global_flag = interbellum
+		SOV = {
+			has_government = communism
+		}
+	}
+	fire_only_once = yes
+	#we will keep our mother of scandinavia!
+	option = {
+		name = ww1_sweden.32.a
+		add_political_power = 50
+		add_stability = 0.05
+		SOV = {
+			add_opinion_modifier = {
+				target = ROOT
+				modifier = HOI4TGW_Opinion_hostile_diplomatic_relations
+			}
+		}
+		hidden_effect = {
+			add_popularity = {
+				ideology = democratic
+				popularity = 0.05
+			}
+		}
+		ai_chance = {
+			base = 20
+		}
+	}
+	#it's time for a change in direction
+	option = {
+		name = ww1_sweden.32.b
+		retire_character = SWE_elise_ottesen
+		promote_character = SWE_hugo_sillen
+		add_war_support = 0.10
+		add_opinion_modifier = {
+			target = SOV
+			modifier = HOI4TGW_Opinion_diplomats_bonus
+		}
+		SOV = {
+			add_opinion_modifier = {
+				target = ROOT
+				modifier = HOI4TGW_Opinion_diplomats_bonus
+			}
+		}
+		ai_chance = {
+			base = 80
+			modifier = {
+				factor = 100
+				GER = {
+					has_country_flag = great_war_winner
+				}
+			}
+		}
 	}
 }

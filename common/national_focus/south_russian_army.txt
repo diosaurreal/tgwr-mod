@@ -1,0 +1,831 @@
+focus_tree = {
+	id = south_russian_army_focus
+	country = {
+		factor = 0
+		modifier = {
+			add = 10
+			tag = SRA		
+		}
+	}
+		
+	reset_on_civilwar = no
+
+	initial_show_position = {
+		focus = SRA_ice_march
+	}
+	
+	#ADMINISTRATIVE BRANCH
+	focus = {
+		id = SRA_ice_march
+		icon = GFX_focus_spr_torchbearers_of_tomorrow
+		x = 0
+		y = 0
+		cost = 1
+		search_filters = {
+			FOCUS_FILTER_POLITICAL
+		}
+		ai_will_do = {
+			factor = 100
+		}
+		completion_reward = {
+			add_political_power = 50
+			add_stability = 0.05
+			add_war_support = 0.05
+			activate_mission = SRA_first_kuban_campaign
+			add_timed_idea = {
+				idea = SRA_kuban_campaign
+				days = 60
+			}	
+		}
+	}
+
+	focus = {
+		id = SRA_special_meeting
+		icon = GFX_focus_ETH_re-convene_the_parliament
+		prerequisite = { 
+			focus = SRA_ice_march
+		}
+		available = {
+			controls_state = 234
+		}
+		x = -4
+		y = 1
+		relative_position_id = SRA_ice_march
+		cost = 2
+		search_filters = {  
+			FOCUS_FILTER_POLITICAL 
+		}
+
+		completion_reward = {
+			country_event = ww1_sra.15
+		}
+
+		ai_will_do = {
+			factor = 100
+		}
+	}
+
+	focus = {
+		id = SRA_negotiations_with_kuban_rada
+		icon = GFX_focus_SOV_transcaucasian_republic
+		prerequisite = { 
+			focus = SRA_special_meeting
+		}
+		available = {
+
+		}
+		bypass = {
+			has_country_flag = sra_no_rada
+		}
+		x = 1
+		y = 1
+		relative_position_id = SRA_special_meeting
+		cost = 5
+		search_filters = {  
+			FOCUS_FILTER_ANNEXATION
+		}
+
+		ai_will_do = {
+			factor = 750 #alliance should be prior to anything else
+		}
+
+		completion_reward = {
+			custom_effect_tooltip = SRA_kuban_question_tt
+			set_country_flag = SRA_KUB_interactions
+			set_variable = {
+				var = SRA_cossack_loyalty
+				value = 30
+			}
+			set_variable = {
+				var = SRA_cossack_autonomy
+				value = 0
+			}
+			set_variable = {
+				var = SRA_cossack_favours
+				value = 20
+			}
+		}
+	}
+	focus = {
+		id = SRA_foreign_relations
+		icon = GFX_goal_generic_intelligence_exchange
+		prerequisite = { 
+			focus = SRA_special_meeting
+		}
+		available = {
+
+		}
+		x = -1
+		y = 1
+		 relative_position_id = SRA_special_meeting
+		cost = 5
+		search_filters = {  
+			FOCUS_FILTER_POLITICAL 
+		}
+		completion_reward = {
+			set_country_flag = SRA_foreign_relation_decisions
+			custom_effect_tooltip = SRA_foreign_relations_tt_desc
+		}
+	}
+	
+	focus = {
+		id = SRA_afsr
+		icon = GFX_focus_rus_yunarmiya
+		prerequisite = { 
+			focus = SRA_foreign_relations
+		}
+		prerequisite = { 
+			focus = SRA_negotiations_with_kuban_rada
+		}
+		available = {
+
+		}
+		x = 1
+		y = 1
+		relative_position_id = SRA_foreign_relations
+		cost = 5
+		search_filters = {  
+			FOCUS_FILTER_POLITICAL 
+		}
+
+		completion_reward = {
+			if = {
+				limit = {
+					DON = {
+						exists = yes
+						has_capitulated = no
+						is_subject = no
+						NOT = {
+							has_government = communism
+							has_war_with = ROOT
+							is_in_faction_with = SOV
+						}
+					}
+				}
+				DON = {
+					country_event = {
+						id = ww1_sra.2
+						hours = 6
+					}
+				}
+				else = {
+					ROOT = {
+						country_event = {
+							id = ww1_sra.3
+							hours = 6
+						}
+					}
+				}
+			}
+		}
+	}
+	focus = {
+		id = SRA_establish_governor_generals
+		icon = GFX_focus_generic_annex_country
+		prerequisite = { 
+			focus = SRA_afsr
+		}
+		x = 3
+		y = 1
+		relative_position_id = SRA_afsr
+		cost = 5
+		search_filters = {  
+			FOCUS_FILTER_POLITICAL 
+		}
+		completion_reward = {
+			unlock_decision_tooltip = SRA_core_states
+			set_country_flag = vol_core_states
+		}
+	}
+	focus = {
+		id = SRA_moscow_directive
+		icon = GFX_focus_ger_strike_at_the_source
+		prerequisite = { 
+			focus = SRA_afsr
+		}
+		available = {
+
+		}
+		x = -1
+		y = 1
+		relative_position_id = SRA_afsr
+		cost = 5
+		search_filters = {  
+			FOCUS_FILTER_POLITICAL 
+		}
+		mutually_exclusive = { 
+			focus = SRA_ufa_directive
+		}
+		completion_reward = {
+			activate_mission = SRA_moscow_directive_absolute
+			add_timed_idea = {
+				idea =  SRA_moscow_directive_1
+				days = 150
+			}
+			custom_effect_tooltip = SRA_moscow_directive_absolute_tt_desc
+		}
+		ai_will_do = {
+			factor = 0
+			modifier = {
+				add = 1000
+				has_army_manpower = {
+					size > 250000
+				}
+				OR = {
+					has_country_leader = {
+						character = RUS_anton_denikin
+					}
+					has_country_leader = {
+						character = RUS_lavr_kornilov
+					}
+				}
+			}
+		}
+	}
+
+	focus = {
+		id = SRA_ufa_directive
+		icon = GFX_focus_planning_bonus
+		prerequisite = { 
+			focus = SRA_afsr
+		}
+		available = {
+			SIB = {
+				exists = yes
+				is_puppet = no
+				NOT = {
+					has_government = communism
+					has_war_with = ROOT
+				}
+			}
+		}
+		x = 1
+		y = 1
+		relative_position_id = SRA_afsr
+		cost = 5
+		search_filters = {  
+			FOCUS_FILTER_POLITICAL 
+		}
+		mutually_exclusive = { 
+			focus = SRA_moscow_directive
+		}
+		completion_reward = {
+			activate_mission = SRA_ufa_directive
+			add_timed_idea = {
+				idea =  SRA_UFA_directive_1
+				days = 100
+			}
+			custom_effect_tooltip = SRA_ufa_directive_tt_desc
+		}
+	}
+	focus = {
+		id = SRA_ukrainian_question
+		icon = GFX_focus_POL_ukrainian_army
+		prerequisite = { 
+			focus = SRA_afsr
+		}
+		will_lead_to_war_with = UKR
+		available = {
+			NOT = {
+				has_war_with = UKR
+			}
+			UKR = {
+				NOT = {
+					has_government = communism
+				}
+				has_war_with = SOV
+				is_puppet = no
+				exists = yes
+			}
+		}
+		completion_reward = {
+			country_event = {
+				id = ww1_sra.23
+				days = 2
+			}
+		}
+		x = -3
+		y = 1
+		relative_position_id = SRA_afsr
+		cost = 5
+		search_filters = {  
+			FOCUS_FILTER_POLITICAL 
+		}
+	}
+
+	focus = {
+		id = SRA_special_council
+		icon = GFX_focus_generic_industrialists
+		prerequisite = { 
+			focus = SRA_special_meeting
+		}
+		available = {
+
+		}
+		x = -4
+		y = 1
+		relative_position_id = SRA_special_meeting
+		cost = 5
+		search_filters = {  
+			FOCUS_FILTER_POLITICAL 
+		}
+
+		completion_reward = {
+			add_political_power = 150
+			add_ideas = free_trade
+			if = {
+				limit = {
+					has_idea = SRA_no_civ_government_1
+				}
+				swap_ideas = {
+					remove_idea = SRA_no_civ_government_1
+					add_idea = SRA_no_civ_government_2
+				}
+			}
+		}
+
+		ai_will_do = {
+			factor = 100
+		}
+	}
+
+	focus = {
+		id = SRA_osvag
+		icon = GFX_goal_generic_propaganda
+		prerequisite = { 
+			focus = SRA_special_council
+		}
+		x = -1
+		y = 1
+		relative_position_id = SRA_special_council
+		cost = 5
+		search_filters = {  
+			FOCUS_FILTER_ANNEXATION
+		}
+
+		ai_will_do = {
+			factor = 100
+		}
+
+		completion_reward = {
+			add_ideas = SRA_osvag_idea
+		}
+	}
+
+	focus = {
+		id = SRA_agrarian_question
+		icon = GFX_focus_generic_farmland
+		prerequisite = { 
+			focus = SRA_special_council
+		}
+		available = {
+			
+		}
+		x = 1
+		y = 1
+		relative_position_id = SRA_special_council
+		cost = 5
+		search_filters = {  
+			FOCUS_FILTER_ANNEXATION
+		}
+
+		ai_will_do = {
+			factor = 100
+		}
+
+		completion_reward = {
+			effect_tooltip = {
+				swap_ideas = {
+					remove_idea = SRA_agrarian_question_idea_1 
+					add_idea = SRA_agrarian_question_idea_2 
+				}
+			}
+			hidden_effect = {
+				remove_ideas = SRA_agrarian_question_idea_1 
+				add_timed_idea = {
+					idea = SRA_agrarian_question_idea_2 
+					days = 90
+				}
+			}
+			custom_effect_tooltip = sra_agrarian_reform_tt
+		}
+	}
+
+	focus = {
+		id = SRA_monarchist_press
+		icon = GFX_focus_generic_treaty
+		prerequisite = { 
+			focus = SRA_osvag
+		}
+		available = {
+			
+		}
+		x = 0
+		y = 1
+		relative_position_id = SRA_osvag
+		cost = 5
+		search_filters = {  
+			FOCUS_FILTER_ANNEXATION
+		}
+
+		ai_will_do = {
+			factor = 100
+		}
+
+		completion_reward = {
+			add_popularity = {
+				ideology = neutrality
+				popularity = 0.15
+			}
+			add_war_support = 0.1
+			add_political_power = 100
+		}
+	}
+
+	focus = {
+		id = SRA_allied_intervention
+		icon = GFX_goal_generic_alliance
+		prerequisite = { 
+			focus = SRA_ice_march
+		}
+		available = {
+			NOT = {
+				GER = {
+					has_country_flag = great_war_winner
+				}
+			}
+			has_completed_focus = SRA_special_meeting
+		}
+		x = 0
+		y = 1
+		relative_position_id = SRA_ice_march
+		cost = 5
+		search_filters = {  
+			FOCUS_FILTER_ANNEXATION
+		}
+
+		completion_reward = {
+			ENG = {
+				country_event = ww1_sra.6
+			}
+			USA = {
+				country_event = ww1_sra.6
+			}
+			FRA = {
+				country_event = ww1_sra.6
+			}
+		}
+	}
+	
+	focus = {
+		id = SRA_british_training_mission
+		icon = GFX_focus_generic_commonwealth_build_infantry
+		prerequisite = { 
+			focus = SRA_allied_intervention
+		}
+		prerequisite = { 
+			focus = SRA_rehabilitate_officers
+		}
+		available = {
+			NOT = {
+				ENG = {
+					has_country_flag = great_war_loser
+				}
+			}
+		}
+		completion_reward = {
+			add_ideas = SRA_british_training_idea
+			army_experience = 50
+		}
+		x = 0
+		y = 2
+		relative_position_id = SRA_allied_intervention
+		cost = 5
+		search_filters = {  
+			FOCUS_FILTER_ANNEXATION
+		}
+	}
+
+	focus = {
+		id = SRA_open_up_mobilization
+		icon = GFX_focus_rus_volunteer_army
+		prerequisite = { 
+			focus = SRA_ice_march 
+		}
+		available = {
+			OR = {
+				# because those are nearby states with enough manpower to mobilize and player can go in different directions
+				controls_state = 218
+				controls_state = 234
+				controls_state = 235
+				controls_state = 245
+				controls_state = 579
+			}
+		}
+		x = 4
+		y = 1
+		relative_position_id = SRA_ice_march
+		cost = 3
+		search_filters = {  
+			FOCUS_FILTER_POLITICAL 
+		}
+		
+		completion_reward = {
+			swap_ideas = {
+				remove_idea = volunteer_only
+				add_idea = extensive_conscription
+			}
+			add_timed_idea = {
+				idea = SRA_opened_mobilization
+				days = 60
+			}
+			division_template = {
+				name = "Mobilizovannaya Diviziya"
+				is_locked = no
+				force_allow_recruiting = yes
+				regiments = {
+					infantry = { x = 0 y = 0 }
+					infantry = { x = 0 y = 1 }
+					infantry = { x = 0 y = 2 }
+				}
+				support = {
+					recon = { x = 0 y = 0 }
+					engineer = { x = 0 y = 1 }
+					artillery = { x = 0 y = 2 }
+				}
+			}
+			random_controlled_state = {
+				create_unit = {
+					division = "division_template = \"Mobilizovannaya Diviziya\" start_experience_factor = 0.2 start_equipment_factor = 1.0"
+					owner = ROOT
+					count = 10
+				}
+			}
+			unlock_decision_category_tooltip = SRA_army_recruitement
+		}
+		ai_will_do = {
+			factor = 100
+			modifier = {
+				factor = 1000
+				has_army_manpower = {
+					size < 30000
+				}
+			}
+		}
+	}
+
+	focus = {
+		id = SRA_rehabilitate_officers
+		icon = GFX_focus_RUS_army_officers
+		prerequisite = { 
+			focus = SRA_open_up_mobilization
+		}
+		x = 0
+		y = 1
+		relative_position_id = SRA_open_up_mobilization
+		cost = 5
+		search_filters = {  
+			FOCUS_FILTER_POLITICAL 
+		}
+
+		completion_reward = {
+			add_command_power = 50
+			army_experience = 100
+			unlock_decision_tooltip = SRA_rehabilitate_officers
+		}
+	}
+
+	focus = {
+		id = SRA_state_guard
+		icon = GFX_goal_generic_military_sphere
+		prerequisite = { 
+			focus = SRA_open_up_mobilization
+		}
+		x = -2
+		y = 1
+		relative_position_id = SRA_open_up_mobilization
+		cost = 5
+		search_filters = {  
+			FOCUS_FILTER_POLITICAL 
+		}
+
+		completion_reward = {
+			add_ideas = SRA_state_guard
+		}
+	}
+
+	focus = {
+		id = SRA_expand_azbuka
+		icon = GFX_focus_generic_secret_service_agency
+		prerequisite = { 
+			focus = SRA_open_up_mobilization
+		}
+		x = 2
+		y = 1
+		relative_position_id = SRA_open_up_mobilization
+		cost = 5
+		search_filters = {  
+			FOCUS_FILTER_POLITICAL 
+		}
+
+		completion_reward = {
+			#add partisan fighting decisions
+			every_possible_country = {
+				limit = {
+					has_character = RUS_vasily_shulgin
+				}
+				RUS_vasily_shulgin = {
+					set_nationality = ROOT
+					hidden_effect = {
+						remove_advisor_role = {
+							slot = political_advisor
+						}
+					}			
+					add_advisor_role = {
+						advisor = {
+							slot = political_advisor
+							idea_token = SRA_vasily_shulgin
+							traits  = {
+								special_envoy
+							}
+						}
+					}		
+				}		
+			}
+			if = {
+				limit = {
+					has_dlc = "La Resistance"
+				}
+				create_intelligence_agency = {
+					name = "Azbuka" 
+					icon = "GFX_intelligence_agency_logo_rus" 
+				}		
+			}
+		}
+	}
+
+	focus = {
+		id = SRA_counter_intel
+		icon = GFX_focus_SWI_embrace_rote_drei
+		prerequisite = { 
+			focus = SRA_expand_azbuka
+		}
+		x = 0
+		y = 1
+		relative_position_id = SRA_expand_azbuka
+		cost = 5
+		search_filters = {  
+			FOCUS_FILTER_POLITICAL 
+		}
+
+		completion_reward = {
+			add_ideas = SRA_counter_intelligence
+			upgrade_intelligence_agency = upgrade_passive_defense
+		}
+	}
+ 
+	focus = {
+		id = SRA_question_kuban_autonomy
+		icon = GFX_focus_convention
+		prerequisite = { 
+			focus = SRA_rehabilitate_officers
+		}
+		available = {
+			OR = {
+				has_idea = SRA_kuban_rada_1
+				has_idea = SRA_kuban_rada_2
+			}
+		}
+		x = -2
+		y = 2
+		relative_position_id = SRA_open_up_mobilization
+		cost = 5
+		search_filters = {  
+			FOCUS_FILTER_POLITICAL 
+		}
+
+		completion_reward = {
+			if = {
+				limit = {
+					has_idea = SRA_kuban_rada_1
+				}
+				remove_ideas = SRA_kuban_rada_1
+			}
+			else = {
+				remove_ideas = SRA_kuban_rada_2
+			}
+			custom_effect_tooltip = sra_no_rada_interactions_tt
+		}
+		ai_will_do = {
+			factor = 0
+			modifier = {
+				add = 1000
+				has_country_flag = SRA_rebellious_rada		
+			}
+		}
+	}
+
+	focus = {
+		id = SRA_reorganize_don_army
+		icon = GFX_focus_generic_strike_at_democracy1
+		prerequisite = { 
+			focus = SRA_rehabilitate_officers
+		}
+		available = {
+			OR = {
+				has_idea = SRA_cossack_distrust
+				has_character = RUS_pyotr_krasnov
+			}			
+		}
+		x = 0
+		y = 2
+		relative_position_id = SRA_open_up_mobilization
+		cost = 5
+		search_filters = {  
+			FOCUS_FILTER_POLITICAL 
+		}
+
+		completion_reward = {
+			remove_ideas = SRA_cossack_distrust
+			RUS_pyotr_krasnov = {
+				set_nationality = RXL
+			}	
+		}
+	}
+	
+	focus = {
+		id = SRA_rearm_navy
+		icon = GFX_focus_generic_cruiser2
+		x = 4
+		y = 1
+		relative_position_id = SRA_open_up_mobilization
+		prerequisite = { 
+			focus = SRA_open_up_mobilization
+		}
+		cost = 5
+		search_filters = {  
+			FOCUS_FILTER_NAVY_XP
+		}
+		available = {
+			has_country_leader = {
+				character = RUS_pyotr_wrangel
+			}
+			NOT = {
+				has_idea = SRA_marching_army
+			}
+		}
+		completion_reward = {
+			custom_effect_tooltip = SRA_rearm_navy_tt
+			hidden_effect = {
+				load_oob = "SRA_wrangels_fleet"
+			}
+		}
+	}
+
+	focus = {
+		id = SRA_fortify_crimea
+		icon = GFX_focus_otto_naval_train
+		prerequisite = { 
+			focus = SRA_rearm_navy 
+		}
+		available = {
+			controls_state = 137
+			controls_state = 955
+		}
+		x = 0
+		y = 1
+		relative_position_id = SRA_rearm_navy
+		cost = 5
+		search_filters = {  
+			FOCUS_FILTER_NAVY_XP
+		}
+		
+		completion_reward = {
+			137 = {
+				add_building_construction = {
+					type = bunker
+					level = 3
+					province = 3722
+					instant_build = yes
+				}
+				add_building_construction = {
+					type = bunker
+					level = 3
+					province = 9680
+					instant_build = yes
+				}
+				add_building_construction = {
+					type = bunker
+					level = 3
+					province = 9718
+					instant_build = yes
+				}
+				add_building_construction = {
+					type = air_base
+					level = 1
+					instant_build = yes
+				}	
+			}
+		}
+	}
+}

@@ -1,0 +1,297 @@
+add_namespace = ww1_crete
+add_namespace = ww1_samos
+add_namespace = ww1_ikaria
+add_namespace = ww1_pontos
+
+### CRETE
+###Venizelos leaves for Greece!###(Probably the only event for Crete lmao maybe i'll add dragoumis later)
+country_event = {
+	id = ww1_crete.1
+	title = ww1_crete.1.t
+	desc = ww1_crete.1.d
+	picture = GFX_report_venizelos_speech
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_crete.1.a
+		promote_character = CRE_antonis_michelidakis
+	}	
+}
+
+### IKARIA
+# Ikarian revolt 1912
+country_event = {
+	id = ww1_ikaria.1
+	title = ww1_ikaria.1.t
+	desc = ww1_ikaria.1.d
+	fire_only_once = yes
+	picture = GFX_report_event_gre_rural_rebels
+	trigger = {
+		original_tag = TUR
+		owns_state = 975
+		OR = {
+			date > 1912.7.1
+			has_war_with = GRE
+		}
+		NOT = {
+			has_global_flag = ikarian_revolt
+		}
+		has_start_date < 1914.1.1		
+	}
+	immediate = {
+		hidden_effect = {
+			news_event = {
+				id = ww1_ikaria.3
+				hours = 3
+			}
+			975 = { add_core_of = IKR }
+		}
+	}
+	option = {
+		name = ww1_ikaria.1.a
+		hidden_effect = {
+			set_global_flag = ikarian_revolt
+			IKR = {
+				add_timed_idea = {
+					idea = GRE_greek_resistance
+					days = 365
+				}
+				add_ideas = standing_alone
+				transfer_state = 975
+				division_template = {
+					name = "Politofylakés Ikaria"
+					division_names_group = GRE_DEM_01
+					regiments = {
+						militia = { x = 0 y = 0 }
+						militia = { x = 0 y = 1 }
+						militia = { x = 1 y = 0 }
+						militia = { x = 1 y = 1 }
+					}
+				}
+				975 = {
+					create_unit = {
+						division = "name = \"Taxiarchía Politofylakís Ikaria\" division_template = \"Politofylakés Ikaria\"	start_experience_factor = 0.2	start_equipment_factor = 0.7"
+						owner = PREV
+						allow_spawning_on_enemy_provs = yes
+					}
+					create_unit = {
+						division = "name = \"Taxiarchía Politofylakís Fournoi Korseon\" division_template = \"Politofylakés Ikaria\"	start_experience_factor = 0.2	start_equipment_factor = 0.5"
+						owner = PREV
+						allow_spawning_on_enemy_provs = yes
+					}
+				}
+			}
+			if = {
+				limit = {
+					has_war_with = GRE
+				}
+				GRE = {
+					IKR = { get_current_government_type = yes }
+					set_autonomy = {
+						target = IKR
+						autonomy_state = autonomy_tgwr_unilateral_union
+					}
+					IKR = {
+						restore_previous_government_type = yes
+						remove_ideas = standing_alone
+					}
+				}
+			}
+		}
+		975 = {
+			remove_core_of = ROOT
+			add_claim_by = ROOT
+		}
+		IKR = {
+			declare_war_on = {
+				target = ROOT
+				type = independence_wargoal
+			}
+		}
+	}
+}
+
+### Greece gets Ikaria
+country_event = {
+	id = ww1_ikaria.2
+	title = ww1_ikaria.2.t
+	desc = ww1_ikaria.2.d
+	fire_only_once = yes
+	picture = GFX_report_event_gre_rural_rebels
+	trigger = {
+		tag = GRE
+		has_war_together_with = IKR
+		NOT = { has_subject = IKR }
+	}
+	immediate = {
+		hidden_effect = {
+			IKR = { get_current_government_type = yes }
+			set_autonomy = {
+				target = IKR
+				autonomy_state = autonomy_tgwr_unilateral_union
+			}
+			IKR = {
+				restore_previous_government_type = yes
+				remove_ideas = standing_alone
+			}
+		}
+	}
+	option = {
+		name = ww1_ikaria.2.a
+		effect_tooltip = {
+			set_autonomy = {
+				target = IKR
+				autonomy_state = autonomy_tgwr_unilateral_union
+			}
+		}
+	}
+}
+
+# news event for ikarian revolt
+news_event = {
+	id = ww1_ikaria.3
+	title = ww1_ikaria.3.t
+	desc = {
+		trigger = { TUR = { has_war_with = GRE } }
+		text = ww1_ikaria.3.e
+	}
+	desc = {
+		trigger = { NOT = { TUR = { has_war_with = GRE } } }
+		text = ww1_ikaria.3.d
+	}
+	is_triggered_only = yes
+	picture = GFX_news_event_greek_victory
+	major = yes
+	option = {
+		name = ww1_ikaria.3.a
+		trigger = { is_greek_nation = yes }
+	}
+	option = {
+		name = ww1_ikaria.3.b
+		trigger = { has_war_with = IKR }
+	}
+	option = {
+		name = ww1_ikaria.3.c
+		trigger = {
+			is_greek_nation = no
+			NOT = { has_war_with = IKR }
+		}
+	}
+}
+
+### SAMOS
+# Samian prince assassination
+country_event = {
+	id = ww1_samos.1
+	title = ww1_samos.1.t
+	desc = ww1_samos.1.d
+	fire_only_once = yes
+	picture = GFX_report_event_gre_rural_rebels
+	trigger = {
+		tag = SMS
+		has_country_leader = {
+			character = SMS_andreas_kopasis
+			ruling_only = yes
+		}
+		date > 1912.3.1
+		has_start_date < 1914.1.1		
+	}
+	mean_time_to_happen = {
+		days = 20
+	}
+	option = {
+		name = ww1_samos.1.a
+		retire_character = SMS_andreas_kopasis
+		promote_character = SMS_grigorios_vegleris
+		add_stability = -0.10
+	}
+}
+
+# Sofoulis returns
+country_event = {
+	id = ww1_samos.2
+	title = ww1_samos.2.t
+	desc = ww1_samos.2.d
+	fire_only_once = yes
+	picture = GFX_report_event_gre_rural_rebels
+	trigger = {
+		tag = SMS
+		OR = {
+			AND = {
+				is_subject = yes
+				OVERLORD = {
+					has_war_with = GRE
+				}
+			}
+			has_war_with = GRE
+		}
+	}
+	option = {
+		name = ww1_samos.2.a
+		set_politics = {
+			ruling_party = democratic
+			elections_allowed = no #provisional
+		}
+		add_ideas = gre_the_megali_idea
+		add_timed_idea = {
+			idea = GRE_greek_resistance
+			days = 365
+		}
+		hidden_effect = {
+			add_stability = 0.30
+			add_war_support = 0.30
+			GRE = {
+				if = {
+					limit = {
+						has_war_with = ROOT
+					}
+					white_peace = ROOT
+				}
+				ROOT = { get_current_government_type = yes }
+				set_autonomy = {
+					target = ROOT
+					autonomy_state = autonomy_tgwr_unilateral_union
+				}
+				ROOT = {
+					restore_previous_government_type = yes
+					remove_ideas = TUR_wavering_ottoman_influence
+					if = {
+						limit = {
+							PREV = { has_war_with = TUR }
+						}
+						add_to_war = {
+							targeted_alliance = PREV
+							enemy = TUR
+						}
+					}
+				}
+			}
+			division_template = {
+				name = "Politofylakés Samos"
+				division_names_group = GRE_DEM_01
+				regiments = {
+					militia = { x = 0 y = 0 }
+					militia = { x = 0 y = 1 }
+					militia = { x = 1 y = 0 }
+					militia = { x = 1 y = 1 }
+				}
+			}
+			975 = {
+				create_unit = {
+					division = "name = \"Taxiarchía Politofylakís\" division_template = \"Politofylakés Samos\"	start_experience_factor = 0.2	start_equipment_factor = 0.7"
+					owner = PREV
+					allow_spawning_on_enemy_provs = yes
+					count = 3
+				}
+			}
+		}
+		effect_tooltip = {
+			GRE = {
+				set_autonomy = {
+					target = ROOT
+					autonomy_state = autonomy_tgwr_unilateral_union
+				}
+			}
+		}
+	}
+}
