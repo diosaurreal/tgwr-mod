@@ -7543,6 +7543,7 @@ TUR_millet_system = {
 		highlight_states = { highlight_state_targets = { state = 447 } }
 		on_map_mode = map_and_decisions_view
 		visible = { owns_state = 447 }
+		available = { 447 = { is_demilitarized_zone = no  } }
 		cost = 50
 		complete_effect = {
 			custom_effect_tooltip = TUR_increase_suez_centralization_70
@@ -7570,6 +7571,7 @@ TUR_millet_system = {
 		on_map_mode = map_and_decisions_view
 		visible = { owns_state = 447 }
 		available = {
+			has_war_with_major = yes
 			custom_trigger_tooltip = {
 				tooltip = TUR_push_regulations_for_the_suez_canal_tt1
 				has_global_flag = TUR_nationalize_the_suez_canal
@@ -8514,12 +8516,9 @@ peace_deals = {
 
 operations = {
 	TUR_balkan_war_intervention_decision = {
+		icon = GFX_decision_generic_prepare_civil_war
 		allowed = { original_tag = TUR }
-		target_trigger = {
-			FROM = {
-				tag = BUL
-			}
-		}
+		target_trigger = { FROM = { tag = BUL } }
 		available = {
 			is_subject = no
 			FROM = {
@@ -8576,35 +8575,6 @@ operations = {
 		fire_only_once = yes
 		days_remove = 10
 		war_with_on_remove = BUL
-		ai_will_do = {
-			base = 100
-			modifier = {
-				factor = 0
-				OR = {
-					ROM = {
-						OR = {
-							has_capitulated = yes
-							surrender_progress > 0.1
-						}
-					}
-					SER = {
-						OR = {
-							has_capitulated = yes
-							surrender_progress > 0.1
-						}
-					}
-					AND = {
-						GRE = {
-							has_war_with = FROM
-							OR = {
-								has_capitulated = yes
-								surrender_progress > 0.1
-							}
-						}
-					}
-				}
-			}
-		}
 		remove_effect = {
 			set_country_flag = {
 				flag = TUR_special_operation_last_less_than_30_days
@@ -8643,10 +8613,165 @@ operations = {
 				}
 			}
 		}
+		ai_will_do = {
+			base = 100
+			modifier = {
+				factor = 0
+				OR = {
+					ROM = {
+						OR = {
+							has_capitulated = yes
+							surrender_progress > 0.1
+						}
+					}
+					SER = {
+						OR = {
+							has_capitulated = yes
+							surrender_progress > 0.1
+						}
+					}
+					AND = {
+						GRE = {
+							has_war_with = FROM
+							OR = {
+								has_capitulated = yes
+								surrender_progress > 0.1
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	TUR_invasion_of_egypt = {
+		allowed = { always = yes }
+		icon = GFX_decision_generic_prepare_civil_war
+		war_with_on_remove = EGY
+		activation = { always = no }
+		days_mission_timeout = 180
+		war_with_on_timeout = EGY
+		cancel_trigger = {
+			OR = {
+				has_war_with = EGY
+				any_subject_country = {
+					has_autonomy_state = autonomy_tgwr_ottoman_committee_government
+					has_war_with = EGY
+				}
+			}
+		}
+		available = {
+			OR = {
+				is_neighbor_of = EGY
+				any_subject_country = {
+					has_autonomy_state = autonomy_tgwr_ottoman_committee_government
+					if = {
+						limit = { TRS = { has_power_balance = { id = TUR_local_central_rule } } }
+						is_power_balance_in_range = {
+							id = TUR_local_central_rule
+							range > TUR_local_central_rule_local_high_control
+						}
+					}
+					is_neighbor_of = EGY
+				}
+			}
+			if = {
+				limit = { has_power_balance = { id = TUR_local_central_rule } }
+				is_power_balance_in_range = {
+					id = TUR_local_central_rule
+					range = TUR_local_central_rule_local_high_control
+				}
+			}
+			else = { is_subject = no }
+			EGY = { is_subject = no }
+		}
+		selectable_mission = yes
+		complete_effect = {
+			declare_war_on = {
+				target = EGY
+				type = annex_everything
+			}
+			set_global_flag = TUR_ottoman_invasion_of_egypt
+			hidden_effect = {
+				country_event = ottoman.193
+				every_subject_country = {
+					limit = { has_autonomy_state = autonomy_tgwr_ottoman_committee_government }
+					country_event = ottoman.193
+				}
+				EGY = { country_event = ottoman.194 }
+				every_country = {
+					limit = { is_major = yes }
+					country_event = { id = ottoman.197 hours = 8 }
+				}
+			}
+			if = {
+				limit = { NOT = { has_global_flag = TUR_occupying_egypt } }
+				custom_effect_tooltip = TUR_invasion_of_egypt_tt
+			}
+		}
+		ai_will_do = { base = 100 }
+	}
+	EGY_pending_ottoman_invasion = {
+		allowed = { always = yes }
+		icon = GFX_decision_generic_prepare_civil_war
+		activation = { always = no }
+		days_mission_timeout = 180
+		available = {
+			if = {
+				limit = {
+					TRS = {
+						has_autonomy_state = autonomy_tgwr_ottoman_committee_government
+						if = {
+							limit = { TRS = { has_power_balance = { id = TUR_local_central_rule } } }
+							is_power_balance_in_range = {
+								id = TUR_local_central_rule
+								range = TUR_local_central_rule_local_high_control
+							}
+						}
+					}
+				}
+				TRS = { has_war_with = EGY }
+			}
+			else = { TUR = { has_war_with = EGY } }
+		}
+		complete_effect = {
+			if = {
+				limit = {
+					TRS = {
+						has_autonomy_state = autonomy_tgwr_ottoman_committee_government
+						if = {
+							limit = { TRS = { has_power_balance = { id = TUR_local_central_rule } } }
+							is_power_balance_in_range = {
+								id = TUR_local_central_rule
+								range = TUR_local_central_rule_local_high_control
+							}
+						}
+					}
+				}
+				effect_tooltip = {
+					TRS = {
+						declare_war_on = {
+							target = EGY
+							type = annex_everything
+						}
+					}
+				}
+			}
+			else = {
+				effect_tooltip = {
+					TUR = {
+						declare_war_on = {
+							target = EGY
+							type = annex_everything
+						}
+					}
+				}
+			}
+		}
+		ai_will_do = { base = 100 }
 	}
 	TUR_occupy_cyprus = {
-		icon = GFX_decision_infiltrate_state
 		allowed = { original_tag = TUR }
+		icon = GFX_decision_infiltrate_state
 		target_trigger = { FROM = { tag = CYP } }
 		available = {
 			has_war = no
@@ -8660,9 +8785,7 @@ operations = {
 				}
 			}
 			NOT = {
-				any_other_country = {
-					has_guaranteed = FROM
-				}
+				any_other_country = { has_guaranteed = FROM }
 				has_active_mission = frankfurt_conference
 				has_active_mission = versallies_conference
 			}
