@@ -12,7 +12,7 @@
 
 FRA_fill_cambrai_and_reims_gaps = {
 	allowed = {
-		tag = FRA
+		original_tag = FRA
 	}
 	enable = {
 		NOT = {
@@ -37,7 +37,7 @@ FRA_fill_cambrai_and_reims_gaps = {
 
 FRA_defensive_if_lack_of_guns_against_GER = {
 	allowed = {
-		tag = FRA
+		original_tag = FRA
 	}
 	enable = {
 		has_war_with = GER
@@ -127,6 +127,36 @@ FRA_buildup_right_before_ww1 = {
 		id = bunker  # Type of building
 		target = 11483
 		value = 20000  # AI weight, used for weighted random selection of what to build. The AI gathers all build_building strategies (including the ones created dynamically) with non-zero values, and selects one of them.
+	}
+}
+
+FRA_gerardmer_gap = {
+	allowed = { 
+		original_tag = FRA 
+	}
+
+	enable = {
+		original_tag = FRA
+		controls_province = 2923
+		NOT = {
+			has_global_flag = great_war_ends
+		}
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = front_unit_request
+		state = 864
+		value = 90
+	}
+	ai_strategy = {
+		type = front_control
+		state = 28
+		ratio = 0.3
+		priority = 9999
+		ordertype = front
+		execution_type = careful
+		execute_order = no
+		manual_attack = yes
 	}
 }
 
@@ -843,7 +873,7 @@ FRA_prepare_italian_joining = {
 		original_tag = FRA
 	}
 	enable = {
-		tag = FRA
+		original_tag = FRA
 		has_wargoal_against = GER
 		NOT = { has_war_with = GER }
 		ITA = {
@@ -871,7 +901,7 @@ FRA_italy_endangers_south = {
 		original_tag = FRA
 	}
 	enable = {
-		tag = FRA
+		original_tag = FRA
 		has_war_with = GER
 		has_war_with = ITA
 	}
@@ -901,12 +931,12 @@ FRA_italy_endangers_south = {
 
 FRA_GRE_low_prio = {
 	allowed = {
-		tag = FRA
+		original_tag = FRA
 	}
 	abort_when_not_enabled = yes
 	enable = {
 		has_war_with = BUL
-		tag = FRA
+		original_tag = FRA
 		345 = {
 			is_controlled_by_ROOT_or_ally = yes
 			NOT = {
@@ -964,7 +994,7 @@ FRA_GRE_low_prio = {
 
 FRA_GER_against_FRC_NFA = {
 	allowed = {
-		tag = FRA
+		original_tag = FRA
 	}
 	enable = {
 		has_global_flag = FRA_GER_intervention_button_pushed
@@ -1048,7 +1078,7 @@ FRA_illogical_rush_to_GER = {
 		original_tag = FRA
 	}
 	enable = {
-		tag = FRA
+		original_tag = FRA
 		has_game_rule = {
 			rule = battle_of_france_outcome
 			option = FRENCH_EARLY_DEFEAT
@@ -1350,7 +1380,7 @@ FRA_limit_army_size = {
 		original_tag = FRA
 	}
 	enable = {
-		tag = FRA
+		original_tag = FRA
 		has_army_manpower = {
 			size > 2000000
 		}
@@ -1388,7 +1418,7 @@ FRA_limit_army_size = {
 FRA_VIN_fight_long_mission = {
 	allowed = {
 		OR = {
-			tag = FRA
+			original_tag = FRA
 			tag = VIN
 		}
 	}
@@ -1413,7 +1443,7 @@ FRA_VIN_fight_long_mission = {
 FRA_ITA_prepare_in_moutains = {
 	allowed = {
 		OR = {
-			tag = FRA 
+			original_tag = FRA 
 		}
 	}
 	enable = {
@@ -1452,7 +1482,7 @@ FRA_ITA_prepare_in_moutains = {
 
 FRA_MOR_is_thicc = {
 	allowed = {
-		tag = FRA
+		original_tag = FRA
 	}
 	enable = {
 		country_exists = MOR
@@ -1507,7 +1537,7 @@ FRA_MOR_is_thicc = {
 
 FRA_MOR_is_thicc2 = {
 	allowed = {
-		tag = FRA
+		original_tag = FRA
 	}
 	enable = {
 		country_exists = MOR
@@ -1654,7 +1684,7 @@ FRA_unit_production = {
 	ai_strategy = {
 		type = template_prio
 		id = heavy_armor
-		value = 10
+		value = 20
 	}
 
 	ai_strategy = {
@@ -1668,6 +1698,12 @@ FRA_unit_production = {
 		type = unit_ratio
 		id = fighter
 		value = 50 # From 70 to 75
+	}
+
+	ai_strategy = {
+		type = unit_ratio
+		id = maritime_patrol_plane
+		value = -100
 	}
 	
 	ai_strategy = {
@@ -1812,7 +1848,7 @@ early_tank_production = {
 		OR = {
 			has_active_mission = FRA_fufill_schneider_contract
 			NOT = {
-				has_tech = basic_light_tank_chassis
+				check_variable = { num_equipment_in_armies@light_tank_chassis > 59 }
 			}
 		}
 		has_tech = basic_medium_tank_chassis
@@ -1823,8 +1859,8 @@ early_tank_production = {
 		}
 		OR = {
 			has_global_flag = great_war_ends
-			has_tech = basic_light_tank_chassis
-			has_global_flag = great_war_ends
+			has_completed_focus = FRA_ww1_form_the_armored_spearhead
+			check_variable = { num_equipment_in_armies@light_tank_chassis > 59 }
 		}
 
 	}
@@ -1833,12 +1869,6 @@ early_tank_production = {
 		type = equipment_production_factor
 		id = armor
 		value = 800 #build some
-	}
-
-	ai_strategy = {
-		type = equipment_production_min_factories
-		id = armor
-		value = 6
 	}
 
 	ai_strategy = {
@@ -1858,10 +1888,31 @@ early_tank_production = {
 		id = medium_armor
 		value = 1
 	}
+
 	ai_strategy = {
 		type = role_ratio
 		id = armored_car
 		value = -1
+	}
+}
+
+constant_tank_production = {
+	allowed = {
+		original_tag = FRA	
+	}
+	enable = {
+		original_tag = FRA
+		NOT = {
+			has_global_flag = great_war_ends
+		}
+		num_of_military_factories > 15
+	}
+	abort_when_not_enabled = yes
+
+	ai_strategy = {
+		type = equipment_production_min_factories
+		id = armor
+		value = 1
 	}
 }
 
@@ -1912,6 +1963,32 @@ renault_tank_production = {
 		type = equipment_production_factor
 		id = armor
 		value = 500 #build some
+	}
+}
+
+FRA_chamond_production = { 	#st chamond stays while sex
+	allowed = {
+		original_tag = FRA	
+	}
+	enable = {
+		original_tag = FRA
+		has_tech = basic_heavy_tank_chassis
+		NOT = {
+			has_global_flag = great_war_ends
+		}
+	}
+	abort_when_not_enabled = yes
+
+	ai_strategy = {
+		type = build_army
+		id = heavy_armor
+		value = 2
+	}
+
+	ai_strategy = {
+		type = role_ratio
+		id = heavy_armor
+		value = 1
 	}
 }
 
@@ -1970,9 +2047,9 @@ duval_plan_mission_focus_fighters = {
 		has_active_mission = FRA_duval_plan
 		surrender_progress < 0.15
 		NOT = {
-			check_variable = { num_deployed_planes_with_type@fighter_equipment > 1999 }
+			check_variable = { num_deployed_planes_with_type@fighter_equipment > 999 }
 			has_equipment = {
-				fighter_equipment > 1999
+				fighter_equipment > 999
 			}
 		}
 	}
@@ -1981,18 +2058,18 @@ duval_plan_mission_focus_fighters = {
 	ai_strategy = {
 		type = equipment_production_factor
 		id = fighter
-		value = 800 #bfighuild some
+		value = 600 #bfighuild some
 	}
 
 	ai_strategy = {
 		type = air_factory_balance # focus on air
-		value = 30
+		value = 20
 	}
 
 	ai_strategy = {
 		type = equipment_production_min_factories
 		id = fighter
-		value = 12
+		value = 8
 	}
 }
 
@@ -2019,19 +2096,19 @@ duval_plan_mission_focus_bombers = {
 
 	ai_strategy = {
 		type = air_factory_balance # focus on air
-		value = 30
+		value = 20
 	}
 
 	ai_strategy = {
 		type = equipment_production_factor
 		id = tactical_bomber
-		value = 1200
+		value = 800
 	}
 
 	ai_strategy = {
 		type = equipment_production_min_factories
 		id = tactical_bomber
-		value = 12
+		value = 8
 	}
 }
 
@@ -2076,7 +2153,7 @@ FRA_rape_hainan = {
 	}
 	enable = {
 		OR = {
-			tag = FRA
+			original_tag = FRA
 			tag = IND
 		}
 		has_country_flag = FRA_war_on_hainan_flag
@@ -2117,7 +2194,7 @@ keep_djibouti = {
 
 FRA_industrial_ai_smartness_1910_1911 = {
 	allowed = {
-		always = yes
+		original_tag = FRA
 	}
 	enable = {
 		NOT = {
@@ -2144,5 +2221,28 @@ FRA_industrial_ai_smartness_1910_1911 = {
 	ai_strategy = {
 		type = agency_ai_per_upgrade_factories_factor
 		value = -100    # -25% on the define
+	}
+}
+
+FRA_TUN_MOR_mobilization = {
+	allowed = {
+		always = yes
+	}
+	enable = {
+		is_subject_of = FRA
+		NOT = {
+			has_global_flag = great_war_ends
+		}
+		has_war_with_major = yes
+		OR = {
+			tag = TUN
+			tag = MOR
+		}
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = front_unit_request
+		country_trigger = { NOT = { is_neighbor_of = FROM } OR = { original_tag = FRA tag = ENG tag = GRE tag = THE is_subject_of = FRA is_subject_of = ENG } }
+		value = 50
 	}
 }
