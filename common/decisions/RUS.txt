@@ -855,14 +855,18 @@ economy_decisions = {
 				owns_state = 563
 				owns_state = 967
 			}
-		}
-		available = {
 			NOT = {
 				has_railway_connection = {
 					start_province = 10574
+					target_province = 7763
+				}
+				has_railway_connection = {
+					start_province = 7763
 					target_province = 12189
 				}
 			}
+		}
+		available = {	
 			num_of_available_civilian_factories > 3
 			409 = { is_owned_and_controlled_by = ROOT }
 			561 = { is_owned_and_controlled_by = ROOT }
@@ -907,16 +911,23 @@ RUS_tsar_decision = {
 			has_threat_of_revolution = yes
 			OR = {
 				AND = {
-					# OR = {
-					# 	has_stability < 0.35
-					# 	has_war_support < 0.35
-					# }
 					war_length_with = { 
 						tag = GER 
 						months > 28 
 					}
-					surrender_progress > 0.04
-					casualties > 1500000
+					OR = {
+						AND = {
+							surrender_progress > 0.1
+							casualties > 1500000
+						}
+						AND = {
+							POL = {
+								exists = yes
+							}
+							surrender_progress > 0.04
+							casualties > 1500000
+						}
+					}
 				}
 				# we are in a big danger
 				AND = {
@@ -1720,6 +1731,9 @@ RUS_civil_war = {
 				}
 			}
 		}
+		ai_will_do = {
+			factor = 100
+		}
 	}
 	RUS_white_terror = {	
 		icon = GFX_decision_oppression	
@@ -2205,10 +2219,34 @@ RUS_release_country = {
 			set_global_flag = ukraine_released
 			UKR = {
 				set_country_flag = released_by_russia
-				promote_character = UKR_pavlo_skoropadskyi
 				hidden_effect = {
 					load_oob = "UKR_army"
 				}
+			}
+			RUS = {
+				UKR_pavlo_skoropadskyi = {		
+					set_nationality = UKR	
+					if = {
+						limit = {
+							is_field_marshal = no									
+						}
+						promote_leader = yes
+					}
+					set_character_name = UKR_pavlo_skoropadskyi
+					if = {
+						limit = { has_ideology = personalistic_dictatorship }
+						promote_character = personalistic_dictatorship
+					}
+					else = {
+						add_country_leader_role = {
+							country_leader = {
+								ideology = personalistic_dictatorship
+								traits = { russophile }
+							}
+							promote_leader = yes
+						}
+					}
+				}		
 			}
 			every_owned_state = {
 				limit = { 
@@ -2895,7 +2933,6 @@ RUS_provisional_government = {
 			OR = {
 				has_war = no
 				10 = { is_controlled_by_ROOT_or_subject = yes }
-				surrender_progress < 0.05
 			}
 		}
 		cancel_trigger = {

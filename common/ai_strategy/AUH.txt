@@ -198,7 +198,7 @@ AUH_be_aware_of_ITA = {
 	ai_strategy = {
 		type = front_unit_request
 		tag = ITA
-		value = 50
+		value = 120
 	}
 	ai_strategy = {
 		type = prepare_for_war
@@ -361,17 +361,17 @@ AUH_fight_SER = {
 		id = POL		
 		value = 1
 	}
-
+	
 	ai_strategy = {
-		type = front_unit_request
+		type = front_unit_request 
 		tag = SER
-		value = 100
+		value = 50
 	}
 
 	ai_strategy = {
-		type = front_unit_request
-		tag = RUS
-		value = 100
+		type = front_unit_request 
+		tag = MNT
+		value = 50
 	}
 
 	ai_strategy = {
@@ -448,7 +448,7 @@ AUH_focus_on_italy= {
 	ai_strategy = {
 		type = front_unit_request 		## dont get surprised by their war declaration
 		tag = ITA
-		value = 100
+		value = 150
 	}
 
 	ai_strategy = {
@@ -579,7 +579,45 @@ AUH_defensive_against_ITA_if_lacking_guns = {
 	ai_strategy = {
 		type = front_control
 		tag = ITA
-		ratio = 0.30
+		ratio = 0.60
+		priority = 1000
+		ordertype = front
+		execution_type = careful
+		execute_order = no
+		manual_attack = yes
+	}
+
+}
+
+AUH_defensive_against_RUS_if_lacking_guns = {
+	allowed = {
+		original_tag = AUS
+	}
+	allowed = {
+		always = yes
+	}
+	enable = {
+		tag = AUS
+		has_war_with = RUS
+		stockpile_ratio = {	## 5% of the armies equipment must be in reserves
+			archetype = infantry_equipment
+			ratio < 0.01
+		}
+	}
+	abort = {
+		OR = {
+			stockpile_ratio = {	## 7% of the armies equipment must be in reserves
+				archetype = infantry_equipment
+				ratio > 0.02
+			}
+			surrender_progress > 0.15
+		}
+	}
+
+	ai_strategy = {
+		type = front_control
+		tag = RUS
+		ratio = 0.60
 		priority = 1000
 		ordertype = front
 		execution_type = careful
@@ -793,10 +831,21 @@ AUH_unit_production = {
 		value = 20
 	}
 	
+}
+
+AUH_profit_from_hungary = {
+	allowed = {
+		original_tag = AUS
+	}
+	enable = {
+		has_subject = HUN
+	}
+	abort_when_not_enabled = yes
+
 	ai_strategy = {
 		type = equipment_production_factor
 		id = infantry
-		value = 40
+		value = -100	#hungary will give you all you need, sweetie
 	}
 }
 
@@ -806,12 +855,6 @@ AUH_bruderkrieg = {
 	}
 	enable = {
 		has_war_with = GER
-	}
-	abort = {
-		OR = {
-			has_capitulated = yes
-			has_global_flag = great_war_ends
-		}
 	}
 	abort_when_not_enabled = yes
 	ai_strategy = {
@@ -874,30 +917,157 @@ AUH_stop_sejoecseg_uprisings = {
 	}
 }
 
-# THIS IS NOT WORKING
-# AUH_mobilization = {
-# 	allowed = {
-# 		original_tag = AUS
-# 	}
-# 	enable = {
-# 		has_war = yes
-# 	}
-# 	abort = {
-# 		OR = {
-# 			has_war = no
-# 			has_idea = service_by_requirement
-# 		}	
-# 	}
+AUH_low_pressure_on_russia_front = {
+	allowed = {
+		original_tag = AUS
+	}
+	enable = {
+		has_war_with = RUS
+		controls_state = 91
+		controls_state = 88
+		controls_state = 778
+		controls_state = 84
+		controls_state = 89
+		surrender_progress < 0.1
+		GER = {
+			surrender_progress < 0.05
+		}
+		RUS = {
+			surrender_progress > 0.05
+		}
+		longest_war_length > 6	#let germans push
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = front_unit_request
+		tag = RUS
+		value = -50
+	}
+}
 
-# 	ai_strategy = {
-# 		type = pp_spend_amount
-# 		id = extensive_conscription
-# 		value = 100
-# 	}
+AUH_buy_hungarian_equipment = {
+	allowed = { 
+		original_tag = AUS 
+	}
 
-# 	ai_strategy = {
-# 		type = pp_spend_amount
-# 		id = service_by_requirement
-# 		value = 100
-# 	}
-# }
+	enable = {
+		has_subject = HUN
+	}
+	abort_when_not_enabled = yes
+
+	ai_strategy = {
+		type = equipment_market_buy
+		seller = HUN  # Only buy to hungary
+		value = 1000  # Part of the score calculation for things to buy. Related define: EQUIPMENT_MARKET_SCORE_FACTOR_AI_STRAT_WEIGHT
+	}
+
+	ai_strategy = {
+		type = equipment_market_trade_desire
+		id = HUN  # desired trade partner
+		value = 5000  # Increases the acceptance and desire values by this
+	}
+
+	ai_strategy = {
+		type = equipment_market_trade_desire
+		id = GRE  # desired trade partner
+		value = -5000  # Increases the acceptance and desire values by this
+	}
+
+	ai_strategy = {
+		type = equipment_market_spend_factories
+		value = 400  # austrian can spend as x2 more civs to buy guns to Hungary than normal AI
+	}
+
+	ai_strategy = {
+		type = equipment_market_buying_threshold
+		id = infantry_equipment  # equipment archetype
+		value = 10000  # buy a lot of guns
+	}
+	ai_strategy = {
+		type = equipment_market_buying_threshold
+		id = artillery_equipment  # equipment archetype
+		value = 250
+	}
+	ai_strategy = {
+		type = equipment_market_buying_threshold
+		id = support_equipment  # equipment archetype
+		value = 250
+	}
+}
+
+AUH_fortify_trento = {
+	allowed = { 
+		original_tag = AUS
+	}
+
+	enable = {
+		owns_state = 244
+		date > 1912.1.1
+		date < 1915.1.1
+		NOT = {
+			is_in_faction_with = ITA
+			has_global_flag = great_war_ends
+		}
+	}
+	abort_when_not_enabled = yes
+	
+	#trento
+	ai_strategy = {
+		type = build_building
+		id = bunker  # Type of building
+		target = 6631
+		value = 3  # AI weight, used for weighted random selection of what to build. The AI gathers all build_building strategies (including the ones created dynamically) with non-zero values, and selects one of them.
+	}
+	ai_strategy = {
+		type = build_building
+		id = bunker  # Type of building
+		target = 9598
+		value = 3  # AI weight, used for weighted random selection of what to build. The AI gathers all build_building strategies (including the ones created dynamically) with non-zero values, and selects one of them.
+	}
+	ai_strategy = {
+		type = build_building
+		id = bunker  # Type of building
+		target = 656
+		value = 3  # AI weight, used for weighted random selection of what to build. The AI gathers all build_building strategies (including the ones created dynamically) with non-zero values, and selects one of them.
+	}
+	ai_strategy = {
+		type = build_building
+		id = bunker  # Type of building
+		target = 11615
+		value = 3  # AI weight, used for weighted random selection of what to build. The AI gathers all build_building strategies (including the ones created dynamically) with non-zero values, and selects one of them.
+	}
+	ai_strategy = {
+		type = build_building
+		id = bunker  # Type of building
+		target = 6675
+		value = 3  # AI weight, used for weighted random selection of what to build. The AI gathers all build_building strategies (including the ones created dynamically) with non-zero values, and selects one of them.
+	}
+
+	#istria
+	ai_strategy = {
+		type = build_building
+		id = bunker  # Type of building
+		target = 6626
+		value = 3  # AI weight, used for weighted random selection of what to build. The AI gathers all build_building strategies (including the ones created dynamically) with non-zero values, and selects one of them.
+	}
+	ai_strategy = {
+		type = build_building
+		id = bunker  # Type of building
+		target = 11595
+		value = 3  # AI weight, used for weighted random selection of what to build. The AI gathers all build_building strategies (including the ones created dynamically) with non-zero values, and selects one of them.
+	}
+
+	#upper austria
+	ai_strategy = {
+		type = build_building
+		id = bunker  # Type of building
+		target = 6673
+		value = 3  # AI weight, used for weighted random selection of what to build. The AI gathers all build_building strategies (including the ones created dynamically) with non-zero values, and selects one of them.
+	}
+	ai_strategy = {
+		type = build_building
+		id = bunker  # Type of building
+		target = 671
+		value = 3  # AI weight, used for weighted random selection of what to build. The AI gathers all build_building strategies (including the ones created dynamically) with non-zero values, and selects one of them.
+	}
+}

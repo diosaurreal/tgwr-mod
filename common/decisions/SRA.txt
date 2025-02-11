@@ -625,7 +625,7 @@ RUS_civil_war = {
 								turret_type_slot = tank_heavy_fixed_superstructure_turret
 								suspension_type_slot = tank_bogie_suspension
 								armor_type_slot = tank_riveted_armor
-								engine_type_slot = tank_gasoline_engine
+								engine_type_slot = early_tank_gasoline_engine
 								special_type_slot_1 = additional_machine_guns
 								special_type_slot_2 = additional_machine_guns
 							}
@@ -1163,6 +1163,91 @@ political_actions = {
 
 SRA_rada_interactions = {
 
+	SRA_rada_discontent_timer = {
+		icon = generic_political_discourse
+
+		allowed = {
+			tag = SRA
+		}
+
+		available = {
+			always = no
+		}
+
+		days_mission_timeout = 7
+		fire_only_once = no
+		is_good = no
+
+		activation = {
+			tag = SRA
+			OR = {
+				has_idea = SRA_kuban_rada_1
+				has_idea = SRA_kuban_rada_2
+			}
+		}
+		timeout_effect = {
+			if = {
+				limit = {
+					has_country_flag = SRA_KUB_interactions
+				}
+				if = {
+					limit = {
+						has_idea = SRA_kuban_rada_1
+					}
+					add_to_variable = { SRA_cossack_autonomy = 5 }
+					add_to_variable = { SRA_cossack_loyalty = -3 }
+					custom_effect_tooltip = SRA_kuban_autonomy_increase_2_tt
+					if = {
+						limit = {
+							check_variable = {SRA_cossack_loyalty < 0} 
+						}
+						set_variable = {
+							var = SRA_cossack_loyalty
+							value = 0
+						}
+					}
+					else_if = {
+						limit = {
+							check_variable = {SRA_cossack_autonomy > 100} 
+						}
+						set_variable = {
+							var = SRA_cossack_autonomy 
+							value = 100
+						}
+					}
+				}
+				else_if = {
+					limit = {
+						has_idea = SRA_kuban_rada_2
+					}
+					add_to_variable = { SRA_cossack_autonomy = 10 }
+					add_to_variable = { SRA_cossack_loyalty = -6 }
+					custom_effect_tooltip = SRA_kuban_autonomy_increase_4_tt
+					if = {
+						limit = {
+							check_variable = {SRA_cossack_loyalty < 0} 
+						}
+						set_variable = {
+							var = SRA_cossack_loyalty
+							value = 0
+						}
+					}
+					else_if = {
+						limit = {
+							check_variable = {SRA_cossack_autonomy > 100} 
+						}
+						set_variable = {
+							var = SRA_cossack_autonomy 
+							value = 100
+						}
+					}
+				}
+			}
+			hidden_effect = {
+				activate_mission = SRA_rada_discontent_timer
+			}		
+		}
+	}
 	SRA_assasinate_mykola = {
 		icon = generic_assassination
 		allowed = {
@@ -2092,6 +2177,55 @@ SRA_army_recruitement = {
 }
 
 RUS_support_in_civil_war = {
+	SRA_shipments_timer = {
+		icon = ger_military_buildup
+
+		allowed = {
+			tag = ENG
+		}
+
+		available = {
+			always = no
+		}
+
+		days_mission_timeout = 30
+		fire_only_once = no
+		is_good = yes
+
+		activation = {
+			tag = ENG
+			has_country_flag = can_send_to_SRA
+			check_variable = {SRA_total_shipments_remaining > 0} 
+			country_exists = SRA
+			SRA = {
+				has_war_with = SOV
+			}
+			NOT = {
+				has_country_flag = great_war_loser
+				has_government = communism
+				has_war_with = TUR
+				has_war_with = OTT
+			}
+		}
+
+		timeout_effect = {
+			if = {
+				limit = {
+					country_exists = SRA
+					check_variable = {SRA_total_shipments_remaining > 0} 
+					SRA = {
+						has_war_with = SOV
+					}
+				}
+				add_to_variable = { SRA_available_shipments = 2 }
+				add_to_variable = { SRA_total_shipments_remaining = -2 }
+			}
+			custom_effect_tooltip = ENT_receive_two_shipments_tt
+			hidden_effect = {
+				activate_mission = SRA_shipments_timer
+			}
+		}
+	}
 	send_equipment_to_FROM_rifles = {
 		visible = {
 			is_major = yes

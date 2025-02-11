@@ -1064,46 +1064,77 @@ operations = {
 		allowed = {
 			tag = ENG
 		}
-		target_trigger = {
-			FROM = {
-				tag = PER
-			}
-		}
-		fire_only_once = yes
-		available = {
+		# target_trigger = {
+		# 	FROM = {
+		# 		tag = PER
+		# 	}
+		# }
+		fire_only_once = no
+		is_good = yes
+		days_mission_timeout = 140
+		activation = {
+			has_capitulated = no
 			is_subject = no
-			is_in_faction_with = RUS
-			NOT = {
-				has_country_flag = great_war_loser 
-				has_war_with = PER
-			}
 			RUS = {
-				exists = yes 
-				NOT = { has_war_with = PER }
-			}			
-		    PER = {
-				exists = yes 
-				is_subject = no 
-				is_major = no
-				OR = {
-					is_in_faction_with = ENG
-					is_in_faction = no
-				}
-			}
-		}
-		visible = {
-			has_war_with = TUR
-			any_state = {
-				has_dynamic_modifier = { modifier = per_british_sphere }
-			}
-			RUS = {
+				is_in_faction_with = ROOT
 				NOT = {
+					has_war_with = PER
 					tag = SOV
 					has_war_with = SOV
 				}
 			}
+			NOT = {
+				has_global_flag = rus_eng_partition_of_persia
+				has_country_flag = great_war_loser
+				has_war_with = PER
+			}
+			PER = {
+				exists = yes
+				is_subject = no 
+				is_major = no
+				OR = {
+					is_in_faction_with = ROOT
+					is_in_faction = no
+				}
+				has_idea = PER_idea_foreign_reliance
+			}
+			any_state = {
+				has_dynamic_modifier = { modifier = per_british_sphere }
+			}
+			OR = {
+				has_war_with = TUR
+				PER = { has_war_with = TUR }
+			}
+			has_global_flag = great_war
+			date > 1914.1.1
 		}
-		complete_effect = {
+		available = {
+			OR = {
+				is_subject = yes
+				has_capitulated = yes
+				has_global_flag = great_war_ends
+				PER = {
+					NOT = {
+						has_idea = PER_idea_foreign_reliance
+					}
+				}
+				NOT = {
+					has_war_with = TUR
+					PER = { has_war_with = TUR }
+				}
+				RUS = {
+					OR = {
+						has_war_with = PER
+						tag = SOV
+						has_war_with = SOV
+						NOT = {
+							is_in_faction_with = ROOT
+						}
+					}
+				}
+			}
+		}
+		remove_effect = {
 			add_state_claim = 413
 			add_state_claim = 410
 			RUS = {
@@ -1115,35 +1146,6 @@ operations = {
 				add_state_claim = 877
 			}
 			hidden_effect = {
-				# random_state = {
-				# 	limit = {
-				# 		is_owned_by = PER
-				# 		OR =  {
-				# 			state = 413
-				# 			state = 412
-				# 			state = 410
-				# 		}
-						
-				# 	}
-				# 	prioritize = {
-				# 		413
-				# 	}
-				# 	transfer_state_to = ENG
-				# }
-				# random_state = {
-				# 	limit = {
-				# 		is_owned_by = PER
-				# 		OR =  {
-				# 			state = 412
-				# 			state = 410
-				# 		}
-						
-				# 	}
-				# 	prioritize = {
-				# 		410
-				# 	}
-				# 	transfer_state_to = ENG
-				# }
 				every_state = {
 					limit = {
 						is_owned_by = PER
@@ -1167,31 +1169,9 @@ operations = {
 				}
 				RUS = { country_event = ww1_russia.72 }
 			}
-			# PER = { 
-			# 	country_event = { id = ww1_persia.5 days = 1 hours = 4 }
-			# }
 			set_global_flag = rus_eng_partition_of_persia
 		}
-		ai_will_do = { 
-			base = 50
-			modifier = {
-				NOT = { 
-					PER = { has_war_with = TUR } 
-					has_war_with = TUR
-				}
-				factor = 0
-			}
-			modifier = {
-				date < 1915.5.1
-				NOT = { has_global_flag = russian_revolution }
-				factor = 0
-			}
-			modifier = {
-				factor = 1000
-				has_global_flag = russian_revolution
-			}
-		}
-	}	
+	}
 	ENG_afghanistan_war_timer = {
 		icon = GFX_decision_eng_blackshirt_march
 		allowed = {
@@ -1923,6 +1903,33 @@ foreign_influence = {
 }
 
 GER_great_war = {
+	unlock_armored_cars_for_ENG = {
+		visible = {
+			is_ai = yes
+			tag = ENG
+		}
+		available = {
+			has_tech = improved_armored_car
+		}
+		fire_only_once = yes
+		complete_effect = {
+			create_equipment_variant = {
+				name = "Rolls Royce Mk I" 
+				type = armored_car_equipment_3
+				parent_version = 0
+				modules = {
+					main_armament_slot = tank_heavy_machine_gun
+					turret_type_slot = armored_car_one_man_tank_turret
+					suspension_type_slot = tank_wheeled_suspension
+					armor_type_slot = tank_riveted_armor
+					engine_type_slot = early_tank_gasoline_engine
+				}
+			}
+		}
+		ai_will_do = {
+			factor = 500
+		}
+	}
 	ENG_send_knox_to_russia = {
 
 		icon = GFX_decision_generic_army_support
