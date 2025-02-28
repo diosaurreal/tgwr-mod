@@ -179,3 +179,136 @@ peace_deals = {
 		}
 	}
 }
+
+war_in_desert = { 
+
+	attack_foreign_state = {
+		icon = border_war
+		custom_cost_trigger = {
+			command_power > 9
+		}
+		custom_cost_text = decision_cost_CP_10
+		days_re_enable = 120
+		state_target = yes
+		visible = {
+			always = yes
+		}
+		
+		target_trigger = {
+			FROM = {
+				any_neighbor_state = {
+					is_owned_and_controlled_by = ROOT
+					is_demilitarized_zone = no
+					NOT = {
+						region = 127
+					}
+					NOT = {
+						has_state_flag = border_incident_active
+					}
+					has_ROOT_at_least_1_div_in_current_state_scope = yes
+				}
+				NOT = {
+					is_owned_and_controlled_by = ROOT
+				}
+				region = 225
+			}
+		}
+		complete_effect = {
+			custom_effect_tooltip = ITA_LBA_border_war_start_tt
+			FROM = {
+				random_neighbor_state = {
+					limit = {
+						is_owned_and_controlled_by = ROOT
+						is_demilitarized_zone = no
+						NOT = {
+							region = 127
+						}
+						NOT = {
+							has_state_flag = border_incident_active
+						}
+						has_ROOT_at_least_1_div_in_current_state_scope = yes
+					}
+					save_event_target_as = attacker_state
+					set_variable = { FROM.attacker_state_vs_@ROOT = id }
+					set_temp_variable = { attacker_state_temp = id }
+					set_state_flag = border_incident_active
+					set_state_flag = border_incident_active_libya
+				}
+			}
+			FROM = {
+				save_event_target_as = defender_state
+				set_variable = { FROM.defender_state_vs_@ROOT = id }
+				set_temp_variable = { defender_state_temp = id }
+				set_state_flag = border_incident_active
+				set_state_flag = border_incident_active_libya
+			}
+			start_border_war = {
+				change_state_after_war = no
+				attacker = {
+					state = var:FROM.attacker_state_vs_@ROOT
+					num_provinces = 6
+					on_win = wtt_border_conflict_won_attacker.1
+					on_lose = wtt_border_conflict_lost_attacker.1
+					on_cancel = wtt_border_conflict_canceled_attacker.1
+				}	
+				defender = {
+					state = var:FROM.defender_state_vs_@ROOT
+					num_provinces = 6
+					on_win = wtt_border_conflict_won_defender.1
+					on_lose = wtt_border_conflict_lost_defender.1
+					on_cancel = wtt_border_conflict_canceled_defender.1
+				}
+			}
+			custom_effect_tooltip = tt_you_have_90_days
+			custom_effect_tooltip = back_in_120_days
+			activate_mission = attack_mission_in_progress
+		}
+	}
+	attack_mission_in_progress = {
+		icon = border_war
+		days_mission_timeout = 90
+		available = {
+			has_border_war = no
+		}
+		is_good = no
+		timeout_effect = {
+			random_owned_controlled_state = {
+				limit = {
+					any_neighbor_state = {
+						has_state_flag = border_incident_active_libya
+					}
+					has_state_flag = border_incident_active_libya
+				}
+				add_political_power = 10
+				set_temp_variable = { attacker_state_temp = id }
+				set_variable = { attacker_state_temp = id }
+			}
+			every_state = {
+				limit = {
+					has_state_flag = border_incident_active_libya
+				}
+				clr_state_flag = border_incident_active_libya
+				OWNER = {
+					country_event = {
+						id = wtt_border_conflict_canceled_defender.1
+						days = 1
+					}
+				}
+			}
+		}
+		activation = {
+			always = no
+		}
+	}
+	clear_flags = {
+		complete_effect = {
+			every_owned_state = {
+				limit = {
+					has_state_flag = border_incident_active
+				}
+				clr_state_flag = border_incident_active
+				clr_state_flag = border_incident_active_libya
+			}
+		}
+	}
+}
