@@ -159,7 +159,14 @@ focus_tree = {
 	focus = {
 		id = USA_reorganize_army_corps
 		icon = GFX_goal_generic_small_arms
-		cost = 10
+		available = {
+			OR = {
+				has_war = yes
+				threat > 0.4
+				has_global_flag = great_war
+			}
+		}
+		cost = 5
 		x = 43
 		y = 0
 		completion_reward = { army_experience = 20 }
@@ -750,6 +757,13 @@ focus_tree = {
 		search_filters = {
 			FOCUS_FILTER_HISTORICAL
 		}
+		ai_will_do = {
+			factor = 10
+			modifier = {
+				factor = 0.1
+				has_country_leader = { character = USA_theodore_roosevelt } 
+			}
+		}
 	}
 	focus = {
 		id = USA_protest_diplomacy
@@ -761,12 +775,16 @@ focus_tree = {
 		x = 11
 		y = 2
 		bypass = {
-			NOT = { has_idea = isolation }
 			NOT = { has_idea = undisturbed_isolation }
 		}
+		cancel_if_invalid = no
+		continue_if_invalid = yes
 		available = { threat > 0.2 }
 		completion_reward = { 
-			add_ideas = isolation
+			swap_ideas = {
+				add_idea = isolation
+				remove_idea = undisturbed_isolation
+			}
 		}
 		search_filters = {
 			FOCUS_FILTER_HISTORICAL
@@ -839,9 +857,19 @@ focus_tree = {
 		available = { threat > 0.45 }
 		completion_reward = { 
 			add_ideas = civilian_economy 
+			custom_effect_tooltip = escape_line
+			swap_ideas = {
+				add_idea = USA_idea_neglected_military_budget2
+				remove_idea = USA_idea_neglected_military_budget
+			}
+			country_lock_all_division_template = no
+			
 		}
 		search_filters = {
 			FOCUS_FILTER_HISTORICAL
+		}
+		ai_will_do = {
+			factor = 100
 		}
 	}
 	focus = {
@@ -1105,6 +1133,13 @@ focus_tree = {
 		completion_reward = {
 			add_ideas = USA_idea_big_stick
 		}
+		ai_will_do = {
+			factor = 10
+			modifier = {
+				factor = 0.1
+				NOT = { has_country_leader = { character = USA_theodore_roosevelt } } 
+			}
+		}
 	}
 	focus = {
 		id = USA_volunteer_act
@@ -1121,6 +1156,23 @@ focus_tree = {
 		completion_reward = {
 			add_ideas = volunteer_only
 			add_ideas = USA_idea_volunteer_corps
+			if = {
+				limit = {
+					has_country_leader = {
+						character = USA_theodore_roosevelt
+					}
+					has_character = USA_charles_young
+					USA_charles_young = {
+						NOT = {
+							has_character_flag = unit_leader_available
+						}
+					}
+				}
+				show_unit_leaders_tooltip = USA_charles_young
+				USA_charles_young = {
+					set_character_flag = unit_leader_available
+				}
+			}
 		}
 		ai_will_do = {
 			factor = 5
@@ -1250,6 +1302,7 @@ focus_tree = {
 		available = { has_war_support > 0.45 }
 		completion_reward = {
 			add_ideas = civilian_economy
+			remove_ideas = USA_idea_neglected_military_budget
 		}
 	}
 	focus = {
@@ -1685,6 +1738,7 @@ focus_tree = {
 			democratic > 0.95
 			NOT = { has_completed_focus = USA_land_of_dixie }
 			NOT = { has_completed_focus = USA_revived_states_of_america }
+			NOT = { has_country_leader = { character = USA_theodore_roosevelt } }
 		}
 		completion_reward = { 
 			set_cosmetic_tag = USA_ancap
@@ -2899,20 +2953,17 @@ focus_tree = {
 	focus = {
 		id = USA_maneuver_divison
 		icon = GFX_goal_generic_cavalry
-		cost = 10
+		cost = 5
 		prerequisite = {
 			focus = USA_reorganize_army_corps
 		}
 		x = 42
 		y = 1
+		available = {
+			has_tech = motorised_infantry2
+		}
 		search_filters = {FOCUS_FILTER_RESEARCH}
 		completion_reward = {
-			if = {
-				limit = { NOT = { has_tech = motorised_infantry2 } }
-				set_technology = {
-					motorised_infantry2 = 1
-				}
-			}
 			division_template = {
 				name = "Maneuver Divison"
 				division_names_group = USA_MOT_01
@@ -2967,8 +3018,6 @@ focus_tree = {
 		cost = 10
 		prerequisite = {
 			focus = USA_hunt_for_bands
-		}
-		prerequisite = {
 			focus = USA_doctrine_of_armored_raids
 		}
 		x = 40
@@ -3038,6 +3087,7 @@ focus_tree = {
 				uses = 2
 				category = infantry_tech
 			}
+			increase_conscription = yes
 		}
 	}
 	focus = {
@@ -3068,8 +3118,9 @@ focus_tree = {
 		x = 44
 		y = 4
 		search_filters = {FOCUS_FILTER_MANPOWER}
-		bypass = { has_idea = limited_conscription }
+		bypass = { }
 		available = { 
+			has_war_with_major = yes
 			has_completed_focus = USA_volunteer_act 
 			if = {
 				limit = {
@@ -3083,7 +3134,20 @@ focus_tree = {
 			}
 		}
 		completion_reward = {
-			add_ideas = limited_conscription
+			increase_conscription = yes
+			custom_effect_tooltip = escape_line
+			if = {
+				limit = {
+					has_idea = USA_idea_neglected_military_budget2
+				}
+				remove_ideas = USA_idea_neglected_military_budget2
+				else = {
+					remove_ideas = USA_idea_neglected_military_budget
+				}
+			}
+		}
+		ai_will_do = {
+			factor = 100
 		}
 	}
 	focus = {
@@ -3366,6 +3430,20 @@ focus_tree = {
 			swap_ideas = {
 				add_idea = USA_idea_army_desegregation
 				remove_idea = USA_idea_labor_desegregation
+			}
+			if = {
+				limit = {
+					has_character = USA_charles_young
+					USA_charles_young = {
+						NOT = {
+							has_character_flag = unit_leader_available
+						}
+					}
+				}
+				show_unit_leaders_tooltip = USA_charles_young
+				USA_charles_young = {
+					set_character_flag = unit_leader_available
+				}
 			}
 		}
 	}
