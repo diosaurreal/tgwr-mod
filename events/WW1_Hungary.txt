@@ -275,7 +275,7 @@ country_event = {
 	trigger = {
 		tag = HUN
 		is_subject = no
-		has_global_flag = versallies_treaty
+		has_global_flag = great_war_ends
 		OR = {
 			has_country_flag = great_war_loser
 			has_country_flag = collapse_of_austria_hungary_HUN
@@ -786,7 +786,7 @@ news_event = {
 	}
 }
 
-# Conditional surrender to Soviet Hungary
+# Conditional surrender to Hungary
 country_event = {
 	id = ww1_hungary.8
 	title = ww1_hungary.8.t
@@ -796,22 +796,50 @@ country_event = {
 	option = {
 		name = ww1_hungary.8.a
 		set_country_flag = hungarian_soviet_truce
-		ROM = {
-			complete_national_focus = ROM_defeat_in_hungarian_war
-		}
-		ROM = {
+		FROM = {
 			white_peace = HUN
 			leave_faction = yes
-			add_popularity = {
-				ideology = communism
-				popularity = 0.10
+			if = {
+				limit = {
+					HUN = {
+						has_government = communism
+					}
+				}
+				add_popularity = {
+					ideology = communism
+					popularity = 0.10
+				}
 			}
 			every_state = {
 				limit = {
-					is_owned_by = ROM
+					is_owned_by = PREV
 					is_core_of = HUN
+					NOT = {
+						AND = {
+							is_core_of = SLO
+							SLO = {
+								is_subject_of = HUN
+							}
+						}
+					}
 				}
 				transfer_state_to = HUN
+			}
+			every_state = {
+				limit = {
+					is_owned_by = PREV
+					is_core_of = SLO
+					SLO = {
+						is_subject_of = HUN
+					}
+				}
+				transfer_state_to = SLO
+			}
+			if = {
+				limit = {
+					has_focus_tree = romania_focus
+				}
+				complete_national_focus = ROM_defeat_in_hungarian_war
 			}
 		}
 		ai_chance = {
@@ -820,6 +848,9 @@ country_event = {
 	}
 	option = {
 		name = ww1_hungary.8.b
+		add_war_support = -0.2
+		add_stability = -0.2
+		add_political_power = -250
 		FROM = { country_event = ww1_hungary.9 }
 		ai_chance = {
 			base = 0
