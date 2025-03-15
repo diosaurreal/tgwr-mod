@@ -84,18 +84,14 @@ peace_deals = {
 			NOT = { has_global_flag = great_war_ends }
 		}
 		available = {
-			OR = {
-				has_capitulated = yes
-				has_country_leader = {
-					character = LBA_muhammad_idris_assenussi
-				}
-			}
+			
 		}
 		fire_only_once = yes
 		ai_will_do = {
 			base = 1000
 			modifier = {
 				factor = 0
+				surrender_progress < 0.6
 				NOT = {
 					has_country_leader = {
 						character = LBA_muhammad_idris_assenussi
@@ -104,6 +100,18 @@ peace_deals = {
 			}
 		}
 		complete_effect = {
+			if = {
+				limit = {
+					NOT = {
+						has_country_leader = {
+							character = LBA_muhammad_idris_assenussi
+						}
+					}
+				}
+				country_event = {
+					id = ww1_libya.1
+				}
+			}
 			LBA_motus_vivendi = yes
 		}
 	}
@@ -228,12 +236,24 @@ war_in_desert = {
 				}
 			}
 		}
+		days_remove = 7
 		complete_effect = {
+			FROM = {
+				OWNER = {
+					country_event = {
+						id = ww1_libya.9
+						days = 1
+					}
+				}
+			}
 			set_country_flag = {
 				flag = LBA_wait_before_attack_again
-				days = 120
+				days = 127
 				value = 1
 			}
+		}
+		remove_effect = {
+			
 			if = {
 				limit = {
 					OR = {
@@ -249,67 +269,69 @@ war_in_desert = {
 				}
 			}
 			custom_effect_tooltip = ITA_LBA_border_war_start_tt
-			FROM = {
-				random_neighbor_state = {
-					limit = {
-						is_owned_and_controlled_by = ROOT
-						is_demilitarized_zone = no
-						NOT = {
-							region = 127
+			hidden_effect = {
+				FROM = {
+					random_neighbor_state = {
+						limit = {
+							is_owned_and_controlled_by = ROOT
+							is_demilitarized_zone = no
+							NOT = {
+								region = 127
+							}
+							NOT = {
+								has_state_flag = border_incident_active
+							}
+							has_ROOT_at_least_1_div_in_current_state_scope = yes
 						}
-						NOT = {
-							has_state_flag = border_incident_active
-						}
-						has_ROOT_at_least_1_div_in_current_state_scope = yes
+						save_event_target_as = attacker_state
+						set_variable = { FROM.attacker_state_vs_@ROOT = id }
+						set_temp_variable = { attacker_state_temp = id }
+						set_state_flag = border_incident_active
 					}
-					save_event_target_as = attacker_state
-					set_variable = { FROM.attacker_state_vs_@ROOT = id }
-					set_temp_variable = { attacker_state_temp = id }
+				}
+				FROM = {
+					save_event_target_as = defender_state
+					set_variable = { FROM.defender_state_vs_@ROOT = id }
+					set_temp_variable = { defender_state_temp = id }
 					set_state_flag = border_incident_active
-				}
-			}
-			FROM = {
-				save_event_target_as = defender_state
-				set_variable = { FROM.defender_state_vs_@ROOT = id }
-				set_temp_variable = { defender_state_temp = id }
-				set_state_flag = border_incident_active
-				if = {
-					limit = {
-						ROOT = {
-							tag = LBA
+					if = {
+						limit = {
+							ROOT = {
+								tag = LBA
+							}
+						}
+						add_dynamic_modifier = {
+							modifier = LBA_intensified_guerrila
+							days = 90
 						}
 					}
-					add_dynamic_modifier = {
-						modifier = LBA_intensified_guerrila
-						days = 90
+				}
+				start_border_war = {
+					change_state_after_war = no
+					attacker = {
+						state = var:FROM.attacker_state_vs_@ROOT
+						num_provinces = 12
+						on_win = wtt_border_conflict_won_attacker.1
+						on_lose = wtt_border_conflict_lost_attacker.1
+						on_cancel = wtt_border_conflict_canceled_attacker.1
+					}	
+					defender = {
+						state = var:FROM.defender_state_vs_@ROOT
+						num_provinces = 12
+						on_win = wtt_border_conflict_won_defender.1
+						on_lose = wtt_border_conflict_lost_defender.1
+						on_cancel = wtt_border_conflict_canceled_defender.1
 					}
 				}
-			}
-			start_border_war = {
-				change_state_after_war = no
-				attacker = {
-					state = var:FROM.attacker_state_vs_@ROOT
-					num_provinces = 12
-					on_win = wtt_border_conflict_won_attacker.1
-					on_lose = wtt_border_conflict_lost_attacker.1
-					on_cancel = wtt_border_conflict_canceled_attacker.1
-				}	
-				defender = {
-					state = var:FROM.defender_state_vs_@ROOT
-					num_provinces = 12
-					on_win = wtt_border_conflict_won_defender.1
-					on_lose = wtt_border_conflict_lost_defender.1
-					on_cancel = wtt_border_conflict_canceled_defender.1
+				if = {
+					limit = { is_border_conflict_defender_vs_FROM = yes }
+					var:ROOT.defender_state_vs_@FROM = { save_event_target_as = their_state }
+					var:ROOT.attacker_state_vs_@FROM = { save_event_target_as = our_state }
 				}
-			}
-			if = {
-				limit = { is_border_conflict_defender_vs_FROM = yes }
-				var:ROOT.defender_state_vs_@FROM = { save_event_target_as = their_state }
-				var:ROOT.attacker_state_vs_@FROM = { save_event_target_as = our_state }
-			}
-			else = {
-				var:FROM.defender_state_vs_@ROOT = { save_event_target_as = our_state }
-				var:FROM.attacker_state_vs_@ROOT = { save_event_target_as = their_state }
+				else = {
+					var:FROM.defender_state_vs_@ROOT = { save_event_target_as = our_state }
+					var:FROM.attacker_state_vs_@ROOT = { save_event_target_as = their_state }
+				}
 			}
 			custom_effect_tooltip = back_in_120_days
 		}
@@ -342,6 +364,9 @@ war_in_desert = {
 		}
 		available = {
 			controls_state = 452
+			NOT = {
+				has_country_flag = LBA_modus_vivendi_of_acroma
+			}
 		}
 		is_good = no
 		timeout_effect = {
