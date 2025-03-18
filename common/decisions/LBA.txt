@@ -84,18 +84,14 @@ peace_deals = {
 			NOT = { has_global_flag = great_war_ends }
 		}
 		available = {
-			OR = {
-				has_capitulated = yes
-				has_country_leader = {
-					character = LBA_muhammad_idris_assenussi
-				}
-			}
+			
 		}
 		fire_only_once = yes
 		ai_will_do = {
 			base = 1000
 			modifier = {
 				factor = 0
+				surrender_progress < 0.6
 				NOT = {
 					has_country_leader = {
 						character = LBA_muhammad_idris_assenussi
@@ -104,89 +100,340 @@ peace_deals = {
 			}
 		}
 		complete_effect = {
-			set_country_flag = LBA_modus_vivendi_of_acroma
-			hidden_effect = {
-				if = {
-					limit = {
-						has_capitulated = yes
-					}
-					#prevent generic peace
-					set_state_controller = 663
-					set_state_controller = 810
-				}
-			}
 			if = {
-				limit = { is_in_faction = yes }
-				leave_faction = yes
-			}
-			every_state = {
 				limit = {
-					owner = { has_war_with = ROOT }
-				}
-				if = {
-					limit = {
-						OR = {
-							state = 273
-							state = 661
-							state = 1061
+					NOT = {
+						has_country_leader = {
+							character = LBA_muhammad_idris_assenussi
 						}
 					}
-					transfer_state_to = ROOT
+				}
+				country_event = {
+					id = ww1_libya.1
+				}
+			}
+			LBA_motus_vivendi = yes
+		}
+	}
+}
+
+war_in_desert = { 
+
+	attack_foreign_state = {
+		icon = border_war
+		custom_cost_trigger = {
+			command_power > 9
+		}
+		custom_cost_text = decision_cost_CP_10
+		days_re_enable = 120
+		state_target = yes
+		visible = {
+			if = {
+				limit = {
+					tag = LBA
+				}
+				has_war = no
+			}
+			NOT = {
+				has_country_flag = LBA_modus_vivendi_of_acroma
+			}
+		}
+		available = {
+			NOT = {
+				has_country_flag = LBA_modus_vivendi_of_acroma
+			}
+			FROM = {
+				any_neighbor_state = {
+					has_ROOT_at_least_1_div_in_current_state_scope = yes
+				}
+			}
+			has_border_war = no
+			NOT = {
+				has_country_flag = LBA_wait_before_attack_again
+			}
+		}
+		ai_will_do = {
+			base = 0
+			modifier = {
+				tag = LBA
+				add = 15
+			}
+			modifier = {
+				FROM = {
+					state = 452
+				}
+				controls_state = 661
+				add = 1000
+			}
+			modifier = {
+				FROM = {
+					state = 663
+				}
+				add = 5000
+			}
+			modifier = {
+				tag = ENG
+				add = 5
+			}
+			modifier = {
+				tag = ITA
+				has_war = no
+				NOT = {
+					has_country_flag = LBA_wait_before_attack_again_AI
+				}
+				add = 1
+			}
+			modifier = {
+				tag = ITA
+				FROM = {
+					state = 661
+				}
+				controls_state = 663
+				add = 1000
+			}
+			modifier = {
+				tag = ITA
+				FROM = {
+					state = 810
+				}
+				is_historical_focus_on = yes
+				factor = 0 #dont end senussi on historical, please
+			}
+			modifier = {
+				has_country_flag = LBA_wait_before_attack_again_AI
+				factor = 0
+			}
+		}
+		target_trigger = {
+			FROM = {
+				any_neighbor_state = {
+					is_controlled_by_ROOT_or_subject = yes
+					is_demilitarized_zone = no
+					NOT = {
+						region = 127
+					}
+					NOT = {
+						has_state_flag = border_incident_active
+					}
+				}
+				NOT = {
+					is_controlled_by_ROOT_or_subject = yes
+				}
+				CONTROLLER = {
+					NOT = {
+						original_tag = TUR #dont attack your friend, idiot
+						is_in_faction_with = ROOT
+					}
+				}
+				OR = {
+					region = 225
+					AND = {
+						region = 128
+						LBA = {
+							has_country_flag = LBA_border_war_against_UK
+						}
+					}
+				}
+			}
+		}
+		days_remove = 7
+		complete_effect = {
+			FROM = {
+				OWNER = {
+					country_event = {
+						id = ww1_libya.9
+						days = 1
+					}
+				}
+			}
+			set_country_flag = {
+				flag = LBA_wait_before_attack_again
+				days = 127
+				value = 1
+			}
+		}
+		remove_effect = {
+			
+			if = {
+				limit = {
+					OR = {
+						tag = ITA
+						tag = ENG
+					}
+				}
+				#they dont attack that much
+				set_country_flag = {
+					flag = LBA_wait_before_attack_again_AI
+					days = 360
+					value = 1
+				}
+			}
+			custom_effect_tooltip = ITA_LBA_border_war_start_tt
+			hidden_effect = {
+				FROM = {
+					random_neighbor_state = {
+						limit = {
+							is_owned_and_controlled_by = ROOT
+							is_demilitarized_zone = no
+							NOT = {
+								region = 127
+							}
+							NOT = {
+								has_state_flag = border_incident_active
+							}
+							has_ROOT_at_least_1_div_in_current_state_scope = yes
+						}
+						save_event_target_as = attacker_state
+						set_variable = { FROM.attacker_state_vs_@ROOT = id }
+						set_temp_variable = { attacker_state_temp = id }
+						set_state_flag = border_incident_active
+					}
+				}
+				FROM = {
+					save_event_target_as = defender_state
+					set_variable = { FROM.defender_state_vs_@ROOT = id }
+					set_temp_variable = { defender_state_temp = id }
+					set_state_flag = border_incident_active
+					if = {
+						limit = {
+							ROOT = {
+								tag = LBA
+							}
+						}
+						add_dynamic_modifier = {
+							modifier = LBA_intensified_guerrila
+							days = 90
+						}
+					}
+				}
+				start_border_war = {
+					change_state_after_war = no
+					attacker = {
+						state = var:FROM.attacker_state_vs_@ROOT
+						num_provinces = 12
+						on_win = wtt_border_conflict_won_attacker.1
+						on_lose = wtt_border_conflict_lost_attacker.1
+						on_cancel = wtt_border_conflict_canceled_attacker.1
+					}	
+					defender = {
+						state = var:FROM.defender_state_vs_@ROOT
+						num_provinces = 12
+						on_win = wtt_border_conflict_won_defender.1
+						on_lose = wtt_border_conflict_lost_defender.1
+						on_cancel = wtt_border_conflict_canceled_defender.1
+					}
 				}
 				if = {
-					limit = {
-						state = 1060
-					}
-					transfer_state_to = TRP
+					limit = { is_border_conflict_defender_vs_FROM = yes }
+					var:ROOT.defender_state_vs_@FROM = { save_event_target_as = their_state }
+					var:ROOT.attacker_state_vs_@FROM = { save_event_target_as = our_state }
 				}
+				else = {
+					var:FROM.defender_state_vs_@ROOT = { save_event_target_as = our_state }
+					var:FROM.attacker_state_vs_@ROOT = { save_event_target_as = their_state }
+				}
+			}
+			custom_effect_tooltip = back_in_120_days
+		}
+	}
+	LBA_take_state_452 = {
+		icon = border_war
+		state_target = yes
+		allowed = {
+			tag = LBA
+		}
+		fire_only_once = yes
+		target_trigger = {
+			FROM = {
+				state = 452
+				CONTROLLER = {
+					LBA = {
+						NOT = {
+							has_active_mission = LBA_take_state_452
+						}
+					}
+					NOT = {
+						tag = LBA
+						is_in_faction_with = LBA
+						tag = TUR
+					}
+					OR = {
+						LBA = {
+							has_country_flag = LBA_border_war_against_UK
+						}
+						has_war_with = LBA
+					}
+				}
+			}
+		}
+		days_mission_timeout = 420
+		visible = {
+			tag = LBA
+		}
+		available = {
+			controls_state = 452
+		}
+		cancel_trigger = {
+			has_country_flag = LBA_modus_vivendi_of_acroma
+		}
+		activation = {
+			NOT = {
+				has_active_mission = LBA_take_state_452
+			}
+		}
+		is_good = no
+		timeout_effect = {
+			LBA = {
+				country_event = {
+					id = ww1_libya.1
+					days = 2
+				}
+			}
+		}
+		complete_effect = {
+			add_political_power = 200
+			add_war_support = 0.15
+		}
+	}
+	ENG_general_Peyton_expeditonary_force_in_senussi = {
+		allowed = {
+			tag = ENG
+		}
+		visible = {
+			has_country_flag = ITA_LBA_war_in_desert
+		}
+		complete_effect = {
+			declare_war_on = {
+				target = LBA
+				type = topple_government
 			}
 			if = {
 				limit = {
-					owns_state = 552
-				}
-				every_enemy_country = {
-					limit = {
-						owns_state = 452
-					}
-					transfer_state = 552
-				}
-			}
-			white_peace = FROM
-			hidden_effect = {
-				every_enemy_country = {
-					limit = {
-						is_in_faction_with = FROM
-					}
-					ROOT = {
-						white_peace = PREV
+					EGY = {
+						is_subject_of = ENG
 					}
 				}
-				if = {
-					limit = {
-						country_exists = TRP
-					}
-					set_truce = {
-						target = TRP
-						days = 365
-					}
-					diplomatic_relation = {
-						country = TRP
-						relation = non_aggression_pact
-						active = yes
+				EGY = {
+					add_to_war = {
+						targeted_alliance = ENG
+						enemy = LBA
 					}
 				}
 			}
-			TUR = {
-				diplomatic_relation = {
-					country = ROOT
-					relation = guarantee
-					active = no
+			every_country = {
+				limit = {
+					not = {
+						tag = LBA
+					}
 				}
+				clr_country_flag = ITA_LBA_war_in_desert #end of desert border war mechanic
 			}
-			diplomatic_relation = {
-				country = TUR
-				relation = military_access
-				active = no
+		}
+		ai_will_do = {
+			base = 10
+			modifier = {
+				factor = 0
+				date < 1916.5.2
 			}
 		}
 	}
