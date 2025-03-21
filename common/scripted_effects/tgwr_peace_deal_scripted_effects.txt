@@ -229,23 +229,11 @@ armistice_effect = {
 					state = 863
 					state = 864
 					state = 865
+					state = 33
 					state = 29
 				}
 			}
 			set_demilitarized_zone = yes
-		}
-		if = {
-			limit = {
-				has_global_flag = luxembourg_submitted
-				GER = { has_subject = LUX }
-			}
-			GER = {
-				annex_country = {
-					target = LUX
-					transfer_troops = yes
-				}
-			}
-			LUX = { add_state_core = 906 }
 		}
 	}
 	if = {
@@ -906,31 +894,93 @@ armistice_effect = {
 			}
 			LUX = {
 				clear_all_relations = yes
-				clr_country_flag = great_war_loser
-				remove_ideas = idea_army_restrictions
 			}
-			FRA = {
-				country_event = {
-					id = ww1_luxembourg.6
-					days = 25
-					random_days = 10
+			if = {
+				limit = {
+					BEL = {
+						NOT = {
+							AND = {
+								NOT = {
+									has_country_flag = BEL_defeat
+									has_country_flag = BEL_decision_over_luxemburg
+								}
+								has_country_flag = great_war_winner
+							}						
+						}					
+					}
 				}
-			}
+				FRA = {
+					country_event = {
+						id = ww1_luxembourg.6
+						days = 25
+						random_days = 10
+					}
+				}
+			}		
 		}
 	}
 	if = {	#restitution of belgian territory
 		limit = {
 			BEL = {
 				has_country_flag = BEL_submit_to_GER_1914
-				NOT = {
-					has_country_flag = great_war_loser
-				}
+				# NOT = {
+				# 	has_country_flag = great_war_loser
+				# }
 				owns_state = 6
 			}
 		}
-		transfer_state = 34
-		transfer_state = 907
-		transfer_state = 906
+		GER = {
+			clr_country_flag = BEL_submit_to_GER_1914
+			if = {
+				limit = {
+					BEL = {
+						has_country_flag = great_war_loser
+					}
+				}
+				every_owned_state = {
+					limit = {
+						OR = {
+							state = 34
+							state = 907
+							state = 906
+						}
+						NOT = {
+							is_claimed_by = GER
+							is_core_of = GER
+						}
+					}
+					transfer_state_to = BEL
+				}
+				else = {
+					every_owned_state = {
+						limit = {
+							OR = {
+								state = 34
+								state = 907
+								state = 906
+							}
+						}
+						transfer_state_to = BEL
+					}
+				}
+			}			
+		}
+		BEL = {
+			clr_country_flag = BEL_submit_to_GER_1914
+			if = {
+				limit = {
+					has_cosmetic_tag = FLA
+					any_owned_state = {
+						OR = {
+							state = 34
+							state = 907
+							state = 906
+						}
+					}
+				}
+				drop_cosmetic_tag = yes
+			}
+		}
 	}
 	if = {
 		limit = {
@@ -1628,6 +1678,7 @@ armistice_effect = {
 						}
 						transfer_state_to = GER
 					}
+					add_state_core = 33
 				}
 				if = {
 					limit = {
@@ -1651,14 +1702,21 @@ armistice_effect = {
 						}
 					}
 				}
-
 			}
 			if = {
 				limit = {
-					LUX = {
-						has_country_flag = great_war_loser
-						exists = yes
-					}				
+					OR = {
+						AND = {
+							LUX = {
+								has_country_flag = great_war_loser
+								exists = yes
+							}
+						}				
+						AND = {
+							has_global_flag = luxembourg_submitted
+							GER = { has_subject = LUX }
+						}
+					}							
 				}
 				GER = {
 					annex_country = {
@@ -3158,13 +3216,28 @@ conference_effect = {
 						state = 865
 					}	
 					OWNER = {
-						OR = {						
-							has_country_flag = great_war_loser
-						}
+						has_country_flag = great_war_loser
 					}				
 				}
 				transfer_state_to = PREV
+				set_demilitarized_zone = no
 			}
+		}
+		random_country = {
+			limit = {
+				owns_state = 34
+				NOT = { has_country_flag = great_war_loser }
+			}
+			33 = {
+				if = {
+					limit = {
+						OWNER = {
+							has_country_flag = great_war_loser
+					}				
+				}	
+				transfer_state_to = PREV
+				set_demilitarized_zone = no
+			}	
 		}
 		if = {
 			limit = {
@@ -5522,24 +5595,6 @@ conference_effect = {
 	# 		transfer_state_to = SYR
 	# 	}
 	# }
-	# Luxembourg
-	if = {
-		limit = {
-			LUX = { has_country_flag = great_war_winner }
-		}
-		if = {
-			limit = {
-				any_country = {
-					owns_state = 906
-					has_country_flag = great_war_loser
-				}
-			}
-			LUX = {
-				add_state_core = 906
-				transfer_state = 906
-			}
-		}
-	}
 	# Kingdom of Arabia
 	if = {
 		limit = {
