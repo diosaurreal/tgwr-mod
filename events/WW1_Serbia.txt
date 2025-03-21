@@ -16,25 +16,21 @@ country_event = {
 	}
 	option = {
 		name = ww1_serbia.1.a
-		clr_country_flag = grand_coalition
-		set_country_flag = grand_coalition_collapse
 		# hidden_effect = {
 		# 	country_event = generic.27
 		# }
-		remove_ideas = {
-			SER_idea_grand_coalition
-			SER_idea_grand_coalition_1
+		if = {
+			limit = { has_idea = SER_idea_grand_coalition }
+			remove_ideas = SER_idea_grand_coalition
 		}
-		hidden_effect = {
-			country_event = {
-				id = ww1_serbia.3
-				days = 90
-			}
+		if = {
+			limit = { has_idea = SER_idea_grand_coalition_1 }
+			remove_ideas = SER_idea_grand_coalition_1
 		}
-		# retire_character = SER_nikola_pasic
-		SER_milovan_milovanovic = {
-			promote_character = yes
-		}
+		hidden_effect = { country_event = { id = ww1_serbia.3 days = 90 } }
+		retire_country_leader = yes
+		set_country_flag = SER_grand_coalition_collapsed
+		complete_national_focus = SER_coalition_collapse
 	}
 }
 
@@ -88,11 +84,9 @@ country_event = {
 	is_triggered_only = yes
 	trigger = {
 		original_tag = SER
-		has_country_flag = grand_coalition_collapse
 		NOT = {
-			has_country_flag = grand_coalition
-		}
-		NOT = {
+			has_idea = SER_idea_grand_coalition
+			has_idea = SER_idea_grand_coalition_1
 			has_idea = SER_idea_government_without_majority
 		}
 		has_start_date < 1911.1.1
@@ -380,9 +374,7 @@ country_event = {
 		name = ww1_serbia.11.a
 		add_political_power = -20
 		if = {
-			limit = {
-				has_idea = SER_idea_grand_coalition_1
-			}
+			limit = { has_idea = SER_idea_grand_coalition_1 }
 			swap_ideas = {
 				remove_idea = SER_idea_grand_coalition_1
 				add_idea = SER_idea_grand_coalition
@@ -1291,6 +1283,7 @@ country_event = {
 		set_global_flag = corfu_lease
 		FROM = {
 			transfer_state = 187
+			187 = { add_dynamic_modifier = { modifier = SER_serbian_exile } }
 			swap_ideas = {
 				remove_idea = SER_idea_exodus
 				add_idea = SER_idea_exile
@@ -1298,12 +1291,6 @@ country_event = {
 			add_opinion_modifier = {
 				target = ROOT
 				modifier = large_increase
-			}
-		}
-		187 = {
-			set_state_controller_to = FROM
-			add_dynamic_modifier = {
-				modifier = SER_serbian_exile
 			}
 		}
 		hidden_effect = {
@@ -1647,7 +1634,21 @@ country_event = {
 	title = ww1_serbia.56.t
 	desc = ww1_serbia.56.d
 	picture = GFX_report_event_gre_rural_rebels
-	is_triggered_only = yes
+	trigger = {
+		tag = SER
+		owns_state = 105
+		NOT = { country_exists = MNT }
+		MNT = {
+			has_country_leader = {
+				character = MNT_podgorica_assembly
+				ruling_only = yes
+			}
+		}
+	}
+	fire_only_once = yes
+	mean_time_to_happen = {
+		days = 30
+	}
 	option = {
 		name = ww1_serbia.56.a
 		add_stability = -0.1
@@ -3495,14 +3496,21 @@ country_event = {
 					state = 870
 				}
 			}
-			keep_all_characters = yes
+			keep_political_leader = yes
+			keep_political_party_members = yes
+			keep_unit_leaders_trigger = {
+				OR = {
+					has_trait = politically_connected
+					has_trait = trait_royal
+					has_trait = trait_royalist
+				}
+			}
 			hidden_effect = {
 				PREV = {
 					MNT_podgorica_assembly = {
 						set_nationality = PREV.PREV
 					}
 				}
-				get_current_government_type = yes
 				FROM = {
 					set_autonomy = {
 						target = PREV
@@ -3511,20 +3519,34 @@ country_event = {
 						end_civil_wars = no
 					}
 				}
-				restore_previous_government_type = yes
+				set_politics = {
+					ruling_party = democratic
+					elections_allowed = no
+				}
+				add_popularity = {
+					ideology = democratic
+					popularity = 0.2
+				}
 				set_party_name = {
 					ideology = democratic
 					long_name = MNT_national_assembly_long
 					name = MNT_national_assembly
 				}
 				MNT_podgorica_assembly = {
-					add_country_leader_role = {
-						promote_leader = yes
-						country_leader = {
-							ideology = conservatism
+					if = {
+						limit = {
+							has_ideology = conservatism
+						}
+						promote_character = conservatism
+					}
+					else = {
+						add_country_leader_role = {
+							promote_leader = yes
+							country_leader = {
+								ideology = conservatism
+							}
 						}
 					}
-					promote_character = conservatism
 				}
 			}
 		}
