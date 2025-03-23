@@ -71,7 +71,7 @@ crisis = {
 						add_to_temp_variable = { leftwing_temp = party_popularity@communism }
 						check_variable = {
 							var = leftwing_temp
-							value = 0.5
+							value = 0.51
 						}
 					}
 				}
@@ -664,7 +664,8 @@ SWE_riksdagens_decisions = {
 			has_idea = SWE_unpopular_riksdag
 		}
 		available = {
-			threat > 0.6
+			threat > 0.5
+			has_completed_focus = SWE_allies_in_unlikely_places
 		}
 		cancel_trigger = {
 			hidden_trigger = {
@@ -827,18 +828,18 @@ SWE_riksdagens_decisions = {
 			original_tag = SWE
 		}
 		visible = {
-			OR = {
-				has_country_leader_ideology = social_democracy
-				has_government = communism
-			}
-			NOT = { has_idea = SWE_class_compromise }
+			has_completed_focus = SWE_welfare_reforms
 			date > 1916.1.1
 		}
 		available = {
 			neutrality < 0.2
 			fascism < 0.2
 			NOT = { has_idea = SWE_class_conflict }
-			NOT = { has_idea = SWE_class_compromise }
+			OR = {
+				has_country_leader_ideology = social_liberalism
+				has_country_leader_ideology = social_democracy
+				has_government = communism
+			}
 		}
 		fire_only_once = yes
 		
@@ -1055,6 +1056,31 @@ SWE_riksdagens_decisions = {
 			}
 		}
 	}
+	SWE_goal_of_army_bill = {	# Hammarskjöld's Army Bill of 1914
+		allowed = {
+			always = no
+		}
+		available = {
+			has_army_size = {
+				size > 11
+				type = infantry
+			}
+			has_army_manpower = { size > 12999 }
+		}
+		visible = {
+			original_tag = SWE
+		}
+		
+		fire_only_once = yes
+		
+		is_good = yes
+		
+		days_mission_timeout = 365
+		
+		complete_effect = {
+			add_war_support = 0.05
+		}
+	}
 	SWE_motion_for_military_expansion = {
 		allowed = {
 			original_tag = SWE
@@ -1079,7 +1105,7 @@ SWE_riksdagens_decisions = {
 		}
 		custom_cost_text = decision_cost_CP_25_pp_50
 
-		days_remove = 140
+		days_remove = 175
 		fire_only_once = yes
 		
 		complete_effect = {
@@ -1087,10 +1113,14 @@ SWE_riksdagens_decisions = {
 				add_command_power = -25
 				add_political_power = -50
 			}
+			activate_mission = SWE_goal_of_army_bill
+		}
+		
+		modifier = {
+			war_support_weekly = 0.002
 		}
 		
 		remove_effect = {
-			add_war_support = 0.05
 			army_experience = 15
 			custom_effect_tooltip = adjust_swe_military_tt
 			add_to_variable = {
@@ -1292,6 +1322,10 @@ SWE_riksdagens_decisions = {
 		
 		ai_will_do = {
 			base = 10
+			modifier = {
+				factor = 0
+				has_political_power < 150
+			}
 		}
 	}
 	SWE_organise_military_labour_unions = {
@@ -1549,6 +1583,76 @@ SWE_riksdagens_decisions = {
 			modifier = {
 				factor = 0
 				has_stability < 0.7
+			}
+		}
+	}
+	SWE_funds_to_army_jobs = {
+		# Let's bring in those funds!
+		icon = GFX_decision_generic_industry
+		allowed = {
+			original_tag = SWE
+		}
+		available = {
+			NOT = { has_idea = SWE_anti_war_promises }
+			any_owned_state = {
+				is_controlled_by = ROOT
+				arms_factory > 0
+			}
+			OR = {
+				has_war_support > 0.15
+				communism < 0.1
+				threat > 0.05
+			}
+		}
+		
+		fire_only_once = yes
+		
+		visible = {
+			has_completed_focus = SWE_create_army_jobs
+			any_owned_state = {
+				is_controlled_by = ROOT
+				free_building_slots = {
+					building = industrial_complex
+					size > 0
+					include_locked = yes
+				}
+			}
+		}
+		
+		cost = 50
+		days_remove = 365
+		
+		modifier = {
+			consumer_goods_factor = 0.10
+		}
+		
+		remove_effect = {
+			random_owned_controlled_state = {
+				limit = { arms_factory > 0 }
+				add_extra_state_shared_building_slots = 1
+				add_building_construction = {
+					type = arms_factory
+					level = 1
+					instant_build = yes
+				}
+			}
+		}
+		ai_will_do = {
+			base = 0
+			modifier = {
+				add = 1
+				OR = {
+					has_country_leader_ideology = conservatism
+					has_country_leader_ideology = liberal_conservatism
+				}
+			}
+			modifier = {
+				add = 1
+				date > 1913.1.1
+			}
+			modifier = {
+				add = 1
+				has_war = yes
 			}
 		}
 	}

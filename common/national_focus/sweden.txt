@@ -174,13 +174,12 @@ focus_tree = {
 			random_owned_controlled_state = {
 				limit = { arms_factory > 0 }
 				add_extra_state_shared_building_slots = 1
-				add_building_construction = {
-					type = arms_factory
-					level = 1
-					instant_build = yes
-				}
 			}
 			# Should maybe unlock Riksdag decision instead
+			unlock_decision_tooltip = {
+				decision = SWE_funds_to_army_jobs
+				show_effect_tooltip = yes
+			}
 		}
 	}
 	focus = {	# Reimburse them
@@ -609,10 +608,12 @@ focus_tree = {
 			}
 		}
 		cancel = {
-			NOT = {
-				has_country_leader = {
-					character = SWE_karl_staaff
-					ruling_only = yes
+			OR = {
+				NOT = {
+					has_country_leader = {
+						character = SWE_karl_staaff
+						ruling_only = yes
+					}
 				}
 				has_completed_focus = SWE_third_liberal_regering
 				has_completed_focus = SWE_courtyard_speech
@@ -776,6 +777,10 @@ focus_tree = {
 				has_country_leader_ideology = social_liberalism
 				has_country_leader_ideology = social_democracy
 			}
+			OR = {	# For now
+				threat > 0.3
+				has_completed_focus = SWE_push_for_parliamentism_reforms
+			}
 			custom_trigger_tooltip = {
 				tooltip = eighty_percent_leftwing_support
 				set_temp_variable = { leftwing_temp = party_popularity@communism }
@@ -857,6 +862,8 @@ focus_tree = {
 				has_country_leader_ideology = social_liberalism
 				has_country_leader_ideology = social_democracy
 			}
+			fascism < 0.2
+			neutrality < 0.2
 		}
 		
 		search_filters = { FOCUS_FILTER_POLITICAL FOCUS_FILTER_INTERNAL_AFFAIRS }
@@ -900,6 +907,7 @@ focus_tree = {
 		completion_reward = {
 			add_stability = 0.05
 			add_political_power = 50
+			# Should also give some riksdag's reforms
 		}
 	}
 	focus = {
@@ -968,13 +976,17 @@ focus_tree = {
 		y = 4
 		
 		available = {
-			has_country_leader_ideology = social_liberalism
+			OR = {
+				has_country_leader_ideology = social_liberalism
+				has_country_leader_ideology = classical_liberalism
+			}
 		}
 		
-		search_filters = { FOCUS_FILTER_POLITICAL }
+		search_filters = { FOCUS_FILTER_INDUSTRY FOCUS_FILTER_POLITICAL FOCUS_FILTER_STABILITY }
 		
 		completion_reward = {
-			add_ideas = SWE_new_liberalism_2
+			add_ideas = SWE_new_liberalism
+			# Maybe add some riksdag decisions
 		}
 	}
 	focus = {
@@ -1210,6 +1222,12 @@ focus_tree = {
 		completion_reward = {
 			custom_effect_tooltip = if_they_accept_tt
 			custom_effect_tooltip = will_lower_requirements_to_remove_risk_of_famine
+			# Will be asked to have food be delievered through either Norway or Russia/Finland (if Finland has broken free)
+				# Norway will prob decline
+				# Russia might agree for concession
+				# Finland should(?) always accept
+			# Unlocks decision to make use of food corridor
+				# Gains some stability immediately
 		}
 	}
 	# Historical
@@ -1247,7 +1265,7 @@ focus_tree = {
 			}
 		}
 		
-		search_filters = { FOCUS_FILTER_POLITICAL FOCUS_FILTER_STABILITY }
+		search_filters = { FOCUS_FILTER_HISTORICAL FOCUS_FILTER_POLITICAL FOCUS_FILTER_STABILITY }
 		
 		completion_reward = {
 			SWE_hjalmar_hammarskjold = {
@@ -1272,7 +1290,7 @@ focus_tree = {
 			NOT = { has_idea = closed_economy }
 		}
 		
-		search_filters = { FOCUS_FILTER_INDUSTRY }
+		search_filters = { FOCUS_FILTER_HISTORICAL FOCUS_FILTER_INDUSTRY }
 		
 		completion_reward = {
 			add_ideas = SWE_resource_market
@@ -1300,7 +1318,7 @@ focus_tree = {
 		}
 		bypass = { is_in_faction = yes }
 		
-		search_filters = { FOCUS_FILTER_STABILITY }
+		search_filters = { FOCUS_FILTER_HISTORICAL FOCUS_FILTER_STABILITY }
 		
 		completion_reward = {
 			add_stability = 0.15
@@ -1355,7 +1373,7 @@ focus_tree = {
 			is_in_faction = no
 		}
 		
-		search_filters = { FOCUS_FILTER_POLITICAL FOCUS_FILTER_INTERNAL_AFFAIRS }
+		search_filters = { FOCUS_FILTER_HISTORICAL FOCUS_FILTER_POLITICAL FOCUS_FILTER_INTERNAL_AFFAIRS }
 		
 		completion_reward = {
 			add_ideas = SWE_rally_to_neutrality
@@ -1412,6 +1430,7 @@ focus_tree = {
 				var = SWE_mil_training_time_factor
 				value = -0.05
 			}
+			# Get decision to establish Landstorm (just gies war support)?
 		}
 	}
 	focus = {
@@ -1442,8 +1461,21 @@ focus_tree = {
 				}
 			}
 		}
+		# If bypassed get event giving war support?
+		search_filters = { FOCUS_FILTER_HISTORICAL }
 		
 		completion_reward = {
+			add_opinion_modifier = {
+				target = NOR
+				modifier = small_increase
+			}
+			reverse_add_opinion_modifier = {
+				target = NOR
+				modifier = small_increase
+			}
+			NOR = {
+				country_event = { id = ww_sverige_general.20 hours = 6 }
+			}
 			# Opinion boost with NOR
 				# NOR get event where they can chose to reafirm it
 				# if they agree they lose war support, gain pp + stab
@@ -1477,9 +1509,10 @@ focus_tree = {
 				has_war = no
 			}
 		}
+		search_filters = { FOCUS_FILTER_HISTORICAL }
 		
 		completion_reward = {
-			# If agreed every country gains 'Nordic Censorship Agreement' until end of war (ended by decision? event?)
+			# If agreed every nordic country gains 'Nordic Censorship Agreement' until end of war (ended by decision? event?)
 			# This gives +20% enemy justify wargoal time, add base stability + war support
 			# Adds some bonus to spies?
 		}
@@ -1505,6 +1538,8 @@ focus_tree = {
 				NOT = { has_idea = closed_economy }
 			}
 		}
+		
+		search_filters = { FOCUS_FILTER_HISTORICAL }
 		
 		completion_reward = {
 			# Denmark gets event to make agreement for trade
@@ -1543,7 +1578,7 @@ focus_tree = {
 			NOT = { has_global_flag = great_war_ends }
 		}
 		
-		search_filters = { FOCUS_FILTER_POLITICAL FOCUS_FILTER_INTERNAL_AFFAIRS }
+		search_filters = { FOCUS_FILTER_HISTORICAL FOCUS_FILTER_POLITICAL FOCUS_FILTER_INTERNAL_AFFAIRS }
 		
 		completion_reward = {
 			add_political_power = 100
@@ -1579,7 +1614,7 @@ focus_tree = {
 			}
 		}
 		
-		search_filters = { FOCUS_FILTER_WAR_SUPPORT FOCUS_FILTER_INTERNAL_AFFAIRS }
+		search_filters = { FOCUS_FILTER_HISTORICAL FOCUS_FILTER_WAR_SUPPORT FOCUS_FILTER_INTERNAL_AFFAIRS }
 		
 		completion_reward = {
 			add_war_support = 0.15
@@ -1662,39 +1697,29 @@ focus_tree = {
 		}
 	}
 	focus = {
-		id = SWE_bias_towards_german_trade
-		icon = GFX_focus_deal_with_german_empire
-		prerequisite = {
-			focus = SWE_foreign_policy_of_the_king
-			focus = SWE_creation_of_nationalistiskt_arbetarparti
-		}
+		id = SWE_allies_in_unlikely_places
+		icon = GFX_goal_generic_positive_trade_relations
+		prerequisite = { focus = SWE_foreign_policy_of_the_king }
 		relative_position_id = SWE_foreign_policy_of_the_king
-		cost = 10.00
-		x = 1
-		y = 2
+		cost = 5.00
+		x = 0
+		y = 1
 		
-		available = {
-			NOT = { has_idea = closed_economy }
-			GER = {
-				exists = yes
-				NOT = {
-					has_idea = idea_army_restrictions
-					has_idea = idea_armistice
-				}
-			}
-		}
-		
-		search_filters = { FOCUS_FILTER_INDUSTRY }
+		search_filters = { FOCUS_FILTER_POLITICAL }
 		
 		completion_reward = {
-			add_ideas = SWE_pro_german_trade
+			custom_effect_tooltip = available_political_advisor
+			show_ideas_tooltip = SWE_rudof_kjellen
+			show_ideas_tooltip = SWE_axel_hultkrantz
+			show_ideas_tooltip = SWE_otto_jarte
 		}
 	}
 	focus = {
 		id = SWE_strengthen_german_relations
 		icon = GFX_focus_ger_weltpolitik_ww1
 		prerequisite = {
-			focus = SWE_bias_towards_german_trade
+			focus = SWE_foreign_policy_of_the_king
+			focus = SWE_creation_of_nationalistiskt_arbetarparti
 		}
 		mutually_exclusive = {
 			focus = SWE_rally_to_neutrality
@@ -1753,6 +1778,40 @@ focus_tree = {
 				relation = offer_docking_rights
 				active = yes
 			}
+			custom_effect_tooltip = available_political_advisor
+			show_ideas_tooltip = SWE_adrian_molin
+		}
+	}
+	focus = {
+		id = SWE_bias_towards_german_trade
+		icon = GFX_focus_deal_with_german_empire
+		prerequisite = {
+			focus = SWE_rally_to_neutrality
+			focus = SWE_strengthen_german_relations
+		}
+		relative_position_id = SWE_rally_to_neutrality
+		cost = 5.00
+		x = 2
+		y = 1
+		
+		search_filters = { FOCUS_FILTER_HISTORICAL FOCUS_FILTER_INDUSTRY FOCUS_FILTER_WAR_SUPPORT }
+		
+		available = {
+			NOT = { has_idea = closed_economy }
+			GER = {
+				exists = yes
+				NOT = { has_war_with = ROOT }
+				NOT = {
+					has_idea = idea_army_restrictions
+					has_idea = idea_armistice
+				}
+			}
+		}
+		
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		
+		completion_reward = {
+			add_ideas = SWE_pro_german_trade
 		}
 	}
 	focus = {
@@ -2422,7 +2481,19 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_POLITICAL }
 		
 		completion_reward = {
-			
+			custom_effect_tooltip = will_remove_com_popularity_and_add_dem_popularity_tt
+			set_temp_variable = { communism_temp = party_popularity@communism }
+			multiply_temp_variable = { communism_temp = -0.30 }
+			add_popularity = {
+				ideology = communism
+				popularity = communism_temp
+			}
+			multiply_temp_variable = { communism_temp = -0.50 }
+			add_popularity = {
+				ideology = democratic
+				popularity = communism_temp
+			}
+			add_stability = 0.05
 		}
 	}
 	focus = {
@@ -2445,8 +2516,11 @@ focus_tree = {
 			}
 			add_popularity = {
 				ideology = communism
-				popularity = 0.03
+				popularity = 0.06
 			}
+			# Unlock decision to convert democratic support to socialist
+				# This should take support from socdem to communists in riksdag
+				# Then get decision to coup them out to unlock rest of tree
 		}
 	}
 	focus = {
@@ -2482,16 +2556,11 @@ focus_tree = {
 		x = -1
 		y = 4
 		
-		search_filters = { FOCUS_FILTER_STABILITY FOCUS_FILTER_INDUSTRY }
-		available = {
-			has_idea = SWE_class_conflict
-		}
-
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		
 		completion_reward = {
-			swap_ideas = {
-				remove_idea = SWE_class_conflict
-				add_idea = SWE_class_unity
-			}
+			custom_effect_tooltip = enables_further_riksdag_decisions
+			unlock_decision_tooltip = SWE_the_eight_hour_workday
 		}
 	}
 	focus = {
@@ -2507,14 +2576,33 @@ focus_tree = {
 		y = 4
 		
 		search_filters = { FOCUS_FILTER_STABILITY FOCUS_FILTER_INDUSTRY }
-		available = {
-			has_idea = SWE_class_conflict
-		}
-
+		
 		completion_reward = {
 			swap_ideas = {
 				remove_idea = SWE_class_conflict
 				add_idea = SWE_class_unity
+			}
+		}
+	}
+	focus = {
+		id = SWE_revolutionarism
+		icon = GFX_focus_social_welfare
+		prerequisite = { focus = SWE_fuel_to_the_fire }
+		relative_position_id = SWE_first_chance_for_social_democracy
+		cost = 10.00
+		x = 3
+		y = 4
+		
+		search_filters = { FOCUS_FILTER_STABILITY FOCUS_FILTER_INDUSTRY }
+		available = {
+			NOT = { has_idea = communist_pressure }
+		}
+		
+		completion_reward = {
+			add_stability = -0.05
+			add_popularity = {
+				ideology = communism
+				popularity = 0.10
 			}
 		}
 	}
