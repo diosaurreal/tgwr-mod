@@ -66,6 +66,15 @@ focus_tree = {
 				ahead_reduction = 1
 				bonus = 0.5
 			}
+			random_owned_controlled_state = {
+				prioritize = { 16 }
+				add_extra_state_shared_building_slots = 1
+				add_building_construction = {
+					type = industrial_complex
+					level = 1
+					instant_build = yes
+				}
+			}
 		}
 		ai_will_do = {
 			factor = 20
@@ -6396,10 +6405,6 @@ focus_tree = {
 				}
 			}
 			add_ideas = FRA_wadai_war_effort
-			add_equipment_to_stockpile = {
-				type = infantry_equipment
-				amount = 3000
-			}
 		}
 		ai_will_do = {
 			factor = 600
@@ -6510,8 +6515,13 @@ focus_tree = {
 			add_doctrine_cost_reduction = {
 				name = FRA_ww1_revision_de_larmee_de_terre
 				cost_reduction = 0.5
-				uses = 2
+				uses = 1
 				category = land_doctrine
+			}
+			add_equipment_to_stockpile = {
+				type = infantry_equipment_0
+				producer = FRA
+				amount = 8000
 			}
 		}
 		ai_will_do = {
@@ -6604,7 +6614,11 @@ focus_tree = {
 				category = train_tech
 				uses = 2
 			}
-			
+			add_equipment_to_stockpile = {
+				type = artillery_equipment_1
+				producer = FRA
+				amount = 500
+			}
 			
 			set_country_flag = has_invested_in_schneider
 		}
@@ -6870,7 +6884,7 @@ focus_tree = {
 		y = 1
 	}
 	focus = {
-		id = FRA_ww1_emergency_measures
+		id = FRA_voie_sacree
 		icon = GFX_focus_damascus
 		relative_position_id = FRA_ww1_taxis_de_la_marne
 		prerequisite = {
@@ -6880,12 +6894,18 @@ focus_tree = {
 			has_war = yes
 		}
 		completion_reward = {
-			add_tech_bonus = {
-				name = FRA_ww1_fund_berthier
-				bonus = 0.75
-				category = infantry_weapons
-				category = support_tech
-				uses = 2
+			every_controlled_state = {
+				limit = {
+					is_core_of = ROOT
+					any_neighbor_state = {
+						CONTROLLER = {
+							has_war_with = ROOT
+						}
+					}
+				}
+				add_dynamic_modifier = {
+					modifier = FRA_voie_sacree
+				}
 			}
 		}
 		ai_will_do = {
@@ -6902,9 +6922,9 @@ focus_tree = {
 	focus = {
 		id = FRA_ww1_anti_air_positions
 		icon = GFX_goal_generic_construct_military
-		relative_position_id = FRA_ww1_emergency_measures
+		relative_position_id = FRA_voie_sacree
 		prerequisite = {
-			focus = FRA_ww1_emergency_measures
+			focus = FRA_voie_sacree
 		}
 		available = {
 			NOT = {
@@ -7293,11 +7313,99 @@ focus_tree = {
 		y = 1
 	}
 	focus = {
+		id = FRA_ww1_favor_peugeot_tank
+		icon = GFX_focus_char_peugeot
+		relative_position_id = FRA_ww1_break_the_german_lines
+		prerequisite = {
+			focus = FRA_ww1_break_the_german_lines
+		}
+		mutually_exclusive = {
+			focus = FRA_ww1_the_french_miracle
+		}
+		available = {
+			NOT = {
+				has_idea = idea_army_restrictions
+				has_idea = FRA_land_army_restrictions
+				has_idea = FRA_naval_army_restrictions
+			}
+			OR = {
+				has_idea = FRA_idea_union_sacree
+				ROOT = {
+					custom_trigger_tooltip = {
+						tooltip = FRA_250_seats
+						check_variable = {
+							democrat_alliance > 250
+						}
+					}
+				}
+			}
+			longest_war_length > 30
+		}
+		completion_reward = {
+			
+			
+			set_country_flag = has_invested_in_peugeot
+			set_technology = { armor_tech_1 = 1 }
+			if = {
+				limit  ={
+					has_dlc = "No Step Back"
+				}
+				add_tech_bonus = {
+					name = FRA_ww1_the_french_miracle
+					uses = 1
+					bonus = 3
+					ahead_reduction = 1
+					technology = basic_light_tank_chassis
+					technology = improved_light_tank_chassis
+				}
+				else = {
+					add_tech_bonus = {
+						name = FRA_ww1_the_french_miracle
+						uses = 1
+						bonus = 3
+						ahead_reduction = 1
+						technology = basic_light_tank
+					}
+				}
+			} 
+			
+
+			IF = {
+				limit = {
+					has_dlc = "Arms Against Tyranny"
+				}
+				custom_effect_tooltip = available_mio_tt
+				show_mio_tooltip = FRA_peugeot_organization
+				mio:FRA_peugeot_organization = {
+					add_mio_size = 5
+				}
+				else = {
+					custom_effect_tooltip = available_designer
+					show_ideas_tooltip = peugeot
+				}
+			}
+		}
+		ai_will_do = {
+			factor = 1000
+		}
+		search_filters = {
+			FOCUS_FILTER_WAR_SUPPORT
+			FOCUS_FILTER_RESEARCH
+			FOCUS_FILTER_HISTORICAL
+		}
+		cost = 10
+		x = -1
+		y = 1
+	}
+	focus = {
 		id = FRA_ww1_the_french_miracle
 		icon = GFX_focus_early_tank
 		relative_position_id = FRA_ww1_break_the_german_lines
 		prerequisite = {
 			focus = FRA_ww1_break_the_german_lines
+		}
+		mutually_exclusive = {
+			focus = FRA_ww1_favor_peugeot_tank
 		}
 		available = {
 			NOT = {
@@ -7352,11 +7460,12 @@ focus_tree = {
 				mio:FRA_renault_organization = {
 					add_mio_size = 5
 				}
+				else = {
+					custom_effect_tooltip = available_designer
+					show_ideas_tooltip = renault_fra
+				}
 			}
-			else = {
-				custom_effect_tooltip = available_designer
-				show_ideas_tooltip = renault_fra
-			}
+			
 		}
 		ai_will_do = {
 			factor = 1000
@@ -7367,7 +7476,7 @@ focus_tree = {
 			FOCUS_FILTER_HISTORICAL
 		}
 		cost = 10
-		x = 0
+		x = 1
 		y = 1
 	}
 	focus = {
@@ -7376,6 +7485,7 @@ focus_tree = {
 		relative_position_id = FRA_ww1_the_french_miracle
 		prerequisite = {
 			focus = FRA_ww1_the_french_miracle
+			focus = FRA_ww1_favor_peugeot_tank
 		}
 		available = {
 			NOT = {
@@ -7408,125 +7518,15 @@ focus_tree = {
 		}
 		completion_reward = {
 			set_country_flag = FRA_ww1_form_the_armored_spearhead
-			effect_tooltip = {
-				activate_decision = FRA_fufill_renault_contract
-			}
 			if = {
-				limit  ={
-					has_dlc = "No Step Back"
-					has_tech = basic_light_tank_chassis
-					NOT = {
-						has_tech = improved_light_tank_chassis
-					}
-				}
-				create_equipment_variant = {
-					name = "Renault FT (mitrailleuses)" 
-					type = light_tank_chassis_0
-					parent_version = 0
-					modules = {
-						main_armament_slot = tank_heavy_machine_gun
-						turret_type_slot = tank_light_one_man_tank_turret
-						suspension_type_slot = tank_bogie_suspension
-						armor_type_slot = tank_riveted_armor
-						engine_type_slot = tank_gasoline_engine
-					}
-					upgrades = {
-						tank_nsb_engine_upgrade = 3
-						tank_nsb_armor_upgrade = 3
-					}
-					icon = "gfx/interface/technologies/FRA/FRA_ww1_light_tank_1.png"
-				}
-			}
-			if = {
-				limit  ={
-					has_dlc = "No Step Back"
-					has_tech = improved_light_tank_chassis
-					NOT = {
-						has_tech = advanced_light_tank_chassis
-					}
-				}
-				create_equipment_variant = {
-					name = "Renault NC Modèle 1918" 
-					type = light_tank_chassis_1
-					parent_version = 0
-					modules = {
-						main_armament_slot = tank_close_support_gun
-						turret_type_slot = tank_light_one_man_tank_turret
-						suspension_type_slot = tank_bogie_suspension
-						armor_type_slot = tank_riveted_armor
-						engine_type_slot = tank_gasoline_engine
-					}
-					upgrades = {
-						tank_nsb_engine_upgrade = 3
-						tank_nsb_armor_upgrade = 3
-					}
-					icon = "gfx/interface/technologies/FRA/FRA_ww1_light_tank_2.png"
-				}
-			} 
-			if = {
-				limit  ={
-					has_dlc = "No Step Back"
-					has_tech = advanced_light_tank_chassis
-				}
-				create_equipment_variant = {
-					name = "Renault NC Modèle 1920" 
-					type = light_tank_chassis_2
-					parent_version = 0
-					modules = {
-						main_armament_slot = tank_close_support_gun
-						turret_type_slot = tank_light_one_man_tank_turret
-						suspension_type_slot = tank_bogie_suspension
-						armor_type_slot = tank_riveted_armor
-						engine_type_slot = tank_gasoline_engine
-					}
-					upgrades = {
-						tank_nsb_engine_upgrade = 3
-						tank_nsb_armor_upgrade = 3
-					}
-					icon = "gfx/interface/technologies/FRA/FRA_ww1_light_tank_3.png"
-				}
-			}
-			division_template = {
-				name = "Brigade de cavalerie blindée"
-				regiments = {
-					light_armor = {
-						x = 0
-						y = 0
-					}
-					light_armor = {
-						x = 0
-						y = 1
-					}
-					light_armor = {
-						x = 0
-						y = 2
-					}
-					light_armor = {
-						x = 0
-						y = 3
-					}
-					cavalry = {
-						x = 1
-						y = 0
-					}
-					cavalry = {
-						x = 1
-						y = 1
-					}
-				}
-			}
-			random_owned_controlled_state = {
 				limit = {
-					is_core_of = ROOT
-					is_on_continent = europe
+					NOT = {
+						has_completed_focus = FRA_ww1_favor_peugeot_tank
+					}
 				}
-				create_unit = {
-					division = "name = \"1ère brigade de chars légers\" division_template = \"Brigade de cavalerie blindée\" start_equipment_factor = 0.6"
-					owner = ROOT
-				}
-				create_unit = {
-					division = "name = \"2ème brigade de chars légers\" division_template = \"Brigade de cavalerie blindée\" start_equipment_factor = 0.6"
-					owner = ROOT
+				FRA_spawn_renault_tanks = yes
+				else = {
+					FRA_spawn_peugeot_tanks = yes
 				}
 			}
 			custom_effect_tooltip = FRA_form_renault_tank_brigades
@@ -7609,6 +7609,70 @@ focus_tree = {
 		}
 		cost = 5
 		x = 1
+		y = 1
+	}
+
+	focus = {
+		id = FRA_ww1_char_b
+		icon = FRA_ww1_focus_char_b
+		
+		relative_position_id = FRA_ww1_favor_peugeot_tank
+		prerequisite = {
+			focus = FRA_ww1_favor_peugeot_tank
+		}
+		available = {
+			NOT = {
+				has_idea = idea_army_restrictions
+				has_idea = FRA_land_army_restrictions
+				has_idea = FRA_naval_army_restrictions
+			}
+			OR = {
+				has_idea = FRA_idea_union_sacree
+				ROOT = {
+					custom_trigger_tooltip = {
+						tooltip = FRA_250_seats
+						check_variable = {
+							democrat_alliance > 250
+						}
+					}
+				}
+			}
+		}
+		completion_reward = {
+
+			if = {
+				limit  ={
+					has_dlc = "No Step Back"
+				}
+				add_tech_bonus = {
+					name = FRA_ww1_the_french_miracle
+					uses = 1
+					bonus = 1
+					ahead_reduction = 1
+					technology = super_heavy_tank_chassis
+				}
+				else = {
+					add_tech_bonus = {
+						name = FRA_ww1_the_french_miracle
+						uses = 1
+						bonus = 1
+						ahead_reduction = 1
+						technology = super_heavy_tank
+					}
+				}
+			} 
+			
+		}
+		ai_will_do = {
+			factor = 1
+		}
+		search_filters = {
+			FOCUS_FILTER_WAR_SUPPORT
+			FOCUS_FILTER_HISTORICAL
+			FOCUS_FILTER_RESEARCH
+		}
+		cost = 5
+		x = -1
 		y = 1
 	}
 
@@ -7775,7 +7839,7 @@ focus_tree = {
 			focus = FRA_ww1_fuhrer_innovation
 		}
 		prerequisite = {
-			focus = FRA_ww1_emergency_measures
+			focus = FRA_voie_sacree
 		}
 		available = {
 			OR = {
@@ -10270,27 +10334,39 @@ focus_tree = {
 		}
 		bypass_if_unavailable = yes
 		available = {
-			OR = {
-				676 = {
-					OWNER = {
-						has_country_flag = great_war_loser
-					}
-				}
-				853 = {
-					OWNER = {
-						has_country_flag = great_war_loser
-					}
-				}
-			}
+			#even if UK controls the place, France rights are still prevailing
+			# OR = {
+			# 	676 = {
+			# 		OWNER = {
+			# 			has_country_flag = great_war_loser
+
+			# 		}
+			# 	}
+			# 	853 = {
+			# 		OWNER = {
+			# 			has_country_flag = great_war_loser
+			# 		}
+			# 	}
+			# }
 		}
 		completion_reward = {
-			give_resource_rights = {
-				receiver = FRA
-				state = 853
+			random_country = {
+				limit = {
+					owns_state = 853
+				}
+				give_resource_rights = {
+					receiver = FRA
+					state = 853
+				}
 			}
-			give_resource_rights = {
-				receiver = FRA
-				state = 676
+			random_country = {
+				limit = {
+					owns_state = 676
+				}
+				give_resource_rights = {
+					receiver = FRA
+					state = 676
+				}
 			}
 			every_other_country = {
 				limit = {
