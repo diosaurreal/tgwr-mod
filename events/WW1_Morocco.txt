@@ -48,7 +48,7 @@ country_event = {
 			}
 		}
 		division_template = {
-			name = "Partisans"
+			name = "Milishia"
 			is_locked = yes
 			regiments = {
 				irregular_infantry = {
@@ -92,7 +92,7 @@ country_event = {
 		set_global_flag = MOR_rebellion_against_FRA
 		461 = {
 			create_unit = {
-				division = "name = \"Partisans\" division_template = \"Partisans\" start_experience_factor = 0.25 start_equipment_factor = 0.5"
+				division = "name = \"Milishia\" division_template = \"Milishia\" start_experience_factor = 0.25 start_equipment_factor = 0.5"
 				owner = ROOT
 				count = 10
 			}
@@ -171,13 +171,25 @@ country_event = {
 			}
 			restore_previous_government_type = yes	
 			unlock_national_focus = MOR_cooperate_with_french	
-		}
-		FRA = {
-			transfer_state = 1093
+			if = {
+				limit = {
+					owns_state = 1093
+				}
+				1093 = {
+					transfer_state_to = FRA
+				}
+			}
 		}
 		if = {
 			limit = {
 				country_exists = SPR
+				any_state = {
+					is_owned_or_subject_trigger = yes
+					OR = {
+						state = 290
+						state = 807
+					}
+				}	
 			}
 			effect_tooltip = {
 				SPR = { transfer_state = 290 transfer_state = 807 }
@@ -219,7 +231,6 @@ country_event = {
 				}
 			}
 		}
-		
 		every_state = {
 			limit = {
 				OR = {
@@ -243,7 +254,7 @@ country_event = {
 			transfer_state_to = RMO	#to avoid no flag bug
 			transfer_state_to = MOR
 		}
-		MOR = {
+		RMO = {
 			set_capital = {
 				state = 462
 			}
@@ -396,15 +407,33 @@ country_event = {
 	option = {
 		name = ww1_morocco.8.a
 		add_political_power = -75
-		transfer_state = 769
 		hidden_effect = {
 			set_crisis_progressbar_75 = yes
 		}
+		every_state = {
+			limit = {
+				is_owned_or_subject_trigger = yes
+				OR = {
+					state = 815 
+					state = 814
+					state = 752
+					state = 772
+				}
+			}
+			transfer_state_to = GER
+		}
 		GER = {
-			transfer_state = 815 
-			transfer_state = 814
-			transfer_state = 752
-			transfer_state = 772
+			if = {
+				limit = {
+					769 = {
+						is_owned_or_subject_PREV_trigger = yes
+					}
+				}
+				769 = {
+					transfer_state_to = FRA
+					add_core_of = CAR
+				}
+			}
 			country_event = {
 				id = ww1_morocco.10
 				days = 2
@@ -412,25 +441,42 @@ country_event = {
 		}
 		news_event = ww1_morocco.11
 		if = {
-			limit = { CMR = { exists = yes } }
-			CMR = {
-				transfer_state = 815 
-				transfer_state = 814
-				transfer_state = 752
-				transfer_state = 772
+			limit = { 
+				CMR = { exists = yes } 
+			}
+			every_state = {			
+				limit = {
+					is_owned_or_subject_trigger = yes
+					OR = {
+						state = 815 
+						state = 814
+						state = 752
+						state = 772
+					}
+				}
+				transfer_state_to = CMR
+				add_claim_by = ROOT
+			}
+			else = {
+				every_state = {					
+					limit = {
+						is_owned_or_subject_trigger = yes
+						OR = {
+							state = 815 
+							state = 814
+							state = 752
+							state = 772
+						}
+					}
+					transfer_state_to = GER
+					add_claim_by = ROOT
+				}
 			}
 		}
 		hidden_effect = {
-			add_state_claim = 815
-			add_state_claim = 814
-			add_state_claim = 772
-			add_state_claim = 752
 			CMR = {
 				add_state_core = 814
 		   		add_state_core = 815
-			}
-			CAR = {
-				add_state_core = 769
 			}
 		}
 		ai_chance = {
@@ -460,6 +506,15 @@ country_event = {
 			NOT = {
 				has_global_flag = agadir_british_support_france
 			}
+			any_state = {
+				is_owned_or_subject_trigger = yes
+				OR = {
+					state = 815 
+					state = 814
+					state = 752
+					state = 772
+				}
+			}
 		}
 	}
 	option = {
@@ -467,36 +522,63 @@ country_event = {
 		trigger = {
 			has_global_flag = agadir_german_demand_congo
 			has_global_flag = agadir_british_support_france
+			any_state = {
+				is_owned_or_subject_trigger = yes
+				OR = {
+					state = 815 
+					state = 814
+				}
+			}
 		}
-		add_war_support = 0.05
-		transfer_state = 769
+		add_war_support = 0.05		
+		if = {
+			limit = { CMR = { exists = yes } }
+			every_state = {
+				limit = {
+					is_owned_or_subject_trigger = yes
+					OR = {
+						state = 815 
+						state = 814
+					}	
+				}
+				transfer_state_to = CMR
+				add_core_of = CMR
+				add_claim_by = ROOT
+			}
+			else = {
+				every_state = {
+					limit = {
+						is_owned_or_subject_trigger = yes
+						OR = {
+							state = 815 
+							state = 814
+						}	
+					}
+					transfer_state_to = GER
+					add_core_of = CMR
+					add_claim_by = ROOT
+				}
+			}
+		}
 		GER = {
-			transfer_state = 815 
-			transfer_state = 814
+			if = {
+				limit = {
+					769 = {
+						is_owned_or_subject_PREV_trigger = yes
+					}
+				}
+				769 = {
+					transfer_state_to = FRA
+					add_core_of = CAR
+				}
+			}
 			country_event = {
 				id = ww1_morocco.10
 				days = 2
 			}
 		}
 		news_event = ww1_morocco.11
-		if = {
-			limit = { CMR = { exists = yes } }
-			CMR = {
-				transfer_state = 815 
-				transfer_state = 814
-			}
-		}
-		hidden_effect = {
-			add_state_claim = 815
-			add_state_claim = 814
-			CMR = {
-				add_state_core = 814
-		   		add_state_core = 815
-			}
-			CAR = {
-				add_state_core = 769
-			}
-		}
+		
 		ai_chance = {
 			factor = 100 
 			modifier = {
@@ -527,14 +609,35 @@ country_event = {
 		name = ww1_morocco.8.e
 		trigger = {
 			has_global_flag = agadir_german_southern_morocco
+			any_state = {
+				OR = {
+					is_owned_or_subject_trigger = yes
+					is_owned_by = MOR
+				}
+				OR = {
+					state = 807
+					state = 783
+				}
+			}
 		}
 		hidden_effect = {
 			set_crisis_progressbar_50 = yes
 		}
+		every_state = {
+			limit = {
+				OR = {
+					is_owned_or_subject_trigger = yes
+					is_owned_by = MOR
+				}
+				OR = {
+					state = 807
+					state = 783
+				}
+			}
+			transfer_state_to = GER
+		}
 		GER = {
 			add_stability = 0.05
-			transfer_state = 807
-			transfer_state = 783
 		}
 		add_political_power = -150
 		news_event = ww1_morocco.11
@@ -1048,8 +1151,21 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_morocco.20.a
-		transfer_state = 290
-		transfer_state = 807
+		SPR_alfonso_xiii = {
+			add_country_leader_trait = SPR_el_africano
+		}
+		FRA = {
+			every_state = {
+				limit = {
+					is_owned_or_subject_PREV_trigger = yes
+					OR = {
+						state = 290
+						state = 807
+					}
+				}
+				transfer_state_to = ROOT
+			}
+		}
 		add_state_claim = 887
 	}
 }
@@ -1191,6 +1307,17 @@ country_event = {
 		name = ww1_morocco.26.a
 		custom_effect_tooltip = historical_tt
 		set_global_flag = agadir_german_demand_congo
+		trigger = {
+			FRA = {
+				any_state = {
+					is_owned_or_subject_PREV_trigger = yes
+					OR = {
+						state = 815 
+						state = 814
+					}
+				}
+			}
+		}
 		ENG = {
 			country_event = {
 				id = ww1_morocco.25
@@ -1214,6 +1341,20 @@ country_event = {
 	option = {
 		name = ww1_morocco.26.b #huh give us southern morocco
 		set_global_flag = agadir_german_southern_morocco
+		trigger = {
+			FRA = {
+				any_state = {
+					OR = {
+						is_owned_or_subject_trigger = yes
+						is_owned_by = MOR
+					}
+					OR = {
+						state = 807
+						state = 783
+					}
+				}
+			}
+		}
 		ENG = {
 			country_event = {
 				id = ww1_morocco.25
@@ -1577,6 +1718,7 @@ country_event = {
 						state = 1094
 						state = 462
 						state = 108
+						state = 1095
 					}
 					NOT = {
 						state = 743
@@ -1652,7 +1794,6 @@ country_event = {
 			limit = {
 				NOT = {
 					has_cosmetic_tag = MOR_FRA
-					has_cosmetic_tag = MOR_FRA
 				}
 			}
 			promote_character = MOR_muhammad_bin_yusef
@@ -1694,7 +1835,7 @@ country_event = {
 ##########################################################
 
 # The Rif #
-# Riffian tribesmen strongly resists the Spanish
+# Riffian Tribesmen strongly resists the Spanish
 country_event = {
 	id = ww1_rif.1
 	title = ww1_rif.1.t
@@ -1752,6 +1893,9 @@ country_event = {
 	desc = ww1_rif.3.d
 	picture = GFX_report_event_spr_army_of_africa
 	is_triggered_only = yes
+	trigger = {
+		owns_state = 290
+	}
 	immediate = {
 		hidden_effect = {
 			290 = { add_core_of = RIF }
@@ -1768,7 +1912,7 @@ country_event = {
 			}
 			RIF = {
 				division_template = {
-					name = "Tribesmen"
+					name = "Harka"
 					regiments = {
 						irregular_infantry = { x = 0 y = 0 }
 						irregular_infantry = { x = 0 y = 1 }
@@ -1819,25 +1963,25 @@ country_event = {
 				}
 				290 = {
 					create_unit = {
-						division = "name = \"Axdir tribesmen\" division_template = \"Tribesmen\" start_experience_factor = 1.0 start_equipment_factor = 1.0"
+						division = "name = \"Axdir Harka\" division_template = \"Harka\" start_experience_factor = 1.0 start_equipment_factor = 1.0"
 						owner = RIF
 						prioritize_location = 7215
 						allow_spawning_on_enemy_provs = yes
 					}
 					create_unit = {
-						division = "name = \"Chauen tribesmen\" division_template = \"Tribesmen\" start_experience_factor = 1.0 start_equipment_factor = 1.0"
+						division = "name = \"Chauen Harka\" division_template = \"Harka\" start_experience_factor = 1.0 start_equipment_factor = 1.0"
 						owner = RIF
 						prioritize_location = 12087
 						allow_spawning_on_enemy_provs = yes
 					}
 					create_unit = {
-						division = "name = \"Axdir tribesmen\" division_template = \"Tribesmen\" start_experience_factor = 1.0 start_equipment_factor = 1.0"
+						division = "name = \"Axdir Harka\" division_template = \"Harka\" start_experience_factor = 1.0 start_equipment_factor = 1.0"
 						owner = RIF
 						prioritize_location = 7215
 						allow_spawning_on_enemy_provs = yes
 					}
 					create_unit = {
-						division = "name = \"Chauen tribesmen\" division_template = \"Tribesmen\" start_experience_factor = 1.0 start_equipment_factor = 1.0"
+						division = "name = \"Chauen Harka\" division_template = \"Harka\" start_experience_factor = 1.0 start_equipment_factor = 1.0"
 						owner = RIF
 						prioritize_location = 12087
 						allow_spawning_on_enemy_provs = yes
@@ -1859,9 +2003,21 @@ country_event = {
 			transfer_state = 290
 			hidden_effect = {
 				PREV = {
-					set_province_controller = 10113
 					set_province_controller = 4761
+					set_province_controller = 12100
 					743 = {
+						create_unit = {
+							division = "name = \"Guarnición de Melilla\" division_template = \"Regimiento de guarnición en Marruecos\" start_experience_factor = 0.3 start_equipment_factor = 1.0"
+							owner = ROOT
+							prioritize_location = 12082
+							allow_spawning_on_enemy_provs = yes
+						}
+						create_unit = {
+							division = "name = \"Guarnición de Ceuta\" division_template = \"Regimiento de guarnición en Marruecos\" start_experience_factor = 0.3 start_equipment_factor = 1.0"
+							owner = ROOT
+							prioritize_location = 9945
+							allow_spawning_on_enemy_provs = yes
+						}
 						create_unit = {
 							division = "name = \"Guarnición de Melilla\" division_template = \"Regimiento de guarnición en Marruecos\" start_experience_factor = 0.3 start_equipment_factor = 1.0"
 							owner = ROOT
@@ -1878,13 +2034,25 @@ country_event = {
 				}
 				290 = {
 					create_unit = {
-						division = "name = \"Axdir tribesmen\" division_template = \"Tribesmen\" start_experience_factor = 1.0 start_equipment_factor = 1.0"
+						division = "name = \"Axdir Harka\" division_template = \"Harka\" start_experience_factor = 1.0 start_equipment_factor = 1.0"
 						owner = RIF
 						prioritize_location = 7215
 						allow_spawning_on_enemy_provs = yes
 					}
 					create_unit = {
-						division = "name = \"Chauen tribesmen\" division_template = \"Tribesmen\" start_experience_factor = 1.0 start_equipment_factor = 1.0"
+						division = "name = \"Chauen Harka\" division_template = \"Harka\" start_experience_factor = 1.0 start_equipment_factor = 1.0"
+						owner = RIF
+						prioritize_location = 12087
+						allow_spawning_on_enemy_provs = yes
+					}
+					create_unit = {
+						division = "name = \"Axdir Harka\" division_template = \"Harka\" start_experience_factor = 1.0 start_equipment_factor = 1.0"
+						owner = RIF
+						prioritize_location = 7215
+						allow_spawning_on_enemy_provs = yes
+					}
+					create_unit = {
+						division = "name = \"Chauen Harka\" division_template = \"Harka\" start_experience_factor = 1.0 start_equipment_factor = 1.0"
 						owner = RIF
 						prioritize_location = 12087
 						allow_spawning_on_enemy_provs = yes
@@ -2089,6 +2257,7 @@ country_event = {
 					state = 807
 					state = 699
 					state = 108
+					state = 1095
 				}
 			}
 			add_dynamic_modifier = {
