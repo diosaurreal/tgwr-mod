@@ -65,6 +65,10 @@ shared_focus = {
 		trigger = { original_tag = OMA }
 		value = GFX_army_focus_oman
 	}
+	icon = {
+		trigger = { original_tag = UAE }
+		value = GFX_army_focus_uae
+	}
 	
 	cost = 10
 	relative_position_id =  GULF_establish_control_over_the_economy
@@ -80,7 +84,7 @@ shared_focus = {
 	}
 }
 shared_focus = {
-	id =  GULF_arms_factory
+	id =  GULF_weapons_factory
 	icon = GFX_goal_generic_construct_mil_factory
 	cost = 10
 	relative_position_id =  GULF_establish_control_over_the_economy
@@ -112,7 +116,7 @@ shared_focus = {
 	}
 }
 shared_focus = {
-	id =  GULF_Our_ships
+	id =  GULF_our_ships
 	icon = {
 		trigger = {
 			original_tag = MSC  
@@ -145,14 +149,14 @@ shared_focus = {
 	}
 }
 shared_focus = {
-	id =  GULF_trade_ships
+	id =  GULF_expand_the_merchant_fleet
 	icon = GFX_focus_generic_refit_civilian_ships
 	cost = 10
 	relative_position_id =  GULF_establish_control_over_the_economy
 	x = 9
 	y = 2
 	prerequisite = {
-		focus =  GULF_Our_ships
+		focus =  GULF_our_ships
 	}
 	ai_will_do = {
 		factor = 1
@@ -168,45 +172,49 @@ shared_focus = {
 	}
 }
 shared_focus = {
-	id =  GULF_war_ships
+	id =  GULF_ask_for_british_destroyers
 	icon = GFX_focus_generic_destroyer
 	cost = 10
 	relative_position_id =  GULF_establish_control_over_the_economy
 	x = 8
 	y = 3
 	prerequisite = {
-		focus =  GULF_Our_ships
+		focus =  GULF_our_ships
 	}
 	ai_will_do = {
 		factor = 1
 	}
 	available = {
-		has_global_flag = great_war_ends
-		any_owned_state = {
-			is_coastal = yes
-		}
-		NOT = {
-			has_war_with = ENG
-		}
+		any_owned_state = { is_coastal = yes }
+		NOT = { has_war_with = ENG }
 	}
 	completion_reward = {
-		navy_experience = 25
-		add_equipment_to_stockpile = { 
-			type = destroyer_1
-			amount = 1 
-			producer = ENG 
+		if = {
+			limit = { has_dlc = "Man the Guns" }
+			create_ship = {
+				type = ship_hull_light_1
+				equipment_variant = "TB 81 Class"
+				creator = ENG
+				name = "TB 81 Class"
+			}
+		}
+		else = {
+			create_ship = {
+				type = destroyer_1
+				creator = "ENG"
+			}
 		}
 	}
 }
 shared_focus = {
-	id =  GULF_naval_plan
+	id =  GULF_just_in_case
 	icon = GFX_goal_generic_navy_doctrines_tactics
 	cost = 10
 	relative_position_id =  GULF_establish_control_over_the_economy
 	x = 9
 	y = 4
 	prerequisite = {
-		focus =  GULF_trade_ships
+		focus =  GULF_expand_the_merchant_fleet
 	}
 	ai_will_do = {
 		factor = 1
@@ -217,32 +225,45 @@ shared_focus = {
 		}
 	}
 	completion_reward = {
-		navy_experience = 25
-		add_equipment_to_stockpile = { type = destroyer_1 amount = 3 producer = ENG }
+		every_owned_state = {
+			limit = { is_capital = yes }
+			add_building_construction = {
+				type = coastal_bunker
+				province = {
+					limit_to_coastal = yes
+					all_provinces = yes
+					limit_to_victory_point > 1
+				}
+				level = 1
+				instant_build = yes
+			}
+		}
+		add_doctrine_cost_reduction = {
+			name = GULF_just_in_case
+			cost_reduction = 0.5
+			uses = 1
+			category = naval_doctrine
+		}
 	}
 }
 shared_focus = {
-	id =  GULF_ottoman_artillery
+	id =  GULF_secret_ottoman_deal
 	icon = GFX_focus_generic_mountain_artillery
 	cost = 10
 	relative_position_id =  GULF_establish_control_over_the_economy
 	x = 6
 	y = 3
 	prerequisite = {
-		focus =  GULF_arms_factory
+		focus =  GULF_weapons_factory
 	}
 	ai_will_do = {
 		factor = 1
 	}
-	available = {
-		ENG={
-			has_subject = ROOT
-		}
-	}
+	available = { is_subject_of = ENG }
 	completion_reward = {
-		add_political_power = 50
+		army_experience = 25
 		add_tech_bonus = {
-			name = GULF_ottoman_artillery
+			name = GULF_secret_ottoman_deal
 			bonus = 1
 			uses = 1
 			category = artillery
@@ -261,7 +282,7 @@ shared_focus = {
 	}
 }
 shared_focus = {
-	id =  GULF_War_plans
+	id =  GULF_war_plans
 	icon = GFX_focus_planning_bonus
 	cost = 10
 	relative_position_id =  GULF_establish_control_over_the_economy
@@ -276,9 +297,9 @@ shared_focus = {
 	available = {
 	}
 	completion_reward = {
-		add_political_power = 50
+		army_experience = 50
 		add_doctrine_cost_reduction = {
-			name = GULF_War_plans
+			name = GULF_war_plans
 			cost_reduction = 0.5
 			uses = 1
 			category = land_doctrine
@@ -286,31 +307,27 @@ shared_focus = {
 	}
 }
 shared_focus = {
-	id =  GULF_Military_Airfield
+	id =  GULF_military_airfield
 	icon = GFX_goal_generic_air_fighter
 	cost = 10
 	relative_position_id =  GULF_establish_control_over_the_economy
 	x = 7
 	y = 4
 	prerequisite = {
-		focus =  GULF_War_plans
+		focus =  GULF_war_plans
 	}
 	prerequisite = {
-		focus =  GULF_ottoman_artillery
+		focus =  GULF_secret_ottoman_deal
 	}
 	prerequisite = {
-		focus =  GULF_war_ships
+		focus =  GULF_ask_for_british_destroyers
 	}
 	ai_will_do = {
 		factor = 1
 	}
-	available = {
-		NOT={
-			has_war_with = ENG
-		}
-	}
+	available = { NOT = { has_war_with = ENG } }
 	completion_reward = {
-		add_political_power = 5
+		air_experience = 25
 		random_owned_controlled_state = {
 			add_building_construction = {
 				type = air_base
@@ -331,7 +348,7 @@ shared_focus = {
 		focus =  GULF_army_focus
 	}
 	mutually_exclusive = {
-		focus =  GULF_Stick_agriculture_fishing
+		focus =  GULF_stick_agriculture_fishing
 	}
 	relative_position_id =  GULF_establish_control_over_the_economy
 	x = -3
@@ -504,7 +521,7 @@ shared_focus = {
 	}
 }
 shared_focus = {
-	id =  GULF_Stick_agriculture_fishing
+	id =  GULF_stick_agriculture_fishing
 	icon = GFX_focus_agrarian_soldiers
 	cost = 5
 	prerequisite = {
@@ -522,22 +539,31 @@ shared_focus = {
 	}
 }
 shared_focus = {
-	id =  GULF_more_fish
-	icon = GFX_focus_SWE_state_paid_vacation
+	id =  GULF_better_fishing_farming_tactics
+	icon = {
+		trigger = { NOT = { any_owned_state = { is_coastal = yes } } }
+		value = GFX_focus_generic_farmland
+	}
+	icon = {
+		trigger = { any_owned_state = { is_coastal = yes } }
+		value = GFX_focus_SWE_state_paid_vacation
+	}
 	cost = 10
 	prerequisite = {
-		focus =  GULF_Stick_agriculture_fishing
-	}
-	available = {
-		any_owned_state = {
-			is_coastal = yes
-		}
+		focus =  GULF_stick_agriculture_fishing
 	}
 	relative_position_id =  GULF_establish_control_over_the_economy
 	x = 3
 	y = 2
 	completion_reward = {
-		add_ideas = GULF_more_fish_idea
+		if = {
+			limit = { NOT = { any_owned_state = { is_coastal = yes } } }
+			add_ideas = GULF_enhanced_farming_tactics
+		}
+		if = {
+			limit = { any_owned_state = { is_coastal = yes } }
+			add_ideas = GULF_enhanced_fishing_tactics
+		}
 	}
 }
 shared_focus = {
@@ -545,7 +571,7 @@ shared_focus = {
 	icon = GFX_goal_generic_positive_trade_relations
 	cost = 10
 	prerequisite = {
-		focus =  GULF_Stick_agriculture_fishing
+		focus =  GULF_stick_agriculture_fishing
 	}
 	available = {
 		any_owned_state = {
@@ -560,14 +586,14 @@ shared_focus = {
 	}
 }
 shared_focus = {
-	id =  GULF_reorganize_land
+	id =  GULF_land_reorganization
 	icon = GFX_focus_generic_land_reclamation
 	cost = 10
 	prerequisite = {
 		focus =  GULF_pearl_tax
 	}
 	prerequisite = {
-		focus =  GULF_more_fish
+		focus =  GULF_better_fishing_farming_tactics
 	}
 	relative_position_id =  GULF_establish_control_over_the_economy
 	x = 4
@@ -587,7 +613,7 @@ shared_focus = {
 		focus =  GULF_pearl_tax
 	}
 	prerequisite = {
-		focus =  GULF_reorganize_land
+		focus =  GULF_land_reorganization
 	}
 	relative_position_id =  GULF_establish_control_over_the_economy
 	x = 5
@@ -602,23 +628,16 @@ shared_focus = {
 	icon = GFX_focus_generic_wheat
 	cost = 10
 	prerequisite = {
-		focus =  GULF_reorganize_land
+		focus =  GULF_land_reorganization
 	}
 	prerequisite = {
-		focus =  GULF_modernize_Islamic_School
-	}
-	available = {
-		has_completed_focus =  GULF_import_foreign_tractors
-
+		focus =  GULF_modernize_islamic_school
 	}
 	relative_position_id =  GULF_establish_control_over_the_economy
 	x = 3
 	y = 4
 	completion_reward = {
-		add_stability = 0.05
-		random_owned_controlled_state = {
-			add_extra_state_shared_building_slots = 2
-		}
+		add_ideas = GULF_agricultural_economy_idea
 	}
 }
 shared_focus = {
@@ -631,41 +650,22 @@ shared_focus = {
 	relative_position_id =  GULF_establish_control_over_the_economy
 	x = 1
 	y = 2
-	available = {
-		NOT = {
-			has_war_with = ENG
-		}
-	}
+	available = { NOT = { has_war_with = ENG } }
 	completion_reward = {
+		add_offsite_building = { type = industrial_complex level = 1 }
 		add_opinion_modifier = {
 			target = ENG
 			modifier = large_increase
 		}
-		random_owned_controlled_state = {
-			limit = {
-				free_building_slots = {
-					building = arms_factory
-					size > 0
-					include_locked = yes
-				}
-			}
-			add_extra_state_shared_building_slots = 1
-			add_building_construction = {
-				type = arms_factory
-				level = 1
-				instant_build = yes
-			}
-			
-		}
 	}
 }
 shared_focus = {
-	id =  GULF_modernize_Islamic_School
+	id =  GULF_modernize_islamic_school
 	icon = GFX_TUR_Islamic_Education
 	cost = 10
 	prerequisite = {
 		focus =  GULF_british_investments
-		focus =  GULF_more_fish
+		focus =  GULF_better_fishing_farming_tactics
 	}
 	relative_position_id =  GULF_establish_control_over_the_economy
 	x = 2
@@ -707,11 +707,11 @@ shared_focus = {
 	}
 }
 shared_focus = {
-	id =  GULF_economic_boom
+	id =  GULF_country_miracle
 	icon = GFX_focus_generic_money
 	cost = 10
 	prerequisite = {
-		focus =  GULF_modernize_Islamic_School
+		focus =  GULF_modernize_islamic_school
 	}
 	prerequisite = {
 		focus =  GULF_a_modern_economy
