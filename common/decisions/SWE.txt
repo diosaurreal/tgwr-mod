@@ -546,7 +546,7 @@ SWE_staaff_emergency = {
 		days_remove = 50
 		
 		modifier = {
-			political_power_cost = 0.05
+			political_power_cost = 0.10
 			power_balance_weekly = 0.005
 		}
 		
@@ -558,6 +558,96 @@ SWE_staaff_emergency = {
 }
 
 SWE_riksdagens_decisions = {
+	SWE_find_anti_monarchist_allies = {
+		allowed = {
+			tag = SWE
+		}
+		visible = {
+			has_completed_focus = SWE_fuel_to_the_fire
+		}
+		available = {
+			OR = {
+				has_government = communism
+				has_country_leader_ideology = social_democracy
+			}
+		}
+		
+		cost = 50
+		days_remove = 50
+		fire_only_once = yes
+		
+		modifier = {
+			democratic_drift = -0.02
+			communism_drift = 0.02
+		}
+		
+		ai_will_do = {
+			base = 10
+		}
+	}
+	SWE_pressure_a_popular_front = {
+		allowed = {
+			tag = SWE
+		}
+		visible = {
+			has_completed_focus = SWE_fuel_to_the_fire
+		}
+		available = {
+			democratic > 0.1
+			communism > 0.4
+		}
+		
+		cost = 75
+		days_remove = 50
+		fire_only_once = yes
+		
+		remove_effect = {
+			set_temp_variable = {
+				var = neutrality_support_var
+				value = party_popularity_100@neutrality
+			}
+			set_temp_variable = {
+				var = democratic_support_var
+				value = party_popularity_100@democratic
+			}
+			multiply_temp_variable = {
+				var = democratic_support_var
+				value = 0.2
+			}
+			set_temp_variable = {
+				var = democratic_support_var_two
+				value = party_popularity_100@democratic
+			}
+			multiply_temp_variable = {
+				var = democratic_support_var_two
+				value = 0.8
+			}
+			set_temp_variable = {
+				var = communism_support_var
+				value = party_popularity_100@communism
+			}
+			set_temp_variable = {
+				var = fascism_support_var
+				value = party_popularity_100@fascism
+			}
+			add_to_temp_variable = {
+				communism_support_var = democratic_support_var
+			}
+			custom_effect_tooltip = a_fifth_of_dem_will_join_communist
+			hidden_effect = {
+				set_popularities = {
+					democratic = democratic_support_var_two
+					neutrality = neutrality_support_var
+					fascism = fascism_support_var
+					communism = communism_support_var
+				}
+			}
+		}
+		
+		ai_will_do = {
+			base = 10
+		}
+	}
 	SWE_prepare_statskommisioner_for_wartime = {
 		allowed = {
 			original_tag = SWE
@@ -613,49 +703,6 @@ SWE_riksdagens_decisions = {
 			}
 		}
 	}
-	SWE_exportforbjud = {
-		allowed = {
-			original_tag = SWE
-		}
-		visible = {
-			has_idea = SWE_hungerskjold
-		}
-		available = {
-			has_war_support > 0.1
-			has_stability < 0.8
-		}
-		cancel_trigger = {
-			hidden_trigger = {
-				OR = {
-					NOT = { has_idea = SWE_hungerskjold }
-					is_in_faction = yes
-				}
-			}
-		}
-		cost = 50
-		days_remove = -1
-		
-		modifier = {
-			stability_factor = 0.1
-			war_support_factor = -0.05
-			trade_laws_cost_factor = 3.0	# No changing back now!!!
-		}
-		
-		complete_effect = {
-			if = {
-				limit = { has_idea = free_trade }
-				add_ideas = export_focus
-			}
-		}
-		
-		ai_will_do = {
-			base = 1
-			modifier = {
-				add = 1
-				has_stability < 0.5
-			}
-		}
-	}
 	SWE_unite_the_right_in_crisis = {
 		allowed = {
 			original_tag = SWE
@@ -676,7 +723,7 @@ SWE_riksdagens_decisions = {
 		days_remove = 70
 		
 		modifier = {
-			stability_weekly = 0.001
+			stability_weekly = 0.001	# Counteracts effect of Unpopular Riksdag
 		}
 		
 		remove_effect = {
@@ -718,7 +765,13 @@ SWE_riksdagens_decisions = {
 		
 		complete_effect = {
 			hidden_effect = {
-				country_event = { id = ww_sverige_general.0 days = 340 }
+				country_event = { id = ww_sverige_general.0 days = 40 }
+			}
+			custom_effect_tooltip = adjust_emigration_problem_tt
+			add_to_variable = {
+				tooltip = monthly_population_tt
+				var = SWE_emigration_monthly_population
+				value = 0.01
 			}
 		}
 		
@@ -735,7 +788,7 @@ SWE_riksdagens_decisions = {
 			add_to_variable = {
 				tooltip = monthly_population_tt
 				var = SWE_emigration_monthly_population
-				value = 0.04
+				value = 0.03
 			}
 		}
 		ai_will_do = {
@@ -768,12 +821,27 @@ SWE_riksdagens_decisions = {
 			custom_trigger_tooltip = {
 				tooltip = conservatives_wont_support_this_unless_forced
 				OR = {
-					# Add more stuff later, but for now socialist takeover in major
+					# Add more stuff later, but for now socialist takeover in major or civil wars/socialism in Nordic countries
 					AND = {
 						has_government = democratic
 						any_other_country = {
 							is_actual_major = yes
 							has_government = communism
+						}
+					}
+					AND = {
+						has_government = democratic
+						DEN = {
+							OR = {
+								has_government = communism
+								has_civil_war = yes
+							}
+						}
+						NOR = {
+							OR = {
+								has_government = communism
+								has_civil_war = yes
+							}
 						}
 					}
 					has_government = communism
@@ -879,9 +947,10 @@ SWE_riksdagens_decisions = {
 		cost = 50
 		
 		remove_effect = {
-			add_timed_idea = {
-				idea = SWE_school_reform
-				days = 730
+			add_ideas = SWE_school_reform
+			if = {
+				limit = { date > 1918.1.1 }
+				unlock_decision_tooltip = SWE_higher_learning_for_tekniska_skolor
 			}
 		}
 		
@@ -899,6 +968,7 @@ SWE_riksdagens_decisions = {
 		}
 		visible = {
 			date > 1918.1.1
+			has_idea = SWE_school_reform
 		}
 		available = {
 			has_capitulated = no
@@ -910,7 +980,7 @@ SWE_riksdagens_decisions = {
 		days_remove = 400
 		cost = 50
 		modifier = {
-			consumer_goods_factor = 0.02
+			consumer_goods_factor = 0.03
 		}
 		
 		remove_effect = {
@@ -920,6 +990,10 @@ SWE_riksdagens_decisions = {
 				category = industry
 				uses = 1
 				bonus = 0.25
+			}
+			swap_ideas = {
+				add_idea = SWE_school_reform_el
+				remove_idea = SWE_school_reform
 			}
 		}
 		
@@ -1065,7 +1139,17 @@ SWE_riksdagens_decisions = {
 				size > 11
 				type = infantry
 			}
-			has_army_manpower = { size > 12999 }
+			OR = {
+				has_army_size = {
+					size > 2
+					type = cavalry
+				}
+				has_army_size = {
+					size > 1
+					type = motorized
+				}
+			}
+			has_army_manpower = { size > 25999 }	# Double of historical strength 13000
 		}
 		visible = {
 			original_tag = SWE
@@ -1434,6 +1518,54 @@ SWE_riksdagens_decisions = {
 				add = 1
 				date > 1913.1.1
 			}
+		}
+	}
+	SWE_neutralitetsregler = {
+		# Let's work on our neutrality a bit (thanks to Albert Ehrensvärd)
+		# Some sources found states it is essentially Haag-convention? I need to find old document
+		# https://www.regeringen.se/contentassets/357fe4e9219a4e61ab14614d0a95c11d/deklarationer-vaxlade-med-danmark-och-norge-rorande-likartade-neutralitetsbestammelserso_1912_11.pdf
+		allowed = {
+			tag = SWE
+		}
+		available = {
+			has_government = democratic
+			OR = {
+				has_idea = SWE_albert_ehrensvard
+				AND = {
+					threat > 0.3
+					has_stability > 0.5
+				}
+			}
+			focus_progress = {
+				focus = SWE_pro_entente_stance
+				progress < 0.01
+			}
+			focus_progress = {
+				focus = SWE_strengthen_german_relations
+				progress < 0.01
+			}
+		}
+		visible = {
+			date > 1911.9.11
+			NOT = {
+				has_completed_focus = SWE_pro_entente_stance
+				has_completed_focus = SWE_rally_to_neutrality
+				has_completed_focus = SWE_strengthen_german_relations
+			}
+		}
+		fire_only_once = yes
+		
+		days_remove = 25
+		cost = 25
+				
+		remove_effect = {
+			add_stability = 0.05
+			add_political_power = 75
+			add_ideas = SWE_neutralitetsforklaring
+			custom_effect_tooltip = neutralitetsforklaring_removal_tt
+		}
+		ai_will_do = {
+			base = 1
 		}
 	}
 	SWE_move_past_decemberkompromissen = {

@@ -86,7 +86,7 @@ focus_tree = {
 		prerequisite = { focus = SWE_encouraged_industrialisation }
 		prerequisite = { focus = SWE_support_blacklisting_of_strikers }
 		relative_position_id = SWE_a_moderate_approach
-		cost = 8.00
+		cost = 10.00
 		x = 0
 		y = 2
 		
@@ -135,7 +135,7 @@ focus_tree = {
 			focus = SWE_a_moderate_approach
 		}
 		relative_position_id = SWE_favor_SAF
-		cost = 8.00
+		cost = 10.00
 		x = -1
 		y = 1
 		
@@ -188,7 +188,7 @@ focus_tree = {
 		prerequisite = { focus = SWE_support_blacklisting_of_strikers }
 		prerequisite = { focus = SWE_create_army_jobs }
 		relative_position_id = SWE_favor_SAF
-		cost = 8.00
+		cost = 10.00
 		x = 0
 		y = 2
 		
@@ -514,13 +514,23 @@ focus_tree = {
 		
 		completion_reward = {
 			custom_effect_tooltip = upon_selection_will_extend_question_by_seventy_days
-			add_power_balance_value = {
-				id = SWE_staaf_approval
-				value = -0.07
+			if = {
+				limit = {
+					has_power_balance = {
+						id = SWE_staaf_approval
+					}
+				}
+				add_power_balance_value = {
+					id = SWE_staaf_approval
+					value = -0.07
+				}
 			}
-			add_days_mission_timeout = {
-				mission = SWE_f_baten_question
-				days = 105
+			if = {
+				limit = { has_active_mission = SWE_f_baten_question }
+				add_days_mission_timeout = {
+					mission = SWE_f_baten_question
+					days = 105
+				}
 			}
 		}
 	}
@@ -632,7 +642,7 @@ focus_tree = {
 	}
 	focus = {
 		id = SWE_forsvarsvasendet
-		icon = GFX_unknown
+		icon = GFX_focus_chain_army
 		prerequisite = { focus = SWE_push_for_parliamentism_reforms }
 		prerequisite = { focus = SWE_a_liberal_military_plan }
 		prerequisite = { focus = SWE_infrastructure_projects }
@@ -910,6 +920,7 @@ focus_tree = {
 			# Should also give some riksdag's reforms
 		}
 	}
+	# Make this into a Riksdag decision
 	focus = {
 		id = SWE_investment_into_affordable_houses
 		icon = GFX_focus_SWE_hygienic_housing
@@ -1154,40 +1165,6 @@ focus_tree = {
 		}
 	}
 	focus = {
-		id = SWE_pro_entente_propaganda
-		icon = GFX_goal_generic_propaganda
-		prerequisite = { focus = SWE_french_ties }
-		prerequisite = { focus = SWE_entente_corridor_for_food_security }
-		relative_position_id = SWE_pro_entente_stance
-		cost = 5.00
-		x = 0
-		y = 2
-		
-		available = {
-			FRA = {
-				exists = yes
-				is_subject = no
-				NOT = { has_war_with = ROOT }
-				NOT = { has_country_flag = great_war_loser }
-			}
-			has_government = democratic
-		}
-		
-		completion_reward = {
-			add_timed_idea = {
-				idea = SWE_pro_entente_propaganda
-				days = 120
-			}
-			custom_effect_tooltip = when_expired
-			effect_tooltip = {
-				swap_ideas = {
-					remove_idea = SWE_pro_entente_minority
-					add_idea = SWE_pro_entente_minority_propaganda
-				}	
-			}
-		}
-	}
-	focus = {
 		id = SWE_entente_corridor_for_food_security
 		icon = GFX_focus_generic_price_controls
 		prerequisite = { focus = SWE_pro_entente_stance }
@@ -1228,6 +1205,157 @@ focus_tree = {
 				# Finland should(?) always accept
 			# Unlocks decision to make use of food corridor
 				# Gains some stability immediately
+			unlock_decision_tooltip = SWE_iniate_food_corridor_plan
+		}
+	}
+	focus = {
+		id = SWE_pro_entente_propaganda
+		icon = GFX_goal_generic_propaganda
+		prerequisite = { focus = SWE_french_ties }
+		prerequisite = { focus = SWE_entente_corridor_for_food_security }
+		relative_position_id = SWE_pro_entente_stance
+		cost = 5.00
+		x = 0
+		y = 2
+		
+		available = {
+			FRA = {
+				exists = yes
+				is_subject = no
+				NOT = { has_war_with = ROOT }
+				NOT = { has_country_flag = great_war_loser }
+			}
+			has_government = democratic
+		}
+		
+		completion_reward = {
+			add_timed_idea = {
+				idea = SWE_pro_entente_propaganda
+				days = 120
+			}
+			custom_effect_tooltip = when_expired
+			effect_tooltip = {
+				swap_ideas = {
+					remove_idea = SWE_pro_entente_minority
+					add_idea = SWE_pro_entente_minority_propaganda
+				}	
+			}
+		}
+	}
+	focus = {
+		id = SWE_raise_aland_fragan
+		icon = GFX_goal_generic_demand_territory
+		prerequisite = { focus = SWE_pro_entente_propaganda }
+		mutually_exclusive = { focus = SWE_warm_public_with_anti_russian_propaganda }
+		relative_position_id = SWE_pro_entente_stance
+		cost = 10.00
+		x = 0
+		y = 3
+		
+		available = {
+			FRA = {
+				exists = yes
+				is_subject = no
+				NOT = { has_war_with = ROOT }
+				NOT = { has_country_flag = great_war_loser }
+			}
+			145 = {
+				OR = {
+					is_owned_by = RUS
+					AND = {
+						is_owned_by = FIN
+						FIN = { is_subject_of = RUS }
+					}
+				}
+			}
+			RUS = {
+				NOT = {
+					has_completed_focus = RUS_abandon_the_french
+					has_completed_focus = RUS_rapprochement_with_kaiser
+					is_in_faction_with = GER
+				}
+				NOT = { has_war_with = ROOT }
+			}
+			has_government = democratic
+		}
+		bypass = {
+			owns_state = 145
+		}
+		
+		completion_reward = {
+			custom_effect_tooltip = if_they_accept_tt
+			effect_tooltip = {
+				transfer_state = 145
+				# Give some form of compensation
+					# Non-Aggression with Russia?
+			}
+		}
+	}
+	focus = {
+		id = SWE_warm_public_with_anti_russian_propaganda
+		icon = GFX_focus_attack_russia
+		prerequisite = { focus = SWE_pro_entente_propaganda }
+		mutually_exclusive = { focus = SWE_raise_aland_fragan }
+		relative_position_id = SWE_pro_entente_stance
+		cost = 10.00
+		x = 2
+		y = 3
+		
+		available = {
+			FRA = {
+				exists = yes
+				is_subject = no
+				NOT = { has_war_with = ROOT }
+				NOT = { has_country_flag = great_war_loser }
+			}
+			RUS = {
+				OR = {
+					has_completed_focus = RUS_abandon_the_french
+					has_completed_focus = RUS_rapprochement_with_kaiser
+					is_in_faction_with = GER
+				}
+			}
+			NOT = { has_idea = SWE_pro_entente_propaganda }
+		}
+		
+		completion_reward = {
+			add_war_support = 0.10
+			swap_ideas = {
+				add_idea = SWE_pro_entente_sentiment
+				remove_idea = SWE_pro_entente_minority_propaganda
+			}
+		}
+	}
+	focus = {
+		id = SWE_petition_for_a_free_finland	# great for buffer state
+		icon = GFX_focus_attack_russia
+		prerequisite = { focus = SWE_warm_public_with_anti_russian_propaganda }
+		relative_position_id = SWE_pro_entente_stance
+		cost = 10.00
+		x = 3
+		y = 4
+		
+		available = {
+			FRA = {
+				exists = yes
+				is_subject = no
+				NOT = { has_war_with = ROOT }
+				NOT = { has_country_flag = great_war_loser }
+			}
+			RUS = {
+				OR = {
+					has_completed_focus = RUS_abandon_the_french
+					has_completed_focus = RUS_rapprochement_with_kaiser
+					is_in_faction_with = GER
+				}
+			}
+			NOT = { has_idea = SWE_pro_entente_propaganda }
+		}
+		
+		completion_reward = {
+			# Unlock decision to establish an independent finland post ww1
+			# UK/FRA has to agree
+				# US can strongarm it?
 		}
 	}
 	# Historical
@@ -1262,6 +1390,18 @@ focus_tree = {
 			has_country_leader = {
 				character = SWE_hjalmar_hammarskjold
 				ruling_only = yes
+			}
+		}
+		bypass = {
+			# Just backup in case something happens
+			hidden_trigger = {
+				OR = {
+					has_country_leader = {
+						character = SWE_carl_swartz
+						ruling_only = yes
+					}
+					NOT = { can_be_country_leader = SWE_hjalmar_hammarskjold }
+				}
 			}
 		}
 		
@@ -1361,6 +1501,7 @@ focus_tree = {
 			focus = SWE_foreign_policy_of_the_king
 		}
 		mutually_exclusive = {
+			focus = SWE_pro_entente_stance
 			focus = SWE_strengthen_german_relations
 		}
 		relative_position_id = SWE_keeping_our_head_down
@@ -1376,8 +1517,17 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_HISTORICAL FOCUS_FILTER_POLITICAL FOCUS_FILTER_INTERNAL_AFFAIRS }
 		
 		completion_reward = {
-			add_ideas = SWE_rally_to_neutrality
 			# Some bonus that lasts until you join faction mayhaps
+			if = {
+				limit = { NOT = { has_idea = SWE_neutralitetsforklaring } }
+				add_ideas = SWE_rally_to_neutrality
+			}
+			else = {
+				swap_ideas = {
+					add_idea = SWE_rally_to_neutrality
+					remove_idea = SWE_neutralitetsforklaring
+				}
+			}
 		}
 	}
 	focus = {
@@ -1512,9 +1662,25 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_HISTORICAL }
 		
 		completion_reward = {
-			# If agreed every nordic country gains 'Nordic Censorship Agreement' until end of war (ended by decision? event?)
-			# This gives +20% enemy justify wargoal time, add base stability + war support
 			# Adds some bonus to spies?
+			NOR = {
+				country_event = { id = ww_sverige_general.28 }
+				custom_effect_tooltip = if_they_accept_tt
+				effect_tooltip = {
+					add_ideas = SWE_nordic_censorship_agreement
+				}
+			}
+			DEN = {
+				country_event = { id = ww_sverige_general.28 }
+				custom_effect_tooltip = if_they_accept_tt
+				effect_tooltip = {
+					add_ideas = SWE_nordic_censorship_agreement
+				}
+			}
+			custom_effect_tooltip = if_they_accept_tt
+			effect_tooltip = {
+				add_ideas = SWE_nordic_censorship_agreement
+			}
 		}
 	}
 	focus = {
@@ -1739,6 +1905,7 @@ focus_tree = {
 					character = SWE_gustaf_v
 					ruling_only = yes
 				}
+				# Need some way for this
 				AND = {
 					has_country_flag = pact_with_germany
 					has_country_leader_ideology = conservatism
@@ -1910,6 +2077,11 @@ focus_tree = {
 			#		add_to_faction = SWE
 			#	}
 			#}
+			# Unlock decision to join war under certain circumstances
+				# Presumably:
+				# Finland uprising of any form
+				# German knocked out some entente member super-quickly
+				# Germany controls Finland somehow
 		}
 	}
 	focus = {
@@ -2029,7 +2201,6 @@ focus_tree = {
 		prerequisite = { focus = SWE_creation_of_nationalistiskt_arbetarparti }
 		mutually_exclusive = {
 			focus = SWE_military_control
-			focus = SWE_promises_from_the_king
 		}
 		relative_position_id = SWE_creation_of_nationalistiskt_arbetarparti
 		cost = 10.00
@@ -2067,6 +2238,8 @@ focus_tree = {
 					name = SWE_neutrality_party
 				}
 			}
+			custom_effect_tootip = available_political_advisor
+			show_ideas_tooltip = SWE_carl_bennedich
 		}
 	}
 	focus = {
@@ -2167,7 +2340,6 @@ focus_tree = {
 		prerequisite = { focus = SWE_creation_of_nationalistiskt_arbetarparti }
 		mutually_exclusive = {
 			focus = SWE_kungliga_regeringen
-			focus = SWE_promises_from_the_king
 		}
 		relative_position_id = SWE_creation_of_nationalistiskt_arbetarparti
 		cost = 10.00
@@ -2210,6 +2382,8 @@ focus_tree = {
 			#		name = SWE_neutrality_party
 			#	}
 			#}
+			custom_effect_tootip = available_political_advisor
+			show_ideas_tooltip = SWE_carl_bennedich
 		}
 	}
 	focus = {

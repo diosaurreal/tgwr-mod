@@ -32,7 +32,7 @@ country_event = {
 		remove_ideas = SWE_status_quo_politics
 	}
 	option = {	# No
-		name = ww_sverige.0.a
+		name = ww_sverige.0.b
 		ai_chance = {
 			base = 0
 			modifier = {
@@ -77,7 +77,7 @@ country_event = {
 		add_ideas = SWE_minority_government
 	}
 	option = {	# Form a coalition government
-		name = ww_sverige.1001.a
+		name = ww_sverige.1001.b
 		ai_chance = {
 			base = 0
 			modifier = {
@@ -132,7 +132,11 @@ country_event = {
 		ai_chance = {
 			base = 0
 		}
-		add_political_power = -35
+		add_political_power = -30
+		add_popularity = {
+			ideology = neutrality
+			popularity = 0.05
+		}
 	}
 }
 
@@ -630,7 +634,8 @@ country_event = {
 		add_ideas = SWE_unpopular_riksdag
 		add_ideas = SWE_liberal_opposition
 		hidden_effect = {
-			country_event = { id = ww_sverige.1002 days = 7 }
+			country_event = { id = ww_sverige.1002 days = 21 }	# Was 7 days, but 3 weeks of bonus might feel a lil better than 1 lmao
+			# Should have more events
 		}
 	}
 }
@@ -781,7 +786,7 @@ country_event = {
 	option = {	# Another liberal regime is secured
 		name = ww_sverige.13.a
 		trigger = {
-			democratic > 0.6
+			democratic > 0.49
 			power_balance_value = {
 				id = SWE_staaf_approval
 				value > 0.1
@@ -2504,13 +2509,32 @@ country_event = {
 	id = ww_sverige_general.0
 	title = ww_sverige_general.0.t
 	desc = ww_sverige_general.0.d
-	picture = GFX_report_event_election_vote
 	
 	is_triggered_only = yes
 	
-	option = {	# Annoying
+	option = {	# Ignore em
 		name = ww_sverige_general.0.a
+		ai_chance = {
+			base = 1
+			modifier = {
+				factor = 0
+				is_historical_focus_on = yes
+			}
+		}
 		add_political_power = -25
+	}
+	option = {	# Concessions
+		name = ww_sverige_general.0.b
+		ai_chance = {
+			base = 1
+		}
+		custom_effect_tooltip = historical_tt
+		custom_effect_tooltip = adjust_emigration_problem_tt
+		add_to_variable = {
+			tooltip = monthly_population_tt
+			var = SWE_emigration_monthly_population
+			value = -0.01
+		}
 	}
 }
 
@@ -2519,7 +2543,7 @@ country_event = {
 	id = ww_sverige_general.1
 	title = ww_sverige_general.1.t
 	desc = ww_sverige_general.1.d
-	picture = GFX_report_event_election_vote
+	picture = GFX_report_event_generic_funeral
 	
 	is_triggered_only = yes
 	
@@ -2539,7 +2563,7 @@ country_event = {
 	id = ww_sverige_general.2
 	title = ww_sverige_general.2.t
 	desc = ww_sverige_general.2.d
-	picture = GFX_report_event_election_vote
+	picture = GFX_report_event_generic_funeral
 	
 	is_triggered_only = yes
 	
@@ -2649,7 +2673,7 @@ country_event = {
 				name = SWE_democratic_general_electoral_league_party 
 			}
 			# King's Opinion
-			country_event = { id = ww_sverige_general.1001 hours = 1 }
+			country_event = { id = ww_sverige_general.1001 days = 3 }
 		}
 	}
 }
@@ -2815,6 +2839,7 @@ country_event = {
 	
 	trigger = {
 		has_idea = SWE_class_conflict
+		is_in_faction_with = GER
 	}
 	
 	option = {	# Nooo
@@ -3109,6 +3134,14 @@ country_event = {
 	
 	is_triggered_only = yes
 	
+	immediate = {
+		hidden_effect = {
+			remove_power_balance = {
+				id = SWE_staaf_approval
+			}
+		}
+	}
+	
 	option = {	# Not great
 		name = ww_sverige_general.19.a
 		SWE_riksdag = {
@@ -3137,9 +3170,6 @@ country_event = {
 		# Afterwards elections will be held for Andra kammaren
 		hidden_effect = {
 			country_event = { id = ww_sverige.9 hours = 12 }
-			remove_power_balance = {
-				id = SWE_staaf_approval
-			}
 		}
 	}
 }
@@ -3213,6 +3243,129 @@ country_event = {
 		add_war_support = 0.01
 	}
 }
+
+# Follow-up join statement
+# Initialize
+# Agreement or not
+# Success (+ news event)
+# Failure
+
+# Censorship Agreement
+country_event = {
+	id = ww_sverige_general.28
+	title = ww_sverige_general.28.t
+	desc = ww_sverige_general.28.d
+	
+	is_triggered_only = yes
+	
+	option = {	# Sure
+		name = ww_sverige_general.28.a
+		ai_chance = {
+			base = 1
+			modifier = {
+				add = 1
+				GER = { has_completed_focus = GER_scandinavian_focus }
+			}
+			modifier = {
+				factor = 0
+				is_in_faction = yes
+			}
+		}
+		add_ideas = SWE_nordic_censorship_agreement
+		SWE = { country_event = { id = ww_sverige_general.29 hours = 6 } }
+	}
+	option = {	# No
+		name = ww_sverige_general.28.b
+		ai_chance = {
+			base = 0
+			modifier = {
+				add = 1
+				GER = { surrender_progress > 0.1 }
+			}
+			modifier = {
+				add = 1
+				GER = { surrender_progress > 0.25 }
+			}
+			modifier = {
+				add = 1
+				is_in_faction = yes
+			}
+		}
+		SWE = { country_event = { id = ww_sverige_general.30 hours = 6 } }
+	}
+}
+
+# Censorship Agreement Accepted
+country_event = {
+	id = ww_sverige_general.29
+	title = ww_sverige_general.29.t
+	desc = ww_sverige_general.29.d
+	
+	is_triggered_only = yes
+	
+	option = {	# Sure
+		name = ww_sverige_general.29.a
+		add_stability = 0.01
+		if = {
+			limit = { NOT = { has_idea = SWE_nordic_censorship_agreement } }
+			add_ideas = SWE_nordic_censorship_agreement
+		}
+		FROM = { add_ideas = SWE_nordic_censorship_agreement }
+	}
+}
+# Censorship Agreement Denied
+country_event = {
+	id = ww_sverige_general.30
+	title = ww_sverige_general.30.t
+	desc = ww_sverige_general.30.d
+	
+	is_triggered_only = yes
+	
+	option = {	# Sure
+		name = ww_sverige_general.30.a
+	}
+}
+# Censorship Agreement Falls through
+country_event = {
+	id = ww_sverige_general.31
+	title = ww_sverige_general.31.t
+	desc = ww_sverige_general.31.d
+	
+	is_triggered_only = yes
+	trigger = {
+		has_idea = SWE_nordic_censorship_agreement
+	}
+	immediate = {
+		hidden_effect = {
+			remove_ideas = SWE_nordic_censorship_agreement
+		}
+	}
+	
+	option = {	# Too bad
+		name = ww_sverige_general.31.a
+		effect_tooltip = { remove_ideas = SWE_nordic_censorship_agreement }
+	}
+}
+
+# Sweden Election Surge
+country_event = {
+	id = ww_sverige_general.32
+	title = ww_sverige_general.32.t
+	desc = ww_sverige_general.32.d
+	
+	is_triggered_only = yes
+	fire_only_once = yes
+	
+	option = {	# Too bad
+		name = ww_sverige_general.32.a
+		add_timed_idea = {
+			idea = SWE_election_campaigns
+			days = 210	# 252 days until election
+		}
+	}
+}
+
+
 
 
 
@@ -3591,7 +3744,9 @@ country_event = {
 			ideology = fascism
 			popularity = 0.02
 		}
-		country_event = { id = ww_sverige_neutralitet.10 days = 7 }
+		hidden_effect = {
+			country_event = { id = ww_sverige_neutralitet.10 days = 7 }
+		}
 	}
 }
 # The Ignored Military Question pt. 2 (King Critical of Government not intervening)
@@ -3639,6 +3794,16 @@ country_event = {
 		NOT = { has_country_flag = pause_between_neutrality_events }
 	}
 	
+	immediate = {
+		hidden_effect = {
+			set_country_flag = {
+				flag = pause_between_neutrality_events
+				days = 30	# Shorter since positive
+				value = 1
+			}
+		}
+	}
+	
 	option = {	# Great
 		name = ww_sverige_neutralitet.11.a
 		add_political_power = 10
@@ -3683,7 +3848,7 @@ country_event = {
 		add_political_power = -15
 	}
 	option = {	# We don't care
-		name = ww_sverige_neutralitet.12.a
+		name = ww_sverige_neutralitet.12.b
 		add_timed_idea = {
 			idea = SWE_diplomatic_frustrations
 			days = 60
