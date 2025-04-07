@@ -104,7 +104,7 @@ country_event = {
 	id = ww_sverige.1
 	title = ww_sverige.1.t
 	desc = ww_sverige.1.d
-	picture = GFX_report_event_election_vote
+	picture = GFX_report_event_generic_read_write
 	
 	is_triggered_only = yes
 	
@@ -226,7 +226,7 @@ country_event = {
 		}
 		if = {
 			limit = {
-				threat < 0.2
+				threat < 0.25
 				has_war = no
 				NOT = { has_global_flag = great_war }
 			}
@@ -502,7 +502,7 @@ country_event = {
 				}
 			}
 		}
-		add_political_power = -25
+		add_political_power = -5
 		hidden_effect = {
 			# Follow-up event about if coup should be executed
 			# If stability/political support is too low, civil war!
@@ -731,7 +731,6 @@ country_event = {
 	id = ww_sverige.12
 	title = ww_sverige.12.t
 	desc = ww_sverige.12.d
-	picture = GFX_report_event_election_vote
 	
 	is_triggered_only = yes
 	
@@ -749,12 +748,12 @@ country_event = {
 		SWE_sven_hedin = {
 			promote_character = personalistic_dictatorship
 		}
+		set_party_name = {
+			ideology = neutrality
+			long_name = SWE_expeditionsregering_long
+			name = SWE_expeditionsregering
+		}
 		hidden_effect = {
-			set_party_name = {
-				ideology = neutrality
-				long_name = SWE_expeditionsregering_long
-				name = SWE_expeditionsregering
-			}
 			# King's Opinion
 			country_event = { id = ww_sverige_general.1001 hours = 1 }
 		}
@@ -845,7 +844,7 @@ country_event = {
 		}
 		add_power_balance_value = {
 			id = SWE_staaf_approval
-			value = -0.75
+			value = -1
 		}
 	}
 }
@@ -1022,6 +1021,9 @@ country_event = {
 		hidden_effect = {
 			# King's Opinion
 			country_event = { id = ww_sverige_general.1001 hours = 1 }
+			# Fall, really should be based on revolutions spreading n Sweden passing reform then internal failures
+			# Should have alt where they don't do reform, like stab hit n front between some parties
+			country_event = { id = ww_sverige.19 days = 874 }
 		}
 	}
 }
@@ -1066,7 +1068,8 @@ country_event = {
 	}
 }
 
-# Communist Organising
+# Election of 1920
+# Regering Branting I (historical) (should fall to geer then sydow n then back to Branting)
 country_event = {
 	id = ww_sverige.19
 	title = ww_sverige.19.t
@@ -1074,32 +1077,25 @@ country_event = {
 	picture = GFX_report_event_election_vote
 	
 	is_triggered_only = yes
+	fire_only_once = yes
 	
 	trigger = {
-		has_government = communism
+		has_government = democratic
 	}
 	
-	option = {	# Workers Unite!
-		name = ww_sverige.18.a
-		ai_chance = {
-			base = 2
-		}
-		add_timed_idea = {
-			idea = SWE_workers_focus
-			days = 730
-		}
-	}
-	option = {	# Unions Unite!
-		name = ww_sverige.18.b
-		ai_chance = {
-			base = 1
-		}
-		add_timed_idea = {
-			idea = SWE_unions_focus
-			days = 730
+	option = {	# Regeringen Branting I
+		name = ww_sverige.19.a
+		add_stability = -0.05
+		add_ideas = SWE_minority_government
+		promote_character = SWE_hjalmar_branting
+		set_party_name = {
+			ideology = democratic
+			long_name = SWE_democratic_sap_party_long 
+			name = SWE_democratic_sap_party
 		}
 	}
 }
+
 
 # Hungerskjöld Warning
 country_event = {
@@ -1353,14 +1349,10 @@ country_event = {
 		SWE_sven_hedin = {
 			promote_character = personalistic_dictatorship
 		}
-		hidden_effect = {
-			set_party_name = {
-				ideology = neutrality
-				long_name = SWE_expeditionsregering_long
-				name = SWE_expeditionsregering
-			}
-			# King's Opinion
-			
+		set_party_name = {
+			ideology = neutrality
+			long_name = SWE_expeditionsregering_long
+			name = SWE_expeditionsregering
 		}
 	}
 }
@@ -1430,7 +1422,7 @@ country_event = {
 	
 	is_triggered_only = yes
 	
-	option = {	# Let them do so
+	option = {	# He'll return to favor us
 		name = ww_sverige_demo_crisis.101.a
 		add_political_power = -10
 		if = {
@@ -2839,13 +2831,19 @@ country_event = {
 	is_triggered_only = yes
 	
 	trigger = {
-		has_idea = SWE_class_conflict
+		OR = {
+			has_idea = SWE_paragraf_twenty_three
+			has_idea = SWE_class_conflict
+		}
 		is_in_faction_with = GER
 	}
 	
 	option = {	# Nooo
 		name = ww_sverige_general.10.a
-		remove_ideas = SWE_class_conflict
+		if = {
+			limit = { has_idea = SWE_class_conflict }
+			remove_ideas = SWE_class_conflict
+		}
 		add_timed_idea = {
 			idea = SWE_class_war
 			days = 600
@@ -3404,19 +3402,93 @@ country_event = {
 	is_triggered_only = yes
 	fire_only_once = yes
 	
+	immediate = {
+		hidden_effect = {
+			add_timed_idea = {
+				idea = SWE_election_campaigns
+				days = 210	# 252 days until election
+			}
+		}
+	}
+	
 	option = {	# Too bad
 		name = ww_sverige_general.32.a
-		add_timed_idea = {
-			idea = SWE_election_campaigns
-			days = 210	# 252 days until election
+		effect_tooltip = {
+			add_timed_idea = {
+				idea = SWE_election_campaigns
+				days = 210	# 252 days until election
+			}
 		}
 	}
 }
 
+# US Went To War
+country_event = {
+	id = ww_sverige_general.33
+	title = ww_sverige_general.33.t
+	desc = ww_sverige_general.33.d
+	
+	is_triggered_only = yes
+	fire_only_once = yes
+	
+	option = {	# Ah
+		name = ww_sverige_general.33.a
+		custom_effect_tooltip = adjust_emigration_problem_tt
+		add_to_variable = {
+			tooltip = monthly_population_tt
+			var = SWE_emigration_monthly_population
+			value = 0.10
+		}
+	}
+}
 
+# Vågmästare
+country_event = {
+	id = ww_sverige_general.34
+	title = ww_sverige_general.34.t
+	desc = ww_sverige_general.34.d
+	
+	is_triggered_only = yes
+	fire_only_once = yes
+	
+	trigger = {
+		has_elections = yes
+	}
+	
+	option = {	# Very well
+		name = ww_sverige_general.34.a
+		remove_trait = {
+			character = TAG_jane_smith
+			slot = political_advisor
+			trait = prohibitionist
+		}
+		add_trait = {
+			character = TAG_jane_smith
+			slot = political_advisor
+			trait = SWE_vagmastere
+		}
+	}
+}
 
-
-
+# People rather not travel during ww1
+country_event = {
+	id = ww_sverige_general.35
+	title = ww_sverige_general.35.t
+	desc = ww_sverige_general.35.d
+	
+	is_triggered_only = yes
+	fire_only_once = yes
+	
+	option = {	# I see
+		name = ww_sverige_general.35.a
+		custom_effect_tooltip = adjust_emigration_problem_tt
+		add_to_variable = {
+			tooltip = monthly_population_tt
+			var = SWE_emigration_monthly_population
+			value = 0.30		# Largest basically
+		}
+	}
+}
 
 
 # King's Approval
@@ -3914,3 +3986,5 @@ country_event = {
 	}
 }
 # TBA: Hammarskjöld says stupid shit to entente event
+# TBA: Women leave home to demand food against the hunger crisis
+# TBA: Syndaclist and men strike after above event

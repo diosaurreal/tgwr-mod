@@ -107,6 +107,8 @@ crisis = {
 		
 		complete_effect = {
 			custom_effect_tooltip = a_leftwing_government_takes_charge
+			# SocDem government
+				# If socialist support is above 40% other event from communists
 		}
 	}
 	SWE_f_baten_question = {
@@ -268,7 +270,7 @@ SWE_staaff_emergency = {
 		}
 		
 		ai_will_do = {
-			base = 0
+			base = 1
 			modifier = {
 				add = 1
 				power_balance_value = {
@@ -513,7 +515,21 @@ SWE_staaff_emergency = {
 				add = 1
 				power_balance_value = {
 					id = SWE_staaf_approval
+					value < -0.25
+				}
+			}
+			modifier = {
+				add = 1
+				power_balance_value = {
+					id = SWE_staaf_approval
 					value < -0.5
+				}
+			}
+			modifier = {
+				add = 1
+				power_balance_value = {
+					id = SWE_staaf_approval
+					value < -0.75
 				}
 			}
 			modifier = {
@@ -562,6 +578,25 @@ SWE_staaff_emergency = {
 		}
 	}
 	# https://books.google.se/books?hl=sv&lr=&id=dxnXAgAAQBAJ&oi=fnd&pg=PP9&dq=Arvid+Lindman&ots=iUlkwhkto3&sig=rzm0MCukgZ9C49pMUcaTBwu6qyk&redir_esc=y#v=onepage&q=Arvid%20Lindman&f=false
+}
+political_actions = {
+	SWE_mdebug_replace_agrarianism_hammarskjöld = {
+		icon = GFX_decision_generic_political_discourse
+		allowed = {
+			original_tag = SWE
+		}
+		fire_only_once = yes
+		available = {
+			has_country_leader_ideology = agrarianism
+		}
+		
+		completed_effect = {
+			set_country_leader_ideology = conservatism
+		}
+		ai_will_do = {
+			base = 0
+		}
+	}
 }
 
 SWE_riksdagens_decisions = {
@@ -694,6 +729,7 @@ SWE_riksdagens_decisions = {
 		available = {
 			has_war = no
 			has_global_flag = great_war_ends
+			NOT = { has_idea = SWE_temporary_state_of_ermegency }
 		}
 		
 		cost = 25
@@ -763,6 +799,7 @@ SWE_riksdagens_decisions = {
 			NOT = {
 				has_government = fascism
 			}
+			fascism < 0.2
 			NOT = { has_idea = SWE_temporary_state_of_ermegency }
 		}
 		fire_only_once = yes
@@ -833,6 +870,7 @@ SWE_riksdagens_decisions = {
 						has_government = democratic
 						any_other_country = {
 							is_actual_major = yes
+							capital_scope = { is_on_continent = europe }
 							has_government = communism
 						}
 					}
@@ -851,7 +889,11 @@ SWE_riksdagens_decisions = {
 							}
 						}
 					}
-					has_government = communism
+					AND = {
+						has_government = communism
+						communism > 0.4
+					}
+					communism > 0.5
 				}
 			}
 			NOT = { has_idea = SWE_temporary_state_of_ermegency }
@@ -896,6 +938,39 @@ SWE_riksdagens_decisions = {
 				add = 100
 				date > 1917.1.1
 			}
+		}
+	}
+	SWE_temporary_increase_of_taxation_for_government = {
+		# Generic for now
+		allowed = {
+			tag = SWE
+		}
+		visible = {
+			OR = {
+				has_completed_focus = SWE_fix_what_is_backwards
+				has_completed_focus = SWE_promote_reasonable_reforms
+			}
+		}
+		available = {
+			has_war = no
+			has_stability > 0.6
+			OR = {
+				communism > 0.12
+				neutrality < 0.1
+			}
+		}
+		fire_only_once = yes
+		
+		modifier = {
+			stability_factor = -0.05
+			consumer_goods_factor = -0.05
+		}
+		
+		days_remove = 365
+		cost = 100
+		
+		ai_will_do = {
+			base = 1
 		}
 	}
 	SWE_the_eight_hour_workday = {
@@ -946,7 +1021,6 @@ SWE_riksdagens_decisions = {
 		available = {
 			has_capitulated = no
 			has_stability > 0.5
-			NOT = { has_idea = SWE_temporary_state_of_ermegency }
 		}
 		fire_only_once = yes
 		
@@ -959,6 +1033,10 @@ SWE_riksdagens_decisions = {
 				limit = { date > 1918.1.1 }
 				unlock_decision_tooltip = SWE_higher_learning_for_tekniska_skolor
 			}
+			if = {
+				limit = { date > 1919.1.1 }
+				unlock_decision_tooltip = SWE_upl_1919
+			}
 		}
 		
 		ai_will_do = {
@@ -969,13 +1047,67 @@ SWE_riksdagens_decisions = {
 			}
 		}
 	}
+	SWE_upl_1919 = {
+		# UPL 1919
+		# Basically set a proper framework for the education
+		allowed = {
+			original_tag = SWE
+		}
+		visible = {
+			date > 1919.1.1
+			OR = {
+				has_idea = SWE_school_reform
+				has_idea = SWE_school_reform_el
+			}
+		}
+		available = {
+			has_civil_war = no
+		}
+		
+		cost = 75
+		
+		days_remove = 14
+		fire_only_once = yes
+		
+		remove_effect = {
+			if = {
+				limit = { has_idea = SWE_school_reform }
+				swap_ideas = {
+					add_idea = SWE_school_reform_19
+					remove_idea = SWE_school_reform
+				}
+			}
+			if = {
+				limit = { has_idea = SWE_school_reform_el }
+				swap_ideas = {
+					add_idea = SWE_school_reform_best
+					remove_idea = SWE_school_reform_el
+				}
+			}
+		}
+		
+		ai_will_do = {
+			base = 0
+			modifier = {
+				add = 50
+				date > 1919.10.1
+			}
+			modifier = {
+				add = 50
+				date > 1919.10.16
+			}
+		}
+	}
 	SWE_higher_learning_for_tekniska_skolor = {
 		allowed = {
 			original_tag = SWE
 		}
 		visible = {
 			date > 1918.1.1
-			has_idea = SWE_school_reform
+			OR = {
+				has_idea = SWE_school_reform
+				has_idea = SWE_school_reform_19
+			}
 		}
 		available = {
 			has_capitulated = no
@@ -998,9 +1130,46 @@ SWE_riksdagens_decisions = {
 				uses = 1
 				bonus = 0.25
 			}
-			swap_ideas = {
-				add_idea = SWE_school_reform_el
-				remove_idea = SWE_school_reform
+			if = {
+				limit = { has_idea = SWE_school_reform }
+				swap_ideas = {
+					add_idea = SWE_school_reform_el
+					remove_idea = SWE_school_reform
+				}
+			}
+			if = {
+				limit = { has_idea = SWE_school_reform_19 }
+				swap_ideas = {
+					add_idea = SWE_school_reform_best
+					remove_idea = SWE_school_reform_19
+				}
+			}
+		}
+		
+		ai_will_do = {
+			base = 100
+		}
+	}
+	SWE_allow_usage_of_more_mineralrich_land = {
+		# https://www.riksdagen.se/sv/dokument-och-lagar/dokument/proposition/kungl.-majts-nad.-proposition-no-173_d730173
+		# From understanding, making it easier to make use of land
+		allowed = {
+			original_tag = SWE
+		}
+		available = {
+			NOT = { has_idea = SWE_temporary_state_of_ermegency }
+		}
+		fire_only_once = yes
+		
+		days_remove = 120
+		cost = 25
+		
+		remove_effect = {
+			add_tech_bonus = {
+				name = excavation_tech
+				category = excavation_tech
+				uses = 1
+				bonus = 0.2
 			}
 		}
 		
@@ -1015,7 +1184,7 @@ SWE_riksdagens_decisions = {
 		}
 		visible = {
 			has_completed_focus = SWE_second_karl_staaff_regeringen
-			date < 1912.1.1
+			date < 1912.1.2
 		}
 		available = {
 			has_war = no
@@ -1087,6 +1256,7 @@ SWE_riksdagens_decisions = {
 				has_country_leader_ideology = social_democracy
 			}
 			has_war_support > 0.8
+			NOT = { has_idea = SWE_temporary_state_of_ermegency }
 		}
 		fire_only_once = yes
 		
@@ -1146,16 +1316,16 @@ SWE_riksdagens_decisions = {
 				size > 11
 				type = infantry
 			}
-			OR = {
-				has_army_size = {
-					size > 2
-					type = cavalry
-				}
-				has_army_size = {
-					size > 1
-					type = motorized
-				}
-			}
+			#OR = {
+			#	has_army_size = {
+			#		size > 2
+			#		type = cavalry
+			#	}
+			#	has_army_size = {
+			#		size > 1
+			#		type = motorized
+			#	}
+			#}
 			has_army_manpower = { size > 25999 }	# Double of historical strength 13000
 		}
 		visible = {
@@ -1177,7 +1347,11 @@ SWE_riksdagens_decisions = {
 			original_tag = SWE
 		}
 		visible = {
-			has_completed_focus = SWE_courtyard_speech
+			OR = {
+				has_completed_focus = SWE_keeping_our_head_down
+				has_completed_focus = SWE_foreign_policy_of_the_king
+				has_completed_focus = SWE_creation_of_nationalistiskt_arbetarparti
+			}
 		}
 		available = {
 			has_completed_focus = SWE_support_the_military
@@ -1228,10 +1402,6 @@ SWE_riksdagens_decisions = {
 		
 		ai_will_do = {
 			base = 1
-			modifier = {	# Let's not do this right now
-				factor = 0.1
-				has_reached_maximum_divisions = yes
-			}
 			modifier = {	# Just to make sure pp is spent properly
 				factor = 0
 				has_political_power < 151
@@ -1287,6 +1457,10 @@ SWE_riksdagens_decisions = {
 		
 		ai_will_do = {
 			base = 2
+			modifier = {	# Let's not do this right now
+				factor = 0.5
+				has_reached_maximum_divisions = yes
+			}
 		}
 	}
 	SWE_extend_the_infantry_training = {
@@ -1347,6 +1521,10 @@ SWE_riksdagens_decisions = {
 		
 		ai_will_do = {
 			base = 2
+			modifier = {	# Let's not do this right now
+				factor = 0.5
+				has_reached_maximum_divisions = yes
+			}
 		}
 	}
 	SWE_early_conscription_extension = {
@@ -1413,6 +1591,10 @@ SWE_riksdagens_decisions = {
 		
 		ai_will_do = {
 			base = 10
+			modifier = {	# Let's not do this right now
+				factor = 0.1
+				has_reached_maximum_divisions = yes
+			}
 			modifier = {
 				factor = 0
 				has_political_power < 150
@@ -1430,6 +1612,7 @@ SWE_riksdagens_decisions = {
 				has_country_leader_ideology = social_democracy
 			}
 			has_war_support > 0.7
+			NOT = { has_idea = SWE_temporary_state_of_ermegency }
 		}
 		fire_only_once = yes
 		
@@ -1467,6 +1650,52 @@ SWE_riksdagens_decisions = {
 			base = 1
 		}
 	}
+	SWE_fattigvardslag = {
+		# Fattigauktion
+		# Let's ban like. bidding to take care of the poorest and most vulnerable for lowest cost in exchange for some benefits cuz law said so...
+		allowed = {
+			original_tag = SWE
+		}
+		visible = {
+			date > 1917.1.1
+			has_dynamic_modifier = { modifier = SWE_emigration_problem }
+		}
+		available = {
+			has_war = no
+			NOT = { has_idea = SWE_temporary_state_of_ermegency }
+		}
+		
+		cost = 100
+		
+		days_remove = 45
+		fire_only_once = yes
+		
+		modifier = {
+			consumer_goods_factor = 0.15
+		}
+		
+		complete_effect = {
+			add_stability = 0.025
+			add_war_support = 0.025
+		}
+		
+		remove_effect = {
+			custom_effect_tooltip = adjust_emigration_problem_tt
+			add_to_variable = {
+				tooltip = monthly_population_tt
+				var = SWE_emigration_monthly_population
+				value = 0.03
+			}
+		}
+		
+		ai_will_do = {
+			base = 0
+			modifier = {
+				add = 100
+				date > 1918.5.1
+			}
+		}
+	}
 	SWE_campaign_to_stay_at_home = {	# Generic, to be replaced
 		# Stop leaving Sweden!
 		allowed = {
@@ -1478,9 +1707,11 @@ SWE_riksdagens_decisions = {
 		}
 		available = {
 			has_war = no
-			has_stability > 0.8
+			threat > 0.5
+			has_stability > 0.7
 			has_completed_focus = SWE_investera_i_framtiden
 			NOT = { has_idea = SWE_hungerskjold }
+			NOT = { has_idea = SWE_temporary_state_of_ermegency }
 		}
 		
 		cost = 25
@@ -1509,7 +1740,7 @@ SWE_riksdagens_decisions = {
 			date > 1912.1.1
 		}
 		
-		cost = 25
+		cost = 36
 		
 		complete_effect = {
 			add_tech_bonus = {
@@ -1575,14 +1806,21 @@ SWE_riksdagens_decisions = {
 	SWE_move_past_decemberkompromissen = {
 		# Decemberkompromissen isn't enough, we need to take further steps to fix the class conflict
 		allowed = {
-			always = no
+			tag = SWE
+		}
+		visible = {
+			has_completed_focus = SWE_socialliberal_reforms
 		}
 		available = {
 			OR = {
 				has_country_leader_ideology = social_liberalism
 				has_country_leader_ideology = social_democracy
+				has_government = communism
 			}
 			has_stability > 0.7
+			neutrality < 0.1
+			fascism < 0.1
+			NOT = { has_idea = SWE_temporary_state_of_ermegency }
 		}
 		fire_only_once = yes
 		
@@ -1590,6 +1828,10 @@ SWE_riksdagens_decisions = {
 		cost = 75
 		
 		modifier = { political_power_cost = 1 }
+		
+		complete_effect = {
+			set_country_flag = swe_handled_class_conflict
+		}
 		
 		remove_effect = {
 			if = {
@@ -1603,6 +1845,7 @@ SWE_riksdagens_decisions = {
 				}
 			}
 			unlock_decision_tooltip = SWE_leverage_industrial_security
+			set_country_flag = swe_handled_class_conflict
 		}
 		ai_will_do = {
 			base = 1
@@ -1623,6 +1866,7 @@ SWE_riksdagens_decisions = {
 			has_stability > 0.7
 			num_of_factories > 30
 			NOT = { has_idea = SWE_hungerskjold }
+			NOT = { has_idea = SWE_temporary_state_of_ermegency }
 		}
 		fire_only_once = yes
 		
@@ -1647,6 +1891,75 @@ SWE_riksdagens_decisions = {
 			base = 1
 		}
 	}
+	SWE_put_paragraf_23_to_law = {
+		# https://sv.wikipedia.org/wiki/Paragraf_32
+		# Was called Paragaf 23 at the time
+			# Essentially a worker cannot just refuse to work without due cause
+		allowed = {
+			tag = SWE
+		}
+		visible = {
+			NOT = { has_government = communism }
+			NOT = { has_completed_focus = SWE_third_liberal_regering }
+			NOT = { has_country_flag = swe_handled_class_conflict }
+		}
+		available = {
+			communism < 0.1
+			OR = {
+				custom_trigger_tooltip = {
+					tooltip = sixty_percent_rightwing_support
+					set_temp_variable = { rightwing_temp = party_popularity@fascism }
+					add_to_temp_variable = { rightwing_temp = party_popularity@neutrality }
+					check_variable = {
+						var = rightwing_temp
+						value = 0.6
+					}
+				}
+				has_completed_focus = SWE_ban_dangerous_socialist_organisations
+			}
+			has_stability > 0.8
+			has_completed_focus = SWE_courtyard_speech
+			NOT = { has_idea = SWE_temporary_state_of_ermegency }
+		}
+		fire_only_once = yes
+		
+		days_remove = 600
+		cost = 100
+		
+		modifier = {
+			stability_factor = -0.1
+		}
+		
+		complete_effect = {
+			set_country_flag = swe_handled_class_conflict
+		}
+		
+		remove_effect = {
+			if = {
+				limit = { NOT = { has_idea = SWE_class_conflict } }
+				add_ideas = SWE_paragraf_twenty_three
+			}
+			else = {
+				swap_ideas = {
+					add_idea = SWE_paragraf_twenty_three
+					remove_idea = SWE_class_conflict
+				}
+			}
+			custom_effect_tooltip = adjust_emigration_problem_tt
+			add_to_variable = {
+				tooltip = monthly_population_tt
+				var = SWE_emigration_monthly_population
+				value = -0.02
+			}
+		}
+		ai_will_do = {
+			base = 0
+			modifier = {
+				add = 1
+				has_completed_focus = SWE_ban_dangerous_socialist_organisations
+			}
+		}
+	}
 	SWE_sweeping_political_restructuring = {
 		# We'll not allow further dangers to Democracy in Sweden and will implement a number of reforms to stop it from being abused
 		# Short-term stability loss in return for a bit of pp and stability return
@@ -1663,6 +1976,7 @@ SWE_riksdagens_decisions = {
 			has_stability > 0.6
 			fascism < 0.15
 			neutrality < 0.15
+			NOT = { has_idea = SWE_temporary_state_of_ermegency }
 		}
 		fire_only_once = yes
 		
@@ -1696,6 +2010,7 @@ SWE_riksdagens_decisions = {
 		visible = { has_government = communism }
 		available = {
 			has_stability > 0.6
+			NOT = { has_idea = SWE_temporary_state_of_ermegency }
 		}
 		fire_only_once = yes
 		
@@ -1748,7 +2063,7 @@ SWE_riksdagens_decisions = {
 			any_owned_state = {
 				is_controlled_by = ROOT
 				free_building_slots = {
-					building = industrial_complex
+					building = arms_factory
 					size > 0
 					include_locked = yes
 				}
@@ -1764,7 +2079,14 @@ SWE_riksdagens_decisions = {
 		
 		remove_effect = {
 			random_owned_controlled_state = {
-				limit = { arms_factory > 0 }
+				limit = {
+					is_controlled_by = ROOT
+					free_building_slots = {
+						building = arms_factory
+						size > 0
+						include_locked = yes
+					}
+				}
 				add_extra_state_shared_building_slots = 1
 				add_building_construction = {
 					type = arms_factory
@@ -1897,6 +2219,7 @@ SWE_riksdagens_decisions = {
 		}
 		available = {
 			has_completed_focus = SWE_funds_to_buy_industries
+			NOT = { has_idea = SWE_temporary_state_of_ermegency }
 		}
 		
 		fire_only_once = yes
@@ -1958,6 +2281,7 @@ SWE_riksdagens_decisions = {
 		}
 		available = {
 			has_completed_focus = SWE_support_for_agrarian_sector
+			NOT = { has_idea = SWE_temporary_state_of_ermegency }
 		}
 		
 		fire_only_once = yes
@@ -2009,6 +2333,7 @@ SWE_riksdagens_decisions = {
 					}
 				}
 			}
+			NOT = { has_idea = SWE_temporary_state_of_ermegency }
 		}
 		
 		fire_only_once = yes
@@ -2036,7 +2361,7 @@ SWE_riksdagens_decisions = {
 			}	
 		}
 		
-		cost = 50
+		cost = 25
 		days_remove = 300
 		
 		modifier = {
@@ -2118,6 +2443,7 @@ SWE_riksdagens_decisions = {
 					}
 				}
 			}
+			NOT = { has_idea = SWE_temporary_state_of_ermegency }
 		}
 		
 		fire_only_once = yes
@@ -2154,7 +2480,7 @@ SWE_riksdagens_decisions = {
 			}	
 		}
 		
-		cost = 50
+		cost = 25
 		days_remove = 300
 		
 		modifier = {
@@ -2283,7 +2609,7 @@ SWE_riksdagens_decisions = {
 				name = train_tech
 				category = train_tech
 				uses = 1
-				bonus = 0.5
+				bonus = 0.25
 			}
 		}
 		
@@ -2425,6 +2751,7 @@ political_actions = {
 					ruling_only = yes
 				}
 			}
+			has_idea = SWE_exportforbjud
 			OR = {
 				AND = {
 					has_stability > 0.3
@@ -2462,7 +2789,6 @@ political_actions = {
 							AND = {
 								has_idea = SWE_entente_trade_agreement
 								has_idea = SWE_cp_trade_agreement
-								has_decision = SWE_exportforbjud
 							}
 						}
 					}
@@ -2485,10 +2811,193 @@ political_actions = {
 			base = 100
 		}
 	}
-}
+	SWE_undermine_socialist_papers = {
+		allowed = {
+			original_tag = SWE
+		}
+		
+		available = {
+			has_completed_focus = SWE_eliminate_leftist_opposition
+			NOT = { has_decision = SWE_support_pro_military_faction }
+		}
+		
+		visible = {
+			OR = {
+				has_idea = SWE_liberal_opposition
+				has_idea = SWE_liberal_opposition_1
+				has_idea = SWE_liberal_opposition_2
+			}
+		}
+		
+		fire_only_once = yes
+		cost = 50
+		
+		days_remove = 35
+		
+		modifier = { communism_drift = -0.03 }
+		
+		complete_effect = {
+			# Critical of censorship
+		}
+		
+		remove_effect = {
+			if = {
+				limit = { has_idea = SWE_liberal_opposition_1 }
+				remove_ideas = SWE_liberal_opposition_2
+			}
+			else_if = {
+				limit = { has_idea = SWE_liberal_opposition_1 }
+				swap_ideas = {
+					add_idea = SWE_liberal_opposition_2
+					remove_idea = SWE_liberal_opposition_1
+				}
+			}
+			else_if = {
+				limit = { has_idea = SWE_liberal_opposition }
+				swap_ideas = {
+					add_idea = SWE_liberal_opposition_1
+					remove_idea = SWE_liberal_opposition
+				}
+			}
+		}
+		ai_will_do = {
+			base = 1
+			modifier = {
+				add = 1
+				communism > 0.1
+			}
+			modifier = {
+				add = 1
+				communism > 0.2
+			}
+			modifier = {
+				add = 1
+				communism > 0.3
+			}
+			modifier = {
+				add = 1
+				communism > 0.4
+			}
+			modifier = {
+				factor = 10
+				communism > 0.5
+			}
+		}
+	}
+	SWE_support_pro_military_faction = {
+		allowed = {
+			original_tag = SWE
+		}
+		
+		available = {
+			has_completed_focus = SWE_eliminate_leftist_opposition
+			NOT = { has_decision = SWE_undermine_socialist_papers }
+		}
+		
+		visible = {
+			OR = {
+				has_idea = SWE_liberal_opposition
+				has_idea = SWE_liberal_opposition_1
+				has_idea = SWE_liberal_opposition_2
+			}
+		}
+		
+		fire_only_once = yes
+		cost = 50
+		
+		days_remove = 35
+		
+		modifier = {
+			stability_factor = -0.05
+		}
+		
+		complete_effect = {
+			# Critical of militarism
+		}
+		
+		remove_effect = {
+			if = {
+				limit = { has_idea = SWE_liberal_opposition_1 }
+				remove_ideas = SWE_liberal_opposition_2
+			}
+			else_if = {
+				limit = { has_idea = SWE_liberal_opposition_1 }
+				swap_ideas = {
+					add_idea = SWE_liberal_opposition_2
+					remove_idea = SWE_liberal_opposition_1
+				}
+			}
+			else_if = {
+				limit = { has_idea = SWE_liberal_opposition }
+				swap_ideas = {
+					add_idea = SWE_liberal_opposition_1
+					remove_idea = SWE_liberal_opposition
+				}
+			}
+		}
+		
+		ai_will_do = {
+			base = 1
+			modifier = {
+				add = 1
+				communism > 0.1
+			}
+			modifier = {
+				add = 1
+				communism > 0.2
+			}
+			modifier = {
+				add = 1
+				communism > 0.3
+			}
+			modifier = {
+				add = 1
+				communism > 0.4
+			}
+			modifier = {
+				factor = 10
+				communism > 0.5
+			}
+		}
+	}}
 
 # Miltary
 operations = {
+	SWE_mobilize_landstormtrupperna = {
+		allowed = {
+			tag = SWE
+		}
+		
+		available = {
+			has_capitulated = no
+		}
+		visible = {
+			has_global_flag = great_war
+		}
+		
+		days_remove = 50
+		fire_only_once = yes
+		
+		custom_cost_trigger = {
+			command_power > 24
+		}
+		
+		custom_cost_text = decision_cost_CP_25
+		
+		complete_effect = {
+			hidden_effect = {
+				add_command_power = -25
+			}
+		}
+		
+		remove_effect = {
+			add_war_support = 0.10
+			# They didn't really have ammo or anything, so it was more a morale boost
+		}
+		ai_will_do = {
+			base = 1
+		}
+	}
 	SWE_organise_against_russian_threat = {
 		# Essentially he was very anti-russian
 		allowed = {
@@ -2527,6 +3036,7 @@ operations = {
 		}
 		
 		remove_effect = {
+			add_war_support = 0.05
 			custom_effect_tooltip = adjust_swe_military_tt
 			add_to_variable = {
 				tooltip = training_time_factor_tt
