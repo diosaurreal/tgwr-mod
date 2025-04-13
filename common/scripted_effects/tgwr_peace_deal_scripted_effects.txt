@@ -229,23 +229,11 @@ armistice_effect = {
 					state = 863
 					state = 864
 					state = 865
+					state = 33
 					state = 29
 				}
 			}
 			set_demilitarized_zone = yes
-		}
-		if = {
-			limit = {
-				has_global_flag = luxembourg_submitted
-				GER = { has_subject = LUX }
-			}
-			GER = {
-				annex_country = {
-					target = LUX
-					transfer_troops = yes
-				}
-			}
-			LUX = { add_state_core = 906 }
 		}
 	}
 	if = {
@@ -906,31 +894,93 @@ armistice_effect = {
 			}
 			LUX = {
 				clear_all_relations = yes
-				clr_country_flag = great_war_loser
-				remove_ideas = idea_army_restrictions
 			}
-			FRA = {
-				country_event = {
-					id = ww1_luxembourg.6
-					days = 25
-					random_days = 10
+			if = {
+				limit = {
+					BEL = {
+						NOT = {
+							AND = {
+								NOT = {
+									has_country_flag = BEL_defeat
+									has_country_flag = BEL_decision_over_luxemburg
+								}
+								has_country_flag = great_war_winner
+							}						
+						}					
+					}
 				}
-			}
+				FRA = {
+					country_event = {
+						id = ww1_luxembourg.6
+						days = 25
+						random_days = 10
+					}
+				}
+			}		
 		}
 	}
 	if = {	#restitution of belgian territory
 		limit = {
 			BEL = {
 				has_country_flag = BEL_submit_to_GER_1914
-				NOT = {
-					has_country_flag = great_war_loser
-				}
+				# NOT = {
+				# 	has_country_flag = great_war_loser
+				# }
 				owns_state = 6
 			}
 		}
-		transfer_state = 34
-		transfer_state = 907
-		transfer_state = 906
+		GER = {
+			clr_country_flag = BEL_submit_to_GER_1914
+			if = {
+				limit = {
+					BEL = {
+						has_country_flag = great_war_loser
+					}
+				}
+				every_owned_state = {
+					limit = {
+						OR = {
+							state = 34
+							state = 907
+							state = 906
+						}
+						NOT = {
+							is_claimed_by = GER
+							is_core_of = GER
+						}
+					}
+					transfer_state_to = BEL
+				}
+				else = {
+					every_owned_state = {
+						limit = {
+							OR = {
+								state = 34
+								state = 907
+								state = 906
+							}
+						}
+						transfer_state_to = BEL
+					}
+				}
+			}			
+		}
+		BEL = {
+			clr_country_flag = BEL_submit_to_GER_1914
+			if = {
+				limit = {
+					has_cosmetic_tag = FLA
+					any_owned_state = {
+						OR = {
+							state = 34
+							state = 907
+							state = 906
+						}
+					}
+				}
+				drop_cosmetic_tag = yes
+			}
+		}
 	}
 	if = {
 		limit = {
@@ -1014,11 +1064,6 @@ armistice_effect = {
 				}
 				ITA = { set_country_flag = italo_turkish_war_winner }
 				set_global_flag = italo_turkish_war_ends
-				448 = { set_state_name = TRIPOLI_STATE }
-				1060 = { set_state_name = TRIPOLITANIA_STATE }
-				450 = { set_state_name = BENGHAZI_STATE }
-				set_province_name = { id = 1149 name = TRIPOLI_PROV }
-				set_province_name = { id = 11954 name = BENGHAZI_PROV }
 				if = {
 					limit = {
 						LBA = { has_country_flag = great_war_loser }
@@ -1033,25 +1078,31 @@ armistice_effect = {
 								limit = {
 									OR = {
 										state = 567
+										state = 1123
 										state = 775
+										state = 1135
+										state = 1125
+										state = 1126
+										state = 1127
 										state = 812
 									}
 								}
 								transfer_state_to = FRA
 							}
-							remove_state_core = 567
+							# remove_state_core = 567
+							# remove_state_core = 1123
 						}
 					}
-					if = {
-						limit = {
-							ENG = { has_country_flag = great_war_winner }
-						}
-						LBA = {
-							767 = {
-								transfer_state_to = ENG
-							}
-						}
-					}
+					# if = {
+					# 	limit = {
+					# 		ENG = { has_country_flag = great_war_winner }
+					# 	}
+					# 	LBA = {
+					# 		767 = {
+					# 			transfer_state_to = ENG
+					# 		}
+					# 	}
+					# }
 				}
 			}
 		}
@@ -1628,6 +1679,7 @@ armistice_effect = {
 						}
 						transfer_state_to = GER
 					}
+					add_state_core = 33
 				}
 				if = {
 					limit = {
@@ -1651,14 +1703,21 @@ armistice_effect = {
 						}
 					}
 				}
-
 			}
 			if = {
 				limit = {
-					LUX = {
-						has_country_flag = great_war_loser
-						exists = yes
-					}				
+					OR = {
+						AND = {
+							LUX = {
+								has_country_flag = great_war_loser
+								exists = yes
+							}
+						}				
+						AND = {
+							has_global_flag = luxembourg_submitted
+							GER = { has_subject = LUX }
+						}
+					}							
 				}
 				GER = {
 					annex_country = {
@@ -1765,6 +1824,87 @@ armistice_effect = {
 			}													
 		}
 		set_global_flag = russ_kapitulation
+	}
+	### ROMANIA / HUNGARY ###
+	ROM = {
+		if = { #so romania can get their army positioned before hungarian war
+			limit = {
+				has_country_flag = great_war_winner
+				has_army_manpower = {
+					size < 70000
+				}
+			}
+			load_oob = "ROM_1918"
+		}
+	}
+	HUN =  {
+		if = { 
+			limit = {
+				has_country_flag = great_war_loser
+			}
+			every_owned_state = { #demobilization of hungary (so theyre not too strong in hungarian romanian war)
+				limit = {
+					arms_factory > 1
+				}
+				remove_building = {
+					type = arms_factory
+					level = 1
+				}
+			}
+			every_owned_state = {
+				limit = {
+					arms_factory > 2
+				}
+				remove_building = {
+					type = arms_factory
+					level = 1
+				}
+			}
+			every_owned_state = {
+				limit = {
+					arms_factory > 3
+				}
+				remove_building = {
+					type = arms_factory
+					level = 1
+				}
+			}
+			every_owned_state = {
+				limit = {
+					arms_factory > 4
+				}
+				remove_building = {
+					type = arms_factory
+					level = 1
+				}
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					has_idea = idea_army_restrictions
+				}
+			}
+			add_ideas = idea_army_restrictions
+			country_lock_all_division_template = yes
+		}
+		if = {
+			limit = {
+				has_country_flag = great_war_loser
+				ROM = {
+					has_country_flag = great_war_winner
+				}
+			}
+			every_owned_state = {
+				limit = {
+					OR = {
+						state = 866
+						state = 868
+					}
+				}
+				transfer_state_to = ROM
+			}
+		}
 	}
 	### ITALY ###
 	if = {
@@ -2044,9 +2184,9 @@ armistice_effect = {
 	if = {
 		limit = {
 			NOT = { has_global_flag = GRE_thessaloniki_state_formed }
-			345 = {
+			any_state = {
 				is_owned_by = FRA
-				# has_state_flag = french_salonika
+				has_state_flag = french_salonika
 			}
 		}
 		FRA = {
@@ -2056,6 +2196,8 @@ armistice_effect = {
 						state = 345
 						state = 184
 						state = 731
+						state = 758
+						state = 826
 					}
 				}
 				47 = {
@@ -2343,6 +2485,30 @@ armistice_effect = {
 		MOR = {
 			add_state_core = 461
 			drop_cosmetic_tag = yes
+		}
+	}
+	if = {
+		limit = {
+			FRA = {
+				has_country_flag = great_war_winner
+			}
+			MOR = {
+				has_country_flag = great_war_loser
+			}
+		}
+		FRA = {
+			annex_country = {
+				target = MOR
+			}
+		}
+		every_state = {
+			limit = {
+				OWNER = {
+					has_country_flag = great_war_loser
+				}
+				is_core_of = MOR
+			}
+			transfer_state_to = FRA
 		}
 	}
 	### Series of please stop ruining the Interwar ###
@@ -2642,7 +2808,7 @@ armistice_effect = {
 				limit = {
 					owns_state = 567
 				}
-				515 = {
+				1135 = {
 					owner = {
 						transfer_state = 567
 					}
@@ -2652,9 +2818,39 @@ armistice_effect = {
 				limit = {
 					owns_state = 775
 				}
-				515 = {
+				1135 = {
 					owner = {
 						transfer_state = 775
+					}
+				}
+			}
+			if = {
+				limit = {
+					owns_state = 1125
+				}
+				775 = {
+					owner = {
+						transfer_state = 1125
+					}
+				}
+			}
+			if = {
+				limit = {
+					owns_state = 1126
+				}
+				775 = {
+					owner = {
+						transfer_state = 1126
+					}
+				}
+			}
+			if = {
+				limit = {
+					owns_state = 1127
+				}
+				775 = {
+					owner = {
+						transfer_state = 1127
 					}
 				}
 			}
@@ -3158,13 +3354,29 @@ conference_effect = {
 						state = 865
 					}	
 					OWNER = {
-						OR = {						
-							has_country_flag = great_war_loser
-						}
+						has_country_flag = great_war_loser
 					}				
 				}
 				transfer_state_to = PREV
+				set_demilitarized_zone = no
 			}
+		}
+		random_country = {
+			limit = {
+				owns_state = 34
+				NOT = { has_country_flag = great_war_loser }
+			}
+			33 = {
+				if = {
+					limit = {
+						OWNER = {
+							has_country_flag = great_war_loser
+				    	}				
+			     	}	
+				transfer_state_to = PREV
+				set_demilitarized_zone = no
+			    }
+			}	
 		}
 		if = {
 			limit = {
@@ -3713,6 +3925,7 @@ conference_effect = {
 							state = 273
 							state = 812
 							state = 567
+							state = 1123
 							state = 1060
 						}
 					}
@@ -3743,6 +3956,7 @@ conference_effect = {
 					limit = {
 						OR = {
 							state = 552
+							state = 1131
 							state = 767
 						}
 					}
@@ -4031,6 +4245,7 @@ conference_effect = {
 									is_core_of = POL
 									NOT = {
 										is_core_of = UKR
+										is_core_of = WUK
 										is_core_of = BLR
 										state = 97
 										state = 1015
@@ -4090,6 +4305,7 @@ conference_effect = {
 									is_core_of = POL
 									NOT = {
 										is_core_of = UKR
+										is_core_of = WUK
 										is_core_of = BLR
 										state = 97
 										state = 1015
@@ -4156,6 +4372,7 @@ conference_effect = {
 									is_core_of = POL
 									NOT = {
 										is_core_of = UKR
+										is_core_of = WUK
 										is_core_of = BLR
 										state = 97
 										state = 1015
@@ -5405,84 +5622,68 @@ conference_effect = {
 				has_country_flag = great_war_loser
 			}
 		}
-			##give libya to France or British
-		##scenario 1 : France and Britain share the place
+		##give libya to France or British
 		if = {
 			limit = {
 				ITA = {
-					owns_state = 448
-				}
-				FRA = {
-					has_country_flag = great_war_winner
-				}
-				ENG = {
-					has_country_flag = great_war_winner
-				}
-			}
-			FRA = {
-				transfer_state = 448
-				transfer_state = 661
-				transfer_state = 812
-				transfer_state = 273
-				transfer_state = 1060
-			}
-			ENG = {
-				transfer_state = 450
-				transfer_state = 1061
-			}
-		}
-		##scenario 2 : France won alone
-		if = {
-			limit = {
-				ITA = {
-					owns_state = 448
-				}
-				FRA = {
-					has_country_flag = great_war_winner
-				}
-				NOT = {
-					ENG = {
-						has_country_flag = great_war_winner
+					any_owned_state = {
+						is_core_of = LBA
 					}
 				}
 			}
-			FRA = {
-				transfer_state = 448
-				transfer_state = 661
-				transfer_state = 812
-				transfer_state = 273
-				transfer_state = 1060
-			}
-			LBA = {
-				transfer_state = 450
-				transfer_state = 1061
-			}
-		}
-		##scenario 2 : Great Britain won alone
-		if = {
-			limit = {
-				ITA = {
-					owns_state = 448
+			every_state = {
+				limit = {
+					is_core_of = TRP				
 				}
-				ENG = {
-					has_country_flag = great_war_winner
-				}
-				NOT = {
-					FRA = {
-						has_country_flag = great_war_winner
+				if = {
+					limit = {
+						FRA = {
+							has_country_flag = great_war_winner
+						}
 					}
+					add_claim_by = FRA
+					if = {
+						limit = {
+							OWNER = {
+								has_country_flag = great_war_loser
+							}
+						}
+						transfer_state_to = FRA
+					}
+				}	
+				else = {
+					transfer_state_to = TRP
 				}
 			}
-			LBA = {
-				transfer_state = 448
-				transfer_state = 661
-				transfer_state = 812
-				transfer_state = 273
-				transfer_state = 1060
-			}
-			ENG = {
-				transfer_state = 450
-				transfer_state = 1061
+			every_state = {
+				limit = {
+					OR = {
+						state = 450
+						state = 1061
+						state = 663
+						state = 754
+						state = 1121
+					}				
+				}
+				if = {
+					limit = {
+						ENG = {
+							has_country_flag = great_war_winner
+						}
+					}
+					add_claim_by = ENG
+					if = {
+						limit = {
+							OWNER = {
+								has_country_flag = great_war_loser
+							}
+						}
+						transfer_state_to = ENG
+					}
+				}	
+				else = {
+					transfer_state_to = LBA
+				}
 			}
 		}
 	}
@@ -5522,24 +5723,6 @@ conference_effect = {
 	# 		transfer_state_to = SYR
 	# 	}
 	# }
-	# Luxembourg
-	if = {
-		limit = {
-			LUX = { has_country_flag = great_war_winner }
-		}
-		if = {
-			limit = {
-				any_country = {
-					owns_state = 906
-					has_country_flag = great_war_loser
-				}
-			}
-			LUX = {
-				add_state_core = 906
-				transfer_state = 906
-			}
-		}
-	}
 	# Kingdom of Arabia
 	if = {
 		limit = {
