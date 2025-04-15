@@ -180,29 +180,35 @@ country_event = {
 				}
 			}
 		}
-		if = {
-			limit = {
-				country_exists = SPR
-				any_state = {
-					is_owned_or_subject_trigger = yes
-					OR = {
-						state = 290
-						state = 807
-					}
-				}	
-			}
-			effect_tooltip = {
-				SPR = { transfer_state = 290 transfer_state = 807 }
-			}
-			hidden_effect = {
-				SPR = {
-					country_event = {
-						id = ww1_morocco.20
-						days = 2
-					}
-				}
-			}
-		}
+		# if = {
+		# 	limit = {
+		# 		country_exists = SPR
+		# 		any_state = {
+		# 			OR = {
+		# 				is_owned_or_subject_trigger = yes
+		# 				SPR = {
+		# 					is_owned_or_subject_trigger = yes
+		# 				}
+		# 			}					
+		# 			OR = {
+		# 				state = 290
+		# 				state = 1137
+		# 				state = 807
+		# 			}
+		# 		}	
+		# 	}
+		# 	effect_tooltip = {
+		# 		SPR = { transfer_state = 290 transfer_state = 1137 transfer_state = 807 }
+		# 	}
+		# 	hidden_effect = {
+		# 		SPR = {
+		# 			country_event = {
+		# 				id = ww1_morocco.20
+		# 				days = 2
+		# 			}
+		# 		}
+		# 	}
+		# }
 		
 		hidden_effect = {
 			MOR = {
@@ -788,7 +794,10 @@ country_event = {
 			end_puppet = MOR
 		}
 		GER = {
-			MOR = { set_country_flag = protectorate }
+			MOR = { 
+				set_country_flag = protectorate 
+				get_current_government_type = yes
+			}
 			set_autonomy = {
 				target = MOR
 				autonomy_state = autonomy_tgwr_protectorate
@@ -796,14 +805,7 @@ country_event = {
 			}
 			hidden_effect = {
 				MOR = {
-					set_politics = {
-						ruling_party = neutrality
-						elections_allowed = no
-					}
-					set_popularities = {
-						neutrality = 100
-					}
-					drop_cosmetic_tag = yes
+					restore_previous_government_type = yes
 				}
 			}
 		}
@@ -1157,16 +1159,65 @@ country_event = {
 		FRA = {
 			every_state = {
 				limit = {
-					is_owned_or_subject_PREV_trigger = yes
+					OR = {
+						is_owned_or_subject_PREV_trigger = yes
+						SPR = {
+							is_owned_or_subject_PREV_trigger = yes
+						}
+					}			
 					OR = {
 						state = 290
-						state = 807
+						state = 1137
 					}
 				}
-				transfer_state_to = ROOT
-			}
+				if = {
+					limit = {
+						MRS = {
+							OR = {
+								exists = no
+								is_subject_of = ROOT
+							}
+						}					
+					}
+					transfer_state_to = MRS
+					add_core_of = MRS
+					MRS = { set_country_flag = protectorate }
+					ROOT = {
+						set_autonomy = {
+							target = MRS
+							autonomy_state = autonomy_tgwr_integrated_protectorate
+							freedom_level = 0.6
+						}
+					}
+					FRA = { give_guarantee = MRS }			
+					MOR = { give_guarantee = MRS }
+					hidden_effect = {
+						MRS = {
+							give_military_access = MOR
+							set_politics = {
+								ruling_party = neutrality
+								elections_allowed = no
+							}
+							set_popularities = {
+								neutrality = 100
+							}
+							add_state_claim = 807 #officially as part of the Spanish protectorate in Morocco, but mainly administered alongside Saguía el-Hamra and Río de Oro as part of Spanish Sahara
+						}
+					}
+				}
+				else = {
+					transfer_state_to = ROOT
+				}
+			}		
+			if = {
+				limit = {
+					807 = {
+						is_owned_or_subject_PREV_trigger = yes
+					}
+				}
+				807 = { transfer_state_to = ROOT } 
+			}			
 		}
-		add_state_claim = 887
 	}
 }
 
@@ -1729,7 +1780,10 @@ country_event = {
 				transfer_state_to = MOR
 				add_core_of = MOR
 			}
-			MOR = { set_country_flag = protectorate }
+			MOR = { 
+				get_current_government_type = yes
+				set_country_flag = protectorate 
+			}
 			set_autonomy = {
 				target = MOR
 				autonomy_state = autonomy_tgwr_protectorate
@@ -1737,14 +1791,7 @@ country_event = {
 			}
 			hidden_effect = {
 				MOR = {
-					drop_cosmetic_tag = yes
-					set_politics = {
-						ruling_party = neutrality
-						elections_allowed = no
-					}
-					set_popularities = {
-						neutrality = 100
-					}
+					restore_previous_government_type = yes
 					every_owned_state = {
 						limit = { is_claimed_by = OVERLORD }
 						remove_claim_by = OVERLORD
@@ -1783,20 +1830,12 @@ country_event = {
 	option = {
 		name = ww1_morocco.21.a
 		retire_character = MOR_yusef_bin_hassan
-		MOR_muhammad_bin_yusef = {
-			add_country_leader_role = {
-				country_leader = {
-					ideology = semi_constitutional_monarchy
-				}
+		add_country_leader_role = {
+			character = MOR_muhammad_bin_yusef
+			promote_leader = yes
+			country_leader = {
+				ideology = semi_constitutional_monarchy
 			}
-		}
-		if = {
-			limit = {
-				NOT = {
-					has_cosmetic_tag = MOR_FRA
-				}
-			}
-			promote_character = MOR_muhammad_bin_yusef
 		}
 	}
 }
@@ -1844,15 +1883,28 @@ country_event = {
 	trigger = {
 		tag = SPR
 		290 = { is_owned_or_subject_trigger = yes }
+		has_start_date < 1914.1.1
 	}
 	fire_only_once = yes
 	option = {
 		name = ww1_rif.1.a
-		# 290 = {
-		# 	add_compliance = -10
-		# 	add_resistance = 10
-		# }
-		add_manpower = -40000
+		290 = { add_core_of = RIF }
+		1137 = { add_core_of = RIF }
+		random_subject_country = {
+			limit = {
+				290 = {
+					is_core_of = PREV
+				}
+			}
+			remove_state_core = 290
+			add_state_claim = 290
+		}
+		290 = {
+			start_resistance = yes
+			add_compliance = -30
+			add_resistance = 30
+		}
+		#add_manpower = -40000
 	}
 }
 
@@ -1899,6 +1951,7 @@ country_event = {
 	immediate = {
 		hidden_effect = {
 			290 = { add_core_of = RIF }
+			1137 = { add_core_of = RIF }
 			743 = { add_claim_by = RIF }
 			division_template = {
 				name = "Regimiento de guarnición en Marruecos"
@@ -1931,32 +1984,35 @@ country_event = {
 		RIF = {
 			transfer_state = 290
 			hidden_effect = {
+				add_victory_points = {
+					province = 7215
+					value = 1
+				}
 				PREV = {
-					set_province_controller = 4761
 					set_province_controller = 12100
-					743 = {
+					1137 = {
 						create_unit = {
 							division = "name = \"Guarnición de Melilla\" division_template = \"Regimiento de guarnición en Marruecos\" start_experience_factor = 0.3 start_equipment_factor = 1.0"
 							owner = ROOT
-							prioritize_location = 12082
+							prioritize_location = 12100
 							allow_spawning_on_enemy_provs = yes
 						}
 						create_unit = {
 							division = "name = \"Guarnición de Ceuta\" division_template = \"Regimiento de guarnición en Marruecos\" start_experience_factor = 0.3 start_equipment_factor = 1.0"
 							owner = ROOT
-							prioritize_location = 9945
+							prioritize_location = 12087
 							allow_spawning_on_enemy_provs = yes
 						}
 						create_unit = {
 							division = "name = \"Guarnición de Melilla\" division_template = \"Regimiento de guarnición en Marruecos\" start_experience_factor = 0.3 start_equipment_factor = 1.0"
 							owner = ROOT
-							prioritize_location = 12082
+							prioritize_location = 12100
 							allow_spawning_on_enemy_provs = yes
 						}
 						create_unit = {
 							division = "name = \"Guarnición de Ceuta\" division_template = \"Regimiento de guarnición en Marruecos\" start_experience_factor = 0.3 start_equipment_factor = 1.0"
 							owner = ROOT
-							prioritize_location = 9945
+							prioritize_location = 12087
 							allow_spawning_on_enemy_provs = yes
 						}
 					}
@@ -1989,10 +2045,38 @@ country_event = {
 				}
 			}
 		}
-		add_state_claim = 290
+		hidden_effect = {
+			if = {
+				limit = { 
+					1137 = {
+						is_owned_or_subject_trigger = yes
+					}
+				}
+				1137 = {
+					owner = {
+						set_province_controller = 12100
+						add_state_claim = 290
+					}
+				}
+				else = {
+					set_province_controller = 12100
+					add_state_claim = 290
+				}
+			}
+		}
 		declare_war_on = {
 			target = RIF
 			type = annex_everything
+		}
+		every_subject_country = {
+			limit = {
+				original_tag = MOR
+			}
+			add_to_war = {
+				targeted_alliance = ROOT
+				enemy = RIF
+			}
+			add_civil_war_target = RIF
 		}
 	}
 	option = {
@@ -2002,32 +2086,35 @@ country_event = {
 		RIF = {
 			transfer_state = 290
 			hidden_effect = {
+				add_victory_points = {
+					province = 7215
+					value = 1
+				}
 				PREV = {
-					set_province_controller = 4761
 					set_province_controller = 12100
-					743 = {
+					1137 = {
 						create_unit = {
 							division = "name = \"Guarnición de Melilla\" division_template = \"Regimiento de guarnición en Marruecos\" start_experience_factor = 0.3 start_equipment_factor = 1.0"
 							owner = ROOT
-							prioritize_location = 12082
+							prioritize_location = 12100
 							allow_spawning_on_enemy_provs = yes
 						}
 						create_unit = {
 							division = "name = \"Guarnición de Ceuta\" division_template = \"Regimiento de guarnición en Marruecos\" start_experience_factor = 0.3 start_equipment_factor = 1.0"
 							owner = ROOT
-							prioritize_location = 9945
+							prioritize_location = 12087
 							allow_spawning_on_enemy_provs = yes
 						}
 						create_unit = {
 							division = "name = \"Guarnición de Melilla\" division_template = \"Regimiento de guarnición en Marruecos\" start_experience_factor = 0.3 start_equipment_factor = 1.0"
 							owner = ROOT
-							prioritize_location = 12082
+							prioritize_location = 12100
 							allow_spawning_on_enemy_provs = yes
 						}
 						create_unit = {
 							division = "name = \"Guarnición de Ceuta\" division_template = \"Regimiento de guarnición en Marruecos\" start_experience_factor = 0.3 start_equipment_factor = 1.0"
 							owner = ROOT
-							prioritize_location = 9945
+							prioritize_location = 12087
 							allow_spawning_on_enemy_provs = yes
 						}
 					}
@@ -2060,10 +2147,38 @@ country_event = {
 				}
 			}
 		}
-		add_state_claim = 290
+		hidden_effect = {
+			if = {
+				limit = { 
+					1137 = {
+						is_owned_or_subject_trigger = yes
+					}
+				}
+				1137 = {
+					owner = {
+						set_province_controller = 12100
+						add_state_claim = 290
+					}
+				}
+				else = {
+					set_province_controller = 12100
+					add_state_claim = 290
+				}
+			}
+		}
 		declare_war_on = {
 			target = RIF
 			type = annex_everything
+		}
+		every_subject_country = {
+			limit = {
+				original_tag = MOR
+			}
+			add_to_war = {
+				targeted_alliance = ROOT
+				enemy = RIF
+			}
+			add_civil_war_target = RIF
 		}
 		RIF = { change_tag_from = ROOT }
 	}
@@ -2081,19 +2196,6 @@ country_event = {
 		declare_war_on = {
 			target = RIF
 			type = topple_government
-		}
-		MOR = {
-			add_victory_points = {
-				province = 10070
-				value = 5
-			}
-			add_victory_points = {
-				province = 7069
-				value = -5
-			}
-			set_capital = {
-				state = 462
-			}
 		}
 		if = {
 			limit = { has_subject = MOR }
@@ -2116,23 +2218,47 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_rif.5.a
-		white_peace = FROM
+		FROM = {
+			white_peace = ROOT
+		}
+		
 		if = {
 			limit = {
 				has_war_with = FRA
 			}
-			white_peace = FRA
+			FRA = {
+				white_peace = ROOT
+			}		
 		}
 		FROM = {
-			every_owned_state = {
+			every_state = {
 				limit = {
-					OR = {
-						is_core_of = ROOT
-						is_claimed_by = ROOT
-					}
+					is_owned_or_subject_PREV_trigger = yes
+					is_core_of = ROOT
 				}
 				transfer_state_to = ROOT
+				remove_claim_by = FROM
 			}
+		}
+		if = {
+			limit = {
+				MRS = {
+					exists = no
+				}
+			}
+			MRS = {
+				every_state = {
+					limit = {
+						OR = {
+							is_core_of = PREV
+							is_claimed_by = PREV
+						}							
+					}
+					remove_claim_by = MRS
+					remove_core_of = MRS
+				}
+			}
+
 		}
 		add_war_support = 0.20
 		add_stability = 0.15
@@ -2254,6 +2380,7 @@ country_event = {
 				OR = {
 					state = 461
 					state = 290
+					state = 1137
 					state = 807
 					state = 699
 					state = 108
