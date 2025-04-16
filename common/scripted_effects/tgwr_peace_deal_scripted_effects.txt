@@ -2473,12 +2473,11 @@ armistice_effect = {
 				has_country_flag = great_war_loser
 			}
 			MOR = {
-				has_cosmetic_tag = MOR_FRA
+				is_subject_of = FRA
 			}
 		}
 		MOR = {
 			add_state_core = 461
-			drop_cosmetic_tag = yes
 		}
 	}
 	if = {
@@ -3943,6 +3942,9 @@ conference_effect = {
 							state = 661
 							state = 812
 							state = 1060
+							state = 1122
+							state = 1124
+							state = 1128
 						}
 					}
 					TUR = {
@@ -5385,7 +5387,10 @@ conference_effect = {
 		limit = {
 			MOR = {
 				NOT = { has_country_flag = great_war_winner }
-				is_subject_of = FRA
+				OR = {
+					is_subject_of = FRA
+					has_country_flag = great_war_loser
+				}				
 			}
 		}
 		if = {
@@ -5397,22 +5402,31 @@ conference_effect = {
 			}
 			MOR = {
 				add_state_core = 461
-				drop_cosmetic_tag = yes
+				set_country_flag = protectorate
+				get_current_government_type = yes
 			}
 			GER = {
-				MOR = { set_country_flag = protectorate }
 				set_autonomy = {
 					target = MOR
 					autonomous_state = autonomy_tgwr_protectorate
 				}
 			}
 			MOR = {
-				set_politics = {
-					ruling_party = neutrality
-					elections_allowed = no
-				}
-				set_popularities = {
-					neutrality = 100
+				restore_previous_government_type = yes
+				MOR_mulay_abdelhafid = {
+					if = {
+						limit = { has_ideology = semi_constitutional_monarchy }
+						promote_character = semi_constitutional_monarchy
+					}
+					else = {
+						add_country_leader_role = {
+							country_leader = {
+								ideology = semi_constitutional_monarchy
+								traits = { unpopular_sultan  }
+							}
+							promote_leader = yes
+						}
+					}
 				}
 			}
 			else_if = {
@@ -5420,18 +5434,71 @@ conference_effect = {
 					FRA = { has_country_flag = great_war_loser }
 					SPR = { has_country_flag = great_war_winner }
 				}
+				MOR = {
+					add_state_core = 461
+					set_country_flag = protectorate
+					get_current_government_type = yes
+				}
+				SPR = {
+					set_autonomy = {
+						target = MOR
+						autonomous_state = autonomy_tgwr_integrated_protectorate	
+					}	
+				}
+				MOR = {
+					restore_previous_government_type = yes
+				}
+				if = {
+					limit = {
+						MRS = {
+							OR = {
+								exists = no
+								is_subject_of = SPR
+							}
+						}
+					}
+					MOR = {
+						annex_country = {
+							target = MRS
+							transfer_troops = yes
+						}
+					}
+					MRS = {
+						MOR_mohammed_mehedi_uld_ben_ismael = {
+							set_nationality = MOR
+							promote_character = absolute_monarchy
+						}
+						every_state = {
+							limit = {
+								OR = {
+									is_core_of = PREV
+									is_claimed_by = PREV
+								}							
+							}
+							remove_claim_by = MRS
+							remove_core_of = MRS
+						}
+					}
+				}
 				every_state = {
 					limit = {
-						owner = {
+						owner = {			
 							OR = {
 								tag = FRA
 								is_subject_of = FRA
+								tag = SPR
+								is_subject_of = SPR
 							}
 						}
 						is_core_of = MOR
+						NOT = {
+							is_core_of = SPR
+							state = 783
+							state = 689
+						}
 					}
-					transfer_state_to = SPR
-				}
+					transfer_state_to = MOR
+				}			
 			}
 		}	
 	}
