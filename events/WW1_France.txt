@@ -21700,7 +21700,7 @@ country_event = {
 	}
 }
 
-#Spain called to help France, from Cartagena treaty
+#Spain called to help France/Britain, from Cartagena treaty
 country_event = {
 	id = ww1_france.587
 	title = ww1_france.587.t
@@ -21718,25 +21718,67 @@ country_event = {
 			has_idea = SPR_pact_of_cartagena_1907
 			NOT = {
 				has_war_with = FRA
+				has_war_with = ENG
 				is_in_faction_with = AUS
 				is_in_faction_with = ITA
 			}
 			has_civil_war = no
+			has_capitulated = no
 			NOT = {
 				has_country_flag = called_by_cartagena_pact
 			}
 		}
-		FRA = {
-			has_war_with = AUS
-			has_war_with = ITA
+		NOT = {
+			FRA = {
+				OR = {
+					is_in_faction_with = AUS
+					is_in_faction_with = ITA
+				}
+			}
+			ENG = {
+				OR = {
+					is_in_faction_with = AUS
+					is_in_faction_with = ITA
+				}
+			}			
 		}
+		OR = {
+			FRA = {
+				has_war_with = AUS
+				has_war_with = ITA
+				NOT = {
+					has_war_with = ENG
+				}	
+			}
+			ENG = {
+				has_war_with = AUS
+				has_war_with = ITA
+				NOT = {
+					has_war_with = FRA
+				}
+			}
+		}	
 	}
 	option = {
 		name = ww1_france.587.a
 		#yeah we join
-		add_to_war = {
-			targeted_alliance = FRA
-			enemy = AUS
+		if = {
+			limit = {
+				FRA = {
+					has_war_with = AUS
+					has_war_with = ITA
+				}	
+			}
+			add_to_war = {
+				targeted_alliance = FRA
+				enemy = AUS
+			}
+			else = {
+				add_to_war = {
+					targeted_alliance = ENG
+					enemy = AUS
+				}
+			}
 		}
 		if = {
 			limit = {
@@ -21744,12 +21786,50 @@ country_event = {
 			}
 			news_event = ww1_france.589 #so everyone will know what happened
 		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+				surrender_progress > 0.1
+			}
+		}
+	}
+	option = {
+		name = ww1_france.587.b
+		remove_ideas = SPR_pact_of_cartagena_1907
+		every_other_country = {
+			limit = {
+				has_war_with = AUS
+				has_war_with = ITA
+				NOT = {
+					has_war_with = ROOT
+				}
+			}
+			add_opinion_modifier = {
+				modifier = faction_traitor
+				target = ROOT
+				days = 365
+			}
+		
+			add_opinion_modifier = {
+				modifier = faction_traitor_trade
+				target = ROOT
+				days = 365
+			}
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				add = 10
+				surrender_progress > 0.1
+			}
+		}
 	}
 }
 
-#France called to help Spain, from Cartagena treaty
+#France/Britain called to help Spain, from Cartagena treaty
 country_event = {
-	id = ww1_france.588
+	id = ww1_france.587
 	title = ww1_france.588.t
 	desc = ww1_france.588.d
 	picture = GFX_battleship_liberte_class
@@ -21760,22 +21840,26 @@ country_event = {
 		days = 3
 	}
 	trigger = {
-		tag = FRA
-		FRA = {
-			NOT = {
-				has_war_with = SPR
-				is_in_faction_with = AUS
-				is_in_faction_with = ITA
-			}
-			NOT = {
-				has_country_flag = called_by_cartagena_pact
-			}
-			has_civil_war = no
+		OR = {
+			tag = FRA
+			tag = ENG
+		}	
+		NOT = {
+			has_war_with = SPR
+			has_war_with = FRA
+			has_war_with = ENG
+			is_in_faction_with = AUS
+			is_in_faction_with = ITA
 		}
+		NOT = {
+			has_country_flag = called_by_cartagena_pact
+		}
+		has_civil_war = no
+		has_capitulated = no
 		SPR = {
 			has_idea = SPR_pact_of_cartagena_1907
 			has_war_with = AUS
-			has_war_with = ITA
+			has_war_with = ITA			
 		}
 	}
 	option = {
@@ -21785,6 +21869,46 @@ country_event = {
 			targeted_alliance = SPR
 			enemy = AUS
 		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+				surrender_progress > 0.1
+			}
+		}
+	}
+	option = {
+		name = ww1_france.587.b
+		SPR = {
+				remove_ideas = SPR_pact_of_cartagena_1907
+		}
+		every_other_country = {
+			limit = {
+				has_war_with = AUS
+				has_war_with = ITA
+				NOT = {
+					has_war_with = ROOT
+				}
+			}
+			add_opinion_modifier = {
+				modifier = faction_traitor
+				target = ROOT
+				days = 365
+			}
+		
+			add_opinion_modifier = {
+				modifier = faction_traitor_trade
+				target = ROOT
+				days = 365
+			}
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				add = 10
+				surrender_progress > 0.1
+			}
+		}
 	}
 }
 
@@ -21793,7 +21917,7 @@ news_event = {
 	id = ww1_france.589
 	title = ww1_france.589.t
 	desc = ww1_france.589.d
-	picture = GFX_report_news_army_in_desert
+	picture = GFX_news_event_espana_class_battleship
 	is_triggered_only = yes
 	option = {
 		name = ww1_france.589.a
