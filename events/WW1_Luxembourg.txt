@@ -53,10 +53,17 @@ country_event = {
 	picture = GFX_report_event_royal_parade
 	trigger = {
 		tag = LUX
-		has_global_flag = great_war_ends
-		GER = { has_country_flag = great_war_loser }
-		NOT = {
+		has_global_flag = great_war_ends	
+		has_war = no
+		OR = {
+			AND = {
+				has_global_flag = luxembourg_submitted
+				GER = { has_country_flag = great_war_loser }
+				NOT = { has_country_flag = great_war_loser }
+			}
 			has_country_flag = great_war_loser
+		}	
+		NOT = {
 			has_government = communism
 		}
 		has_country_leader = {
@@ -153,15 +160,7 @@ country_event = {
 	id = ww1_luxembourg.5
 	title = ww1_luxembourg.5.t
 	desc = ww1_luxembourg.5.d
-	trigger = {
-		tag = LUX
-		has_war_with = GER
-		has_global_flag = great_war
-		# has_capitulated = no
-	}
-	mean_time_to_happen = {
-	    days = 0
-	}
+	is_triggered_only = yes
 	fire_only_once = yes
 	option = {
 		name = ww1_luxembourg.5.a
@@ -173,7 +172,7 @@ country_event = {
 			8 = {
 				teleport_armies = {
 					limit = {
-						has_war_with = GER
+						has_war_with = FROM
 					}
 					to_state = 17
 				}
@@ -181,7 +180,7 @@ country_event = {
 			}
 			get_current_government_type = yes
 		}
-		GER = {
+		FROM = {
 			set_autonomy = {
 				target = ROOT
 				autonomous_state = autonomy_integrated_puppet
@@ -189,9 +188,28 @@ country_event = {
 		}
 		hidden_effect = {
 			restore_previous_government_type = yes
-			add_ideas = LUX_occupation
-			add_ideas = disarmed_nation
-			add_ideas = civilian_economy
+			add_ideas = {
+				LUX_occupation
+				disarmed_nation
+				civilian_economy
+			}
+			if = {
+				limit = {
+					NOT = {
+						has_idea = GER_customs_union
+					}
+				}
+				add_ideas = GER_customs_union
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					has_country_leader_ideology = semi_constitutional_monarchy
+					has_country_leader_ideology = absolute_monarchy
+				}			
+			}
+			add_country_leader_trait = disgraced_monarch
 		}
 		custom_effect_tooltip = LUX_occupation_tt
 		ai_chance = {
@@ -219,6 +237,7 @@ country_event = {
 	desc = ww1_luxembourg.6.d
 	picture = GFX_report_event_generic_conference
 	is_triggered_only = yes
+	fire_only_once = yes
 	option = {
 		name = ww1_luxembourg.6.a
 		give_guarantee = LUX
