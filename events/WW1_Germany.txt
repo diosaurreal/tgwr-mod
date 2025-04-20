@@ -26,7 +26,14 @@ country_event = {
 	option = {
 		name = ww1_germany.1.a
 		hidden_effect = {
-			drop_cosmetic_tag = yes
+			if = {
+				limit = {
+					NOT = {
+						has_cosmetic_tag = PRE
+					}
+				}
+				drop_cosmetic_tag = yes
+			}		
 			# manpower restore and equipments
 			# I dont wanna weimar to have duplicated template names with Reichswehr
 			# and damn the locked template it is not even manualy disbandable
@@ -132,33 +139,56 @@ country_event = {
 				}
 			}
 			# Republic of Alsace-Lorraine
-			ALS = {
-				transfer_state = 28
-				transfer_state = 1107
-			}
-			ALS = {
-				add_popularity = {
-					ideology = communism
-					popularity = 0.35
+			if = {
+				limit = {
+					OR = {
+						owns_state = 28
+						owns_state = 1107
+						has_subject = ALS
+					}
+					OR = {
+						ALS = {
+							OR = {
+								exists = no
+								is_subject_of = ROOT
+							}
+						}
+					}
 				}
-				set_politics = {
-					ruling_party = communism
-					elections_allowed = no
+				every_owned_state = {
+					limit = {
+						is_core_of = ALS
+					}
+					transfer_state_to = ALS
 				}
-				add_ideas = standing_alone
-				set_truce = {
-					target = GER
-					days = 365
+				end_puppet = ALS
+				ALS = {
+					leave_faction = yes
+					drop_cosmetic_tag = yes
+					add_popularity = {
+						ideology = communism
+						popularity = 0.35
+					}
+					set_politics = {
+						ruling_party = communism
+						elections_allowed = no
+					}
+					add_ideas = standing_alone
+					remove_ideas = GER_customs_union
+					set_truce = {
+						target = GER
+						days = 365
+					}
+					set_truce = {
+						target = FRA
+						days = 365
+					}
 				}
-				set_truce = {
-					target = FRA
-					days = 365
-				}
-			}
-			FRA = {
-				country_event = {
-					id = ww1_germany.171
-					days = 12
+				FRA = {
+					country_event = {
+						id = ww1_germany.171
+						days = 12
+					}
 				}
 			}
 			# People's States
@@ -173,15 +203,9 @@ country_event = {
 						tag = ALS
 					}
 				}
-				meta_effect = {
-					text = {
-						set_politics = {
-							ruling_party = democratic
-							last_election = "[CURRENT_DATE]"
-							elections_allowed = yes
-						}
-					}
-					CURRENT_DATE = "[?global.date.GetDateStringNoHour]"
+				set_politics = {
+					ruling_party = democratic
+					elections_allowed = yes
 				}
 				add_popularity = {
 					ideology = neutrality
@@ -1610,7 +1634,6 @@ country_event = {
 		name = ww1_germany.22.b
 		add_stability = -0.05
 		add_political_power = -75
-		set_country_flag = ger_kingdom_of_austria
 		AUS = {
 			hidden_effect = {
 				every_state = {
@@ -1648,27 +1671,31 @@ country_event = {
 			}
 			set_politics = {
 				ruling_party = neutrality
-				elections_allowed = no
-			}
-			set_cosmetic_tag = AUS_GER
-			set_party_name = {
-				ideology = neutrality
 				long_name = AUS_neutrality_party_long
 				name = AUS_neutrality_party
+				elections_allowed = yes
 			}
+			drop_cosmetic_tag = yes
 			if = {
 				limit = {
 					NOT = {
 						has_global_flag =  AUH_franz_joseph_i_retired
 					}
+					has_character = AUH_franz_joseph_i
 				}
 				AUH_franz_joseph_i = {
-					add_country_leader_role = {
-						promote_leader = yes
-						country_leader = {
-							ideology = semi_constitutional_monarchy
-							traits = {
-								oldschool_kaiser
+					if = {
+						limit = { has_ideology = semi_constitutional_monarchy }
+						promote_character = semi_constitutional_monarchy
+					}
+					else = {
+						add_country_leader_role = {
+							promote_leader = yes
+							country_leader = {
+								ideology = semi_constitutional_monarchy
+								traits = {
+									oldschool_kaiser
+								}
 							}
 						}
 					}
@@ -1678,21 +1705,39 @@ country_event = {
 						has_global_flag = AUH_franz_ferdinand_killed
 					}
 					AUH_karl_i = {
-						add_country_leader_role = {
-							country_leader = {
-								ideology = semi_constitutional_monarchy
+						if = {
+							limit = { has_ideology = semi_constitutional_monarchy }
+							promote_character = semi_constitutional_monarchy
+						}
+						else = {
+							add_country_leader_role = {
+								promote_leader = yes
+								country_leader = {
+									ideology = semi_constitutional_monarchy
+									traits = {
+										blessed
+									}
+								}
 							}
 						}
-						promote_character = semi_constitutional_monarchy
 					}
 					else = {
 						AUH_franz_ferdinand = {
-							add_country_leader_role = {
-								country_leader = {
-									ideology = semi_constitutional_monarchy
+							if = {
+								limit = { has_ideology = semi_constitutional_monarchy }
+								promote_character = semi_constitutional_monarchy
+							}
+							else = {
+								add_country_leader_role = {
+									promote_leader = yes
+									country_leader = {
+										ideology = semi_constitutional_monarchy
+										traits = {
+											true_personality_amidst_the_inanity
+										}
+									}
 								}
 							}
-							promote_character = semi_constitutional_monarchy
 						}
 					}
 				}
@@ -7818,6 +7863,19 @@ country_event = {
 		}
 		add_state_claim = 906
 		transfer_state = 906
+		hidden_effect = {
+			BEL = {
+				if = {
+					limit = { is_subject_of = ROOT }
+					every_owned_state = {
+						limit = {
+							is_demilitarized_zone = yes
+						}
+						set_demilitarized_zone = no
+					}
+				}
+			}
+		}
 		ai_chance = {
 			base = 100
 			modifier = {
@@ -7847,6 +7905,19 @@ country_event = {
 		add_state_claim = 907
 		transfer_state = 906
 		transfer_state = 907
+		hidden_effect = {
+			BEL = {
+				if = {
+					limit = { is_subject_of = ROOT }
+					every_owned_state = {
+						limit = {
+							is_demilitarized_zone = yes
+						}
+						set_demilitarized_zone = no
+					}
+				}
+			}
+		}
 		ai_chance = {
 			base = 0
 			modifier = {
@@ -7896,6 +7967,19 @@ country_event = {
 				34 = {
 					owner = {
 						transfer_state = PREV.PREV
+					}
+				}
+			}
+		}
+		hidden_effect = {
+			BEL = {
+				if = {
+					limit = { is_subject_of = ROOT }
+					every_owned_state = {
+						limit = {
+							is_demilitarized_zone = yes
+						}
+						set_demilitarized_zone = no
 					}
 				}
 			}
