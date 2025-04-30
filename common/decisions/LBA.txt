@@ -80,13 +80,14 @@ war_in_desert = {
 				any_neighbor_state = {
 					has_ROOT_at_least_1_div_in_current_state_scope = yes
 				}
-			}
-			has_border_war = no
-			FROM = {
 				OWNER = {
 					has_border_war = no
+					NOT = {				
+						has_country_flag = LBA_modus_vivendi_of_acroma
+					}
 				}
 			}
+			has_border_war = no
 			NOT = {
 				has_country_flag = LBA_wait_before_attack_again
 			}
@@ -169,6 +170,7 @@ war_in_desert = {
 						is_in_faction_with = ROOT
 						is_subject_of = ROOT
 						has_subject = ROOT
+						has_war_with = ROOT
 					}
 				}
 				impassable = no
@@ -385,50 +387,49 @@ war_in_desert = {
 		allowed = {
 			tag = ENG
 		}
-		available = {	
+		available = {
+			OR = {
+				is_neighbor_of = FROM
+				any_subject_country = {
+					is_neighbor_of = FROM
+				}
+			}
 		}
 		target_trigger = {
 			FROM = {
 				tag = LBA
 			}
 		}
+		custom_cost_trigger = {
+			command_power > 9
+		}
+		custom_cost_text = decision_cost_CP_10
 		visible = {
 			NOT = {
 				has_country_flag = great_war_loser
 				has_idea = idea_armistice
 				is_in_faction_with = FROM
+				has_war_with = FROM
+				has_subject = FROM
 			}
 			is_subject = no
 			has_country_flag = ITA_LBA_war_in_desert
+			FROM = {
+				has_country_flag = ITA_LBA_war_in_desert
+				NOT = {
+					has_country_flag = LBA_modus_vivendi_of_acroma
+				}
+			}
 		}
 		complete_effect = {
+			add_command_power = -10
+			declare_war_on = {
+				target = LBA
+				type = topple_government
+			}
 			if = {
 				limit = {
-					has_war_with_major = yes
-				}
-				random_enemy_country = {
-					limit = {
-						is_major = yes
-					}
-					LBA = {
-						add_to_war = {
-							targeted_alliance = PREV
-							enemy = ENG
-						}
-					}
-				}
-				else = {
-					declare_war_on = {
-						target = LBA
-						type = topple_government
-					}
-				}
-			}		
-			if = {
-				limit = {
-					EGY = {
-						is_subject_of = ENG
-					}
+					has_subject = EGY
 				}
 				EGY = {
 					add_to_war = {
@@ -437,13 +438,16 @@ war_in_desert = {
 					}
 				}
 			}
-			every_country = {
+			if = {
 				limit = {
-					not = {
-						tag = LBA
+					is_in_faction_with = ITA
+				}
+				ITA = {
+					add_to_war = {
+						targeted_alliance = ENG
+						enemy = LBA
 					}
 				}
-				clr_country_flag = ITA_LBA_war_in_desert #end of desert border war mechanic
 			}
 			hidden_effect = {
 				if = {
@@ -453,7 +457,9 @@ war_in_desert = {
 							is_in_faction = no
 						}
 					}
-					add_ideas = standing_alone
+					LBA = {
+					 	add_ideas = standing_alone
+					}	
 				}
 			}
 		}
