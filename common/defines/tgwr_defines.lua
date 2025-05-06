@@ -102,7 +102,8 @@ NDefines.NAI.SEND_VOLUNTEER_AIDESIRE_SAME_IDEOLOGY_CIVIL_WAR = 0		-- Added to AI
 NDefines.NMilitary.UNIT_DIGIN_SPEED = 0.5
 
 NDefines.NAI.MAX_DISTANCE_NAVAL_INVASION = 150.0
-NDefines.NDiplomacy.IDEOLOGY_JOIN_FACTION_MIN_LEVEL = 0
+NDefines.NAI.CALL_ALLY_PUPPET_INVITE_OVERLORD = 100    -- Desire for a puppet to call its overlord into the war -- Vanilla is -1000
+NDefines.NDiplomacy.IDEOLOGY_JOIN_FACTION_MIN_LEVEL = -1
 NDefines.NDiplomacy.MARKET_ACCESS_ACCEPTANCE_SAME_IDEOLOGY = 0				 -- Acceptance value added if same ideology (Vanilla is 15)
 NDefines.NDiplomacy.MARKET_ACCESS_ACCEPTANCE_TRADE_INFLUENCE = 0.2 			 -- Acceptance factor for trade influence (Vanilla is 0.70)
 
