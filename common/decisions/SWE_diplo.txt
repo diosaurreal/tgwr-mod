@@ -359,6 +359,123 @@ SWE_foreign_policy = {	# TBD
 	}
 }
 foreign_politics = {
+	SWE_join_the_great_war_ger = {
+		allowed = {
+			original_tag = SWE
+		}
+		visible = {
+			has_completed_focus = SWE_prepare_entry_into_the_conflicts
+			is_in_faction = no
+			NOT = { has_global_flag = great_war_ends }
+		}
+		available = {
+			has_war = no
+			is_subject = no
+			has_stability > 0.25
+			has_war_support > 0.4
+			has_global_flag = great_war
+			NOT = { has_global_flag = great_war_ends }
+			GER = { surrender_progress < 0.1 }
+			OR = {
+				custom_trigger_tooltip = {
+					tooltip = finland_has_risen_up_against_russia_tt
+					FIN = {
+						has_war_with = RUS
+						NOT = { has_war_with = GER }
+						NOT = { has_war_with = ROOT }
+					}
+				}
+				custom_trigger_tooltip = {
+					tooltip = germany_has_taken_out_russia_or_france_tt
+					AND = {
+						GER = { surrender_progress < 0.1 }
+						OR = {
+							FRA = {
+								has_country_flag = great_war_loser
+							}
+							RUS = {
+								has_country_flag = great_war_loser
+							}
+						}
+					}
+				}
+				# Pushed far enough into Russian land
+			}
+		}
+		cancel_trigger = {
+			hidden_trigger = {
+				has_global_flag = great_war_ends
+			}
+		}
+		
+		fire_only_once = yes
+		
+		remove_effect = {
+			add_political_power = -50
+			if = {
+				limit = {
+					GER = {
+						is_ai = yes
+					}
+				}
+				GER = {
+					add_to_faction = SWE
+				}
+			}
+			else = {
+				GER = {
+					country_event = { id = generic.2 }
+				}
+			}
+			if = {
+				limit = { GER = { has_war_with = RUS } }
+				add_to_war = {
+					targeted_alliance = GER
+					enemy = RUS
+				}
+			}
+			if = {	# For now
+				limit = { GER = { has_war_with = SOV } }
+				add_to_war = {
+					targeted_alliance = GER
+					enemy = SOV
+				}
+			}
+			if = {
+				limit = {
+					GER = {
+						NOT = { has_war_with = RUS }
+						NOT = { has_war_with = SOV }
+					}
+				}
+				if = {
+					limit = { GER = { has_war_with = FRA } }
+					add_to_war = {
+						targeted_alliance = GER
+						enemy = FRA
+					}
+				}
+				else_if = {
+					limit = { GER = { has_war_with = ENG } }
+					add_to_war = {
+						targeted_alliance = GER
+						enemy = ENG
+					}
+				}
+			}
+		}
+		
+		ai_will_do = {
+			base = 0
+			modifier = {	# For now won't join war unless Germany is at war with Russia
+				add = 1
+				OR = {
+					GER = { has_war_with = RUS }
+					GER = { has_war_with = SOV }
+				}
+			}
+		}
+	}
 	SWE_exportforbjud = {
 		allowed = {
 			original_tag = SWE
@@ -375,7 +492,7 @@ foreign_politics = {
 			hidden_trigger = {
 				OR = {
 					NOT = { has_idea = SWE_hungerskjold }
-					is_in_faction = yes
+				#	is_in_faction = yes
 				}
 			}
 		}
@@ -721,10 +838,6 @@ operations = {
 			NOT = {
 				has_government = communism
 			}
-			OR = {
-				has_global_flag = finnish_civil_war
-				FIN = { has_civil_war = yes }
-			}
 			NOT = {
 				has_idea = idea_army_restrictions
 				has_idea = idea_armistice
@@ -737,7 +850,10 @@ operations = {
 		visible = {
 			FIN = {
 				exists = yes
-				has_civil_war = yes
+			}
+			OR = {
+				has_global_flag = finnish_civil_war
+				FIN = { has_civil_war = yes }
 			}
 			any_other_country = {
 				original_tag = FIN
