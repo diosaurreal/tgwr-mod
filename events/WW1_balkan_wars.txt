@@ -1685,6 +1685,20 @@ country_event = {
 	desc = ww1_secondbalkan.6.d
 	picture = GFX_report_event_generic_conference
 	is_triggered_only = yes
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = { 
+					RUS = {
+						has_country_flag = BUL_rizzing_us_1
+					}
+				}
+				225 = {
+					transfer_state_to = BUL
+				}
+			}
+		}
+	}
 	option = {
 		name = ww1_secondbalkan.6.a
 		country_event = {
@@ -1772,5 +1786,407 @@ news_event = {
 				set_country_flag = SE_balkan_war_2
 			}
 		}
+	}
+}
+
+#Bulgaria attacks (Events for Serbia)
+country_event = {
+	id = ww1_secondbalkan.3
+	title = ww1_secondbalkan.3.t
+	desc = ww1_secondbalkan.3.d
+	picture = GFX_report_event_bul_troops_macedonia
+	is_triggered_only = yes
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					SER = {
+						is_in_faction = no
+					}
+				}
+				create_faction = anti_bulgarian_league
+				add_to_faction = GRE
+				add_to_faction = MNT
+				else_if = {
+					limit = {
+						SER = {
+							is_faction_leader = yes
+						}
+					}
+					set_faction_name = anti_bulgarian_league
+				}
+				GRE = {
+					set_major = yes
+				}
+			}
+		}
+	}
+	option = {
+		name = event_generic_ok
+		ai_chance = {
+			factor = 100
+		}
+	}
+}
+
+#Romanian intervnetion
+country_event = {
+	id = ww1_secondbalkan.4
+	title = ww1_secondbalkan.4.t
+	desc = ww1_secondbalkan.4.d
+	picture = GFX_report_event_romanian_soldiers
+	is_triggered_only = yes
+	immediate = {
+		hidden_effect = {
+			news_event = {
+				id = ww1_secondbalkan.17
+				hours = 3
+			}
+			ROM = {
+				declare_war_on = {
+					target = BUL
+					type = take_claimed_state
+					generator = {
+						77
+					}
+				}
+			}
+			SER = {
+				add_to_faction = ROM
+			}
+		}
+	}
+	option = {
+		name = event_generic_ok
+		ai_chance = {
+			factor = 100
+		}
+		effect_tooltip = {
+			ROM = {
+				declare_war_on = {
+					target = BUL
+					type = take_claimed_state
+					generator = {
+						77
+					}
+				}
+			}
+		}
+	}
+}
+
+# Russian option to stop the Ottoman advance
+country_event = {
+	id = ww1_secondbalkan.11
+	title = ww1_secondbalkan.11.t
+	desc = ww1_secondbalkan.11.d
+	picture = GFX_report_event_tur_turkish_soldiers
+	is_triggered_only = yes
+	option = {
+		name = ww1_secondbalkan.11.a
+		add_war_support = 0.05
+		custom_effect_tooltip = ww1_secondbalkan.11.a.tt
+		effect_tooltip = {
+			create_wargoal = {
+				target = TUR
+				type = take_claimed_state
+			}
+		}
+		hidden_effect = {
+			TUR = {
+				country_event = {
+					id = ww1_secondbalkan.12
+					hours = 3
+				}
+			}
+		}
+	}
+	option = {
+		name = ww1_secondbalkan.11.b
+		ai_chance = { factor = 0 }
+		add_war_support = -0.05
+	}
+}
+
+# Russia threats intervention
+country_event = {
+	id = ww1_secondbalkan.12
+	title = ww1_secondbalkan.12.t
+	desc = ww1_secondbalkan.12.d
+	picture = GFX_report_event_soldiers_marching
+	is_triggered_only = yes
+	trigger = {
+		RUS = {
+			NOT = {
+				has_wargoal_against = TUR
+				has_war_with = TUR
+			}
+		}
+	}
+	option = {
+		name = ww1_secondbalkan.12.a
+		trigger = {
+			#when turkish rejected bulgarian peace offer
+			has_country_flag = tur_no_peace_bw2
+		}
+		add_war_support = -0.05
+		set_global_flag = TUR_BUL_separated_peace
+		white_peace = BUL
+		effect_tooltip = {
+			if = {
+				limit = {
+					756 = {
+						NOT = {
+							is_fully_controlled_by = BUL
+						}
+					}
+				}
+				every_state = {
+					limit = {
+						is_owned_by = BUL
+						OR = {
+							state = 200
+							state = 756
+						}
+					}
+					transfer_state_to = ROOT
+				}
+			}
+			if = {
+				limit = {
+					country_exists = WTH
+				}
+				BUL = {
+					annex_country = {
+						target = WTH
+					}
+				}
+			}
+		}
+		hidden_effect = {
+			country_event = {
+				id = ww1_secondbalkan.7
+				days = 5
+			}
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				has_global_flag = RUS_TUR_timeout_ultimatum
+				add = 1000
+			}
+			modifier = {
+				factor = 0
+				has_global_flag = great_war
+			}
+		}
+	}
+	option = {
+		name = ww1_secondbalkan.12.a
+		trigger = {
+			#russia warns intervention after 30 days
+			has_global_flag = RUS_TUR_timeout_ultimatum
+			NOT = { has_country_flag = tur_no_peace_bw2 }
+		}
+		hidden_effect = {
+			if = {
+				limit = {
+					451 = {
+						is_owned_by = BUL
+						is_controlled_by = ROOT
+					}
+					757 = {
+						is_owned_by = BUL
+						is_controlled_by = ROOT
+					}
+				}
+				every_state = {
+					limit = {
+						OR = {
+							state = 184
+							state = 345
+							state = 451
+							state = 757
+						}
+					}
+					add_core_of = WTH
+				}
+				WTH = {
+					transfer_state = 451
+					transfer_state = 757
+				}
+				set_autonomy = {
+					target = WTH
+					autonomy_state = autonomy_puppet
+				}
+				WTH = {
+					set_truce = {
+						target = BUL
+						days = 60
+					}
+					set_politics = {
+						ruling_party = neutrality
+						elections_allowed = no
+					}
+					set_popularities = {
+						neutrality = 100
+					}
+					add_ideas = standing_alone	
+				}
+			}
+			every_state = {
+				limit = {
+					OR = {
+						state = 200
+						state = 756
+					}
+					is_owned_by = BUL
+					OR = {
+						is_controlled_by = ROOT
+						ROOT = { has_subject = WTH }
+					}
+				}
+				transfer_state_to = ROOT
+			}
+		}
+		add_war_support = -0.05
+		set_global_flag = TUR_BUL_separated_peace
+		white_peace = BUL
+		effect_tooltip = {
+			if = {
+				limit = {
+					451 = {
+						is_owned_by = BUL
+						is_controlled_by = ROOT
+					}
+					757 = {
+						is_owned_by = BUL
+						is_controlled_by = ROOT
+					}
+				}
+				puppet = WTH
+				custom_effect_tooltip = western_thrace_tt
+			}
+		}
+		hidden_effect = {
+			country_event = {
+				id = ww1_secondbalkan.7
+				days = 35
+			}
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				has_global_flag = RUS_TUR_timeout_ultimatum
+				add = 1000
+			}
+			modifier = {
+				factor = 0
+				has_global_flag = great_war
+			}
+		}
+	}
+	option = {
+		name = ww1_secondbalkan.12.b
+		ai_chance = {
+			base = 0
+			modifier = {
+				add = 70
+				has_global_flag = great_war
+			}
+			# modifier = {
+			# 	has_global_flag = RUS_TUR_timeout_ultimatum
+			# 	factor = 0
+			# }
+		}
+		add_war_support = 0.05
+		FROM = {
+			create_wargoal = {
+				target = ROOT
+				type = take_claimed_state
+			}
+		}
+	}
+}
+
+# Russia sends navy
+country_event = {
+	id = ww1_secondbalkan.13
+	title = ww1_secondbalkan.13.t
+	desc = ww1_secondbalkan.13.d
+	picture = GFX_report_event_soldiers_marching
+	is_triggered_only = yes
+	option = {
+		name = ww1_secondbalkan.13.a
+		add_war_support = 0.01
+		hidden_effect = {
+			news_event = ww1_secondbalkan.14
+		}
+	}
+	option = {
+		name = ww1_secondbalkan.13.b
+		ai_chance = { factor = 0 }
+		add_war_support = -0.01
+	}
+}
+
+# Russia sends navy news
+news_event = {
+	id = ww1_secondbalkan.14
+	title = ww1_secondbalkan.14.t
+	desc = ww1_secondbalkan.14.d
+	picture = GFX_news_event_020
+	is_triggered_only = yes
+	major = yes
+	immediate = {
+		hidden_effect = {
+			set_global_flag = bw2_russia_threat
+		}
+	}
+	option = {
+		name = ww1_secondbalkan.14.a
+		trigger = {
+			NOT = { tag = RUS }
+		}
+	}
+	option = {
+		name = ww1_secondbalkan.14.b
+		trigger = { tag = RUS }
+	}
+}
+
+# Romanian intervention news
+news_event = {
+	id = ww1_secondbalkan.17
+	title = ww1_secondbalkan.17.t
+	desc = ww1_secondbalkan.17.d
+	picture = ww1_secondbalkan_1
+	major = yes
+	is_triggered_only = yes
+	option = {
+		name = ww1_secondbalkan.17.a
+		trigger = { tag = BUL }
+	}
+	option = {
+		name = ww1_secondbalkan.17.b
+		trigger = { NOT = { tag = BUL } }
+	}
+}
+
+# Turkish intervention news
+news_event = {
+	id = ww1_secondbalkan.18
+	title = ww1_secondbalkan.18.t
+	desc = ww1_secondbalkan.18.d
+	picture = ww1_secondbalkan_2
+	major = yes
+	is_triggered_only = yes
+	option = {
+		name = ww1_secondbalkan.18.a
+		trigger = { tag = BUL }
+	}
+	option = {
+		name = ww1_secondbalkan.18.b
+		trigger = { NOT = { tag = BUL } }
 	}
 }
