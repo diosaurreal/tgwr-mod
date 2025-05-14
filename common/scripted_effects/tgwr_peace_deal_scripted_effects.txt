@@ -22,181 +22,6 @@ armistice_effect = {
 			set_country_flag = great_war_winner
 		}
 	}
-	##### Restrictions #####
-	every_country = {
-		limit = {
-			#shit, your divisions got locked
-			has_country_flag = great_war_loser
-			NOT = {
-				AND = {
-					original_tag = LBA
-					has_country_flag = TUR_invoke_senussiya_alliance
-				}
-			}
-		}
-		if = {
-			limit = {
-				has_country_flag = army_should_be_restricted
-			}
-			country_lock_all_division_template = yes
-			add_ideas = idea_army_restrictions
-			if = {
-				limit = {
-					is_faction_leader = yes
-				}
-				dismantle_faction = yes
-			}
-		}
-		remove_wargoal = {
-			type = all
-			target = ROOT
-		}
-		every_state = {
-			limit = {
-				is_claimed_by = PREV
-			}
-			PREV = {
-				remove_state_claim = PREV
-			}
-		}
-		
-		every_other_country = {
-			diplomatic_relation = {
-				country = PREV
-				relation = guarantee
-				active = no
-			}
-			diplomatic_relation = {
-				country = PREV
-				relation = military_access
-				active = no
-			}
-			diplomatic_relation = {
-				country = PREV
-				relation = docking_rights
-				active = no
-			}
-			PREV = {
-				diplomatic_relation = {
-					country = PREV
-					relation = guarantee
-					active = no
-				}
-				diplomatic_relation = {
-					country = PREV
-					relation = military_access
-					active = no
-				}
-				diplomatic_relation = {
-					country = PREV
-					relation = docking_rights
-					active = no
-				}
-			}
-		}
-		every_other_country = {
-			limit = {
-				has_country_flag = great_war_winner
-			}
-			add_opinion_modifier = {
-				target = PREV
-				modifier = great_war_enemy
-			}
-			if = {
-				limit = {
-					has_wargoal_against = PREV
-				}
-				remove_wargoal = {
-					target = PREV
-					type = all
-				}
-			}
-			PREV = {
-				add_opinion_modifier = {
-					target = PREV
-					modifier = great_war_enemy
-				}
-				if = {
-					limit = {
-						has_wargoal_against = PREV
-					}
-					remove_wargoal = {
-						target = PREV
-						type = all
-					}
-				}
-			}
-		}
-		every_owned_state = {
-			limit = {
-				is_core_of = PER
-				NOT = {
-					is_core_of = PREV
-				}
-			}
-			PER = {
-				transfer_state = PREV
-			}
-		}
-	}
-	every_country = {
-		limit = {
-			OR = {
-				has_country_flag = great_war_loser
-				has_country_flag = great_war_winner
-			}
-		}
-		every_other_country = {
-			PREV = {
-				add_ai_strategy = {
-					type = ignore_claim
-					id = PREV
-					value = 1
-				}
-			}		
-		}
-	}
-	every_country = {
-		limit = {
-			has_country_flag = great_war_winner
-		}
-		every_other_country = {
-			limit = {
-				has_country_flag = great_war_winner
-			}
-			add_opinion_modifier = {
-				target = PREV
-				modifier = great_war_ally
-			}
-			PREV = {
-				add_opinion_modifier = {
-					target = PREV
-					modifier = great_war_ally
-				}
-			}
-		}
-		if = {
-			limit = {
-				FRA= {
-					has_country_flag = great_war_winner
-				}
-			}
-			add_ideas = idea_victors_of_wwi_entente
-		}
-		if = {
-			limit = {
-				GER = {
-					has_country_flag = great_war_winner
-				}
-				NOT = {
-					FRA = {
-						has_country_flag = great_war_winner
-					}
-				}
-			}
-			add_ideas = idea_victors_of_wwi_cp
-		}
-	}
 	if = {
 		limit = {
 			FRA = {
@@ -2960,44 +2785,236 @@ armistice_effect = {
 	if = {
 		limit = {
 			AZR = {
-				has_country_flag = great_war_loser
-				has_war_with = BAK
+				OR = {
+					AND = {
+						is_subject = yes
+						OVERLORD = { has_country_flag = great_war_loser }
+					}
+					is_in_faction = yes
+					var:faction_leader = {
+						has_country_flag = great_war_loser
+					}
+				}
 			}
 		}
 		AZR = {
 			if = {
-				limit = {
-					is_subject = yes
-					OVERLORD = { has_country_flag = great_war_loser }
-				}
+				limit = { 	is_subject = yes }			
 				OVERLORD = { end_puppet = PREV }
-			}
+			}		
 			if = {
 				limit = { is_in_faction = yes }
 				leave_faction = yes
 			}
-			every_enemy_country = {
-				limit = {
-					NOT = {
-						tag = BAK
-						is_in_faction_with = BAK
-						has_subject = BAK
+			AZR = {
+				if = {
+					limit = { 
+						has_war_with = BAK
+					}
+					every_enemy_country = {
+						limit = {
+							NOT = {
+								tag = BAK
+								is_in_faction_with = BAK
+								has_subject = BAK
+							}
+						}
+						white_peace = PREV
 					}
 				}
-				white_peace = PREV
+			}		
+		}
+		if = {
+			limit = { 
+				BAK = { has_war_with = AZR }
+			}
+			BAK = {
+				every_enemy_country = {
+					limit = {
+						NOT = {
+							tag = AZR
+							is_in_faction_with = AZR
+							has_subject = AZR
+						}
+					}
+					white_peace = PREV
+				}
 			}
 		}
-		BAK = {
-			every_enemy_country = {
+	}
+	##### Restrictions #####
+	every_country = {
+		limit = {
+			#shit, your divisions got locked
+			has_country_flag = great_war_loser
+			NOT = {
+				AND = {
+					original_tag = LBA
+					has_country_flag = TUR_invoke_senussiya_alliance
+				}
+			}
+		}
+		if = {
+			limit = {
+				has_country_flag = army_should_be_restricted
+			}
+			country_lock_all_division_template = yes
+			add_ideas = idea_army_restrictions
+			if = {
 				limit = {
-					NOT = {
-						tag = AZR
-						is_in_faction_with = AZR
-						has_subject = AZR
+					is_faction_leader = yes
+				}
+				dismantle_faction = yes
+			}
+		}
+		remove_wargoal = {
+			type = all
+			target = ROOT
+		}
+		every_state = {
+			limit = {
+				is_claimed_by = PREV
+			}
+			PREV = {
+				remove_state_claim = PREV
+			}
+		}
+		
+		every_other_country = {
+			diplomatic_relation = {
+				country = PREV
+				relation = guarantee
+				active = no
+			}
+			diplomatic_relation = {
+				country = PREV
+				relation = military_access
+				active = no
+			}
+			diplomatic_relation = {
+				country = PREV
+				relation = docking_rights
+				active = no
+			}
+			PREV = {
+				diplomatic_relation = {
+					country = PREV
+					relation = guarantee
+					active = no
+				}
+				diplomatic_relation = {
+					country = PREV
+					relation = military_access
+					active = no
+				}
+				diplomatic_relation = {
+					country = PREV
+					relation = docking_rights
+					active = no
+				}
+			}
+		}
+		every_other_country = {
+			limit = {
+				has_country_flag = great_war_winner
+			}
+			add_opinion_modifier = {
+				target = PREV
+				modifier = great_war_enemy
+			}
+			if = {
+				limit = {
+					has_wargoal_against = PREV
+				}
+				remove_wargoal = {
+					target = PREV
+					type = all
+				}
+			}
+			PREV = {
+				add_opinion_modifier = {
+					target = PREV
+					modifier = great_war_enemy
+				}
+				if = {
+					limit = {
+						has_wargoal_against = PREV
+					}
+					remove_wargoal = {
+						target = PREV
+						type = all
 					}
 				}
-				white_peace = PREV
 			}
+		}
+		every_owned_state = {
+			limit = {
+				is_core_of = PER
+				NOT = {
+					is_core_of = PREV
+				}
+			}
+			PER = {
+				transfer_state = PREV
+			}
+		}
+	}
+	every_country = {
+		limit = {
+			OR = {
+				has_country_flag = great_war_loser
+				has_country_flag = great_war_winner
+			}
+		}
+		every_other_country = {
+			PREV = {
+				add_ai_strategy = {
+					type = ignore_claim
+					id = PREV
+					value = 1
+				}
+			}		
+		}
+	}
+	every_country = {
+		limit = {
+			has_country_flag = great_war_winner
+		}
+		every_other_country = {
+			limit = {
+				has_country_flag = great_war_winner
+			}
+			add_opinion_modifier = {
+				target = PREV
+				modifier = great_war_ally
+			}
+			PREV = {
+				add_opinion_modifier = {
+					target = PREV
+					modifier = great_war_ally
+				}
+			}
+		}
+		if = {
+			limit = {
+				FRA= {
+					has_country_flag = great_war_winner
+				}
+			}
+			add_ideas = idea_victors_of_wwi_entente
+		}
+		if = {
+			limit = {
+				GER = {
+					has_country_flag = great_war_winner
+				}
+				NOT = {
+					FRA = {
+						has_country_flag = great_war_winner
+					}
+				}
+			}
+			add_ideas = idea_victors_of_wwi_cp
 		}
 	}
 }
