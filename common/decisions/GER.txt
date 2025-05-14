@@ -9245,6 +9245,66 @@ GER_bundesrat_category = {
 			factor = 100
 		}
 	}
+	GER_prussian_electoral_reform_bund = {
+		cost = 10
+		visible = {
+			tag = GER
+			OR = {
+				AND = {
+					is_debug = yes
+					has_country_flag = GER_show_debug_decisions
+				}
+				has_country_flag = GER_prussian_electoral_reform_passed_in_reichstag
+			}
+		}
+		available = {
+			NOT = {
+				has_country_flag = GER_started_voting_bundesrat
+			}
+			custom_trigger_tooltip = {
+				tooltip = GER_has_majority_in_bund
+				has_majority_in_bundesrat = yes
+			}
+		}
+		complete_effect = {
+			custom_effect_tooltip = GER_bunderstadt_minigame
+			set_country_flag = GER_started_voting_bundesrat
+		}
+		days_remove = 30
+		remove_effect = {
+			if = {
+				limit = { has_majority_in_bundesrat = yes }
+				clr_country_flag = GER_prussian_electoral_reform_passed_in_reichstag
+				custom_effect_tooltip = GER_likely_to_pass
+				custom_effect_tooltip = GER_if_law_passes_bund
+				GER_rapid_urbanisation_reform_effect = yes
+
+				GER_remove_all_swayed_states = yes
+
+				custom_effect_tooltip = GER_if_law_fails_bund
+				effect_tooltip = {
+					add_stability = -0.02
+					add_political_power = -20
+				}
+				else = {
+					custom_effect_tooltip = GER_likely_to_be_rejected
+					custom_effect_tooltip = GER_if_law_passes_bund
+					effect_tooltip = {
+						GER_prussian_electoral_reform_effect = yes
+					}
+					custom_effect_tooltip = GER_if_law_fails_bund
+					add_stability = -0.02
+					add_political_power = -20
+
+					GER_remove_all_swayed_states = yes
+				}
+			}
+			GER_remove_voting_stuff = yes
+		}
+		ai_will_do = {
+			factor = 100
+		}
+	}
 	GER_health_insurance_act_bund = {
 		cost = 10
 		visible = {
@@ -10271,6 +10331,7 @@ GER_bundesrat_category = {
 		days_mission_timeout = 30
 		activation = {
 			has_completed_focus = GER_treading_the_centre_line
+			has_war = no
 		}
 		available = {
 			has_global_flag = great_war
@@ -10752,6 +10813,9 @@ GER_reichstag_category = {
 	GER_election2 = {
 		activation = {
 			NOT = {has_active_mission = GER_election1}
+			NOT = {
+				has_war = yes
+			}
 		}
 		available = {
 			OR = {
@@ -10823,6 +10887,23 @@ GER_reichstag_category = {
 		}
 		available = {
 			has_global_flag = great_war_ends
+			
+		}
+		cancel_trigger = {
+			NOT = {
+				has_idea = GER_theobald_von_bethmann_hollweg
+			}
+		}
+		cancel_effect = {
+			hidden_effect = {
+				add_war_support = -0.05
+				clr_country_flag = GER_war_coalition_active
+				custom_effect_tooltip = GER_coalition_collapse
+				deactivate_advisor = GER_theobald_von_bethmannhollweg
+				GER_theobald_von_bethmannhollweg = {
+					remove_any_country_role_from_character = yes
+				}
+			} 
 		}
 
 		icon = mission_icon
@@ -11670,10 +11751,64 @@ GER_reichstag_category = {
 		}
 		cost = 10
 		visible = {
-			always = no
+			OR = {
+				AND = {
+					is_debug = yes
+					has_country_flag = GER_show_debug_decisions
+				}
+				AND = {
+					has_completed_focus = GER_push_for_prussian_electoral_reform
+					NOT = {
+						has_country_flag = GER_prussian_electoral_reform_passed
+					}
+				}
+			}
 		}
 		available = {
-			always = no
+			NOT = {
+				has_country_flag = GER_reichstag_vote_in_progress
+			}
+		}
+		complete_effect = {
+			set_country_flag = left_vote_in_progress
+			set_country_flag = GER_reichstag_vote_in_progress
+		}
+
+		remove_effect = {
+			left_vote_temp_var_setter = yes
+			if = {
+				limit = {
+					check_variable = {
+						merged_vote_strengh > 200
+					}
+				}
+				add_political_power = 25
+				add_stability = 0.02
+				set_country_flag = GER_prussian_electoral_reform_passed_in_reichstag
+				
+				custom_effect_tooltip = GER_law_pass
+				custom_effect_tooltip = GER_if_law_passes_reich
+				custom_effect_tooltip = GER_allows_law_to_be_passed
+				custom_effect_tooltip = GER_if_law_passes_bund
+				effect_tooltip = {
+					GER_prussian_electoral_reform_effect = yes
+				}
+
+				set_country_flag = GER_prussian_electoral_reform_passed
+
+				else = {
+					custom_effect_tooltip = GER_law_dont_pass
+					custom_effect_tooltip = GER_if_law_passes_reich
+					custom_effect_tooltip = GER_allows_law_to_be_passed
+					custom_effect_tooltip = GER_if_law_passes_bund
+					effect_tooltip = {
+						GER_prussian_electoral_reform_effect = yes
+					}
+				}
+			}
+			hidden_effect = {
+				GER_reset_sway_reichstag = yes
+			}
 		}
 		days_remove = 21
 	}
