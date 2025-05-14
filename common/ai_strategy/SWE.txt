@@ -3,7 +3,7 @@ SWE_great_war_neutrality = {
 		original_tag = SWE
 	}
 	enable = {
-		has_global_flag = kis_war
+		has_global_flag = great_war
 		NOT = {
 			has_war_with = FRA
 			has_war_with = GER
@@ -26,6 +26,27 @@ SWE_great_war_neutrality = {
 	}
 }
 
+SWE_decisions_before_ideas = {
+	allowed = {
+		original_tag = SWE
+	}
+	enable = {
+		date < 1915.1.1
+	}
+	disable = {
+		OR = {
+			has_war = yes
+			date > 1916.1.1
+		}
+	}
+	
+	ai_strategy = {
+		type = pp_spend_amount
+		id = decision
+		value = 50
+	}
+}
+
 SWE_ignore_sweden = {
 	allowed = {
 		OR = {
@@ -34,7 +55,7 @@ SWE_ignore_sweden = {
 		}
 	}
 	enable = {
-		has_global_flag = kis_war
+		has_global_flag = great_war
 		NOT = {
 			has_global_flag = great_war_ends
 			has_completed_focus = GER_pressure_on_scandinavia
@@ -55,6 +76,90 @@ SWE_ignore_sweden = {
 		value = -1000
 	}
 }
+
+SWE_research_the_type_l = {
+	allowed = {
+		original_tag = SWE
+	}
+	enable = {
+		has_completed_focus = SWE_establishment_of_airforce
+	}
+	abort = {
+		has_tech = fighter1
+	}
+	
+	ai_strategy = {
+		type = research_weight_factor
+		id = scout_plane2
+		value = 250
+	}
+	ai_strategy = {
+		type = research_weight_factor
+		id = fighter1
+		value = 100
+	}
+}
+
+SWE_resource_market_techs = {
+	allowed = {
+		original_tag = SWE
+	}
+	enable = {
+		has_idea = free_trade
+		date > 1914.1.1
+	}
+	abort = {
+		OR = {
+			has_tech = excavation2
+			any_neighbor_country = {
+				is_subject = no
+				has_war = yes
+			}
+		}
+	}
+	
+	ai_strategy = {
+		type = research_weight_factor
+		id = excavation1
+		value = 100
+	}
+	ai_strategy = {
+		type = research_weight_factor
+		id = stainless_steel
+		value = 100
+	}
+	ai_strategy = {
+		type = research_weight_factor
+		id = excavation2
+		value = 100
+	}
+}
+
+SWE_war_not_yet = {
+	allowed = {
+		original_tag = SWE
+	}
+	enable = {
+		has_war = no
+		NOT = {
+			has_global_flag = great_war
+		}
+		OR = {
+			AND = {
+				has_government = democratic
+				has_war_support < 0.25
+			}
+			has_government = communism
+		}
+	}
+	abort_when_not_enabled = yes
+	
+	ai_strategy = {
+		type = added_military_to_civilian_factory_ratio
+		value = -15
+	}
+}
+
 
 SWE_wartime_preparations_mil = {
 	allowed = {
@@ -84,6 +189,40 @@ SWE_wartime_preparations_mil = {
 	}
 }
 
+SWE_build_up_army_for_preparations = {
+	allowed = {
+		original_tag = SWE
+	}
+	enable = {
+		OR = {
+			has_completed_focus = SWE_pro_entente_stance
+			has_completed_focus = SWE_strengthen_german_relations
+			is_in_faction = yes
+		}
+		threat > 0.3
+	}
+	abort = {
+		OR = {
+			has_global_flag = great_war_ends
+			has_army_manpower = { size > 39999 }	# Just keep a smaller-ish army
+		}
+	}
+	
+	ai_strategy = {
+		type = build_army
+		id = infantry
+		value = 500
+	}
+	ai_strategy = {
+		type = force_build_armies
+		value = 100
+	}
+	ai_strategy = {
+		type = role_ratio
+		id = infantry
+		value = 100
+	}
+}
 # This is to help Sweden resource a bit more
 SWE_improve_infra_in_capital = {	# Improve infra in Capital
 	allowed = {
@@ -160,6 +299,39 @@ SWE_improve_infra_in_lappland = {	# Go for more exports
 		value = 5
 	}
 }
+
+# Historical
+SWE_simulate_mild_early_paranoia = {
+	allowed = {
+		tag = SWE	
+	}
+	enable = {
+		date < 1915.1.1
+		is_in_faction = no
+		RUS = {
+			exists = yes
+			has_subject = FIN
+			has_war_with = GER
+			NOT = { is_in_faction_with = GER }
+			NOT = { has_country_flag = great_war_loser }
+		}
+		NOT = { has_global_flag = great_war_ends }
+		has_active_mission = before_the_leaves_fall
+	}
+	abort_when_not_enabled = yes
+	
+	ai_strategy = {
+		type = front_unit_request
+		tag = RUS
+		value = 50
+	}
+	ai_strategy = {
+		type = front_unit_request
+		tag = FIN
+		value = 50
+	}
+}
+
 
 # Central Powers
 SWE_prepare_against_russia = {
