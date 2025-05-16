@@ -331,7 +331,10 @@ peace_deals = {
 			has_war_with = FROM
 			FROM = { is_subject = no }
 			has_global_flag = great_war
-			NOT = { has_global_flag = great_war_ends }
+			NOT = { 
+				has_global_flag = great_war_ends 
+				has_country_flag = LBA_modus_vivendi_of_acroma
+			}
 		}
 		available = {
 			
@@ -341,11 +344,26 @@ peace_deals = {
 			base = 1000
 			modifier = {
 				factor = 0
-				surrender_progress < 0.6
+				OR = {
+					surrender_progress < 0.6
+					controls_province = 1143
+				}		
 				NOT = {
 					has_country_leader = {
 						character = LBA_muhammad_idris_assenussi
 					}
+				}
+			}
+			modifier = {
+				factor = 0
+				surrender_progress < 0.1
+				controls_province = 1060
+				war_length_with = {
+					tag = ENG
+					months < 6
+				}		
+				has_country_leader = {
+					character = LBA_muhammad_idris_assenussi
 				}
 			}
 		}
@@ -358,11 +376,47 @@ peace_deals = {
 						}
 					}
 				}
-				country_event = {
-					id = ww1_libya.1
+				LBA_muhammad_idris_assenussi = {
+				if = {
+					limit = {
+						has_ideology = theocracy_ideology
+					}
+					promote_character = theocracy_ideology
+					else = {
+						add_country_leader_role = {
+							promote_leader = yes
+							country_leader = {
+								ideology = theocracy_ideology
+								traits = {
+									appeaser
+								}
+							}
+						}
+					}
+				}
+				if = {
+					limit = {
+						has_ideology = fundamentalism
+					}
+					promote_character = fundamentalism
+					else = {
+						add_country_leader_role = {
+							promote_leader = yes
+							country_leader = {
+								ideology = fundamentalism
+								traits = {
+									appeaser
+								}
+							}
+						}
+					}
 				}
 			}
-			LBA_motus_vivendi = yes
+			LBA_ahmed_sharif_assenussi = {
+				set_character_flag = exiled
+			}
+			}
+			LBA_modus_vivendi = yes
 		}
 	}
 }
@@ -416,7 +470,11 @@ war_in_desert = {
 			modifier = {
 				tag = LBA
 				FROM = {
-					state = 452
+					OR = {
+						state = 452
+						state = 1132
+						state = 1133
+					}				
 				}
 				controls_state = 1156
 				add = 1000
@@ -635,6 +693,20 @@ war_in_desert = {
 						set_variable = { FROM.attacker_state_vs_@ROOT = id }
 						set_temp_variable = { attacker_state_temp = id }
 						set_state_flag = border_incident_active
+						if = {
+							limit = {
+								FROM.OWNER = {
+									tag = LBA
+								}
+								is_core_of = LBA
+								NOT = {
+									is_core_of = CHA
+								}
+							}
+							add_dynamic_modifier = {
+								modifier = LBA_intensified_guerrila
+							}
+						}
 					}
 				}
 				FROM = {
@@ -650,7 +722,6 @@ war_in_desert = {
 						}
 						add_dynamic_modifier = {
 							modifier = LBA_intensified_guerrila
-							days = 90
 						}
 					}
 				}
@@ -704,11 +775,6 @@ war_in_desert = {
 			FROM = {
 				state = 452
 				CONTROLLER = {
-					LBA = {
-						NOT = {
-							has_active_mission = LBA_take_state_452
-						}
-					}
 					NOT = {
 						tag = LBA
 						is_in_faction_with = LBA
@@ -734,17 +800,49 @@ war_in_desert = {
 			has_country_flag = LBA_modus_vivendi_of_acroma
 		}
 		activation = {
-			NOT = {
-				has_active_mission = LBA_take_state_452
-			}
+			has_country_flag = LBA_border_war_against_UK
 		}
 		is_good = no
 		timeout_effect = {
-			LBA = {
-				country_event = {
-					id = ww1_libya.1
-					days = 2
+			add_war_support = -0.2
+			LBA_muhammad_idris_assenussi = {
+				if = {
+					limit = {
+						has_ideology = theocracy_ideology
+					}
+					promote_character = theocracy_ideology
+					else = {
+						add_country_leader_role = {
+							promote_leader = yes
+							country_leader = {
+								ideology = theocracy_ideology
+								traits = {
+									appeaser
+								}
+							}
+						}
+					}
 				}
+				if = {
+					limit = {
+						has_ideology = fundamentalism
+					}
+					promote_character = fundamentalism
+					else = {
+						add_country_leader_role = {
+							promote_leader = yes
+							country_leader = {
+								ideology = fundamentalism
+								traits = {
+									appeaser
+								}
+							}
+						}
+					}
+				}
+			}
+			LBA_ahmed_sharif_assenussi = {
+				set_character_flag = exiled
 			}
 		}
 		complete_effect = {
@@ -851,6 +949,7 @@ war_in_desert = {
 						surrender_progress > 0.4
 					}
 					surrender_progress > 0.1
+					has_country_flag = LBA_wait_before_attack_again_AI
 				}		
 			}
 		}

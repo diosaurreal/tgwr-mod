@@ -1365,14 +1365,14 @@
 						original_tag = PER
 						original_tag = MON
 						original_tag = TAN
-						original_tag = POL
-					}
+					}			
 					NOT = {
 						has_cosmetic_tag = SOV_puppet
 						has_cosmetic_tag = GEO_TSCN_commissariat
+						has_cosmetic_tag = GEO_TSCN_committee
 						has_cosmetic_tag = GEO_TSCN
 						has_cosmetic_tag = GEO_TSCN_communism
-						has_cosmetic_tag = POL_SOVIET
+						has_cosmetic_tag = LITBEL
 					}
 					FROM = {
 						OR = {
@@ -3053,15 +3053,14 @@
 						original_tag = PER
 						original_tag = MON
 						original_tag = TAN
-						original_tag = POL
-					}
+					}			
 					NOT = {
 						has_cosmetic_tag = SOV_puppet
 						has_cosmetic_tag = GEO_TSCN_commissariat
 						has_cosmetic_tag = GEO_TSCN_committee
 						has_cosmetic_tag = GEO_TSCN
 						has_cosmetic_tag = GEO_TSCN_communism
-						has_cosmetic_tag = POL_SOVIET
+						has_cosmetic_tag = LITBEL
 					}
 					FROM = {
 						OR = {
@@ -4760,6 +4759,25 @@
 					set_garrison_strength = 1
 					OWNER = {
 						ROM = { set_occupation_law_where_available = foreign_civilian_oversight } 
+					}
+				}
+			}
+			else = {
+				ITA = {
+					every_owned_state = {
+						limit = {
+							is_core_of = LBA
+							impassable = no
+							NOT = {
+								state = 448
+								state = 450
+							}
+						}
+						add_resistance = 50
+						add_compliance = -50
+						add_dynamic_modifier = {
+							modifier = LBA_tribal_resistance
+						}
 					}
 				}
 			}
@@ -7191,23 +7209,27 @@
 			}
 			if = {
 				limit = {
-					tag = NWA
-					has_country_flag = NWA_can_go_exile_in_EST
+					tag = NWA				
 					has_war_with = SOV
-				}
-				EST = {
-					NWA = {
-						become_exiled_in = {
-							target = EST
-							legitimacy = 5
+					has_country_flag = NWA_can_go_exile_in_EST
+					EST = {
+						exists = yes
+						NOT = {
+							has_war_with = ROOT
 						}
 					}
-					load_oob = "EST_NWA"
-					country_event = ww1_nwa.4
 				}
 				NWA = {
+					become_exiled_in = {
+						target = EST
+						legitimacy = 5
+					}
 					clr_country_flag = NWA_can_go_exile_in_EST
 				}
+				EST = {				
+					# load_oob = "EST_NWA"
+					country_event = ww1_nwa.4
+				}	
 			}
 			if = {
 				limit = {
@@ -7273,6 +7295,49 @@
 					}
 				}
 			}
+			if = {
+				limit = {
+					tag = LBA
+					is_subject = no
+					has_war_with = ENG
+					ENG = { is_subject = no }
+					has_global_flag = great_war
+					NOT = { 
+						has_global_flag = great_war_ends 
+						has_country_flag = LBA_modus_vivendi_of_acroma
+					}
+				}
+				LBA_modus_vivendi = yes
+			}
+			if = {
+				limit = {
+					original_tag = LUX
+					is_subject = no
+					has_idea = LUX_london_treaty
+					NOT = {
+						has_government = communism
+					}
+					GER = {
+						has_war_with = ROOT
+						is_subject = no
+						NOT = {
+							has_government = communism
+						}
+					}
+					has_global_flag = great_war
+					NOT = {
+						has_global_flag = luxembourg_submitted
+						has_global_flag = GER_capitulation
+						has_global_flag = FRA_capitulation
+					}			
+				}			
+				GER = {
+					ROOT = { 
+						country_event = { id = ww1_luxembourg.5 } 
+					}
+				}
+					
+			}	
 		}
 	}
 	on_civil_war_end = {
@@ -9795,6 +9860,8 @@
 				limit = {
 					FROM = {
 						original_tag = LUX
+						is_subject = no
+						has_idea = LUX_london_treaty
 						NOT = {
 							has_government = communism
 						}	
@@ -9808,6 +9875,7 @@
 					}
 					has_global_flag = great_war
 					NOT = {
+						has_global_flag = luxembourg_submitted
 						has_global_flag = GER_capitulation
 						has_global_flag = FRA_capitulation
 					}			
@@ -10426,9 +10494,23 @@
 					}
 				}
 				SER = {
+					annex_country = {
+						target = BNT
+						transfer_troops = no
+					}
+					set_country_flag = SER_annexation_of_BNT
+					every_state = {
+						limit = {
+							OR = {
+								is_core_of = BNT
+								is_claimed_by = BNT
+							}							
+						}
+						remove_claim_by = BNT
+						remove_core_of = BNT
+					}
 					country_event = {
 						id = ww1_serbia.150
-						days = 1
 					}
 				}
 			}
@@ -10463,6 +10545,7 @@
 			}
 		}
 	}
+	#FROM is the one that joins the faction
 	on_create_faction = {
 		effect = {
 			every_subject_country = {
@@ -10479,7 +10562,7 @@
 				country_event = { id = ww1_political.7 hours = 1 } #needed if the faction leader is at war, don't ask
 			}
 			FROM = {
-				every_subject_country = {
+				if = {
 					limit = {
 						has_war = no				
 						OR = {
