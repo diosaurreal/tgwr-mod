@@ -173,17 +173,6 @@ GRE_venizelos_assassination = {
 					character = GRE_eleftherios_venizelos
 				}
 			}
-			custom_trigger_tooltip = {
-				tooltip = can_start_rodi_operation
-				OR = {
-					is_ai = no
-					AND = {
-						check_variable = {
-							GRE_venizelos_plot_preparation > 50
-						}
-					}
-				}
-			}
 		}
 		visible = {
 			NOT = {
@@ -192,6 +181,12 @@ GRE_venizelos_assassination = {
 		}
 		ai_will_do = {
 			factor = 100
+			modifier = {
+				factor = 0
+				check_variable = {
+					GRE_venizelos_plot_preparation < 50
+				}
+			}
 		}
 		fire_only_once = yes
 		days_remove = 15
@@ -216,68 +211,6 @@ GRE_venizelos_assassination = {
 }
 
 operations = {
-	GRE_occupy_northern_epirus_epr = {
-		name = GRE_occupy_northern_epirus
-		desc = GRE_occupy_northern_epirus_desc
-		icon = GFX_decision_infiltrate_state
-		allowed = {
-			original_tag = GRE
-		}
-		target_trigger = {
-			FROM = {
-				tag = EPR
-				is_subject_of = ALB
-			}
-		}
-		visible = {
-			has_global_flag = albanian_peasant_revolt
-			has_global_flag = great_war
-			owns_state = 758
-			FROM = {
-				owns_state = 803
-			} 
-		}
-		available = {
-			NOT = {
-				has_global_flag = great_war_ends
-				# has_idea = GRE_idea_national_schism
-			}
-			is_subject = no
-			has_capitulated = no
-			controls_state = 758
-			FROM = {
-				NOT = { has_war_with = ROOT }
-				controls_state = 803
-			}
-		}
-		highlight_states = {
-			highlight_state_targets = {
-				state = 803
-			}
-		}
-		fire_only_once = yes
-		cost = 5
-		ai_will_do = {
-			factor = 1000
-		}
-		complete_effect = {
-			add_named_threat = {
-				threat = 3
-				name = GRE_occupy_northern_epirus
-			}
-			effect_tooltip = {
-				transfer_state = 803
-			}
-			hidden_effect = {
-				FROM.OVERLORD = {
-					country_event = {
-						id = ww1_albania.5
-						hours = 3
-					}
-				}
-			}
-		}
-	}
 	GRE_occupy_cyprus = {
 		icon = GFX_decision_infiltrate_state
 		allowed = {
@@ -323,9 +256,14 @@ operations = {
 		}
 		fire_only_once = yes
 		days_remove = 10
-		cost = 25
+		custom_cost_trigger = {
+			command_power > 24.9
+		}
 		ai_will_do = {
 			factor = 1000
+		}
+		complete_effect = {
+			add_command_power = -25
 		}
 		remove_effect = {
 			annex_country = {
@@ -482,7 +420,7 @@ GRE_battle_of_epirus = {
 			
 		}
 		ai_will_do = {
-			factor = 25
+			factor = 2.5
 		}
 	}
 	GRE_send_weapons_to_epirus = {
@@ -502,13 +440,11 @@ GRE_battle_of_epirus = {
 				has_war_with = ALB
 			}
 		}
-		available = {
-			has_equipment = {
-				infantry_equipment > 499
-			}
-		}
 		fire_only_once = yes
-		cost = 25
+		custom_cost_trigger = {
+			has_equipment = { infantry_equipment > 499 }
+		}
+		custom_cost_text = 500_infantry_equipment_1
 		remove_effect = {
 			send_equipment = {
 				amount = 500
@@ -518,7 +454,99 @@ GRE_battle_of_epirus = {
 			
 		}
 		ai_will_do = {
-			factor = 25
+			factor = 2.5
+			modifier = {
+				factor = 0
+				stockpile_ratio = { 
+					archetype = infantry_equipment
+					ratio < 0.75
+				}
+			}
+		}
+	}
+	GRE_occupy_northern_epirus_epr = {
+		name = GRE_occupy_northern_epirus
+		desc = GRE_occupy_northern_epirus_desc
+		icon = GFX_decision_infiltrate_state
+		allowed = {
+			original_tag = GRE
+		}
+		target_trigger = {
+			FROM = {
+				tag = EPR
+				OR = {
+					is_subject = no
+					is_subject_of = ALB
+				}
+			}
+		}
+		visible = {
+			has_global_flag = albanian_peasant_revolt
+			has_global_flag = great_war
+			has_completed_focus = GRE_florence_protocol
+			owns_state = 758
+			FROM = {
+				owns_state = 803
+			} 
+		}
+		available = {
+			NOT = {
+				has_global_flag = great_war_ends
+				# has_idea = GRE_idea_national_schism
+			}
+			is_subject = no
+			has_capitulated = no
+			controls_state = 758
+			FROM = {
+				NOT = { has_war_with = ROOT }
+				controls_state = 803
+			}
+		}
+		highlight_states = {
+			highlight_state_targets = {
+				state = 803
+			}
+		}
+		fire_only_once = yes
+		custom_cost_trigger = {
+			command_power > 4.9
+		}
+		custom_cost_text = decision_cost_CP_5
+		ai_will_do = {
+			factor = 1000
+		}
+		complete_effect = {
+			add_command_power = -5
+			add_named_threat = {
+				threat = 3
+				name = GRE_occupy_northern_epirus
+			}
+			effect_tooltip = {
+				transfer_state = 803
+			}
+			hidden_effect = {
+				if = {
+					limit = {
+						FROM = {
+							is_subject = yes
+						}
+					}
+					FROM.OVERLORD = {
+						country_event = {
+							id = ww1_albania.5
+							hours = 3
+						}
+					}
+				}
+				else = {
+					FROM = {
+						country_event = {
+							id = ww1_albania.5
+							hours = 3
+						}
+					}
+				}
+			}
 		}
 	}
 }
@@ -648,10 +676,11 @@ GRE_navy_decisions = {
 				is_coastal = yes
 			}
 			NOT = {
+				is_embargoed_by = FROM
 				has_war_with = FROM
 			}
 		}
-		cost = 50
+		cost = 45
 		fire_only_once = yes
 		days_remove = 30
 		visible = {
@@ -663,8 +692,8 @@ GRE_navy_decisions = {
 		}
 		complete_effect = {
 			set_country_flag = {
-				flag = has_active_purchase_contract
-				days = 2
+				flag = has_active_purchase_contract_ship
+				days = 30
 				value = 1
 			}
 		}
@@ -677,18 +706,22 @@ GRE_navy_decisions = {
 			}
 			if = {
 				limit = {
-					GRE_has_IFC = yes
+					has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } 
 				}
 				add_to_variable = {
 					var = GRE_IFC_var
-					value = 0.02
+					value = 0.05
 				}
-				custom_effect_tooltip = GRE_IFC_plus_2_tt
+				custom_effect_tooltip = GRE_IFC_plus_5_tt
 			}
 		}
 		ai_will_do = {
-			factor = 100
-		    }
+			factor = 6
+			modifier = {
+				factor = 0
+				has_country_flag = has_active_purchase_contract_ship
+			}
+		}
 	}
 	GRE_purchase_delfin = {
 		icon = generic_naval
@@ -709,10 +742,11 @@ GRE_navy_decisions = {
 				is_coastal = yes
 			}
 			NOT = {
+				is_embargoed_by = FROM
 				has_war_with = FROM
 			}
 		}
-		cost = 50
+		cost = 45
 		fire_only_once = yes
 		days_remove = 30
 		visible = {
@@ -724,8 +758,8 @@ GRE_navy_decisions = {
 		}
 		complete_effect = {
 			set_country_flag = {
-				flag = has_active_purchase_contract
-				days = 2
+				flag = has_active_purchase_contract_ship
+				days = 30
 				value = 1
 			}
 		}
@@ -738,18 +772,22 @@ GRE_navy_decisions = {
 			}
 			if = {
 				limit = {
-					GRE_has_IFC = yes
+					has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } 
 				}
 				add_to_variable = {
 					var = GRE_IFC_var
-					value = 0.02
+					value = 0.05
 				}
-				custom_effect_tooltip = GRE_IFC_plus_2_tt
+				custom_effect_tooltip = GRE_IFC_plus_5_tt
 			}
 		}
 		ai_will_do = {
-			factor = 100
-		    }
+			factor = 6
+			modifier = {
+				factor = 0
+				has_country_flag = has_active_purchase_contract_ship
+			}
+		}
 	}
 	GRE_purchase_keravnos = {
 		icon = generic_naval
@@ -770,10 +808,11 @@ GRE_navy_decisions = {
 				is_coastal = yes
 			}
 			NOT = {
+				is_embargoed_by = FROM
 				has_war_with = FROM
 			}
 		}
-		cost = 50
+		cost = 45
 		fire_only_once = yes
 		days_remove = 30
 		visible = {
@@ -785,8 +824,8 @@ GRE_navy_decisions = {
 		}
 		complete_effect = {
 			set_country_flag = {
-				flag = has_active_purchase_contract
-				days = 2
+				flag = has_active_purchase_contract_ship
+				days = 30
 				value = 1
 			}
 		}
@@ -799,17 +838,21 @@ GRE_navy_decisions = {
 			}
 			if = {
 				limit = {
-					GRE_has_IFC = yes
+					has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } 
 				}
 				add_to_variable = {
 					var = GRE_IFC_var
-					value = 0.02
+					value = 0.05
 				}
-				custom_effect_tooltip = GRE_IFC_plus_2_tt
+				custom_effect_tooltip = GRE_IFC_plus_5_tt
 			}
 		}
 		ai_will_do = {
-			factor = 100
+			factor = 6
+			modifier = {
+				factor = 0
+				has_country_flag = has_active_purchase_contract_ship
+			}
 		}
 	}
 	GRE_purchase_nea_genea = {
@@ -831,10 +874,11 @@ GRE_navy_decisions = {
 				is_coastal = yes
 			}
 			NOT = {
+				is_embargoed_by = FROM
 				has_war_with = FROM
 			}
 		}
-		cost = 50
+		cost = 45
 		fire_only_once = yes
 		days_remove = 30
 		visible = {
@@ -846,8 +890,8 @@ GRE_navy_decisions = {
 		}
 		complete_effect = {
 			set_country_flag = {
-				flag = has_active_purchase_contract
-				days = 2
+				flag = has_active_purchase_contract_ship
+				days = 30
 				value = 1
 			}
 		}
@@ -860,629 +904,682 @@ GRE_navy_decisions = {
 			}
 			if = {
 				limit = {
-					GRE_has_IFC = yes
+					has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } 
 				}
 				add_to_variable = {
 					var = GRE_IFC_var
-					value = 0.02
+					value = 0.05
 				}
-				custom_effect_tooltip = GRE_IFC_plus_2_tt
+				custom_effect_tooltip = GRE_IFC_plus_5_tt
 			}
 		}
 		ai_will_do = {
-			factor = 100
-		}
-	    }
-		GRE_purchase_aigli = {
-			icon = generic_naval
-			allowed = {
-				tag = GRE
-			}
-			target_trigger = {
-				FROM = {
-					tag = GER
-				}
-			}
-			cancel_trigger = {
-				has_war_with = GER
-				
-			}
-			available = {
-				any_owned_state = {
-					is_coastal = yes
-				}
-				NOT = {
-					has_war_with = FROM
-				}
-			}
-			cost = 50
-			fire_only_once = yes
-			days_remove = 30
-			visible = {
-				GER = {
-					exists = yes
-				}
-				has_completed_focus = GRE_buy_ships
-				
-			}
-			complete_effect = {
-				set_country_flag = {
-					flag = has_active_purchase_contract
-					days = 2
-					value = 1
-				}
-			}
-			remove_effect = {
-				create_ship = {
-					type = ship_hull_light_1
-					equipment_variant = "Aigli Class"
-					creator = GER
-					name = "Aigli"
-				}
-				if = {
-					limit = {
-						GRE_has_IFC = yes
-					}
-					add_to_variable = {
-						var = GRE_IFC_var
-						value = 0.02
-					}
-					custom_effect_tooltip = GRE_IFC_plus_2_tt
-				}
-			}
-			ai_will_do = {
-				factor = 100
-			}
-			}
-			GRE_purchase_alkyoni = {
-				icon = generic_naval
-				allowed = {
-					tag = GRE
-				}
-				target_trigger = {
-					FROM = {
-						tag = GER
-					}
-				}
-				cancel_trigger = {
-					has_war_with = GER
-					
-				}
-				available = {
-					any_owned_state = {
-						is_coastal = yes
-					}
-					NOT = {
-						has_war_with = FROM
-					}
-				}
-				cost = 50
-				fire_only_once = yes
-				days_remove = 30
-				visible = {
-					GER = {
-						exists = yes
-					}
-					has_completed_focus = GRE_buy_ships
-					
-				}
-				complete_effect = {
-					set_country_flag = {
-						flag = has_active_purchase_contract
-						days = 2
-						value = 1
-					}
-				}
-				remove_effect = {
-					create_ship = {
-						type = ship_hull_light_1
-						equipment_variant = "Aigli Class"
-						creator = GER
-						name = "Alkyoni"
-					}
-					if = {
-						limit = {
-							GRE_has_IFC = yes
-						}
-						add_to_variable = {
-							var = GRE_IFC_var
-							value = 0.02
-						}
-						custom_effect_tooltip = GRE_IFC_plus_2_tt
-					}
-				}
-				ai_will_do = {
-					factor = 100
-				}
-			}
-			GRE_purchase_arethousa = {
-			icon = generic_naval
-			allowed = {
-				tag = GRE
-			}
-			target_trigger = {
-				FROM = {
-					tag = GER
-				}
-			}
-			cancel_trigger = {
-				has_war_with = GER
-				
-			}
-			available = {
-				any_owned_state = {
-					is_coastal = yes
-				}
-				NOT = {
-					has_war_with = FROM
-				}
-			}
-			cost = 50
-			fire_only_once = yes
-			days_remove = 30
-			visible = {
-				GER = {
-					exists = yes
-				}
-				has_completed_focus = GRE_buy_ships
-				
-			}
-			complete_effect = {
-				set_country_flag = {
-					flag = has_active_purchase_contract
-					days = 2
-					value = 1
-				}
-			}
-			remove_effect = {
-				create_ship = {
-					type = ship_hull_light_1
-					equipment_variant = "Aigli Class"
-					creator = GER
-					name = "Arethousa"
-				}
-				if = {
-					limit = {
-						GRE_has_IFC = yes
-					}
-					add_to_variable = {
-						var = GRE_IFC_var
-						value = 0.02
-					}
-					custom_effect_tooltip = GRE_IFC_plus_2_tt
-				}
-			}
-			ai_will_do = {
-				factor = 100
+			factor = 6
+			modifier = {
+				factor = 0
+				has_country_flag = has_active_purchase_contract_ship
 			}
 		}
-		GRE_purchase_doris = {
-			icon = generic_naval
-			allowed = {
-				tag = GRE
-			}
-			target_trigger = {
-				FROM = {
-					tag = GER
-				}
-			}
-			cancel_trigger = {
-				has_war_with = GER
-				
-			}
-			available = {
-				any_owned_state = {
-					is_coastal = yes
-				}
-				NOT = {
-					has_war_with = FROM
-				}
-			}
-			cost = 50
-			fire_only_once = yes
-			days_remove = 30
-			visible = {
-				GER = {
-					exists = yes
-				}
-				has_completed_focus = GRE_buy_ships
-				
-			}
-			complete_effect = {
-				set_country_flag = {
-					flag = has_active_purchase_contract
-					days = 2
-					value = 1
-				}
-			}
-			remove_effect = {
-				create_ship = {
-					type = ship_hull_light_1
-					equipment_variant = "Aigli Class"
-					creator = GER
-					name = "Doris"
-				}
-				if = {
-					limit = {
-						GRE_has_IFC = yes
-					}
-					add_to_variable = {
-						var = GRE_IFC_var
-						value = 0.02
-					}
-					custom_effect_tooltip = GRE_IFC_plus_2_tt
-				}
-			}
-			ai_will_do = {
-				factor = 100
+	}
+	GRE_purchase_aigli = {
+		icon = generic_naval
+		allowed = {
+			tag = GRE
+		}
+		target_trigger = {
+			FROM = {
+				tag = GER
 			}
 		}
-		GRE_purchase_dafni = {
-			icon = generic_naval
-			allowed = {
-				tag = GRE
+		cancel_trigger = {
+			has_war_with = GER
+			
+		}
+		available = {
+			any_owned_state = {
+				is_coastal = yes
 			}
-			target_trigger = {
-				FROM = {
-					tag = GER
-				}
-			}
-			cancel_trigger = {
-				has_war_with = GER
-				
-			}
-			available = {
-				any_owned_state = {
-					is_coastal = yes
-				}
-				NOT = {
-					has_war_with = FROM
-				}
-			}
-			cost = 50
-			fire_only_once = yes
-			days_remove = 30
-			visible = {
-				GER = {
-					exists = yes
-				}
-				has_completed_focus = GRE_buy_ships
-				
-			}
-			complete_effect = {
-				set_country_flag = {
-					flag = has_active_purchase_contract
-					days = 2
-					value = 1
-				}
-			}
-			remove_effect = {
-				create_ship = {
-					type = ship_hull_light_1
-					equipment_variant = "Aigli Class"
-					creator = GER
-					name = "Dafni"
-				}
-				if = {
-					limit = {
-						GRE_has_IFC = yes
-					}
-					add_to_variable = {
-						var = GRE_IFC_var
-						value = 0.02
-					}
-					custom_effect_tooltip = GRE_IFC_plus_2_tt
-				}
-			}
-			ai_will_do = {
-				factor = 100
+			NOT = {
+				is_embargoed_by = FROM
+				has_war_with = FROM
 			}
 		}
-		GRE_purchase_thetis = {
-			icon = generic_naval
-			allowed = {
-				tag = GRE
+		cost = 45
+		fire_only_once = yes
+		days_remove = 30
+		visible = {
+			GER = {
+				exists = yes
 			}
-			target_trigger = {
-				FROM = {
-					tag = GER
-				}
-			}
-			cancel_trigger = {
-				has_war_with = GER
-				
-			}
-			available = {
-				any_owned_state = {
-					is_coastal = yes
-				}
-				NOT = {
-					has_war_with = FROM
-				}
-			}
-			cost = 50
-			fire_only_once = yes
-			days_remove = 30
-			visible = {
-				GER = {
-					exists = yes
-				}
-				has_completed_focus = GRE_buy_ships
-				
-			}
-			complete_effect = {
-				set_country_flag = {
-					flag = has_active_purchase_contract
-					days = 2
-					value = 1
-				}
-			}
-			remove_effect = {
-				create_ship = {
-					type = ship_hull_light_1
-					equipment_variant = "Aigli Class"
-					creator = GER
-					name = "Thetis"
-				}
-				if = {
-					limit = {
-						GRE_has_IFC = yes
-					}
-					add_to_variable = {
-						var = GRE_IFC_var
-						value = 0.02
-					}
-					custom_effect_tooltip = GRE_IFC_plus_2_tt
-				}
-			}
-			ai_will_do = {
-				factor = 100
+			has_completed_focus = GRE_buy_ships		
+		}
+		complete_effect = {
+			set_country_flag = {
+				flag = has_active_purchase_contract_ship
+				days = 30
+				value = 1
 			}
 		}
-		GRE_purchase_aetos = {
-			icon = generic_naval
-			allowed = {
-				tag = GRE
+		remove_effect = {
+			create_ship = {
+				type = ship_hull_light_1
+				equipment_variant = "V1 Class"
+				creator = GER
+				name = "Aigli"
 			}
-			target_trigger = {
-				FROM = {
-					tag = ENG
+			if = {
+				limit = {
+					has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } 
 				}
-			}
-			cancel_trigger = {
-				has_war_with = ENG
-				
-			}
-			available = {
-				any_owned_state = {
-					is_coastal = yes
+				add_to_variable = {
+					var = GRE_IFC_var
+					value = 0.05
 				}
-				NOT = {
-					has_war_with = FROM
-				}
-			}
-			cost = 50
-			fire_only_once = yes
-			days_remove = 30
-			visible = {
-				ENG = {
-					exists = yes
-				}
-				has_completed_focus = GRE_buy_ships
-				
-			}
-			complete_effect = {
-				set_country_flag = {
-					flag = has_active_purchase_contract
-					days = 2
-					value = 1
-				}
-			}
-			remove_effect = {
-				create_ship = {
-					type = ship_hull_light_1
-					equipment_variant = "Aetos Class"
-					creator = ENG
-					name = "Aetos"
-				}
-				if = {
-					limit = {
-						GRE_has_IFC = yes
-					}
-					add_to_variable = {
-						var = GRE_IFC_var
-						value = 0.02
-					}
-					custom_effect_tooltip = GRE_IFC_plus_2_tt
-				}
-			}
-			ai_will_do = {
-				factor = 100
+				custom_effect_tooltip = GRE_IFC_plus_5_tt
 			}
 		}
-		GRE_purchase_ierax = {
-			icon = generic_naval
-			allowed = {
-				tag = GRE
-			}
-			target_trigger = {
-				FROM = {
-					tag = ENG
-				}
-			}
-			cancel_trigger = {
-				has_war_with = ENG
-				
-			}
-			available = {
-				any_owned_state = {
-					is_coastal = yes
-				}
-				NOT = {
-					has_war_with = FROM
-				}
-			}
-			cost = 50
-			fire_only_once = yes
-			days_remove = 30
-			visible = {
-				ENG = {
-					exists = yes
-				}
-				has_completed_focus = GRE_buy_ships
-				
-			}
-			complete_effect = {
-				set_country_flag = {
-					flag = has_active_purchase_contract
-					days = 2
-					value = 1
-				}
-			}
-			remove_effect = {
-				create_ship = {
-					type = ship_hull_light_1
-					equipment_variant = "Aetos Class"
-					creator = ENG
-					name = "Ierax"
-				}
-				if = {
-					limit = {
-						GRE_has_IFC = yes
-					}
-					add_to_variable = {
-						var = GRE_IFC_var
-						value = 0.02
-					}
-					custom_effect_tooltip = GRE_IFC_plus_2_tt
-				}
-			}
-			ai_will_do = {
-				factor = 100
+		ai_will_do = {
+			factor = 6
+			modifier = {
+				factor = 0
+				has_country_flag = has_active_purchase_contract_ship
 			}
 		}
-		GRE_purchase_leon = {
-			icon = generic_naval
-			allowed = {
-				tag = GRE
-			}
-			target_trigger = {
-				FROM = {
-					tag = ENG
-				}
-			}
-			cancel_trigger = {
-				has_war_with = ENG
-				
-			}
-			available = {
-				any_owned_state = {
-					is_coastal = yes
-				}
-				NOT = {
-					has_war_with = FROM
-				}
-			}
-			cost = 50
-			fire_only_once = yes
-			days_remove = 30
-			visible = {
-				ENG = {
-					exists = yes
-				}
-				has_completed_focus = GRE_buy_ships
-				
-			}
-			complete_effect = {
-				set_country_flag = {
-					flag = has_active_purchase_contract
-					days = 2
-					value = 1
-				}
-			}
-			remove_effect = {
-				create_ship = {
-					type = ship_hull_light_1
-					equipment_variant = "Aetos Class"
-					creator = ENG
-					name = "Leon"
-				}
-				if = {
-					limit = {
-						GRE_has_IFC = yes
-					}
-					add_to_variable = {
-						var = GRE_IFC_var
-						value = 0.02
-					}
-					custom_effect_tooltip = GRE_IFC_plus_2_tt
-				}
-			}
-			ai_will_do = {
-				factor = 100
+	}
+	GRE_purchase_alkyoni = {
+		icon = generic_naval
+		allowed = {
+			tag = GRE
+		}
+		target_trigger = {
+			FROM = {
+				tag = GER
 			}
 		}
-		GRE_purchase_panthir = {
-			icon = generic_naval
-			allowed = {
-				tag = GRE
+		cancel_trigger = {
+			has_war_with = GER
+			
+		}
+		available = {
+			any_owned_state = {
+				is_coastal = yes
 			}
-			target_trigger = {
-				FROM = {
-					tag = ENG
-				}
-			}
-			cancel_trigger = {
-				has_war_with = ENG
-				
-			}
-			available = {
-				any_owned_state = {
-					is_coastal = yes
-				}
-				NOT = {
-					has_war_with = FROM
-				}
-			}
-			cost = 50
-			fire_only_once = yes
-			days_remove = 30
-			visible = {
-				ENG = {
-					exists = yes
-				}
-				has_completed_focus = GRE_buy_ships
-				
-			}
-			complete_effect = {
-				set_country_flag = {
-					flag = has_active_purchase_contract
-					days = 2
-					value = 1
-				}
-			}
-			remove_effect = {
-				create_ship = {
-					type = ship_hull_light_1
-					equipment_variant = "Aetos Class"
-					creator = ENG
-					name = "Panthir"
-				}
-				if = {
-					limit = {
-						GRE_has_IFC = yes
-					}
-					add_to_variable = {
-						var = GRE_IFC_var
-						value = 0.02
-					}
-					custom_effect_tooltip = GRE_IFC_plus_2_tt
-				}
-			}
-			ai_will_do = {
-				factor = 100
+			NOT = {
+				is_embargoed_by = FROM
+				has_war_with = FROM
 			}
 		}
+		cost = 45
+		fire_only_once = yes
+		days_remove = 30
+		visible = {
+			GER = {
+				exists = yes
+			}
+			has_completed_focus = GRE_buy_ships
+			
+		}
+		complete_effect = {
+			set_country_flag = {
+				flag = has_active_purchase_contract_ship
+				days = 30
+				value = 1
+			}
+		}
+		remove_effect = {
+			create_ship = {
+				type = ship_hull_light_1
+				equipment_variant = "V1 Class"
+				creator = GER
+				name = "Alkyoni"
+			}
+			if = {
+				limit = {
+					has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } 
+				}
+				add_to_variable = {
+					var = GRE_IFC_var
+					value = 0.05
+				}
+				custom_effect_tooltip = GRE_IFC_plus_5_tt
+			}
+		}
+		ai_will_do = {
+			factor = 6
+			modifier = {
+				factor = 0
+				has_country_flag = has_active_purchase_contract_ship
+			}
+		}
+	}
+	GRE_purchase_arethousa = {
+		icon = generic_naval
+		allowed = {
+			tag = GRE
+		}
+		target_trigger = {
+			FROM = {
+				tag = GER
+			}
+		}
+		cancel_trigger = {
+			has_war_with = GER
+			
+		}
+		available = {
+			any_owned_state = {
+				is_coastal = yes
+			}
+			NOT = {
+				is_embargoed_by = FROM
+				has_war_with = FROM
+			}
+		}
+		cost = 45
+		fire_only_once = yes
+		days_remove = 30
+		visible = {
+			GER = {
+				exists = yes
+			}
+			has_completed_focus = GRE_buy_ships
+			
+		}
+		complete_effect = {
+			set_country_flag = {
+				flag = has_active_purchase_contract_ship
+				days = 30
+				value = 1
+			}
+		}
+		remove_effect = {
+			create_ship = {
+				type = ship_hull_light_1
+				equipment_variant = "V1 Class"
+				creator = GER
+				name = "Arethousa"
+			}
+			if = {
+				limit = {
+					has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } 
+				}
+				add_to_variable = {
+					var = GRE_IFC_var
+					value = 0.05
+				}
+				custom_effect_tooltip = GRE_IFC_plus_5_tt
+			}
+		}
+		ai_will_do = {
+			factor = 6
+			modifier = {
+				factor = 0
+				has_country_flag = has_active_purchase_contract_ship
+			}
+		}
+	}
+	GRE_purchase_doris = {
+		icon = generic_naval
+		allowed = {
+			tag = GRE
+		}
+		target_trigger = {
+			FROM = {
+				tag = GER
+			}
+		}
+		cancel_trigger = {
+			has_war_with = GER
+			
+		}
+		available = {
+			any_owned_state = {
+				is_coastal = yes
+			}
+			NOT = {
+				is_embargoed_by = FROM
+				has_war_with = FROM
+			}
+		}
+		cost = 45
+		fire_only_once = yes
+		days_remove = 30
+		visible = {
+			GER = {
+				exists = yes
+			}
+			has_completed_focus = GRE_buy_ships
+			
+		}
+		complete_effect = {
+			set_country_flag = {
+				flag = has_active_purchase_contract_ship
+				days = 30
+				value = 1
+			}
+		}
+		remove_effect = {
+			create_ship = {
+				type = ship_hull_light_1
+				equipment_variant = "V1 Class"
+				creator = GER
+				name = "Doris"
+			}
+			if = {
+				limit = {
+					has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } 
+				}
+				add_to_variable = {
+					var = GRE_IFC_var
+					value = 0.05
+				}
+				custom_effect_tooltip = GRE_IFC_plus_5_tt
+			}
+		}
+		ai_will_do = {
+			factor = 6
+			modifier = {
+				factor = 0
+				has_country_flag = has_active_purchase_contract_ship
+			}
+		}
+	}
+	GRE_purchase_dafni = {
+		icon = generic_naval
+		allowed = {
+			tag = GRE
+		}
+		target_trigger = {
+			FROM = {
+				tag = GER
+			}
+		}
+		cancel_trigger = {
+			has_war_with = GER
+			
+		}
+		available = {
+			any_owned_state = {
+				is_coastal = yes
+			}
+			NOT = {
+				is_embargoed_by = FROM
+				has_war_with = FROM
+			}
+		}
+		cost = 45
+		fire_only_once = yes
+		days_remove = 30
+		visible = {
+			GER = {
+				exists = yes
+			}
+			has_completed_focus = GRE_buy_ships
+			
+		}
+		complete_effect = {
+			set_country_flag = {
+				flag = has_active_purchase_contract_ship
+				days = 30
+				value = 1
+			}
+		}
+		remove_effect = {
+			create_ship = {
+				type = ship_hull_light_1
+				equipment_variant = "V1 Class"
+				creator = GER
+				name = "Dafni"
+			}
+			if = {
+				limit = {
+					has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } 
+				}
+				add_to_variable = {
+					var = GRE_IFC_var
+					value = 0.05
+				}
+				custom_effect_tooltip = GRE_IFC_plus_5_tt
+			}
+		}
+		ai_will_do = {
+			factor = 6
+			modifier = {
+				factor = 0
+				has_country_flag = has_active_purchase_contract_ship
+			}
+		}
+	}
+	GRE_purchase_thetis = {
+		icon = generic_naval
+		allowed = {
+			tag = GRE
+		}
+		target_trigger = {
+			FROM = {
+				tag = GER
+			}
+		}
+		cancel_trigger = {
+			has_war_with = GER
+			
+		}
+		available = {
+			any_owned_state = {
+				is_coastal = yes
+			}
+			NOT = {
+				is_embargoed_by = FROM
+				has_war_with = FROM
+			}
+		}
+		cost = 45
+		fire_only_once = yes
+		days_remove = 30
+		visible = {
+			GER = {
+				exists = yes
+			}
+			has_completed_focus = GRE_buy_ships
+			
+		}
+		complete_effect = {
+			set_country_flag = {
+				flag = has_active_purchase_contract_ship
+				days = 30
+				value = 1
+			}
+		}
+		remove_effect = {
+			create_ship = {
+				type = ship_hull_light_1
+				equipment_variant = "V1 Class"
+				creator = GER
+				name = "Thetis"
+			}
+			if = {
+				limit = {
+					has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } 
+				}
+				add_to_variable = {
+					var = GRE_IFC_var
+					value = 0.05
+				}
+				custom_effect_tooltip = GRE_IFC_plus_5_tt
+			}
+		}
+		ai_will_do = {
+			factor = 6
+			modifier = {
+				factor = 0
+				has_country_flag = has_active_purchase_contract_ship
+			}
+		}
+	}
+	GRE_purchase_aetos = {
+		icon = generic_naval
+		allowed = {
+			tag = GRE
+		}
+		target_trigger = {
+			FROM = {
+				tag = ENG
+			}
+		}
+		cancel_trigger = {
+			has_war_with = ENG
+			
+		}
+		available = {
+			any_owned_state = {
+				is_coastal = yes
+			}
+			NOT = {
+				is_embargoed_by = FROM
+				has_war_with = FROM
+			}
+		}
+		cost = 45
+		fire_only_once = yes
+		days_remove = 30
+		visible = {
+			ENG = {
+				exists = yes
+			}
+			has_completed_focus = GRE_buy_ships
+			
+		}
+		complete_effect = {
+			set_country_flag = {
+				flag = has_active_purchase_contract_ship
+				days = 30
+				value = 1
+			}
+		}
+		remove_effect = {
+			create_ship = {
+				type = ship_hull_light_1
+				equipment_variant = "Aetos Class"
+				creator = ENG
+				name = "Aetos"
+			}
+			if = {
+				limit = {
+					has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } 
+				}
+				add_to_variable = {
+					var = GRE_IFC_var
+					value = 0.05
+				}
+				custom_effect_tooltip = GRE_IFC_plus_5_tt
+			}
+		}
+		ai_will_do = {
+			factor = 6
+			modifier = {
+				factor = 0
+				has_country_flag = has_active_purchase_contract_ship
+			}
+		}
+	}
+	GRE_purchase_ierax = {
+		icon = generic_naval
+		allowed = {
+			tag = GRE
+		}
+		target_trigger = {
+			FROM = {
+				tag = ENG
+			}
+		}
+		cancel_trigger = {
+			has_war_with = ENG
+			
+		}
+		available = {
+			any_owned_state = {
+				is_coastal = yes
+			}
+			NOT = {
+				is_embargoed_by = FROM
+				has_war_with = FROM
+			}
+		}
+		cost = 45
+		fire_only_once = yes
+		days_remove = 30
+		visible = {
+			ENG = {
+				exists = yes
+			}
+			has_completed_focus = GRE_buy_ships
+			
+		}
+		complete_effect = {
+			set_country_flag = {
+				flag = has_active_purchase_contract_ship
+				days = 30
+				value = 1
+			}
+		}
+		remove_effect = {
+			create_ship = {
+				type = ship_hull_light_1
+				equipment_variant = "Aetos Class"
+				creator = ENG
+				name = "Ierax"
+			}
+			if = {
+				limit = {
+					has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } 
+				}
+				add_to_variable = {
+					var = GRE_IFC_var
+					value = 0.05
+				}
+				custom_effect_tooltip = GRE_IFC_plus_5_tt
+			}
+		}
+		ai_will_do = {
+			factor = 6
+			modifier = {
+				factor = 0
+				has_country_flag = has_active_purchase_contract_ship
+			}
+		}
+	}
+	GRE_purchase_leon = {
+		icon = generic_naval
+		allowed = {
+			tag = GRE
+		}
+		target_trigger = {
+			FROM = {
+				tag = ENG
+			}
+		}
+		cancel_trigger = {
+			has_war_with = ENG
+			
+		}
+		available = {
+			any_owned_state = {
+				is_coastal = yes
+			}
+			NOT = {
+				is_embargoed_by = FROM
+				has_war_with = FROM
+			}
+		}
+		cost = 45
+		fire_only_once = yes
+		days_remove = 30
+		visible = {
+			ENG = {
+				exists = yes
+			}
+			has_completed_focus = GRE_buy_ships
+			
+		}
+		complete_effect = {
+			set_country_flag = {
+				flag = has_active_purchase_contract_ship
+				days = 30
+				value = 1
+			}
+		}
+		remove_effect = {
+			create_ship = {
+				type = ship_hull_light_1
+				equipment_variant = "Aetos Class"
+				creator = ENG
+				name = "Leon"
+			}
+			if = {
+				limit = {
+					has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } 
+				}
+				add_to_variable = {
+					var = GRE_IFC_var
+					value = 0.05
+				}
+				custom_effect_tooltip = GRE_IFC_plus_5_tt
+			}
+		}
+		ai_will_do = {
+			factor = 6
+			modifier = {
+				factor = 0
+				has_country_flag = has_active_purchase_contract_ship
+			}
+		}
+	}
+	GRE_purchase_panthir = {
+		icon = generic_naval
+		allowed = {
+			tag = GRE
+		}
+		target_trigger = {
+			FROM = {
+				tag = ENG
+			}
+		}
+		cancel_trigger = {
+			has_war_with = ENG
+			
+		}
+		available = {
+			any_owned_state = {
+				is_coastal = yes
+			}
+			NOT = {
+				is_embargoed_by = FROM
+				has_war_with = FROM
+			}
+		}
+		cost = 45
+		fire_only_once = yes
+		days_remove = 30
+		visible = {
+			ENG = {
+				exists = yes
+			}
+			has_completed_focus = GRE_buy_ships
+			
+		}
+		complete_effect = {
+			set_country_flag = {
+				flag = has_active_purchase_contract_ship
+				days = 30
+				value = 1
+			}
+		}
+		remove_effect = {
+			create_ship = {
+				type = ship_hull_light_1
+				equipment_variant = "Aetos Class"
+				creator = ENG
+				name = "Panthir"
+			}
+			if = {
+				limit = {
+					has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } 
+				}
+				add_to_variable = {
+					var = GRE_IFC_var
+					value = 0.05
+				}
+				custom_effect_tooltip = GRE_IFC_plus_5_tt
+			}
+		}
+		ai_will_do = {
+			factor = 6
+			modifier = {
+				factor = 0
+				has_country_flag = has_active_purchase_contract_ship
+			}
+		}
+	}
 	GRE_purchase_lemnos = {
 		icon = generic_naval
 		allowed = {
@@ -1502,12 +1599,13 @@ GRE_navy_decisions = {
 				is_coastal = yes
 			}
 			NOT = {
+				is_embargoed_by = FROM
 				has_war_with = FROM
 			}
 			date > 1914.1.1
 			
 		}
-		cost = 75
+		cost = 60
 		fire_only_once = yes
 		days_remove = 30
 		visible = {
@@ -1519,8 +1617,8 @@ GRE_navy_decisions = {
 		}
 		complete_effect = {
 			set_country_flag = {
-				flag = has_active_purchase_contract
-				days = 2
+				flag = has_active_purchase_contract_ship
+				days = 30
 				value = 1
 			}
 		}
@@ -1533,17 +1631,21 @@ GRE_navy_decisions = {
 			}
 			if = {
 				limit = {
-					GRE_has_IFC = yes
+					has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } 
 				}
 				add_to_variable = {
 					var = GRE_IFC_var
-					value = 0.02
+					value = 0.05
 				}
-				custom_effect_tooltip = GRE_IFC_plus_2_tt
+				custom_effect_tooltip = GRE_IFC_plus_5_tt
 			}
 		}
 		ai_will_do = {
-			factor = 100
+			factor = 6
+			modifier = {
+				factor = 0
+				has_country_flag = has_active_purchase_contract_ship
+			}
 	    }
     }
 	GRE_purchase_kilkis = {
@@ -1565,12 +1667,13 @@ GRE_navy_decisions = {
 				is_coastal = yes
 			}
 			NOT = {
+				is_embargoed_by = FROM
 				has_war_with = FROM
 			}
 			date > 1914.1.1
 			
 		}
-		cost = 75
+		cost = 60
 		fire_only_once = yes
 		days_remove = 30
 		visible = {
@@ -1582,8 +1685,8 @@ GRE_navy_decisions = {
 		}
 		complete_effect = {
 			set_country_flag = {
-				flag = has_active_purchase_contract
-				days = 2
+				flag = has_active_purchase_contract_ship
+				days = 30
 				value = 1
 			}
 		}
@@ -1596,17 +1699,21 @@ GRE_navy_decisions = {
 			}
 			if = {
 				limit = {
-					GRE_has_IFC = yes
+					has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } 
 				}
 				add_to_variable = {
 					var = GRE_IFC_var
-					value = 0.02
+					value = 0.05
 				}
-				custom_effect_tooltip = GRE_IFC_plus_2_tt
+				custom_effect_tooltip = GRE_IFC_plus_5_tt
 			}
 		}
 		ai_will_do = {
-			factor = 100
+			factor = 6
+			modifier = {
+				factor = 0
+				has_country_flag = has_active_purchase_contract_ship
+			}
 	    }
     }
 	GRE_purchase_elli = {
@@ -1629,11 +1736,12 @@ GRE_navy_decisions = {
 				is_coastal = yes
 			}
 			NOT = {
+				is_embargoed_by = FROM
 				has_war_with = FROM
 			}
 			date > 1914.1.1
 		}
-		cost = 75
+		cost = 60
 		fire_only_once = yes
 		days_remove = 30
 		visible = {
@@ -1645,8 +1753,8 @@ GRE_navy_decisions = {
 		}
 		complete_effect = {
 			set_country_flag = {
-				flag = has_active_purchase_contract
-				days = 2
+				flag = has_active_purchase_contract_ship
+				days = 30
 				value = 1
 			}
 		}
@@ -1659,17 +1767,21 @@ GRE_navy_decisions = {
 			}
 			if = {
 				limit = {
-					GRE_has_IFC = yes
+					has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } 
 				}
 				add_to_variable = {
 					var = GRE_IFC_var
-					value = 0.02
+					value = 0.05
 				}
-				custom_effect_tooltip = GRE_IFC_plus_2_tt
+				custom_effect_tooltip = GRE_IFC_plus_5_tt
 			}
 		}
 		ai_will_do = {
-			factor = 100
+			factor = 6
+			modifier = {
+				factor = 0
+				has_country_flag = has_active_purchase_contract_ship
+			}
 	    }
     }
 }
@@ -1722,7 +1834,7 @@ GRE_reforms = {
 			}
 		}
 		ai_will_do = {
-			factor = 25
+			base = 7
 		}
 	}
 	GRE_legalize_labor_unions = {
@@ -1776,7 +1888,7 @@ GRE_reforms = {
 			} 
 		}
 		ai_will_do = {
-			factor = 25
+			base = 7
 		}
 	}
 	GRE_sunday_obligatory_day_of_rest = {
@@ -1834,7 +1946,7 @@ GRE_reforms = {
 			}
 		}
 		ai_will_do = {
-			factor = 25
+			base = 7
 		}
 	}
 	GRE_abolish_nighttime_labor_for_women = {
@@ -1884,7 +1996,7 @@ GRE_reforms = {
 			}
 		}
 		ai_will_do = {
-			factor = 25
+			base = 7
 		}
 	}
 	GRE_create_the_social_insurance_system = {
@@ -1934,7 +2046,7 @@ GRE_reforms = {
 			}
 		}
 		ai_will_do = {
-			factor = 25
+			base = 7
 		}
 	}
 	GRE_introduce_the_minimum_wage = {
@@ -1984,7 +2096,7 @@ GRE_reforms = {
 			}
 		}
 		ai_will_do = {
-			factor = 25
+			base = 7
 		}
 	}
 	GRE_land_reform = {
@@ -2042,7 +2154,7 @@ GRE_reforms = {
 			}
 		}
 		ai_will_do = {
-			factor = 25
+			base = 7
 		}
 	}
 
@@ -2069,7 +2181,7 @@ GRE_reforms = {
 			add_ideas = GRE_agricultural_education_idea
 		}
 		ai_will_do = {
-			factor = 25
+			factor = 2.5
 		}
 	}
 	GRE_encourage_farming_cooperatives = {
@@ -2119,7 +2231,7 @@ GRE_reforms = {
 			}
 		}
 		ai_will_do = {
-			factor = 25
+			base = 7
 		}
 	}
 	GRE_create_the_ministry_of_agriculture = {
@@ -2169,11 +2281,9 @@ GRE_reforms = {
 			}
 		}
 		ai_will_do = {
-			factor = 25
+			base = 7
 		}
 	}
-
-
 
 	GRE_standardize_the_use_of_katharevousa = {
 		icon = GFX_decision_generic_speech
@@ -2202,7 +2312,7 @@ GRE_reforms = {
 			add_ideas = GRE_katharevousa_idea
 		}
 		ai_will_do = {
-			factor = 25
+			base = 7
 		}
 	}
 	GRE_standardize_the_use_of_dimotiki = {
@@ -2237,7 +2347,7 @@ GRE_reforms = {
 			add_ideas = GRE_dimotiki_idea
 		}
 		ai_will_do = {
-			factor = 25
+			base = 7
 		}
 	}
 	GRE_reform_the_bureaucracy = {
@@ -2268,7 +2378,7 @@ GRE_reforms = {
 			GRE_update_political_turmoil_dynamic_modifier = yes
 		}
 		ai_will_do = {
-			factor = 25
+			base = 7
 		}
 	}
 	GRE_taxation_reforms = {
@@ -2299,7 +2409,7 @@ GRE_reforms = {
 			GRE_update_political_turmoil_dynamic_modifier = yes
 		}
 		ai_will_do = {
-			factor = 25
+			base = 7
 		}
 	}
 	GRE_establish_superior_magistracy_council = {
@@ -2330,7 +2440,7 @@ GRE_reforms = {
 			GRE_update_political_turmoil_dynamic_modifier = yes
 		}
 		ai_will_do = {
-			factor = 25
+			base = 7
 		}
 	}
 	GRE_reform_the_judicial_system = {
@@ -2361,7 +2471,7 @@ GRE_reforms = {
 			GRE_update_political_turmoil_dynamic_modifier = yes
 		}
 		ai_will_do = {
-			factor = 25
+			base = 7
 		}
 	}
 	GRE_reform_the_civil_service = {
@@ -2392,7 +2502,7 @@ GRE_reforms = {
 			GRE_update_political_turmoil_dynamic_modifier = yes
 		}
 		ai_will_do = {
-			factor = 25
+			base = 7
 		}
 	}
 	GRE_protect_individual_and_social_rights = {
@@ -2423,7 +2533,7 @@ GRE_reforms = {
 			GRE_update_political_turmoil_dynamic_modifier = yes
 		}
 		ai_will_do = {
-			factor = 25
+			base = 7
 		}
 	}
 	GRE_strengthen_press_freedom = {
@@ -2454,7 +2564,7 @@ GRE_reforms = {
 			GRE_update_political_turmoil_dynamic_modifier = yes
 		}
 		ai_will_do = {
-			factor = 25
+			base = 7
 		}
 	}
 
@@ -2486,7 +2596,7 @@ GRE_reforms = {
 			GRE_update_political_turmoil_dynamic_modifier = yes
 		}
 		ai_will_do = {
-			factor = 25
+			base = 7
 		}
 	}
 
@@ -2522,7 +2632,7 @@ GRE_reforms = {
 			GRE_update_political_turmoil_dynamic_modifier = yes
 		 }
 		ai_will_do = {
-			factor = 25
+			base = 7
 		}
 	}
 }
@@ -2543,6 +2653,7 @@ GRE_buy_guns_decisions = {
 		}
 		available = {
 			NOT = {
+				is_embargoed_by = FROM
 				has_war_with = FROM
 				has_country_flag = has_active_purchase_contract
 			}
@@ -2577,17 +2688,24 @@ GRE_buy_guns_decisions = {
 			}
 			if = {
 				limit = {
-					GRE_has_IFC = yes
+					has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } 
 				}
 				add_to_variable = {
 					var = GRE_IFC_var
-					value = 0.02
+					value = 0.05
 				}
-				custom_effect_tooltip = GRE_IFC_plus_2_tt
+				custom_effect_tooltip = GRE_IFC_plus_5_tt
 			}
 		}
 		ai_will_do = {
-			base = 75
+			base = 6
+			modifier = {
+				factor = 0
+				stockpile_ratio = { 
+					archetype = infantry_equipment
+					ratio > 0.75
+				}
+			}
 		}
 	}
 	GRE_buy_FROM_support_equipment = {
@@ -2609,6 +2727,7 @@ GRE_buy_guns_decisions = {
 		available = {
 
 			NOT = {
+				is_embargoed_by = FROM
 				has_war_with = FROM
 				has_country_flag = has_active_purchase_contract
 			}
@@ -2643,17 +2762,24 @@ GRE_buy_guns_decisions = {
 			}
 			if = {
 				limit = {
-					GRE_has_IFC = yes
+					has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } 
 				}
 				add_to_variable = {
 					var = GRE_IFC_var
-					value = 0.02
+					value = 0.05
 				}
-				custom_effect_tooltip = GRE_IFC_plus_2_tt
+				custom_effect_tooltip = GRE_IFC_plus_5_tt
 			}
 		}
 		ai_will_do = {
-			base = 25
+			base = 2.5
+			modifier = {
+				factor = 0
+				stockpile_ratio = { 
+					archetype = support_equipment
+					ratio > 0.75
+				}
+			}
 		}
 	}
 	
@@ -2676,6 +2802,7 @@ GRE_buy_guns_decisions = {
 		available = {
 
 			NOT = {
+				is_embargoed_by = FROM
 				has_war_with = FROM
 				has_country_flag = has_active_purchase_contract
 			}
@@ -2710,20 +2837,26 @@ GRE_buy_guns_decisions = {
 			}
 			if = {
 				limit = {
-					GRE_has_IFC = yes
+					has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } 
 				}
 				add_to_variable = {
 					var = GRE_IFC_var
-					value = 0.02
+					value = 0.05
 				}
-				custom_effect_tooltip = GRE_IFC_plus_2_tt
+				custom_effect_tooltip = GRE_IFC_plus_5_tt
 			}
 		}
 		ai_will_do = {
-			base = 50
+			base = 5
+			modifier = {
+				factor = 0
+				stockpile_ratio = { 
+					archetype = artillery_equipment
+					ratio > 0.75
+				}
+			}
 		}
 	}
-	
 }
 
 GRE_debt_management = {
@@ -2741,17 +2874,17 @@ GRE_debt_management = {
 			}
 		}
 		visible = {
-			GRE_has_IFC = yes
+			has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } 
 		}
 		fire_only_once = no
 		days_remove = 45
 		days_re_enable = 120
 		cost = 50
 		remove_effect = {
-			custom_effect_tooltip = GRE_IFC_minus_2_tt
+			custom_effect_tooltip = GRE_IFC_minus_5_tt
 			subtract_from_variable = {
 				var = GRE_IFC_var
-				value = 0.02
+				value = 0.05
 			}
 			if = {
 				limit = {
@@ -2773,7 +2906,7 @@ GRE_debt_management = {
 				check_variable = {
 					GRE_IFC_var > 0.10
 				}
-				factor = 10
+				add = 10
 			}
 		}
 	}
@@ -2791,7 +2924,7 @@ GRE_debt_management = {
 			}
 		}
 		visible = {
-			GRE_has_IFC = yes
+			has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } 
 			has_completed_focus = GRE_large_debt_repayments
 		}
 		fire_only_once = no
@@ -2801,9 +2934,9 @@ GRE_debt_management = {
 		remove_effect = {
 			subtract_from_variable = {
 				var = GRE_IFC_var
-				value = 0.05
+				value = 0.1
 			}
-			custom_effect_tooltip = GRE_IFC_minus_5_tt
+			custom_effect_tooltip = GRE_IFC_minus_10_tt
 			if = {
 				limit = {
 					check_variable = { GRE_IFC_var < 0 }
@@ -2824,7 +2957,7 @@ GRE_debt_management = {
 				check_variable = {
 					GRE_IFC_var > 0.15
 				}
-				factor = 10
+				add = 10
 			}
 		}
 	}
@@ -2880,7 +3013,7 @@ GRE_debt_management = {
 				check_variable = {
 					GRE_IFC_var > 0.15
 				}
-				factor = 10
+				add = 10
 			}
 		}
 	}
@@ -2914,13 +3047,13 @@ GRE_debt_management = {
 		remove_effect = {
 			if = {
 				limit = {
-					GRE_has_IFC = yes
+					has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } 
 				}
 				add_to_variable = {
 					var = GRE_IFC_var
-					value = 0.05
+					value = 0.1
 				}
-				custom_effect_tooltip = GRE_IFC_plus_5_tt
+				custom_effect_tooltip = GRE_IFC_plus_10_tt
 			}
 			custom_effect_tooltip = back_in_280_days			
 		}
@@ -2936,7 +3069,7 @@ GRE_debt_management = {
 				check_variable = {
 					GRE_IFC_var < 0.10
 				}
-				factor = 1
+				add = 1
 			}
 		}
 	}
@@ -2970,13 +3103,13 @@ GRE_debt_management = {
 		remove_effect = {
 			if = {
 				limit = {
-					GRE_has_IFC = yes
+					has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } 
 				}
 				add_to_variable = {
 					var = GRE_IFC_var
-					value = 0.1
+					value = 0.2
 				}
-				custom_effect_tooltip = GRE_IFC_plus_10_tt
+				custom_effect_tooltip = GRE_IFC_plus_20_tt
 			}
 			custom_effect_tooltip = back_in_280_days			
 		}
@@ -2994,7 +3127,7 @@ GRE_debt_management = {
 				check_variable = {
 					GRE_IFC_var < 0.10
 				}
-				factor = 1
+				add = 1
 			}
 		}
 	}
@@ -3011,30 +3144,12 @@ GRE_debt_management = {
 		}
 		visible = {
 			has_completed_focus = GRE_absorb_the_IFC
-			GRE_has_IFC = yes	
+			has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } 	
 		}
 		fire_only_once = yes
 		cost = 200
 		remove_effect = {
-			if = {
-				limit = {
-					has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } 
-				}	
-				remove_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier }
-			}
-			if = {
-				limit = {
-					has_dynamic_modifier = { modifier = GRE_IFC_2_dynamic_modifier } 
-				}	
-				remove_dynamic_modifier = { modifier = GRE_IFC_2_dynamic_modifier }
-			}
-			if = {
-				limit = {
-					has_dynamic_modifier = { modifier = GRE_IFC_3_dynamic_modifier } 
-				}	
-				remove_dynamic_modifier = { modifier = GRE_IFC_3_dynamic_modifier }
-			}
-			
+			remove_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier }
 			add_stability = 0.05
 		}
 		ai_will_do = { 
@@ -3043,7 +3158,7 @@ GRE_debt_management = {
 				check_variable = {
 					GRE_IFC_var < 0.10
 				}
-				factor = 1
+				add = 1
 			}
 		}
 	}
@@ -3067,7 +3182,7 @@ GRE_debt_management = {
 			NOT = {
 				has_country_flag = GRE_thessaloniki_resources_sold
 			}
-			GRE_has_IFC = yes
+			has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } 
 		}
 		target_trigger = {
 			FROM = {
@@ -3083,6 +3198,7 @@ GRE_debt_management = {
 				NOT = {
 					has_idea = neutrality_idea
 					has_idea = SWI_swiss_neutrality
+					has_idea = LUX_london_treaty
 				}
 				NOT = {
 					has_war_with = GRE
@@ -3112,9 +3228,9 @@ GRE_debt_management = {
 		remove_effect = {
 			subtract_from_variable = {
 				var = GRE_IFC_var
-				value = 0.05
+				value = 0.1
 			}
-			custom_effect_tooltip = GRE_IFC_minus_5_tt
+			custom_effect_tooltip = GRE_IFC_minus_10_tt
 			if = {
 				limit = {
 					check_variable = { GRE_IFC_var < 0 }
@@ -3145,7 +3261,7 @@ GRE_debt_management = {
 				check_variable = {
 					GRE_IFC_var > 0.25
 				}
-				factor = 2
+				add = 2
 			}
 		}
 	}
@@ -3161,7 +3277,7 @@ GRE_railway_decision = {
 			}	
 		}
 		available = {
-			num_of_civilian_factories_available_for_projects > 2
+			num_of_civilian_factories_available_for_projects > 1
 			has_full_control_of_state = FROM
 		}
 		visible = {
@@ -3226,7 +3342,7 @@ GRE_railway_decision = {
 			production_speed_buildings_factor = -0.1
 		}
 		ai_will_do = { 
-			base = 1
+			factor = 6
 		}
 	}
 	GRE_finalize_peloponnese_railway = {
@@ -3239,7 +3355,7 @@ GRE_railway_decision = {
 			}	
 		}
 		available = {
-			num_of_civilian_factories_available_for_projects > 2
+			num_of_civilian_factories_available_for_projects > 1
 			hidden_trigger = {
 				controls_province = 7211
 				controls_province = 4193
@@ -3274,7 +3390,7 @@ GRE_railway_decision = {
 				path = { 7211 4193 1173 11965 4078 7096 3988 }
 			}
 			add_stability = 0.02
-			custom_effect_tooltip = GRE_sunday_obligatory_day_of_rest_tt
+			custom_effect_tooltip = GRE_improve_railway_agrarian_society_effect
 			add_to_variable = {
 				var = GRE_construction_speed_var
 				value = 0.03
@@ -3283,7 +3399,6 @@ GRE_railway_decision = {
 				var = GRE_factory_output_var
 				value = 0.03
 			}
-			custom_effect_tooltip = GRE_efficiency_cap_3_tt
 			add_to_variable = {
 				var = GRE_efficiency_cap_var
 				value = 0.03
@@ -3302,7 +3417,7 @@ GRE_railway_decision = {
 						}
 					}	
 				}
-				custom_effect_tooltip = GRE_sunday_obligatory_day_of_rest_tt
+				custom_effect_tooltip = GRE_improve_railway_agrarian_society_effect
 				add_to_variable = {
 					var = GRE_construction_speed_var
 					value = 0.03
@@ -3311,7 +3426,6 @@ GRE_railway_decision = {
 					var = GRE_factory_output_var
 					value = 0.03
 				}
-				custom_effect_tooltip = GRE_efficiency_cap_3_tt
 				add_to_variable = {
 					var = GRE_efficiency_cap_var
 					value = 0.03
@@ -3323,7 +3437,7 @@ GRE_railway_decision = {
 			production_speed_buildings_factor = -0.1
 		}
 		ai_will_do = { 
-			base = 1
+			factor = 6
 		}
 	}
 	GRE_finalize_chalkis_railway = {
@@ -3336,7 +3450,7 @@ GRE_railway_decision = {
 			}	
 		}	
 		available = {
-			num_of_civilian_factories_available_for_projects > 1
+			num_of_civilian_factories_available_for_projects > 0
 			hidden_trigger = {
 				controls_province = 4109
 				controls_province = 7127
@@ -3404,11 +3518,6 @@ GRE_railway_decision = {
 					var = GRE_factory_output_var
 					value = 0.03
 				}
-				custom_effect_tooltip = GRE_efficiency_cap_3_tt
-				add_to_variable = {
-					var = GRE_efficiency_cap_var
-					value = 0.03
-				}
 			}
 			add_stability = 0.02
 		}
@@ -3417,7 +3526,7 @@ GRE_railway_decision = {
 			production_speed_buildings_factor = -0.05
 		}
 		ai_will_do = { 
-			base = 1
+			factor = 6
 		}
 	}
 	GRE_finalize_messolonghi_railway = {
@@ -3430,7 +3539,7 @@ GRE_railway_decision = {
 			}	
 		}
 		available = {
-			num_of_civilian_factories_available_for_projects > 1
+			num_of_civilian_factories_available_for_projects > 0
 			hidden_trigger = {
 				controls_province = 1205
 				controls_province = 417
@@ -3504,7 +3613,7 @@ GRE_railway_decision = {
 			production_speed_buildings_factor = -0.05
 		}
 		ai_will_do = { 
-			base = 1
+			factor = 6
 		}
 	}
 	GRE_finalize_kalabaka_railway = {
@@ -3517,7 +3626,7 @@ GRE_railway_decision = {
 			}	
 		}
 		available = {
-			num_of_civilian_factories_available_for_projects > 1
+			num_of_civilian_factories_available_for_projects > 0
 			hidden_trigger = {
 				controls_province = 863
 				controls_province = 11786
@@ -3593,7 +3702,7 @@ GRE_railway_decision = {
 			production_speed_buildings_factor = -0.05
 		}
 		ai_will_do = { 
-			base = 1
+			factor = 6
 		}
 	}
 }
@@ -3608,20 +3717,24 @@ GRE_investment_decisions_category = {
 
 		available = {
 			NOT = {
-				has_war_with = GER
 				has_country_flag = GRE_germany_rebuffed
-				GER = {
-					has_capitulated = yes
-					is_subject = yes
-					has_government = communism
-					has_government = fascism
-				}
+				has_war_with = FROM
+				is_embargoed_by = FROM
+				has_country_flag = great_war_loser
+			}
+			FROM = {
+				has_capitulated = no
+				is_subject = no
+				NOT = { has_government = communism }
 			}
 		}
 
 		target_trigger = {
 			FROM = {
 				tag = GER
+				NOT = {
+					has_country_flag = great_war_loser
+				}
 			}
 		}
 		days_re_enable = 360
@@ -3632,22 +3745,24 @@ GRE_investment_decisions_category = {
 		fire_only_once = no
 
 		ai_will_do = {
-			factor = 50
+			factor = 5
 			modifier = {
-				factor = 100
-				OR = {
-					has_country_leader = {
-						character = GRE_ioannis_metaxas
-					}
-					has_country_leader = {
-						character = GRE_constantine_i
-					}
-				}
+				factor = 2
+				GRE_has_royalist_government = yes
+				GRE_has_venizelist_government = no
 			}
 		}
 
 		visible = {
 			has_completed_focus = GRE_open_greece_to_investments
+			NOT = {
+				has_country_flag = GRE_germany_rebuffed
+			}	
+			any_owned_state = {
+				is_fully_controlled_by = ROOT
+				impassable = no
+				is_core_of = ROOT
+			}
 		}
 
 		complete_effect = {
@@ -3657,6 +3772,22 @@ GRE_investment_decisions_category = {
 		remove_effect = {
 			GER = {
 				country_event = { id = ww1_greece.64 days = 1 }
+			}
+			custom_effect_tooltip = if_they_accept.tt
+			effect_tooltip = {
+				random_owned_controlled_state = {
+					limit = {
+						is_fully_controlled_by = ROOT
+						impassable = no
+						is_core_of = ROOT
+					}
+					add_extra_state_shared_building_slots = 1
+					add_building_construction = {
+						type = industrial_complex
+						level = 1
+						instant_build = yes
+					}
+				}
 			}
 			custom_effect_tooltip = back_in_360_days
 		}
@@ -3670,24 +3801,25 @@ GRE_investment_decisions_category = {
 		}
 
 		available = {
-			
 			NOT = {
-                    has_country_flag = GRE_britain_rebuffed
-		            has_war_with = ENG				
-		            ENG = {
-					has_capitulated = yes
-					is_subject = yes
-					NOT = { 
-						has_government = communism
-						has_government = fascism
-					}
-				}
+				has_country_flag = GRE_britain_rebuffed
+				has_war_with = FROM
+				is_embargoed_by = FROM
+				has_country_flag = great_war_loser
+			}
+			FROM = {
+				has_capitulated = no
+				is_subject = no
+				NOT = { has_government = communism }
 			}
 		}
 
 		target_trigger = {
 			FROM = {
 				tag = ENG
+				NOT = {
+					has_country_flag = great_war_loser
+				}
 			}
 		}
 
@@ -3698,15 +3830,28 @@ GRE_investment_decisions_category = {
 		fire_only_once = no
 
 		ai_will_do = {
-			factor = 50
+			factor = 5
 			modifier = {
-				factor = 100
-				is_historical_focus_on = yes
+				factor = 2
+				GRE_has_venizelist_government = yes
+			}
+			modifier = {
+				factor = 0
+				GRE_has_royalist_government = yes
+				GRE_has_venizelist_government = no
 			}
 		}
 
 		visible = {
 			has_completed_focus = GRE_open_greece_to_investments
+			NOT = {
+				has_country_flag = GRE_britain_rebuffed
+			}	
+			any_owned_state = {
+				is_fully_controlled_by = ROOT
+				impassable = no
+				is_core_of = ROOT
+			}
 		}
 
 		complete_effect = {
@@ -3715,7 +3860,24 @@ GRE_investment_decisions_category = {
 
 		remove_effect = {
 			ENG = {
-				country_event = { id = ww1_greece.68 days = 1 }
+				country_event = { id = ww1_greece.68 days = 1 }	
+
+			}
+			custom_effect_tooltip = if_they_accept.tt
+			effect_tooltip = {
+				random_owned_controlled_state = {
+					limit = {
+						is_fully_controlled_by = ROOT
+						impassable = no
+						is_core_of = ROOT
+					}
+					add_extra_state_shared_building_slots = 1
+					add_building_construction = {
+						type = industrial_complex
+						level = 1
+						instant_build = yes
+					}
+				}
 			}
 			custom_effect_tooltip = back_in_360_days
 		}
@@ -3728,26 +3890,27 @@ GRE_investment_decisions_category = {
 			original_tag = GRE
 		}
 
-		available = {
-			
+		available = {		
 			NOT = {
 				has_country_flag = GRE_austria_rebuffed
-				has_war_with = AUS
+				has_war_with = FROM
+				is_embargoed_by = FROM
 				has_country_flag = great_war_loser
 			}
-			AUS = {
-				NOT = { has_capitulated = yes }
+			FROM = {
+				has_capitulated = no
 				is_subject = no
-				OR = { 
-					NOT = { has_government = fascism }
-					NOT = { has_government = communism }
-				}
+				NOT = { has_government = communism }
 			}
 		}
 
 		target_trigger = {
 			FROM = {
 				tag = AUS
+				owns_state = 4
+				NOT = {
+					has_country_flag = great_war_loser
+				}
 			}
 		}
 
@@ -3758,22 +3921,24 @@ GRE_investment_decisions_category = {
 		fire_only_once = no
 
 		ai_will_do = {
-			factor = 50
+			factor = 5
 			modifier = {
-				factor = 100
-				OR = {
-					has_country_leader = {
-						character = GRE_ioannis_metaxas
-					}
-					has_country_leader = {
-						character = GRE_constantine_i
-					}
-				}
+				factor = 2
+				GRE_has_royalist_government = yes
+				GRE_has_venizelist_government = no
 			}
 		}
 
 		visible = {
 			has_completed_focus = GRE_open_greece_to_investments
+			NOT = {
+				has_country_flag = GRE_austria_rebuffed
+			}
+			any_owned_state = {
+				is_fully_controlled_by = ROOT
+				impassable = no
+				is_core_of = ROOT
+			}	
 		}
 		days_re_enable = 360
 		complete_effect = {
@@ -3783,6 +3948,22 @@ GRE_investment_decisions_category = {
 		remove_effect = {
 			AUS = {
 				country_event = { id = ww1_greece.77 days = 1 }
+			}
+			custom_effect_tooltip = if_they_accept.tt
+			effect_tooltip = {
+				random_owned_controlled_state = {
+					limit = {
+						is_fully_controlled_by = ROOT
+						impassable = no
+						is_core_of = ROOT
+					}
+					add_extra_state_shared_building_slots = 1
+					add_building_construction = {
+						type = industrial_complex
+						level = 1
+						instant_build = yes
+					}
+				}
 			}
 			custom_effect_tooltip = back_in_360_days
 		}
@@ -3796,25 +3977,26 @@ GRE_investment_decisions_category = {
 		}
 
 		available = {
-			
 			NOT = {
 				has_country_flag = GRE_france_rebuffed
-				has_war_with = FRA
+				has_war_with = FROM
+				is_embargoed_by = FROM
+				has_country_flag = great_war_loser
 			}
-			FRA = {
-				NOT = { has_capitulated = yes }
-				owns_state = 16 
+			FROM = {
+				has_capitulated = no
 				is_subject = no
-				OR = { 
-					NOT = { has_government = fascism }
-					NOT = { has_government = neutrality }
-				}
+				NOT = { has_government = communism }
 			}
 		}
 
 		target_trigger = {
 			FROM = {
 				tag = FRA
+				owns_state = 16
+				NOT = {
+					has_country_flag = great_war_loser
+				}
 			}
 		}
 
@@ -3825,15 +4007,23 @@ GRE_investment_decisions_category = {
 		fire_only_once = no
 
 		ai_will_do = {
-			factor = 50
+			factor = 5
 			modifier = {
-				factor = 100
-				is_historical_focus_on = yes
+				factor = 2
+				GRE_has_venizelist_government = yes
 			}
 		}
 
 		visible = {
 			has_completed_focus = GRE_open_greece_to_investments
+			NOT = {
+				has_country_flag = GRE_france_rebuffed
+			}
+			any_owned_state = {
+				is_fully_controlled_by = ROOT
+				impassable = no
+				is_core_of = ROOT
+			}
 		}
 
 		complete_effect = {
@@ -3843,6 +4033,20 @@ GRE_investment_decisions_category = {
 		remove_effect = {
 			FRA = {
 				country_event = { id = ww1_greece.73 days = 1 }
+			}
+			custom_effect_tooltip = if_they_accept.tt
+			effect_tooltip = {
+				random_owned_controlled_state = {
+					limit = {
+						ROOT = { has_full_control_of_state = PREV }
+					}
+					add_extra_state_shared_building_slots = 1
+					add_building_construction = {
+						type = industrial_complex
+						level = 1
+						instant_build = yes
+					}
+				}
 			}
 			set_country_flag = GRE_go_to_paris_to_negotiate_investment_talks_AI_flag
 			custom_effect_tooltip = back_in_360_days
@@ -3869,7 +4073,7 @@ GRE_operation_rodi = {
 		}
 		days_remove = 50
 		custom_cost_trigger = {
-			command_power > 24
+			command_power > 24.9
 		}
 		custom_cost_text = decision_cost_CP_25
 		ai_will_do = {
@@ -3932,7 +4136,7 @@ GRE_operation_rodi = {
 		}
 		days_remove = 30
 		custom_cost_trigger = {
-			command_power > 24
+			command_power > 24.9
 		}
 		custom_cost_text = decision_cost_CP_25
 		fire_only_once = yes
@@ -3978,7 +4182,7 @@ GRE_operation_rodi = {
 		}
 		days_remove = 35
 		custom_cost_trigger = {
-			command_power > 24
+			command_power > 24.9
 		}
 		custom_cost_text = decision_cost_CP_25
 		complete_effect = {
@@ -4014,7 +4218,7 @@ GRE_operation_rodi = {
 		# }
 		days_remove = 35
 		custom_cost_trigger = {
-			command_power > 49
+			command_power > 49.9
 		}
 		custom_cost_text = decision_cost_CP_50
 		fire_only_once = yes
@@ -4047,18 +4251,6 @@ GRE_operation_rodi = {
 			NOT = {
 				has_country_flag = rodi_operation_launched
 			}
-			custom_trigger_tooltip = {
-				tooltip = can_start_rodi_operation
-				OR = {
-					is_ai = no
-					AND = {
-						check_variable = {
-							GRE_rodi_preparation > 50
-						}
-					}
-				}
-			}
-			
 		}
 		# visible = {
 		# 	NOT = {
@@ -4070,7 +4262,19 @@ GRE_operation_rodi = {
 		cost = 0
 		fire_only_once = yes
 		ai_will_do = {
-			factor = 10
+			factor = 100
+			modifier = {
+				factor = 0
+				has_game_rule = {
+					rule = GRE_OPERATION_RODI_AI_BEHAVIOR
+					option = NO_INTERVENTION
+				}
+				OR = {
+					check_variable = {
+						GRE_rodi_preparation < 50
+					}
+				}				
+			}
 		}
 		remove_effect = {
 			set_country_flag = rodi_operation_launched
@@ -4193,7 +4397,7 @@ GRE_territorial_allegeance = {
 		days_remove = 15
 		cost = 25
 		ai_will_do = {
-			factor = 800
+			factor = 80
 		}
 		remove_effect = {
 			if = {
@@ -4571,17 +4775,27 @@ GRE_territorial_allegeance = {
 			}
 			hidden_effect = {
 				GRE_create_THE = yes
+				CRE = {
+					GRE_eleftherios_venizelos = {
+						set_nationality = THE
+						promote_character = yes
+					}
+				}	
 				GRE = {
 					clr_country_flag = battle_of_influence
 					clr_country_flag = battle_of_influence_royalist_side
-					GRE_eleftherios_venizelos = {
-						set_nationality = THE
-					}
 					GRE_theodoros_pangalos = {
 						set_nationality = THE
 					}
 					GRE_panagiotis_danglis = {
 						set_nationality = THE
+						add_country_leader_role = {
+							promote_leader = yes
+							country_leader = {
+								ideology = stratocracy
+							}
+						}
+						
 					}
 					GRE_nikolaos_trikoupis = {
 						set_nationality = THE
@@ -4594,6 +4808,12 @@ GRE_territorial_allegeance = {
 					}
 					GRE_pavlos_kountouriotis = {
 						set_nationality = THE
+						add_country_leader_role = {
+							promote_leader = yes
+							country_leader = {
+								ideology = authoritarian_democracy
+							}
+						}
 					}
 					GRE_nikolaos_plastiras = {
 						set_nationality = THE
@@ -4634,34 +4854,28 @@ GRE_territorial_allegeance = {
 						}
 					}
 				}
-				THE = {
-					transfer_state = 345
-					set_capital = {
-						state = 345
-					}					
+				random_state = {
+					limit = {
+						has_state_flag = french_salonika
+					}
+					transfer_state_to = THE
+					THE = {
+						set_capital = {
+							state = PREV
+						}
+					}							
+				}					
+				THE = {				
 					add_political_power = 300
 					add_command_power = 100
 					set_country_flag = GRE_national_defense_flag
 					set_cosmetic_tag = GRE_national_defense
 					complete_national_focus = GRE_form_the_provisional_government_of_national_defence
-					promote_character = GRE_eleftherios_venizelos
-					GRE_pavlos_kountouriotis = {
-						add_country_leader_role = {
-							promote_leader = yes
-							country_leader = {
-								ideology = authoritarian_democracy
-							}
-						}
-					}
-					GRE_panagiotis_danglis = {
-						add_country_leader_role = {
-							promote_leader = yes
-							country_leader = {
-								ideology = stratocracy
-							}
-						}
-					}
-					add_ideas = gre_conscription_plan
+					add_ideas = {
+						gre_conscription_plan
+						GRE_panagiotis_danglis
+						GRE_pavlos_kountouriotis
+					}	
 					if = {
 						limit = {
 							GRE = {
@@ -5238,7 +5452,8 @@ crisis = {
 				has_war_with = FRA
 			}
 			is_subject = no
-			345 = {
+			any_state = {
+				has_state_flag = french_salonika
 				OR = {
 					is_owned_and_controlled_by = GRE
 					is_owned_and_controlled_by = FRA
@@ -5325,7 +5540,12 @@ crisis = {
 				limit = {
 					is_ai = no
 				}
-				divisions_in_state = { state = 345 size < 1 }
+				any_state = {
+					has_state_flag = french_salonika
+					ROOT = {
+						divisions_in_state = { state = PREV size < 1 }
+					}
+				}			
 				divisions_in_state = { state = 731 size < 1 }
 			}
 			else = {
@@ -5350,7 +5570,7 @@ GRE_fund_pontic_rebels = {
             has_country_flag = pontus_rebellion
         }
 		ai_will_do = {
-			factor = 25
+			factor = 2.5
 		}
         days_remove = 30
 		custom_cost_text =decision_cost_ie_500_MP_500_CP_25
@@ -5358,7 +5578,7 @@ GRE_fund_pontic_rebels = {
 			has_equipment = {
 				infantry_equipment > 500
 			}
-			command_power > 25
+			command_power > 24.9
 		}
 		state_target = yes
         target_trigger = {
@@ -5569,14 +5789,13 @@ GRE_minorities_management = {
 GRE_fortifications = {
 	GRE_Fort_Roupel = {
 		icon = GFX_decision_generic_fort
-		cost = 20
 		fire_only_once = yes
 		days_remove = 30
 		allowed = {
 			original_tag = GRE
 		}
 		custom_cost_trigger = {
-			command_power > 25
+			command_power > 24.9
 		}
 		custom_cost_text = decision_cost_CP_25
 		available = {
@@ -5611,14 +5830,13 @@ GRE_fortifications = {
 	}
 	GRE_Fort_Dova_Tepe = {
 		icon = GFX_decision_generic_fort
-		cost = 20
 		fire_only_once = yes
 		days_remove = 30
 		allowed = {
 			original_tag = GRE
 		}
 		custom_cost_trigger = {
-			command_power > 25
+			command_power > 24.9
 		}
 		custom_cost_text = decision_cost_CP_25
 		available = {
@@ -5653,14 +5871,13 @@ GRE_fortifications = {
 	}
 	GRE_Fort_Lisse = {
 		icon = GFX_decision_generic_fort
-		cost = 20
 		fire_only_once = yes
 		days_remove = 30
 		allowed = {
 			original_tag = GRE
 		}
 		custom_cost_trigger = {
-			command_power > 25
+			command_power > 24.9
 		}
 		custom_cost_text = decision_cost_CP_25
 		available = {
@@ -5695,14 +5912,13 @@ GRE_fortifications = {
 	}
 	GRE_Fort_Faia_Petra  = {
 		icon = GFX_decision_generic_fort
-		cost = 20
 		fire_only_once = yes
 		days_remove = 30
 		allowed = {
 			original_tag = GRE
 		}
 		custom_cost_trigger = {
-			command_power > 25
+			command_power > 24.9
 		}
 		custom_cost_text = decision_cost_CP_25
 		available = {
@@ -5737,14 +5953,13 @@ GRE_fortifications = {
 	}
 	GRE_Fort_Perithori  = {
 		icon = GFX_decision_generic_fort
-		cost = 20
 		fire_only_once = yes
 		days_remove = 30
 		allowed = {
 			original_tag = GRE
 		}
 		custom_cost_trigger = {
-			command_power > 25
+			command_power > 24.9
 		}
 		custom_cost_text = decision_cost_CP_25
 		available = {
@@ -5779,14 +5994,13 @@ GRE_fortifications = {
 	}
 	GRE_Fort_Touloubar = {
 		icon = GFX_decision_generic_fort
-		cost = 20
 		fire_only_once = yes
 		days_remove = 30
 		allowed = {
 			original_tag = GRE
 		}
 		custom_cost_trigger = {
-			command_power > 25
+			command_power > 24.9
 		}
 		custom_cost_text = decision_cost_CP_25
 		available = {
@@ -5821,14 +6035,13 @@ GRE_fortifications = {
 	}
 	GRE_Fort_Kavala = {
 		icon = GFX_decision_generic_fort
-		cost = 20
 		fire_only_once = yes
 		days_remove = 30
 		allowed = {
 			original_tag = GRE
 		}
 		custom_cost_trigger = {
-			command_power > 25
+			command_power > 24.9
 		}
 		custom_cost_text = decision_cost_CP_25
 		available = {
@@ -5863,14 +6076,14 @@ GRE_fortifications = {
 	}
 	GRE_Fort_Karabournou = {
 		icon = GFX_decision_generic_fort
-		cost = 20
+
 		fire_only_once = yes
 		days_remove = 30
 		allowed = {
 			original_tag = GRE
 		}
 		custom_cost_trigger = {
-			command_power > 25
+			command_power > 24.9
 		}
 		custom_cost_text = decision_cost_CP_25
 		available = {

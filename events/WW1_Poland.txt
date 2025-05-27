@@ -55,8 +55,11 @@ country_event = {
 		exists = yes
 		is_subject = no
 		has_war = no
+		OR = {
+			country_exists = GAL
+			owns_state = 88
+		}
 		GAL = {
-			exists = yes
 			OR = {
 				is_subject = no
 				is_subject_of = PREV
@@ -71,6 +74,7 @@ country_event = {
 	hidden = yes
 
 	immediate = {
+		set_global_flag = GAL_POL_united
 		POL = {
 			annex_country = {
 				target = GAL
@@ -96,12 +100,27 @@ country_event = {
 					remove_country_leader_role = {
 						ideology = authoritarian_democracy
 					}
-					remove_country_leader_role = {
-						ideology = agrarianism
-					}
 					set_nationality = POL
 				}
-			}	
+			}
+			if = {
+				limit = {
+					has_character = POL_ignacy_daszynski
+				}
+				POL_ignacy_daszynski = {	
+					set_nationality = POL
+					if = {
+						limit = {
+							POL = {
+								NOT = {
+									has_government = communism
+								}
+							}
+						}
+						promote_character = reformist_socialism
+					}
+				}
+			}
 		}
 	}
 }
@@ -580,6 +599,7 @@ country_event = {
 					}	
 					OR = {
 						is_core_of = UKR
+						is_core_of = WUK
 						is_core_of = MOL
 					}
 					OR = {
@@ -611,6 +631,7 @@ country_event = {
 						}							
 						OR = {
 							is_core_of = UKR
+							is_core_of = WUK
 							is_core_of = MOL
 						}
 						OR = {
@@ -643,16 +664,49 @@ country_event = {
 						is_core_of = GAL
 						NOT = {
 							is_core_of = CZE
+							is_core_of = TRA
 						}					
 						OR = {
 							is_core_of = POL
 							is_core_of = UKR
+							is_core_of = WUK
 						}
 					}
 					transfer_state_to = FROM
 				}			
 			}
 		}
+		if = {
+			limit = {
+				is_subject = no
+				POL = {
+					is_subject = no
+				}
+			}
+			POL = {
+				get_current_government_type = yes
+				ROOT = {
+					set_autonomy = {
+						target = PREV
+						autonomy_state = autonomy_dominion
+						freedom_level = 0.8
+					}
+				}
+				restore_previous_government_type = yes
+			}
+			else_if = {
+				limit = {
+					NOT = {
+						has_subject = POL
+					}
+				}
+				give_guarantee = POL
+				POL = {
+					give_military_access = ROOT
+				}					
+			}
+		}
+		POL = { country_event = ww1_poland.6 }
 	}
 	option = {
 		name = ww1_poland.2.b
@@ -761,24 +815,19 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_poland.9.a #Wittelsbach
-		every_possible_country = {
-			limit = {
-				has_character = GER_lepold_von_bayern
-			}
+		GER = {
 			GER_lepold_von_bayern = {
 				set_character_name = POL_leopold_i
 				set_nationality = ROOT
-			}
-		}
-		POL_leopold_i = {
-			add_country_leader_role = {
-				country_leader = {
-					ideology = semi_constitutional_monarchy
-					traits = { german_agent }
+				add_country_leader_role = {
+					promote_leader = yes
+					country_leader = {
+						ideology = semi_constitutional_monarchy				
+						traits = { german_agent }
+					}
 				}
-			}
-			promote_character = semi_constitutional_monarchy
-		}		
+			}	
+		}	
 		set_party_name = {
 			ideology = neutrality
 			name = BAY_neutrality_party
@@ -790,23 +839,18 @@ country_event = {
 	}
 	option = {
 		name = ww1_poland.9.b #Württemberg
-		every_possible_country = {
-			limit = {
-				has_character = GER_albrecht_von_wurttemberg
-			}
+		GER = {
 			GER_albrecht_von_wurttemberg = {
 				set_character_name = POL_albrecht_i
 				set_nationality = ROOT
-			}
-		}
-		POL_albrecht_i = {
-			add_country_leader_role = {
-				country_leader = {
-					ideology = semi_constitutional_monarchy
-					traits = { german_agent }
+				add_country_leader_role = {
+					promote_leader = yes
+					country_leader = {
+						ideology = semi_constitutional_monarchy
+						traits = { german_agent }
+					}
 				}
-			}
-			promote_character = semi_constitutional_monarchy
+			}	
 		}		
 		set_party_name = {
 			ideology = neutrality
@@ -821,12 +865,12 @@ country_event = {
 		name = ww1_poland.9.c #	Wettin
 		POL_fryderyk_krystian_i = {
 			add_country_leader_role = {
+				promote_leader = yes
 				country_leader = {
-					ideology = semi_constitutional_monarchy
+					ideology = semi_constitutional_monarchy				
 					traits = { german_agent }
 				}
 			}
-			promote_character = semi_constitutional_monarchy
 		}
 		set_party_name = {
 			ideology = neutrality
@@ -841,12 +885,12 @@ country_event = {
 		name = ww1_poland.9.d #Hohenzollern
 		POL_august_iv = {
 			add_country_leader_role = {
+				promote_leader = yes
 				country_leader = {
 					ideology = semi_constitutional_monarchy
 					traits = { auwi german_agent }
 				}
 			}
-			promote_character = semi_constitutional_monarchy
 		}
 		set_party_name = {
 			ideology = neutrality
@@ -1477,7 +1521,7 @@ country_event = {
 	trigger = {
 		original_tag = POL
 		has_country_leader = {
-			character = POL_karol_stefan_i
+			character = AUH_karl_stephan
 			ruling_only = no
 		}
 		date > 1933.4.1
@@ -1488,20 +1532,25 @@ country_event = {
 	fire_only_once = yes
 	option = {
 		name = ww1_poland.21.a
-		hidden_effect = {
-			retire_character = AUH_Karl_Stephan
-		}
-		retire_character = POL_karol_stefan_i
+		retire_character = AUH_karl_stephan
 		POL_karol_olbracht = {
 			set_character_name = POL_karol_olbracht_i
 			promote_leader = yes
-			add_country_leader_role = {
-				country_leader = {
-					ideology = semi_constitutional_monarchy
-					traits = { patriot_king POL_soldier_king }
+			if = {
+				limit = {
+					has_ideology = semi_constitutional_monarchy
 				}
-			}
-			promote_character = semi_constitutional_monarchy
+				promote_character = semi_constitutional_monarchy
+				else = {
+					add_country_leader_role = {
+						promote_leader = yes
+						country_leader = {
+							ideology = semi_constitutional_monarchy
+							traits = { patriot_king POL_soldier_king }
+						}
+					}
+				}	
+			}	
 		}
 	}
 }
