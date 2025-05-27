@@ -1,3 +1,115 @@
+GER_great_war = {
+	MOR_pacify_countryside = {
+		allowed = {
+			original_tag = MOR
+		}
+		icon = GFX_decision_generic_prepare_civil_war
+		available = {
+			has_war = no
+
+		}
+		visible = {
+			has_country_flag = MOR_pacify_countryside
+			NOT = {
+				has_country_flag = MOR_start_war_with_hostile_caids
+			}
+		}
+		ai_will_do = {
+			factor = 50
+			modifier = {
+				NOT = {
+					AND = {
+						has_completed_focus = MOR_call_izayan_troops 
+						has_completed_focus = MOR_casablanca_levees
+						has_completed_focus = MOR_high_sous_arbitrage
+					}
+				}
+				factor = 0
+			}
+		}
+		days_remove = 7
+		remove_effect = {
+			MOR_start_war_with_hostile_caids = yes
+		}
+	}
+	casablanca_crisis_mission = {
+		icon = GFX_decision_generic_ignite_civil_war
+		
+		allowed = {
+			always= yes
+		}
+		
+		available = {
+			MOR = {
+				OR = {
+					owns_state = 462
+					is_subject_of = FRA
+				}
+			}
+		}
+
+		visible = {
+			
+		}
+		
+		activation = {
+			has_global_flag = MOR_crisis_mission
+			OR = {
+				is_in_array = {
+					array = global.defense_member
+					value = ROOT
+				}
+				is_in_array = {
+					array = global.neutral_member
+					value = ROOT
+				}
+				is_in_array = {
+					array = global.war_member
+					value = ROOT
+				}
+			}
+		}
+
+		fire_only_once = no		
+
+		is_good = no
+		days_mission_timeout = 55
+
+		ai_will_do = {
+			factor = 0
+		}
+
+		timeout_effect = {
+			hidden_effect = {
+				delete_crisis = yes
+			}
+			clr_global_flag = MOR_crisis_mission
+			if = {
+				limit = {
+					tag = MOR
+				}
+				FRA = {
+					country_event = {
+						id = ww1_morocco.74
+						days = 1
+					}
+				}
+				else = {
+					effect_tooltip = {
+						FRA = {
+							country_event = {
+								id = ww1_morocco.74
+								days = 1
+							}
+						}
+					}
+				}
+			}
+		}		
+
+	}
+}
+
 crisis = {
 	MOR_surrender_to_FRA = {
 		allowed = {
@@ -10,6 +122,8 @@ crisis = {
 		}
 		visible = {
 			has_war_with = FRA
+			tag = MOR #rebels tribes cant negociate
+			is_in_faction = no
 		}
 		ai_will_do = {
 			factor = 100
@@ -34,10 +148,11 @@ crisis = {
 		available = {
 			has_war = yes
 			controls_state = 461
-			has_template = "Partisans"
+			has_template = "Harka"
 		}
 		visible = {
 			has_war = yes
+			is_puppet = no
 			NOT = {
 				has_country_flag = MOR_raise_militias_fes
 			}
@@ -51,7 +166,7 @@ crisis = {
 			set_country_flag = MOR_raise_militias_fes
 			461 = {
 				create_unit = {
-					division = "name = \"Fez Partisans\" division_template = \"Partisans\" start_experience_factor = 0 start_equipment_factor = 0.1"
+					division = "name = \"Fez Harka\" division_template = \"Harka\" start_experience_factor = 0 start_equipment_factor = 0.1"
 					owner = ROOT
 					count = 4
 				}
@@ -67,10 +182,11 @@ crisis = {
 		available = {
 			has_war = yes
 			controls_state = 462
-			has_template = "Partisans"
+			has_template = "Harka"
 		}
 		visible = {
 			has_war = yes
+			is_puppet = no
 			NOT = {
 				has_country_flag = MOR_raise_militias_casablanca
 			}
@@ -84,7 +200,7 @@ crisis = {
 			set_country_flag = MOR_raise_militias_casablanca
 			462 = {
 				create_unit = {
-					division = "name = \"Fez Partisans\" division_template = \"Partisans\" start_experience_factor = 0 start_equipment_factor = 0.1"
+					division = "name = \"Casablanca Harka\" division_template = \"Harka\" start_experience_factor = 0 start_equipment_factor = 0.1"
 					owner = ROOT
 					count = 6
 				}
@@ -100,10 +216,11 @@ crisis = {
 		available = {
 			has_war = yes
 			controls_state = 290
-			has_template = "Partisans"
+			has_template = "Harka"
 		}
 		visible = {
 			has_war = yes
+			is_puppet = no
 			NOT = {
 				has_country_flag = MOR_raise_militias_rif
 			}
@@ -117,7 +234,7 @@ crisis = {
 			set_country_flag = MOR_raise_militias_rif
 			290 = {
 				create_unit = {
-					division = "name = \"Fez Partisans\" division_template = \"Partisans\" start_experience_factor = 0 start_equipment_factor = 0.1"
+					division = "name = \"Rif Harka\" division_template = \"Harka\" start_experience_factor = 0 start_equipment_factor = 0.1"
 					owner = ROOT
 					count = 2
 				}
@@ -169,6 +286,420 @@ crisis = {
 					days = 2
 				}
 			}
+		}
+	}
+}
+
+MOR_navy_decisions = {
+	MOR_purchase_Admiral_class = {
+		icon = generic_naval
+		allowed = {
+			tag = MOR
+		}
+		target_trigger = {
+			FROM = {
+				tag = ENG
+			}
+		}
+		cancel_trigger = {
+			has_war_with = ENG
+			
+		}
+		available = {
+			any_owned_state = {
+				is_coastal = yes
+			}
+			NOT = {
+				has_war_with = FROM
+			}
+		}
+		cost = 150
+		fire_only_once = yes
+		days_remove = 30
+		visible = {
+			ENG = {
+				exists = yes
+			}
+			has_country_flag = MOR_buy_warships
+			NOT = {
+				has_country_flag = MOR_purchase_Admiral_class
+			}
+		}
+		complete_effect = {
+			set_country_flag = {
+				flag = has_active_purchase_contract
+				days = 2
+				value = 1
+			}
+		}
+		remove_effect = {
+			set_country_flag = MOR_purchase_Admiral_class
+			hidden_effect = {
+				create_equipment_variant = {
+					name = "Admiral Class"
+					type = ship_hull_pre_dreadnought
+					name_group = ENG_BB_HISTORICAL
+					parent_version = 0
+					modules = {
+						fixed_ship_battery_slot = ship_heavy_battery_1
+						fixed_ship_anti_air_slot = empty
+						fixed_ship_fire_control_system_slot = ship_fire_control_system_0
+						fixed_ship_radar_slot = empty
+						fixed_ship_engine_slot = heavy_ship_engine_1
+						fixed_ship_secondaries_slot = ship_secondaries_1
+						fixed_ship_armor_slot = ship_armor_bb_1
+						front_1_custom_slot = empty
+						mid_1_custom_slot = empty
+						rear_1_custom_slot = empty
+					}
+					obsolete = yes
+				}
+			}
+			create_ship = {
+				type = ship_hull_heavy_1
+				equipment_variant = "Admiral Class"
+				creator = ENG
+				name = "HMS Collingwood"
+			}
+			create_ship = {
+				type = ship_hull_heavy_1
+				equipment_variant = "Admiral Class"
+				creator = ENG
+				name = "HMS Anson"
+			}
+			add_timed_idea = {
+				idea = MOR_ship_purchase
+				days = 120
+			}
+			ENG = {
+				add_timed_idea = {
+					idea = MOR_ship_sale
+					days = 120
+				}
+			}
+		}
+		ai_will_do = {
+			factor = 100
+		    }
+	}
+	MOR_purchase_blake_class = {
+		icon = generic_naval
+		allowed = {
+			tag = MOR
+		}
+		target_trigger = {
+			FROM = {
+				tag = ENG
+			}
+		}
+		cancel_trigger = {
+			has_war_with = ENG
+			
+		}
+		available = {
+			any_owned_state = {
+				is_coastal = yes
+			}
+			NOT = {
+				has_war_with = FROM
+			}
+		}
+		cost = 100
+		fire_only_once = yes
+		days_remove = 30
+		visible = {
+			ENG = {
+				exists = yes
+			}
+			has_country_flag = MOR_buy_warships
+			NOT = {
+				has_country_flag = MOR_purchase_blake_class
+			}
+		}
+		complete_effect = {
+			set_country_flag = {
+				flag = has_active_purchase_contract
+				days = 2
+				value = 1
+			}
+		}
+		remove_effect = {
+			set_country_flag = MOR_purchase_blake_class
+			create_ship = {
+				type = ship_hull_cruiser_1
+				equipment_variant = "Blake Class"
+				creator = ENG
+				name = "HMS Blake"
+			}
+			create_ship = {
+				type = ship_hull_cruiser_1
+				equipment_variant = "Blake Class"
+				creator = ENG
+				name = "HMS Blenheim"
+			}
+			add_timed_idea = {
+				idea = MOR_ship_purchase
+				days = 60
+			}
+			ENG = {
+				add_timed_idea = {
+					idea = MOR_ship_sale
+					days = 60
+				}
+				destroy_ships = {
+					type = ship_hull_cruiser
+					count = 2
+				}
+				country_event = {
+					id = ww1_morocco.82
+					days = 2
+				}
+			}
+			
+		}
+		ai_will_do = {
+			factor = 100
+		}
+	}
+
+	MOR_purchase_gazelle_class = {
+		icon = generic_naval
+		allowed = {
+			tag = MOR
+		}
+		target_trigger = {
+			FROM = {
+				tag = GER
+			}
+		}
+		cancel_trigger = {
+			has_war_with = GER
+			
+		}
+		available = {
+			any_owned_state = {
+				is_coastal = yes
+			}
+			NOT = {
+				has_war_with = FROM
+			}
+		}
+		cost = 100
+		fire_only_once = yes
+		days_remove = 30
+		visible = {
+			GER = {
+				exists = yes
+			}
+			has_country_flag = MOR_buy_warships
+			NOT = {
+				has_country_flag = MOR_purchase_gazelle_class
+			}
+		}
+		complete_effect = {
+			set_country_flag = {
+				flag = has_active_purchase_contract
+				days = 2
+				value = 1
+			}
+			set_country_flag = MOR_purchase_arquebuse_class
+		}
+		remove_effect = {
+			set_country_flag = MOR_purchase_gazelle_class
+			create_ship = {
+				type = ship_hull_cruiser_1
+				equipment_variant = "Gazelle Class"
+				creator = GER
+				name = "SMS Gazelle"
+			}
+			create_ship = {
+				type = ship_hull_cruiser_1
+				equipment_variant = "Gazelle Class"
+				creator = GER
+				name = "HMS Niobe"
+			}
+			add_timed_idea = {
+				idea = MOR_ship_purchase
+				days = 60
+			}
+			GER = {
+				add_timed_idea = {
+					idea = MOR_ship_sale
+					days = 60
+				}
+				destroy_ships = {
+					type = ship_hull_cruiser
+					count = 2
+				}
+				country_event = {
+					id = ww1_morocco.82
+					days = 2
+				}
+			}
+			
+		}
+		ai_will_do = {
+			factor = 100
+		}
+	}
+
+	MOR_purchase_gueydon_class = {
+		icon = generic_naval
+		allowed = {
+			tag = MOR
+		}
+		target_trigger = {
+			FROM = {
+				tag = FRA
+			}
+		}
+		cancel_trigger = {
+			has_war_with = FRA
+			
+		}
+		available = {
+			any_owned_state = {
+				is_coastal = yes
+			}
+			NOT = {
+				has_war_with = FROM
+			}
+		}
+		cost = 100
+		fire_only_once = yes
+		days_remove = 30
+		visible = {
+			FRA = {
+				exists = yes
+			}
+			has_country_flag = MOR_buy_warships
+			NOT = {
+				has_country_flag = MOR_purchase_gueydon_class
+			}
+		}
+		complete_effect = {
+			set_country_flag = {
+				flag = has_active_purchase_contract
+				days = 2
+				value = 1
+			}
+		}
+		remove_effect = {
+			set_country_flag = MOR_purchase_gueydon_class
+			create_ship = {
+				type = ship_hull_cruiser_1
+				equipment_variant = "Gueydon Class"
+				creator = FRA
+				name = "Montcalm"
+			}
+			create_ship = {
+				type = ship_hull_cruiser_1
+				equipment_variant = "Gueydon Class"
+				creator = FRA
+				name = "Dupetit-Thouars"
+			}
+			add_timed_idea = {
+				idea = MOR_ship_purchase
+				days = 60
+			}
+			FRA = {
+				add_timed_idea = {
+					idea = MOR_ship_sale
+					days = 60
+				}
+				destroy_ships = {
+					type = ship_hull_cruiser
+					count = 2
+				}
+				country_event = {
+					id = ww1_morocco.82
+					days = 2
+				}
+			}
+			
+		}
+		ai_will_do = {
+			factor = 100
+		}
+	}
+
+	MOR_purchase_arquebuse_class = {
+		icon = generic_naval
+		allowed = {
+			tag = MOR
+		}
+		target_trigger = {
+			FROM = {
+				tag = FRA
+			}
+		}
+		cancel_trigger = {
+			has_war_with = FRA
+			
+		}
+		available = {
+			any_owned_state = {
+				is_coastal = yes
+			}
+			NOT = {
+				has_war_with = FROM
+			}
+		}
+		cost = 100
+		fire_only_once = yes
+		days_remove = 30
+		visible = {
+			FRA = {
+				exists = yes
+			}
+			has_country_flag = MOR_buy_warships
+			NOT = {
+				has_country_flag = MOR_purchase_arquebuse_class
+			}
+		}
+		complete_effect = {
+			set_country_flag = {
+				flag = has_active_purchase_contract
+				days = 2
+				value = 1
+			}
+		}
+		remove_effect = {
+			set_country_flag = MOR_purchase_arquebuse_class
+			create_ship = {
+				type = ship_hull_light_2
+				equipment_variant = "Arquebuse Class"
+				creator = FRA
+				name = "Mousquet"
+			}
+			create_ship = {
+				type = ship_hull_light_2
+				equipment_variant = "Arquebuse Class"
+				creator = FRA
+				name = "Épieu"
+			}
+			add_timed_idea = {
+				idea = MOR_ship_purchase
+				days = 60
+			}
+			FRA = {
+				add_timed_idea = {
+					idea = MOR_ship_sale
+					days = 60
+				}
+				destroy_ships = {
+					type = ship_hull_cruiser
+					count = 2
+				}
+				country_event = {
+					id = ww1_morocco.82
+					days = 2
+				}
+			}
+			
+		}
+		ai_will_do = {
+			factor = 100
 		}
 	}
 }

@@ -9,6 +9,58 @@ focus_tree = {
 	}
 	default = no
 	initial_show_position = { focus = ENG_Engage_Continental }
+
+	#Focus Path shortcuts	
+	shortcut = {
+		#name = ENG_balfours_folly_shortcut
+		name = ENG_balfours_folly
+		target = ENG_balfours_folly 
+		scroll_wheel_factor = 1.0
+	}
+
+	shortcut = {
+		#name = ENG_engage_continental_shortcut
+		name = ENG_Engage_Continental
+		target = ENG_Engage_Continental 
+		scroll_wheel_factor = 0.63
+	}
+
+	shortcut = {
+		#name = ENG_pax_britannica_shortcut
+		name = ENG_Pax_Britannica
+		target = ENG_Pax_Britannica 
+		scroll_wheel_factor = 0.68
+	}
+	
+	shortcut = {
+		#name = ENG_legacy_of_industrial_revolution_shortcut
+		name = economic_tree_shortcut
+		target = ENG_Legacy_Of_Industrial_Revolution 
+		scroll_wheel_factor = 0.9
+	}
+
+	shortcut = {
+		#name = ENG_imperial_general_staff_shortcut
+		name = army_tree_shortcut
+		target = ENG_imperial_general_staff 
+		scroll_wheel_factor = 0.9
+	}
+
+	shortcut = {
+		#name = ENG_naval_focus_shortcut
+		name = navy_tree_shortcut
+		target = ENG_naval_focus 
+		scroll_wheel_factor = 0.9
+	}
+
+	shortcut = {
+		#name = ENG_free_saf_shortcut
+		name = colonial_tree_shortcut
+		target = ENG_free_saf 
+		scroll_wheel_factor = 1
+	}
+
+
 	focus = {
 		id = ENG_Pax_Britannica
 		icon = GFX_focus_ENG_Pax_Britannica
@@ -260,24 +312,127 @@ focus_tree = {
 	focus = {
 		id = ENG_free_saf
 		icon = GFX_focus_union_south_africa
-		cost = 5
+		cost = 4.4
 		x = 3
 		y = 0
 		available = {
-			has_subject = SAF
-			has_full_control_of_state = 275
-			has_full_control_of_state = 719
+			has_war = no
+			OR = {
+				has_subject = SAF
+				NOT = {
+					country_exists = SAF
+				}	
+			}	
+			681 = {
+				is_owned_or_subject_trigger = yes
+			}
+			275 = {
+				is_owned_or_subject_trigger = yes
+			}
+			719 = {
+				is_owned_or_subject_trigger = yes
+			}		
+			1049 = {
+				is_owned_or_subject_trigger = yes
+			}
 		}
 		bypass = {
 			SAF = {
 				is_subject = no
+				exists = yes
 			}
 		}
 		completion_reward = {
-			SAF = {
-				transfer_state = 275
-				transfer_state = 719
-			}
+			hidden_effect = {
+				every_subject_country = {
+					limit = {
+						OR = {
+							original_tag = ORA
+							original_tag = NAT
+							original_tag = CAP
+						}				
+					}
+					if = {
+						limit = {
+							original_tag = ORA
+						}
+						every_character = {
+							limit = {
+								OR = {
+									is_character = SAF_abraham_fischer
+									is_character = SAF_j_b_m_hertzog
+									is_character = SAF_christiaan_de_wet
+								}
+							}
+							set_nationality = SAF
+						}
+					}
+					else_if = {
+						limit = {
+							original_tag = CAP
+						}
+						every_character = {
+							limit = {
+								OR = {
+									is_character = SAF_henry_lukin
+									is_character = SAF_daniel_malan
+									is_character = SAF_andries_brink
+									is_character = SAF_christoffel_venter
+								}
+							}
+							set_nationality = SAF
+						}
+					}
+					else_if = {
+						limit = {
+							has_character = ENG_paul_methuen
+						}
+						set_nationality = {
+							target_country = ROOT
+							character = ENG_paul_methuen
+						}
+					}
+					SAF = {
+						annex_country = {
+							target = PREV
+							transfer_troops = yes
+						}
+					}
+					if = {
+						limit = { 
+							NOT = {
+								has_cosmetic_tag = CAP_ENG
+							}
+						}
+						drop_cosmetic_tag = yes			
+					}
+					if = {
+						limit = { 
+							is_ai = no 
+							SAF = { is_ai = yes }
+						}
+						SAF = {
+							change_tag_from = PREV
+						}				
+					}
+				}
+			}		
+			every_state = {
+				limit = {		
+					OR = {
+						state = 681
+						state = 789
+						state = 275
+						state = 719
+						state = 1049
+						state = 1050
+						state = 541
+					}
+					is_owned_or_subject_trigger = yes
+				}		
+				add_core_of = SAF
+				transfer_state_to = SAF
+			}			
 			ENG = {
 				set_autonomy = {
 					target = SAF
@@ -285,7 +440,23 @@ focus_tree = {
 					freedom_level = 0.55
 				}
 			}
+			SAF = {
+				set_country_flag = SAF_ENG
+				set_cosmetic_tag = SAF_ENG
+			}
 			hidden_effect = {
+				SAF = {
+					promote_character = SAF_herbert_gladstone
+				}
+				every_state = {
+					limit = {				
+						OR = {
+							state = 1047
+							state = 1048
+						}
+					}
+					add_claim_by = SAF
+				}
 				if = {
 					limit = { has_government = democratic }
 					SAF = {
@@ -294,6 +465,14 @@ focus_tree = {
 							fascism = 10
 							communism = 2
 							neutrality = 26
+						}
+						set_politics = {
+							ruling_party = democratic
+							last_election = "1905.9.15"
+							name = SAF_union_party
+							long_name = SAF_union_party_long
+							election_frequency = 60
+							elections_allowed = yes
 						}
 					}
 				}
@@ -363,12 +542,32 @@ focus_tree = {
 				is_subject_of = ENG
 			}
 		}
+		bypass = {
+			NOT = {
+				any_owned_state = {
+					OR = {
+						state =  542
+						state = 1047
+						state = 1048
+					}
+				}
+			}
+		}
 		completion_reward = {
 			army_experience = 10
 			navy_experience = 10
 			air_experience = 10
+			every_owned_state = {
+				limit = {
+					OR = {
+						state =  542
+						state = 1047
+						state = 1048
+					}
+				}
+				transfer_state_to = SAF
+			}
 			SAF = {
-				transfer_state = 542
 				add_ideas = ENG_trusted_with_government
 				hidden_effect = {
 					add_equipment_to_stockpile = {
@@ -414,12 +613,6 @@ focus_tree = {
 				}
 			}
 			hidden_effect = {
-				if = {
-					limit = {
-						is_ai = no
-					}
-					play_song = "its_a_long_way_to_mukumbura"
-				}
 				country_event = {
 					id = ww1_england.96
 					days = 5
@@ -442,6 +635,8 @@ focus_tree = {
 						communism = 0
 						neutrality = 65
 					}
+					add_ideas = SAF_segregation
+					add_to_tech_sharing_group = commonwealth_research
 				}
 			}
 			hidden_effect = {
@@ -640,17 +835,11 @@ focus_tree = {
 		x = 1
 		y = 4
 		available = {
-			OR = {
-				SAF = {
-					has_full_control_of_state = 681
-				}
-				has_full_control_of_state = 681
+			681 = {
+				is_controlled_by_ROOT_or_subject = yes
 			}
-			OR = {
-				SAF = {
-					has_full_control_of_state = 542
-				}
-				has_full_control_of_state = 542
+			542 = {
+				is_controlled_by_ROOT_or_subject = yes
 			}
 		}
 		completion_reward = {
@@ -721,6 +910,7 @@ focus_tree = {
 						state = 700
 						state = 274
 						state = 558
+						state = 1147
 					}
 				}
 				add_building_construction = {
@@ -745,19 +935,11 @@ focus_tree = {
 		x = 2
 		y = 5
 		available = {
-			OR = {
-				EGY = {
-					has_full_control_of_state = 446
-					is_subject_of = ENG
-				}
-				has_full_control_of_state = 446
+			446 = {
+				is_controlled_by_ROOT_or_subject = yes
 			}
-			OR = {
-				EGY = {
-					has_full_control_of_state = 447
-					is_subject_of = ENG
-				}
-				has_full_control_of_state = 447
+			447 = {
+				is_controlled_by_ROOT_or_subject = yes
 			}
 		}
 		completion_reward = {
@@ -1537,7 +1719,7 @@ focus_tree = {
 						turret_type_slot = tank_heavy_fixed_superstructure_turret
 						suspension_type_slot = tank_bogie_suspension
 						armor_type_slot = tank_riveted_armor
-						engine_type_slot = tank_gasoline_engine
+						engine_type_slot = early_tank_gasoline_engine
 						special_type_slot_1 = additional_machine_guns
 						special_type_slot_2 = additional_machine_guns
 					}
@@ -2116,20 +2298,10 @@ focus = {
 		y = 3
 		available = {
 			468 = {
-				CONTROLLER = {
-					OR = {
-						tag = ENG
-						is_subject_of = ENG
-					}
-				}
+				is_controlled_by_ROOT_or_subject = yes
 			}
 			276 = {
-				CONTROLLER = {
-					OR = {
-						tag = ENG
-						is_subject_of = ENG
-					}
-				}
+				is_controlled_by_ROOT_or_subject = yes
 			}
 		}
 		completion_reward = {
@@ -2163,6 +2335,31 @@ focus = {
 						}
 					}
 				}
+			}
+			if = {
+				limit = {
+					331 = {
+						is_controlled_by_ROOT_or_subject = yes
+					}
+				}
+				331 = {
+					add_extra_state_shared_building_slots = 1
+					if = {
+						limit = {
+							CONTROLLER = {
+								NOT = {
+									tag = ENG
+								}
+							}
+						}
+						CONTROLLER = {
+							add_autonomy_ratio = {
+								value = -0.02
+								localization = ENG_invest_CAN
+							}
+						}
+					}
+				}			
 			}
 		}
 	}
@@ -2246,17 +2443,28 @@ focus = {
 		y = 4
 		bypass = {
 			NOT = {
-				SAF = {
-					is_subject_of = ROOT
+				any_subject_country = {
+					is_south_african_tag = yes
+					has_government = democratic
+					has_idea = SAF_segregation
 				}
 			}
 		}
 		completion_reward = {
-			SAF = {
-				add_stability = 0.15
+			every_subject_country = {
+				limit = {
+					is_south_african_tag = yes
+					has_government = democratic
+					has_idea = SAF_segregation
+				}
+				add_stability = -0.2
 				add_popularity = {
 					ideology = fascism
 					popularity = 0.2
+				}
+				swap_ideas = {
+					remove_idea = SAF_segregation
+					add_idea = SAF_cape_qualified_franchise
 				}
 			}
 		}
@@ -2390,6 +2598,7 @@ focus = {
 		x = 24
 		y = 6
 		available = {
+			has_government = democratic
 			CAN = {
 				OR = {
 					is_subject_of = ROOT
@@ -2414,7 +2623,7 @@ focus = {
 					exists = no
 				}
 			}
-			MAL = {
+			NFL = {
 				OR = {
 					is_subject_of = ROOT
 					exists = no
@@ -2441,26 +2650,9 @@ focus = {
 				}
 				set_cosmetic_tag = ENG_imperial_federation_unified
 			}
-			every_country = {
+			every_subject_country = {
 				limit = {
-					is_subject_of = ROOT
-					NOT = {
-						tag = RAJ
-						tag = AFG
-						tag = NEP
-						tag = BHU
-						tag = EGY
-						tag = KEN
-						tag = ZIM
-						tag = SAF
-						tag = TUR
-						has_country_flag = protectorate
-						has_autonomy_state = autonomy_tgwr_integrated_protectorate
-						has_autonomy_state = autonomy_tgwr_protectorate
-						has_autonomy_state = autonomy_tgwr_informal_protectorate
-						has_autonomy_state = autonomy_collaboration_government
-						has_autonomy_state = autonomy_tgwr_concession
-					}
+					is_south_african_tag = yes
 				}
 				country_event = ww1_england.31
 			}
@@ -2833,36 +3025,35 @@ focus = {
 			democratic < 0.5
 		}
 		completion_reward = {
-			126 = {
-				set_demilitarized_zone = yes
-			}
-			113 = {
-				set_demilitarized_zone = yes
-			}
-			135 = {
-				set_demilitarized_zone = yes
-			}
-			134 = {
-				set_demilitarized_zone = yes
-			}
-			122 = {
-				set_demilitarized_zone = yes
-			}
-			ENG_london_commune = {
-				add_country_leader_role = {
-					promote_leader = yes
-					country_leader = {
-						ideology = social_democracy
-						traits = { eng_archaic_rule }
-					}
+			retire_character = ENG_george_v
+			every_owned_state = {
+				limit = {
+					OR = {
+						state = 126
+						state = 113
+						state = 135
+						state = 134
+						state = 122
+					}				
 				}
+				set_demilitarized_zone = yes
+			}	
+			add_country_leader_role = {
+				character = ENG_london_commune
+				promote_leader = yes
+				country_leader = {
+					ideology = anarchism
+					traits = { eng_archaic_rule }
+				}
+			}
+			set_politics = {
+				ruling_party = communism
+				long_name = ENG_london_commune_party_long
+				name = ENG_london_commune_party
+				elections_allowed = no
 			}
 			hidden_effect = {
-				set_party_name = {
-					ideology = democratic
-					long_name = ENG_london_commune_party_long
-					name = ENG_london_commune_party
-				}
+				add_ideas = standing_alone
 				ENG_edward_viii = {
 					add_country_leader_role = {
 						promote_leader = yes
@@ -2894,19 +3085,15 @@ focus = {
 		x = 35
 		y = 3
 		completion_reward = {
-			126 = {
-				set_demilitarized_zone = no
-			}
-			113 = {
-				set_demilitarized_zone = no
-			}
-			135 = {
-				set_demilitarized_zone = no
-			}
-			134 = {
-				set_demilitarized_zone = no
-			}
-			122 = {
+			retire_character = ENG_london_commune
+			every_owned_state = {
+				limit = {
+					state = 126
+					state = 113
+					state = 135
+					state = 134
+					state = 122
+				}
 				set_demilitarized_zone = no
 			}
 			set_politics = {
@@ -2918,6 +3105,7 @@ focus = {
 				remove_idea = pax_britannica
 			}
 			hidden_effect = {
+				remove_ideas = standing_alone
 				set_party_name = {
 					ideology = democratic
 					long_name = ENG_churchill_pax_britannica
@@ -2925,6 +3113,12 @@ focus = {
 				}
 				ENG_winston_churchill = {
 					promote_character = liberal_conservatism
+				}
+				promote_character = ENG_edward_reynolds_pease
+				set_party_name = {
+					ideology = communism
+					long_name = ENG_fabian_party
+					name = ENG_fabian_party
 				}
 				news_event = {
 					id = eng_news.12
@@ -2976,7 +3170,7 @@ focus = {
 				add_country_leader_role = {
 					promote_leader = yes
 					country_leader = {
-						ideology = rexism
+						ideology = fundamentalism
 						traits = { revolution_trauma }
 					}
 				}
@@ -3060,50 +3254,44 @@ focus = {
 			}
 		}
 		completion_reward = {
-			ENG_charles_edward = {
-				set_character_name = ENG_charles_iii
-				add_country_leader_role = {				
-					promote_leader = yes
-					country_leader = {
-						ideology = rexism
-						traits = {
-							autocratic_imperialist
-							german_agent
+			GER = {
+				GER_carl_eduard_von_sachsen_coburg_und_gotha = {
+					set_nationality = ROOT
+					set_character_name = ENG_charles_iii
+					add_country_leader_role = {				
+						promote_leader = yes
+						country_leader = {
+							ideology = fundamentalism
+							traits = {
+								autocratic_imperialist
+								german_agent
+							}
 						}
-					}
-				}				
-			}
-			hidden_effect = {
-				add_country_leader_role = {
-					character = ENG_charles_edward
-					promote_leader = yes
-					country_leader = {
-						ideology = semi_constitutional_monarchy
-						traits = {
-							autocratic_imperialist
-							german_agent
+					}	
+					hidden_effect = {
+						add_country_leader_role = {
+							character = GER_carl_eduard_von_sachsen_coburg_und_gotha
+							promote_leader = yes
+							country_leader = {
+								ideology = semi_constitutional_monarchy
+								traits = {
+									autocratic_imperialist
+									german_agent
+								}
+							}			
+						}
+						if = {
+							limit = {
+								is_field_marshal = no									
+							}
+							promote_leader = yes
 						}
 					}			
 				}
+			}	
+			hidden_effect = {		
 				set_global_flag = king_charles_iii
 				clr_global_flag = king_edward_viii
-				GER = {
-					if = {
-						limit = {
-							has_character = GER_carl_eduard_von_sachsen_coburg_und_gotha
-						}
-						GER_carl_eduard_von_sachsen_coburg_und_gotha = {
-							set_character_name = ENG_charles_iii
-							if = {
-								limit = {
-									is_field_marshal = no									
-								}
-								promote_leader = yes
-							}
-							set_nationality = ENG							
-						}
-					}
-				}
 			}
 		}
 		ai_will_do = {
@@ -3178,7 +3366,7 @@ focus = {
 				character = ENG_herbert_kitchener
 			}
 		}
-		completion_reward = {
+		completion_reward = {			
 			if = {
 				limit = {
 					NOT = {
@@ -3191,9 +3379,9 @@ focus = {
 				if = {
 					limit = {
 						has_ideology = fascism_ideology
-					}
-					add_country_leader_trait = lord_protector
+					}				
 					promote_character = fascism_ideology
+					add_country_leader_trait = lord_protector
 				}
 				else = {
 					add_country_leader_role = {
@@ -3249,9 +3437,12 @@ focus = {
 			add_state_claim = 776
 			add_state_claim = 781
 			add_state_claim = 515
+			add_state_claim = 1147
+			add_state_claim = 1150
 			add_state_claim = 813
 			add_state_claim = 814
 			add_state_claim = 774
+			add_state_claim = 1059
 			add_state_claim = 660
 			add_state_claim = 543
 			add_state_claim = 114
@@ -3273,6 +3464,8 @@ focus = {
 			add_state_claim = 878
 			add_state_claim = 455
 			add_state_claim = 454
+			add_state_claim = 1021
+			add_state_claim = 858
 		}
 	}
 	focus = {
@@ -3576,9 +3769,12 @@ focus = {
 			NZL = {
 				country_event = { id = ww1_england.33 hours = 10} 
 			}
+			NFL = {
+				country_event = { id = ww1_england.33 hours = 13 } 
+			}
 			CAN = {
 				country_event = { id = canada.70 hours = 15 } 
-			}
+			}		
 		}
 	}
 	focus = {
@@ -3812,17 +4008,15 @@ focus = {
 				has_war_with = FRA
 			}
 		}
+		cancel_if_invalid = no
 		select_effect = {
 			if = {
 				limit = {
 					OR = {
-						is_in_faction_with = FRA
-						#ENG is democratic or neutral => France must be democratic or neutral too / democratic + neutral alliance are valid
+						has_war_with = FRA
+						#ENG is democratic => France must be democratic or neutral / democratic + neutral alliance are valid
 						AND = {
-							OR = {
-								has_government = democratic
-								has_government = neutrality
-							}
+							has_government = democratic
 							FRA = {
 								OR = {
 									has_government = fascism
@@ -3835,18 +4029,28 @@ focus = {
 							has_government = communism
 							FRA = {
 								NOT = {
-										has_government = communism
-										has_government = democratic #COMMIE BRITAIN IS MEANT TO BE ABLE TO JOIN HISTORICAL FRANCE NUMBNUTS
+									has_government = communism
+									has_government = democratic #COMMIE BRITAIN IS MEANT TO BE ABLE TO JOIN HISTORICAL FRANCE NUMBNUTS
 								}
 							}
 						}
-						#ENG is fascist => France is fascist too
+						#ENG is fascist => France is fascist or neutral
 						AND = {
 							has_government = fascism
 							NOT = {
 								FRA = {
-									has_government = fascism
+									OR = {
+										has_government = fascism
+										has_government = neutrality
+									}
 								}
+							}
+						}
+						#ENG is neutral => France must be democratic or neutral or fascist
+						AND = {
+							has_government = neutrality
+							FRA = {
+								has_government = communism
 							}
 						}
 					}
@@ -3877,12 +4081,7 @@ focus = {
 					country_event = ww1_england.29
 				}
 			}
-			if = {
-				limit = {
-					FRA = {
-						is_faction_leader = no
-					}
-				}
+			else = {
 				create_faction = ENG_coalition_of_free_commonwealth_states
 			}
 		}
@@ -3962,6 +4161,7 @@ focus = {
 			add_state_claim = 454
 			add_state_claim = 455
 			add_state_claim = 856
+			add_state_claim = 1021
 			add_ai_strategy = {
 				type = ignore_claim
 				id = SAU
@@ -4005,40 +4205,39 @@ focus = {
 				modifier = HOI4TGW_Opinion_anti_ger_policy_malus
 			}
 			add_state_claim = 546
-			add_state_claim = 541
 			add_state_claim = 794
-			add_state_claim = 523
+			#add_state_claim = 523
 			add_state_claim = 813
 			if = {
 				limit = {
-					has_subject = SAF
+					any_subject_country = {
+						owns_state = 681
+					}
 				}
-				SAF = {
+				random_subject_country = {
+					limit = {
+						owns_state = 681
+					}
 					add_state_claim = 541
+					add_state_claim = 1050				
 				}
 				else = {
 					add_state_claim = 541
+					add_state_claim = 1050
 				}
 			}
 			if = {
 				limit = {
-					NOT = {
-						BEL = {
-							is_in_faction_with = GER
-						}
+					BEL = {
+						is_in_faction_with = GER
 					}
 				}
-				BEL = {
-					add_state_claim = 768
-				}
-				else = {
-					add_state_claim = 768
-				}
+				add_state_claim = 768
 			}
-			#AST = {
-			#	add_state_claim = 523
-			#	add_state_claim = 737
-			#}
+			AST = {
+				add_state_claim = 523
+				add_state_claim = 737
+			}
 		}
 		search_filters = {
 			FOCUS_FILTER_HISTORICAL
@@ -4342,7 +4541,10 @@ focus = {
 				threat = 2
 				name = ENG_Ramp_Up_Production
 			}
-			add_ideas = ENG_Ramp_Up_Production
+			add_timed_idea = {
+				idea = ENG_Ramp_Up_Production
+				days = 480
+			}
 		}
 		search_filters = {
 			FOCUS_FILTER_HISTORICAL
@@ -4603,8 +4805,15 @@ focus = {
 				target = EGY
 				autonomous_state = autonomy_tgwr_integrated_protectorate
 				freedom_level = 0.8
+				end_wars = no
 			}
 			EGY = {
+				if = {
+					limit = {
+						has_idea = EGY_veiled_protectorate
+					}
+					remove_ideas = EGY_veiled_protectorate
+				}
 				add_political_power = 100
 				add_ideas = ENG_british_patronage
 				set_cosmetic_tag = EGY_sultanate
@@ -4640,12 +4849,8 @@ focus = {
 		x = 55
 		y = 3
 		available = {
-			OR = {
-				EGY = {
-					is_subject_of = ENG
-					has_full_control_of_state = 447
-				}
-				has_full_control_of_state = 447
+			447 = {
+				is_controlled_by_ROOT_or_subject = yes
 			}
 		}
 		completion_reward = {
@@ -4881,6 +5086,20 @@ focus = {
 					value = 50
 				}
 			}
+			if = {
+				limit = {
+					has_subject = NFL
+				}
+				NFL = {
+					add_political_power = 100
+					add_ideas = ENG_british_patronage
+					add_ai_strategy = {
+						type = befriend
+						id = ENG
+						value = 50
+					}
+				}
+			}			
 		}
 	}
 	focus = {
@@ -5046,7 +5265,7 @@ focus = {
 				character = ENG_victoria_ii
 				promote_leader = yes
 				country_leader = {
-					ideology = rexism
+					ideology = fundamentalism
 					traits = { conservative_grandee }
 				}
 			}
@@ -5504,22 +5723,21 @@ focus = {
 					}
 				}
 				effect_tooltip = {
-					JOH = { set_country_flag = protectorate }
 					set_autonomy = {
 						target = JOH
 						autonomous_state = autonomy_tgwr_protectorate
-						freedom_level = 1
+						freedom_level = 0.9
 					}
 				}
 				hidden_effect = {
 					JOH = {
 						get_current_government_type = yes
+						set_country_flag = protectorate
 						ROOT = {
-							JOH = { set_country_flag = protectorate }
 							set_autonomy = {
 								target = JOH
 								autonomous_state = autonomy_tgwr_protectorate
-								freedom_level = 1
+								freedom_level = 0.9
 								end_wars = no
 							}
 						}
@@ -5551,7 +5769,7 @@ focus = {
 	}
 	focus = {
 		id = ENG_nationalise_persian_oil
-		icon = GFX_goal_generic_oil_refinery
+		icon = GFX_focus_IRQ_anglo_iraqi_oil_expansion
 		cost = 5
 		prerequisite = {
 			focus = ENG_Legacy_Of_Industrial_Revolution
