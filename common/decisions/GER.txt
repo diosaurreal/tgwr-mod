@@ -142,6 +142,203 @@ GER_internal_affairs = {
 }
 
 GER_great_war = {
+
+	#unrestricted submarine warfare bonus
+	GER_intensification_of_submarine_warfare = {
+		icon = GFX_decision_category_CHL_hispanic_unity_decisions
+		days_remove = 14
+		fire_only_once = no
+		visible = {
+			OR = {
+				has_country_flag = GER_unrestricted_submarine_warfare_flag
+				has_completed_focus = GER_unrestricted_submarine_warfare
+			}
+			NOT = {
+				has_global_flag = great_war_ends
+			}
+			has_war = yes
+			NOT = {
+				has_idea = GER_unrestricted_submarine_warfare_idea4
+			}
+		}
+		available = {
+			has_war = yes
+		}
+		remove_effect = {
+			#increase the submarine warfare
+			GER_intensification_of_submarine_warfare_effect = yes
+		}
+		cancel_trigger = {
+			has_war = no
+		}
+		ai_will_do = {
+			factor = 100
+			modifier = {
+				NOT = {
+					has_war_with = USA
+				}
+				factor = 0
+			}
+		}
+	}
+
+	GER_reduction_of_submarine_warfare = {
+		icon = GFX_decision_category_CHL_hispanic_unity_decisions
+		days_remove = 14
+		fire_only_once = no
+		visible = {
+			OR = {
+				has_country_flag = GER_unrestricted_submarine_warfare_flag
+				has_completed_focus = GER_unrestricted_submarine_warfare
+			}
+			NOT = {
+				has_global_flag = great_war_ends
+			}
+			has_war = yes
+			has_unrestricted_submarine_warfare_idea = yes
+		}
+		available = {
+			has_war = yes
+		}
+		remove_effect = {
+			#reduce the submarine warfare
+			GER_reduction_of_submarine_warfare_effect = yes
+		}
+		cancel_trigger = {
+			has_war = no
+		}
+		ai_will_do = {
+			factor = 0 #hahaha
+		}
+	}
+
+	GER_send_zimmermann_telegram = {
+		icon = GFX_decision_category_CHL_hispanic_unity_decisions
+		days_remove = 7
+		fire_only_once = yes
+		visible = {
+			NOT = {
+				has_global_flag = great_war_ends
+			}
+			MEX = {
+				exists = yes
+				has_war = no
+			}
+			NOT = {
+				is_in_faction_with = USA
+				has_war_together_with = USA
+			}
+			OR = {
+				has_war_with = USA
+				has_country_flag = GER_send_zimmermann_telegram_possible
+			}
+		}
+		available = {
+			NOT = {
+				has_war_with = MEX
+				has_war_together_with = MEX
+				is_in_faction_with = MEX
+			}
+		}
+		remove_effect = {
+			custom_effect_tooltip = GER_zimmermann_depesche_tt
+			MEX = {
+				country_event = {
+					id = ww1_germany.53
+					days = 1
+				}
+			}
+			set_global_flag = zimmermann_telegram
+			custom_effect_tooltip = if_they_accept_tt
+			effect_tooltip = {
+				GER = {
+					add_to_faction = MEX
+				}
+			}
+		}
+		cancel_trigger = {
+			has_war = no
+		}
+		complete_effect = {
+			hidden_effect = {
+				ENG = {
+					if = {
+						limit = {
+							has_war_with = ROOT
+						}
+						if = {
+							limit = {
+								is_ai = no
+							}
+							if = {
+								limit = {
+									OR = {
+										has_completed_focus = ENG_room_40
+										has_done_agency_upgrade = upgrade_decryption_boost
+									}
+								}
+								country_event = ww1_england.9
+							}					
+						}	
+						else = {
+							country_event = ww1_england.9
+						}			
+					}
+				}
+			}	
+		}
+		ai_will_do = {
+			factor = 500
+			modifier = {
+				longest_war_length < 40
+				NOT = {
+					has_war_with = ENG
+				}
+				factor = 0
+			}
+		}
+	}
+
+	GER_date_naval_report = {
+		days_mission_timeout = 28
+		is_good = no
+		allowed = {
+			tag = GER
+		}
+		activation = {
+			has_unrestricted_submarine_warfare_idea = yes
+			has_war = yes
+		}
+		available = {
+			has_unrestricted_submarine_warfare_idea = no
+		}
+		timeout_effect = {
+			if = {
+				limit = {	#forcing historical attack on lusitania
+					is_historical_focus_on = yes
+					NOT = {
+						has_war_with = USA
+					}
+					longest_war_length > 22
+				}
+				hidden_effect = {
+					set_country_flag = magicaly_rooted_lusitania_attack
+					country_event = {
+						id = ww1_germanrework.164
+						days = 2
+					}
+				}
+				effect_tooltip = {	#faking so noone notice it
+					GER_setup_hit_random_list = yes
+				}
+				else = {
+					#random list for hits
+					GER_setup_hit_random_list = yes
+				}
+			}
+		}
+	}
+
 	GER_major_deficit_spending = {
 		days_mission_timeout = 150
 		selectable_mission = no
@@ -166,7 +363,6 @@ GER_great_war = {
 			add_political_power = 50
 			add_stability = 0.05
 		}
-		
 	}
 
 	GER_national_debt_mission = {
