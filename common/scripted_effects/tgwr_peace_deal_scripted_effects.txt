@@ -220,17 +220,13 @@ armistice_effect = {
 			limit = {
 				is_owned_by = FRA
 				OR = {
+					region = 19
 					state = 15
+				}
+				NOT = {
 					state = 16
-					state = 17
-					state = 18
+					state = 24
 					state = 27
-					state = 785
-					state = 863
-					state = 864
-					state = 865
-					state = 33
-					state = 29
 				}
 			}
 			set_demilitarized_zone = yes
@@ -1008,6 +1004,7 @@ armistice_effect = {
 					every_owned_state = {
 						limit = {
 							OR = {
+								region = 225
 								state = 448
 								state = 450
 								state = 661
@@ -1080,6 +1077,7 @@ armistice_effect = {
 										state = 567
 										state = 1123
 										state = 775
+										state = 1135
 										state = 1125
 										state = 1126
 										state = 1127
@@ -1088,20 +1086,20 @@ armistice_effect = {
 								}
 								transfer_state_to = FRA
 							}
-							remove_state_core = 567
-							remove_state_core = 1123
+							# remove_state_core = 567
+							# remove_state_core = 1123
 						}
 					}
-					if = {
-						limit = {
-							ENG = { has_country_flag = great_war_winner }
-						}
-						LBA = {
-							767 = {
-								transfer_state_to = ENG
-							}
-						}
-					}
+					# if = {
+					# 	limit = {
+					# 		ENG = { has_country_flag = great_war_winner }
+					# 	}
+					# 	LBA = {
+					# 		767 = {
+					# 			transfer_state_to = ENG
+					# 		}
+					# 	}
+					# }
 				}
 			}
 		}
@@ -2047,10 +2045,7 @@ armistice_effect = {
 						has_country_flag = british_capitulation
 					}
 				}
-				every_state = {
-					limit = {
-						is_owned_or_subject_PREV_trigger = yes
-					}
+				every_owned_state = {
 					set_state_flag = dont_transfer
 				}
 				set_global_flag = honourable_peace
@@ -2478,12 +2473,11 @@ armistice_effect = {
 				has_country_flag = great_war_loser
 			}
 			MOR = {
-				has_cosmetic_tag = MOR_FRA
+				is_subject_of = FRA
 			}
 		}
 		MOR = {
 			add_state_core = 461
-			drop_cosmetic_tag = yes
 		}
 	}
 	if = {
@@ -2807,7 +2801,7 @@ armistice_effect = {
 				limit = {
 					owns_state = 567
 				}
-				515 = {
+				1135 = {
 					owner = {
 						transfer_state = 567
 					}
@@ -2817,7 +2811,7 @@ armistice_effect = {
 				limit = {
 					owns_state = 775
 				}
-				515 = {
+				1135 = {
 					owner = {
 						transfer_state = 775
 					}
@@ -3924,7 +3918,10 @@ conference_effect = {
 							state = 273
 							state = 812
 							state = 567
+							state = 1122
 							state = 1123
+							state = 1124
+							state = 1128
 							state = 1060
 						}
 					}
@@ -3945,6 +3942,9 @@ conference_effect = {
 							state = 661
 							state = 812
 							state = 1060
+							state = 1122
+							state = 1124
+							state = 1128
 						}
 					}
 					TUR = {
@@ -3955,7 +3955,9 @@ conference_effect = {
 					limit = {
 						OR = {
 							state = 552
+							state = 1131
 							state = 767
+							state = 1134
 						}
 					}
 					LBA = {
@@ -5385,7 +5387,10 @@ conference_effect = {
 		limit = {
 			MOR = {
 				NOT = { has_country_flag = great_war_winner }
-				is_subject_of = FRA
+				OR = {
+					is_subject_of = FRA
+					has_country_flag = great_war_loser
+				}				
 			}
 		}
 		if = {
@@ -5397,22 +5402,31 @@ conference_effect = {
 			}
 			MOR = {
 				add_state_core = 461
-				drop_cosmetic_tag = yes
+				set_country_flag = protectorate
+				get_current_government_type = yes
 			}
 			GER = {
-				MOR = { set_country_flag = protectorate }
 				set_autonomy = {
 					target = MOR
 					autonomous_state = autonomy_tgwr_protectorate
 				}
 			}
 			MOR = {
-				set_politics = {
-					ruling_party = neutrality
-					elections_allowed = no
-				}
-				set_popularities = {
-					neutrality = 100
+				restore_previous_government_type = yes
+				MOR_mulay_abdelhafid = {
+					if = {
+						limit = { has_ideology = semi_constitutional_monarchy }
+						promote_character = semi_constitutional_monarchy
+					}
+					else = {
+						add_country_leader_role = {
+							country_leader = {
+								ideology = semi_constitutional_monarchy
+								traits = { unpopular_sultan  }
+							}
+							promote_leader = yes
+						}
+					}
 				}
 			}
 			else_if = {
@@ -5420,18 +5434,71 @@ conference_effect = {
 					FRA = { has_country_flag = great_war_loser }
 					SPR = { has_country_flag = great_war_winner }
 				}
+				MOR = {
+					add_state_core = 461
+					set_country_flag = protectorate
+					get_current_government_type = yes
+				}
+				SPR = {
+					set_autonomy = {
+						target = MOR
+						autonomous_state = autonomy_tgwr_integrated_protectorate	
+					}	
+				}
+				MOR = {
+					restore_previous_government_type = yes
+				}
+				if = {
+					limit = {
+						MRS = {
+							OR = {
+								exists = no
+								is_subject_of = SPR
+							}
+						}
+					}
+					MOR = {
+						annex_country = {
+							target = MRS
+							transfer_troops = yes
+						}
+					}
+					MRS = {
+						MOR_mohammed_mehedi_uld_ben_ismael = {
+							set_nationality = MOR
+							promote_character = absolute_monarchy
+						}
+						every_state = {
+							limit = {
+								OR = {
+									is_core_of = PREV
+									is_claimed_by = PREV
+								}							
+							}
+							remove_claim_by = MRS
+							remove_core_of = MRS
+						}
+					}
+				}
 				every_state = {
 					limit = {
-						owner = {
+						owner = {			
 							OR = {
 								tag = FRA
 								is_subject_of = FRA
+								tag = SPR
+								is_subject_of = SPR
 							}
 						}
 						is_core_of = MOR
+						NOT = {
+							is_core_of = SPR
+							state = 783
+							state = 689
+						}
 					}
-					transfer_state_to = SPR
-				}
+					transfer_state_to = MOR
+				}			
 			}
 		}	
 	}
@@ -5620,84 +5687,68 @@ conference_effect = {
 				has_country_flag = great_war_loser
 			}
 		}
-			##give libya to France or British
-		##scenario 1 : France and Britain share the place
+		##give libya to France or British
 		if = {
 			limit = {
 				ITA = {
-					owns_state = 448
-				}
-				FRA = {
-					has_country_flag = great_war_winner
-				}
-				ENG = {
-					has_country_flag = great_war_winner
-				}
-			}
-			FRA = {
-				transfer_state = 448
-				transfer_state = 661
-				transfer_state = 812
-				transfer_state = 273
-				transfer_state = 1060
-			}
-			ENG = {
-				transfer_state = 450
-				transfer_state = 1061
-			}
-		}
-		##scenario 2 : France won alone
-		if = {
-			limit = {
-				ITA = {
-					owns_state = 448
-				}
-				FRA = {
-					has_country_flag = great_war_winner
-				}
-				NOT = {
-					ENG = {
-						has_country_flag = great_war_winner
+					any_owned_state = {
+						is_core_of = LBA
 					}
 				}
 			}
-			FRA = {
-				transfer_state = 448
-				transfer_state = 661
-				transfer_state = 812
-				transfer_state = 273
-				transfer_state = 1060
-			}
-			LBA = {
-				transfer_state = 450
-				transfer_state = 1061
-			}
-		}
-		##scenario 2 : Great Britain won alone
-		if = {
-			limit = {
-				ITA = {
-					owns_state = 448
+			every_state = {
+				limit = {
+					is_core_of = TRP				
 				}
-				ENG = {
-					has_country_flag = great_war_winner
-				}
-				NOT = {
-					FRA = {
-						has_country_flag = great_war_winner
+				if = {
+					limit = {
+						FRA = {
+							has_country_flag = great_war_winner
+						}
 					}
+					add_claim_by = FRA
+					if = {
+						limit = {
+							OWNER = {
+								has_country_flag = great_war_loser
+							}
+						}
+						transfer_state_to = FRA
+					}
+				}	
+				else = {
+					transfer_state_to = TRP
 				}
 			}
-			LBA = {
-				transfer_state = 448
-				transfer_state = 661
-				transfer_state = 812
-				transfer_state = 273
-				transfer_state = 1060
-			}
-			ENG = {
-				transfer_state = 450
-				transfer_state = 1061
+			every_state = {
+				limit = {
+					OR = {
+						state = 450
+						state = 1061
+						state = 663
+						state = 754
+						state = 1121
+					}				
+				}
+				if = {
+					limit = {
+						ENG = {
+							has_country_flag = great_war_winner
+						}
+					}
+					add_claim_by = ENG
+					if = {
+						limit = {
+							OWNER = {
+								has_country_flag = great_war_loser
+							}
+						}
+						transfer_state_to = ENG
+					}
+				}	
+				else = {
+					transfer_state_to = LBA
+				}
 			}
 		}
 	}
