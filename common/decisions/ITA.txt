@@ -11288,3 +11288,224 @@ ITA_various_dec = {
 		}
 	}
 }
+
+ITA_italy_communist_decisions = {
+	ITA_invite_socialist_to_faction = {
+		icon = GFX_decision_hol_exchange_intelligence_data
+		allowed = { 
+			original_tag = ITA
+		}
+		available = {
+			FROM = {
+				is_in_faction = no
+			}
+			ITA = { 
+				is_in_faction = yes
+				is_faction_leader = yes
+			}
+		}
+		target_trigger = {
+			FROM = {
+				has_government = communism
+			}
+		}
+		fire_only_once = no
+		ai_will_do = {
+			base = 100
+			modifier = {
+				add = -80
+				FROM = {
+					is_major = yes
+					has_war = yes
+				}
+			}
+			modifier = {
+				add = 50
+				FROM = {
+					is_major = no
+					has_war = yes
+				}
+			}
+			modifier = {
+				factor = 0
+				has_opinion = {
+					target = FROM
+					value < 0
+				}
+			}
+		}
+		visible = {
+			has_completed_focus = ITA_form_the_international
+			FROM = {
+				is_subject = no
+				NOT = {
+					has_war_with = ROOT
+					is_in_faction_with = ITA
+					has_country_flag = ITA_asked_join_internationale
+				}
+			}
+		}
+		complete_effect = {
+			FROM = {
+				country_event = { id = ww1_red_italy.42 hours = 8 }
+				set_country_flag = {
+					flag = ITA_asked_join_internationale
+					days = 180
+					value = 1
+				}
+			}
+		}
+	}
+	ITA_ignite_the_revolution_in_defeated_nation = {
+		icon = GFX_decision_generic_nationalism
+		allowed = { 
+			original_tag = ITA
+		}
+		visible = {
+		#	has_completed_focus = ITA_spread_the_revolution
+			FROM = {
+				NOT = {
+					is_in_faction_with = ITA
+				}
+				has_country_flag = great_war_loser
+			}
+			any_state = {
+				is_controlled_by = FROM
+				is_core_of = FROM
+				is_in_home_area = yes
+			}
+		}
+		cost = 50
+		available = {
+			has_equipment = {
+				infantry_equipment > 1499
+			}
+		}
+		highlight_states = {
+			highlight_states_trigger = {
+				is_owned_by = FROM
+				is_capital = yes
+			}
+		}
+		on_map_mode = decision_view_only
+		days_remove = 70
+		target_trigger = {
+			FROM = {
+				is_major = no
+				NOT = {
+					has_government = communism
+				}
+			}
+		}
+		fire_only_once = no
+		ai_will_do = {
+			base = 100
+			modifier = {
+				add = -80
+				has_war = yes
+			}
+			modifier = {
+				add = -80
+				FROM = {
+					owner = {
+						has_war_with = ITA
+					}
+				}
+			}
+		}
+		complete_effect = {
+			add_equipment_to_stockpile = {
+				type = infantry_equipment
+				amount = -1500
+			}
+		}
+		remove_effect = {
+			if = {
+				limit = {
+					FROM = {
+						check_variable = { num_of_controlled_states = 1 }
+					}
+				}
+				FROM = {
+					set_politics = {
+						ruling_party = communism
+						elections_allowed = no
+					}
+					hidden_effect = {
+						country_event = ww1_red_italy.45
+					}
+				}
+			}
+			else = {
+				FROM = {
+					add_to_temp_variable = {
+						var = civil_war_size_var
+						value = party_popularity@communism
+					}
+					start_civil_war = {
+						ideology = communism
+						size = civil_war_size_var
+						keep_unit_leaders_trigger = {
+							OR = {
+								has_trait = trait_royal
+								has_trait = trait_royalist
+								has_trait = old_guard
+								has_trait = old_guard_navy
+								has_trait = politically_connected
+							}
+						}
+					}
+					hidden_effect = {
+						country_event = ww1_red_italy.45
+					}
+				}
+			}
+		}
+	}
+	ITA_socialist_economic_integration_decision = {
+		icon = GFX_decision_generic_construction
+		allowed = { 
+			original_tag = ITA
+		}
+		visible = {
+		#	has_completed_focus = ITA_socialist_economic_intergration
+		}
+		cost = 50
+		available = {
+			num_of_civilian_factories_available_for_projects > 2
+		}
+		days_remove = 140
+		target_trigger = {
+			FROM = {
+				is_major = no
+				is_in_faction_with = ITA
+			}
+		}
+		fire_only_once = no
+		ai_will_do = {
+			base = 50
+		}
+		modifier = {
+			civilian_factory_use = 3
+		}
+		remove_effect = {
+			FROM = {
+				random_owned_controlled_state = {
+					limit = {
+						is_core_of = FROM
+						free_building_slots = {
+							building = industrial_complex
+							size > 0
+							include_locked = yes
+						}
+					}
+					add_building_construction = {
+						type = industrial_complex
+						level = 1
+						instant_build = yes
+					}
+				}
+			}
+		}
+	}
+}
