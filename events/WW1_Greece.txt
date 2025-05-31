@@ -34,7 +34,12 @@ country_event = {
 		GRE_constantine_i = {
 			promote_character = semi_constitutional_monarchy
 			set_character_name = GRE_constantine_i
-		}		
+		}
+		set_party_name = {
+			ideology = neutrality
+			long_name = GRE_monarchy_party
+			name = GRE_monarchy_party
+		}
 		remove_ideas = GRE_idea_george_i
 		if = {
 			limit = {
@@ -45,6 +50,11 @@ country_event = {
 				}
 			}
 			add_ideas = GRE_idea_constantine		
+		}
+		if = {
+			limit = { has_government = neutrality }
+			activate_advisor = GRE_dimitrios_gounaris
+			set_can_be_fired_in_advisor_role = { character = GRE_dimitrios_gounaris value = no }
 		}
 		add_stability = -0.10
 		hidden_effect = {
@@ -634,7 +644,12 @@ country_event = {
 
 	fire_only_once = yes
 	is_triggered_only = yes
-	
+	immediate = {
+		hidden_effect = {
+			complete_national_focus	= GRE_dragoumis_resignation
+			set_country_flag = GRE_dragoumis_resignation
+		}
+	}
 	option = {
 		name = ww1_greece.26.a
 		custom_effect_tooltip = GRE_appoint_venizelos_tooltip
@@ -642,72 +657,72 @@ country_event = {
 			ruling_party = democratic
 			elections_allowed = yes
 		}
-		hidden_effect = {
-			complete_national_focus	= GRE_dragoumis_resignation
-			complete_national_focus	= GRE_appoint_venizelos
-		}
+		set_country_flag = GRE_appoint_venizelos
+		hidden_effect = { complete_national_focus = GRE_appoint_venizelos }
 		ai_chance = {
-			factor = 20
+			base = 30
 			modifier = {
-				is_historical_focus_on = yes
-				factor = 100
-			}
-			modifier = {
-				OR = {
-					has_game_rule = {
-						rule = GRE_OPERATION_RODI_AI_BEHAVIOR
-						option = RODI_OR_WAR
-					}
-					has_game_rule = {
-						rule = GRE_AI_BEHAVIOR
-						option = METAXAS
-					}
-				}
 				factor = 0
-			}
-		}
-		trigger = {
-			OR = {
-				is_ai = no
-				NOT = {
-					has_game_rule = {
-						rule = GRE_OPERATION_RODI_AI_BEHAVIOR
-						option = RODI_OR_WAR
-					}
+				OR = {
+					has_country_flag = GRE_AI_RANDOM_METAXAS
 					has_game_rule = {
 						rule = GRE_AI_BEHAVIOR
 						option = METAXAS
 					}
-				}
+					has_country_flag = GRE_AI_RANDOM_NEUTRALITY_MONARCHIST
+					has_game_rule = {
+						rule = GRE_AI_BEHAVIOR
+						option = NEUTRALITY_MONARCHIST
+					}
+					has_country_flag = GRE_AI_RANDOM_CENTRAL_POWERS
+					has_game_rule = {
+						rule = GRE_AI_BEHAVIOR
+						option = CENTRAL_POWERS
+					}
+					AND = {
+						is_historical_focus_on = no
+						has_game_rule = {
+							rule = GRE_ai_behavior
+							option = DEFAULT
+						}
+						has_game_rule = {
+							rule = GRE_OPERATION_RODI_AI_BEHAVIOR
+							option = RODI_OR_WAR
+						}
+					}
+				}			
 			}
-		}																		
+		}																	
 	}
 	option = {
 		name = ww1_greece.26.b
 		custom_effect_tooltip = GRE_appoint_gounaris_tooltip
 		promote_character = GRE_dimitrios_gounaris
-		hidden_effect = {
-			complete_national_focus	= GRE_dragoumis_resignation
-			complete_national_focus	= GRE_appoint_gounaris
-		}
+		set_country_flag = GRE_appoint_gounaris
+		hidden_effect = { complete_national_focus = GRE_appoint_gounaris }
 		ai_chance = {
-			factor = 20
+			base = 20
 			modifier = {
-				is_historical_focus_on = yes
 				factor = 0
-			}
-			modifier = {
 				OR = {
-					has_game_rule = {
-						rule = GRE_OPERATION_RODI_AI_BEHAVIOR
-						option = RODI_OR_WAR
+					AND = {
+						is_historical_focus_on = yes
+						has_game_rule = {
+							rule = GRE_ai_behavior
+							option = DEFAULT
+						}
 					}
+					has_country_flag = GRE_AI_RANDOM_HISTORICAL
+					has_game_rule = {
+						rule = GRE_ai_behavior
+						option = DEFAULT
+					}
+					has_country_flag = GRE_AI_RANDOM_SOCIALIST
 					has_game_rule = {
 						rule = GRE_AI_BEHAVIOR
-						option = METAXAS
+						option = SOCIALIST
 					}
 				}
-				factor = 100
 			}
 		}																			
 	}	
@@ -1186,21 +1201,18 @@ country_event = {
 	picture = GFX_report_event_gre_italian_troops
 	fire_only_once = yes
 	is_triggered_only = yes
+	trigger = {
+		ALB = {
+			owns_state = 871
+		}
+	}
 	
 	option = {
 		name = ww1_greece.35.a
-		add_political_power = -200
+		add_command_power = -20
 		transfer_state = 871
 		ai_chance = {
 			factor = 100
-			modifier = {
-				factor = 0
-				has_war = yes
-			}
-			modifier = {
-				factor = 0
-				is_historical_focus_on = yes
-			}
 		}
 	}			
 }
@@ -1718,41 +1730,26 @@ country_event = {
 	is_triggered_only = yes
 	option = {	## debt reduction
 		name = ww1_greece.60.a
-		custom_effect_tooltip = GRE_IFC_minus_5_tt
+		custom_effect_tooltip = GRE_IFC_minus_10_tt
 		subtract_from_variable = {
 			var = GRE_IFC_var
-			value = 0.05
+			value = 0.1
 		}
 		if = {
-			limit = {
-				check_variable = { GRE_IFC_var < 0 }
-			}
-			multiply_temp_variable = {
-				GRE_IFC_var = 0
-			}						
+			limit = { check_variable = { GRE_IFC_var < 0 } }
+			multiply_temp_variable = { GRE_IFC_var = 0 }						
 		}
 	}
 	option = {	## extend loan
 		name = ww1_greece.60.b
-		hidden_effect = {
-			remove_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier }			
-		}
-		add_dynamic_modifier = { modifier = GRE_IFC_2_dynamic_modifier }
+		custom_effect_tooltip = ww1_greece.60.tt1
+		set_variable = { GRE_IFC_production_speed_buildings_factor = 0.1 }
 	}
 	option = {	## extend loan
 		name = ww1_greece.60.c
-		898 = {
-			add_resource = {
-				type = steel
-				amount = 12
-			}
-		}
-		898 = {
-			add_resource = {
-				type = chromium
-				amount = 4
-			}
-		}
+		custom_effect_tooltip = ww1_greece.60.tt2
+		set_variable = { GRE_IFC_country_resource_steel = 12 }
+		set_variable = { GRE_IFC_country_resource_chromium = 4 }
 	}
 }
 
@@ -1766,7 +1763,7 @@ country_event = {
 	option = {	## cool
 		name = ww1_greece.61.a
 		FROM = {
-			custom_effect_tooltip = GRE_IFC_minus_5_tt
+			custom_effect_tooltip = GRE_IFC_minus_10_tt
 			give_resource_rights = {
 				receiver = ROOT
 				state = 345
@@ -1897,7 +1894,9 @@ country_event = {
 		GRE = {
 			random_owned_controlled_state = {
 				limit = {
-					ROOT = { has_full_control_of_state = PREV }
+					is_fully_controlled_by = ROOT
+					impassable = no
+					is_core_of = ROOT
 				}
 				add_extra_state_shared_building_slots = 1
 				add_building_construction = {
@@ -1956,11 +1955,9 @@ country_event = {
 			base = 50
 			modifier = {
 				factor = 100
-				is_historical_focus_on = yes
+				has_government = democratic
 				GRE = {
-					has_country_leader = {
-						character = GRE_eleftherios_venizelos
-					}
+					GRE_has_venizelist_government = yes
 				}
 			}
 		}
@@ -2030,11 +2027,9 @@ country_event = {
 			base = 50
 			modifier = {
 				factor = 100
-				is_historical_focus_on = yes
+				has_government = democratic
 				GRE = {
-					has_country_leader = {
-						character = GRE_eleftherios_venizelos
-					}
+					GRE_has_venizelist_government = yes
 				}
 			}
 		}
@@ -2108,7 +2103,9 @@ country_event = {
 		GRE = {
 			random_owned_controlled_state = {
 				limit = {
-					ROOT = { has_full_control_of_state = PREV }
+					is_fully_controlled_by = ROOT
+					impassable = no
+					is_core_of = ROOT
 				}
 				add_extra_state_shared_building_slots = 1
 				add_building_construction = {
@@ -2164,11 +2161,9 @@ country_event = {
 			base = 50
 			modifier = {
 				factor = 100
-				is_historical_focus_on = yes
+				has_government = democratic
 				GRE = {
-					has_country_leader = {
-						character = GRE_eleftherios_venizelos
-					}
+					GRE_has_venizelist_government = yes
 				}
 			}
 		}
@@ -2242,7 +2237,9 @@ country_event = {
 		GRE = {
 			random_owned_controlled_state = {
 				limit = {
-					ROOT = { has_full_control_of_state = PREV }
+					is_fully_controlled_by = ROOT
+					impassable = no
+					is_core_of = ROOT
 				}
 				add_extra_state_shared_building_slots = 1
 				add_building_construction = {
@@ -2372,7 +2369,9 @@ country_event = {
 		GRE = {
 			random_owned_controlled_state = {
 				limit = {
-					ROOT = { has_full_control_of_state = PREV }
+					is_fully_controlled_by = ROOT
+					impassable = no
+					is_core_of = ROOT
 				}
 				add_extra_state_shared_building_slots = 1
 				add_building_construction = {
@@ -2425,10 +2424,10 @@ country_event = {
 	option = {
 		name = ww1_greece.81.a
 		add_stability = 0.05
-		custom_effect_tooltip = GRE_IFC_minus_5_tt
+		custom_effect_tooltip = GRE_IFC_minus_10_tt
 		subtract_from_variable = {
 			var = GRE_IFC_var
-			value = 0.05
+			value = 0.1
 		}
 	}  
 }
@@ -2444,10 +2443,10 @@ country_event = {
 	option = {
 		name = ww1_greece.82.a
 		add_stability = -0.1
-		custom_effect_tooltip = GRE_IFC_plus_2_tt
+		custom_effect_tooltip = GRE_IFC_plus_5_tt
 		add_to_variable = {
 			var = GRE_IFC_var
-			value = 0.02
+			value = 0.05
 		}
 	}  
 }
@@ -2461,22 +2460,18 @@ country_event = {
 	is_triggered_only = yes
 
 	option = {
-		name = ww1_greece.83.a	
+		name = ww1_greece.83.a
+		GRE_update_political_turmoil_tooltip = yes
 		custom_effect_tooltip = GRE_stability_pp_plus_2_tt
-		add_to_variable = {
-			var = GRE_stability_var
-			value = 0.02
+		add_to_variable = { GRE_stability_var = 0.02 }
+		add_to_variable = { GRE_pp_var = 0.02 }
+		hidden_effect = {
+			remove_dynamic_modifier = { modifier = GRE_political_turmoil_dynamic_modifier }
+			add_dynamic_modifier = { modifier = GRE_political_normality_dynamic_modifier }
 		}
-		add_to_variable = {
-			var = GRE_pp_var
-			value = 0.02
-		}
-		GRE_update_political_turmoil_dynamic_modifier = yes
 		hidden_effect = {
 			if = {
-				limit = {
-					has_completed_focus = GRE_appoint_gounaris
-				}
+				limit = { has_completed_focus = GRE_appoint_gounaris }
 				set_politics = {
 					ruling_party = neutrality
 					last_election = "1911.11.1" 
@@ -2485,9 +2480,7 @@ country_event = {
 				}
 			}
 			if = {
-				limit = {
-					has_completed_focus = GRE_appoint_venizelos
-				}
+				limit = { has_completed_focus = GRE_appoint_venizelos }
 				set_politics = {
 					ruling_party = democratic
 					last_election = "1911.11.1" 
@@ -2997,11 +2990,11 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_greece.93.a
-		FRA = {
+		activate_mission = GRE_retreat_from_new_territories
+		hidden_effect = {
+			FRA = { set_country_flag = GRE_FRA_expansion_of_macedonian_front }
 			set_country_flag = GRE_FRA_expansion_of_macedonian_front
 		}
-		set_country_flag = GRE_FRA_expansion_of_macedonian_front
-		custom_effect_tooltip = GRE_FRA_expansion_tooltip
 	}
 }
 ###Thebes Earthquake 
@@ -3252,32 +3245,65 @@ country_event = {
 		add_stability = -0.02
 		add_manpower = -100
 		promote_character = GRE_avraam_benaroya
-			set_party_name = { 
-				ideology = communism
-				long_name = GRE_federacion_party_long
-				name = GRE_federacion_party
+		set_party_name = { 
+			ideology = communism
+			long_name = GRE_federacion_party_long
+			name = GRE_federacion_party
+		}
+		set_country_flag = gre_federacion_kicked
+		custom_effect_tooltip = GRE_federacion_tooltip
+		add_popularity = {
+			ideology = communism
+			popularity = -0.05
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				OR = {
+					has_country_flag = GRE_AI_RANDOM_SOCIALIST
+					has_game_rule = {
+						rule = GRE_AI_BEHAVIOR
+						option = SOCIALIST
+					}
+				}
 			}
-			set_country_flag = gre_federacion_kicked
-			custom_effect_tooltip = GRE_federacion_tooltip
-			add_popularity = {
-				ideology = communism
-				popularity = -0.05
-			}
-	    }
+		}
+	}
 	option = {
 		name = ww1_greece.102.b
 		add_stability = 0.02
 		promote_character = GRE_avraam_benaroya
-			set_party_name = { 
-				ideology = communism
-				long_name = GRE_federacion_party_long
-				name = GRE_federacion_party
-			}
-			add_popularity = {
-				ideology = communism
-				popularity = 0.05
+		set_party_name = { 
+			ideology = communism
+			long_name = GRE_federacion_party_long
+			name = GRE_federacion_party
+		}
+		add_popularity = {
+			ideology = communism
+			popularity = 0.05
+		}
+		ai_chance = {
+			base = 20
+			modifier = {
+				factor = 0
+				OR = {
+					AND = {
+						is_historical_focus_on = yes
+						has_game_rule = {
+							rule = GRE_ai_behavior
+							option = DEFAULT
+						}
+					}
+					has_country_flag = GRE_AI_RANDOM_HISTORICAL
+					has_game_rule = {
+						rule = GRE_ai_behavior
+						option = DEFAULT
+					}
+				}
 			}
 		}
+	}
 }
 ###French hand over occupied territory
 country_event = {
@@ -4046,6 +4072,7 @@ country_event = {
     trigger = {
 		tag = GRE
 		date > 1914.6.18
+		TUR = { has_completed_focus = TUR_greek_deportations }
 	}
 	option = {
 		name = ww1_greece.129.a
@@ -4784,17 +4811,11 @@ country_event = {
 		name = ww1_greece.151.a
 		add_stability = 0.05
 		if = {
-			limit = {
-				OR = {
-					has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier }
-					has_dynamic_modifier = { modifier = GRE_IFC_2_dynamic_modifier }
-					has_dynamic_modifier = { modifier = GRE_IFC_3_dynamic_modifier }
-				}
-			}
-			custom_effect_tooltip = GRE_IFC_plus_5_tt
+			limit = { has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } }
+			custom_effect_tooltip = GRE_IFC_plus_10_tt
 			add_to_variable = {
 				var = GRE_IFC_var
-				value = 0.05
+				value = 0.1
 			}
 		}
 	}
@@ -4885,17 +4906,11 @@ country_event = {
 		name = ww1_greece.154.a
 		add_stability = 0.05
 		if = {
-			limit = {
-				OR = {
-					has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier }
-					has_dynamic_modifier = { modifier = GRE_IFC_2_dynamic_modifier }
-					has_dynamic_modifier = { modifier = GRE_IFC_3_dynamic_modifier }
-				}
-			}
-			custom_effect_tooltip = GRE_IFC_plus_5_tt
+			limit = { has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } }
+			custom_effect_tooltip = GRE_IFC_plus_10_tt
 			add_to_variable = {
 				var = GRE_IFC_var
-				value = 0.05
+				value = 0.1
 			}
 		}
 	}
@@ -5501,7 +5516,20 @@ country_event = {
 		ai_chance = {
 			factor = 50
 			modifier = {
-				is_historical_focus_on = yes
+				OR = {
+					AND = {
+						is_historical_focus_on = yes
+						has_game_rule = {
+							rule = GRE_ai_behavior
+							option = DEFAULT
+						}
+					}
+					has_country_flag = GRE_AI_RANDOM_HISTORICAL
+					has_game_rule = {
+						rule = GRE_ai_behavior
+						option = DEFAULT
+					}
+				}
 				factor = 100
 			}
 		}
@@ -5735,7 +5763,20 @@ country_event = {
 		ai_chance = {
 			base = 25
 			modifier = {
-				is_historical_focus_on = yes
+				OR = {
+					AND = {
+						is_historical_focus_on = yes
+						has_game_rule = {
+							rule = GRE_ai_behavior
+							option = DEFAULT
+						}
+					}
+					has_country_flag = GRE_AI_RANDOM_HISTORICAL
+					has_game_rule = {
+						rule = GRE_ai_behavior
+						option = DEFAULT
+					}
+				}
 				factor = 0
 			}
 		}
@@ -5747,7 +5788,20 @@ country_event = {
 		ai_chance = {
 			factor = 25
 			modifier = {
-				is_historical_focus_on = yes
+				OR = {
+					AND = {
+						is_historical_focus_on = yes
+						has_game_rule = {
+							rule = GRE_ai_behavior
+							option = DEFAULT
+						}
+					}
+					has_country_flag = GRE_AI_RANDOM_HISTORICAL
+					has_game_rule = {
+						rule = GRE_ai_behavior
+						option = DEFAULT
+					}
+				}
 				factor = 0
 			}
 		}
@@ -6683,6 +6737,7 @@ country_event = {
 			has_country_flag = GRE_ITA_arrangement_about_albania_flag
 		}
 		date > 1923.7.24
+		owns_state = 164
 		899 = {
 			is_owned_and_controlled_by = ITA
 		}
@@ -6771,7 +6826,7 @@ country_event = {
 		hidden_effect = {
 			ITA = {
 				country_event = {
-					id = ww1_greece.223
+					id = ww1_greece.224
 					days = 2
 				}
 			}
@@ -6788,20 +6843,21 @@ country_event = {
     is_triggered_only = yes
 	option = {
 		name = ww1_greece.224.a
+		trigger = {
+			FROM = {
+				owns_state = 187
+			}
+		}
 		187 = {
 			transfer_state_to = ITA
 		}
 		hidden_effect = {
 			GRE = {
-                country_event = ww1_greece.225
+                country_event = { id = ww1_greece.225 days = 2 }
 			}
 		}
 		ai_chance = {
 			factor = 50
-			modifier = {
-				factor = 100
-				is_historical_focus_on = yes
-			}
 		}
 	}
 	option = {
@@ -6809,6 +6865,13 @@ country_event = {
 		add_political_power = 50
 		ai_chance = {
 			factor = 50
+			modifier = {
+				factor = 0
+				OR = {
+					is_historical_focus_on = yes
+					has_government = fascism
+				}
+			}
 		}
 	}
 }
@@ -6823,7 +6886,6 @@ country_event = {
 	option = {
 		name = ww1_greece.225.a
 		187 = {
-			transfer_state_to = GRE
 			damage_building = {
 				type = infrastructure
 				damage = 1
@@ -6843,16 +6905,12 @@ country_event = {
 			ITA = {
 				country_event = {
 					id = ww1_greece.226
-					days = 1
+					days = 25
 				}
 			}
 		}
 		ai_chance = {
-			factor = 50
-			modifier = {
-				factor = 100
-				is_historical_focus_on = yes
-			}
+			factor = 50			
 		}
 	}
 	option = {
@@ -6860,6 +6918,10 @@ country_event = {
 		add_stability = -0.3
 		ai_chance = {
 			factor = 1
+			modifier = {
+				factor = 0
+				is_historical_focus_on = yes
+			}
 		}
 	}
 }
@@ -6871,20 +6933,19 @@ country_event = {
 	picture = GFX_report_event_italians_corfu
 	fire_only_once = yes
     is_triggered_only = yes
+	trigger = {
+		owns_state = 187
+	}
 	option = {
 		name = ww1_greece.226.a
+		187 = {
+			transfer_state_to = GRE
+		}
 		add_stability = 0.05
 		ITA = {
 			add_timed_idea = {
 				idea = gre_corfu_money
 				days = 120
-			}
-		}
-		ai_chance = {
-			factor = 50
-			modifier = {
-				factor = 100
-				is_historical_focus_on = yes
 			}
 		}
 	}
@@ -7249,15 +7310,11 @@ country_event = {
 	desc = ww1_greece.240.d
 	picture = GFX_report_event_lefkada_earthquake
 	fire_only_once = yes
-	mean_time_to_happen = {
-		days = 1
-	}
+	mean_time_to_happen = { days = 1 }
 	trigger = {
 		tag = GRE
 		date > 1914.11.27
-		GRE = {
-		owns_state = 47
-		}
+		GRE = { owns_state = 47 }
 	}
 	option = {
 		name = ww1_greece.240.a
