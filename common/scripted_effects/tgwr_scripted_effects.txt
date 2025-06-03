@@ -2238,6 +2238,8 @@ british_royals_refuge = {
 			transfer_units_fraction = {
 				target = ROOT
 				size = 0
+				target_organization = 1
+				source_organization = 1
 				navy_ratio = 0.5
 			}
 			random_owned_state = {
@@ -2275,6 +2277,8 @@ british_royals_refuge = {
 			transfer_units_fraction = {
 				target = ROOT
 				size = 1
+				target_organization = 1
+				source_organization = 1
 				stockpile_ratio = 0.75
 				army_ratio = 0.7
 				navy_ratio = 0.9
@@ -3946,5 +3950,115 @@ create_AEF = {
 			}
 		}
 		set_state_controller_to = AEF
+	}
+}
+#Makes sure locked advisors like prime ministers would not be fired
+fire_random_advisor_if_no_slots = {	
+	if = {
+		limit = { 
+			amount_taken_ideas = {
+				amount > 2
+				slots = {
+					political_advisor
+				}
+			}
+		}
+		custom_effect_tooltip = fire_random_advisor_tt
+		hidden_effect = {
+			random_character = {
+				limit = {
+					is_political_advisor = yes
+					advisor_can_be_fired = {
+						slot = political_advisor
+					}
+				}
+				set_nationality = XXA #couldn't find another way
+				set_nationality = PREV
+			}
+		}
+	}
+}
+
+join_great_war_against_GER = {
+	if = {
+		limit = {
+			FRA = {
+				is_faction_leader = yes
+				has_war_with = GER
+				NOT = { has_war_with = ROOT }
+			}
+		}
+		add_to_war = {
+			targeted_alliance = FRA
+			enemy = GER
+		}	
+	}
+	else_if = {
+		limit = {
+			ENG = {
+				is_faction_leader = yes
+				has_war_with = GER
+				NOT = { has_war_with = ROOT }
+			}	
+		}
+		add_to_war = {
+			targeted_alliance = ENG
+				enemy = GER
+		}	
+	}
+	else_if = {
+		limit = {
+			RUS = {
+				is_faction_leader = yes
+				has_war_with = GER
+				NOT = { has_war_with = ROOT }
+			}												
+		}
+		add_to_war = {
+			targeted_alliance = RUS
+			enemy = GER
+		}
+	}
+	else_if = {
+		limit = {
+			USA = {
+				has_war_with = GER
+				NOT = { has_war_with = ROOT }
+			}												
+		}
+		add_to_war = {
+			targeted_alliance = USA
+			enemy = GER
+		}
+	}
+	else_if = {
+		limit = {
+			any_other_country = {
+				is_actual_major = yes
+				has_war_with = GER
+				NOT = { has_war_with = ROOT }
+			}
+		}	
+		random_other_country = {
+			limit = {
+				is_actual_major = yes
+				has_war_with = GER
+				NOT = {
+					has_war_with = ROOT
+				}
+			}
+			ROOT = {
+				add_to_war = {
+					targeted_alliance = PREV
+					enemy = GER
+				}
+			}					
+		}
+	}
+	else = {
+		declare_war_on = {
+			target = GER
+			type = topple_government
+		}
 	}
 }
