@@ -1599,8 +1599,7 @@ focus = {
 					has_war_with = FRA
 					has_war_with = RUS
 					has_war_with = ENG
-				}
-				
+				}		
 			}
 		}
 		offset = {
@@ -1728,7 +1727,7 @@ focus = {
 			modifier = {
 				is_historical_focus_on = yes
 				is_in_faction = no
-				is_puppet = no
+				is_subject = no
 				has_war = no
 				add = 100
 			}
@@ -1752,17 +1751,14 @@ focus = {
 	focus = {
 		id = GRE_national_schism_focus
 		icon = GFX_focus_GRE_resurrecting_the_megali_idea
-		cost = 10
+		cost = 0
 		x = 2
 		y = 1
 		available = {
 			has_country_flag = GRE_national_schism_flag
 		}
 		bypass = {
-			OR = {
-				has_idea = GRE_idea_national_schism2
-				has_idea = GRE_idea_national_schism
-			}
+			has_country_flag = GRE_national_schism_flag
 		}
 		relative_position_id = GRE_commit_to_neutrality
 		prerequisite = {
@@ -1777,7 +1773,24 @@ focus = {
 				ideology = neutrality
 				popularity = 0.05
 			}
-			add_ideas = GRE_idea_national_schism2
+			if = {
+				limit = {
+					GRE_has_idea_schism = no
+				}
+				add_ideas = GRE_idea_national_schism2
+			}
+		}
+		bypass_effect = {
+			add_popularity = {
+				ideology = neutrality
+				popularity = 0.05
+			}
+			if = {
+				limit = {
+					GRE_has_idea_schism = no
+				}
+				add_ideas = GRE_idea_national_schism2
+			}
 		}
 		offset = {
 			x = -1
@@ -1894,6 +1907,10 @@ focus = {
 			every_country = {
 				limit = {
 					is_in_faction_with = FRA
+					OR = {
+						is_european_tag = yes
+						original_tag = TUR
+					}
 					is_major = yes
 				}
 				diplomatic_relation = {
@@ -1920,7 +1937,7 @@ focus = {
 		x = -1
 		y = 1
 		available = {
-			is_puppet = no
+			is_subject = no
 			BUL = {
 				OR = {
 					has_war_with = SER
@@ -2122,18 +2139,38 @@ focus = {
 								has_capitulated = yes
 								war_length_with = {
 									tag = GER
-									months > 16
+									months > 12
 								}
 							}						
 						}			
 					}					
 				}
+				TUR = {
+					has_war_with = FRA
+					war_length_with = {
+						tag = FRA
+						months > 12
+					}					
+				}
+			}
+		}
+		bypass = {
+			is_in_faction_with = FRA
+		}
+		bypass_effect = {
+			add_power_balance_value = {
+				id = GRE_venizelos_constantine
+				value = -0.10
 			}
 		}
 		completion_reward = {
 			every_country = {
 				limit = {
 					is_in_faction_with = FRA
+					OR = {
+						is_european_tag = yes
+						original_tag = TUR
+					}
 					is_major = yes
 				}
 				diplomatic_relation = {
@@ -2432,6 +2469,9 @@ focus = {
 				has_country_flag = GRE_national_defense_flag
 			}
 		}
+		bypass = {
+			has_country_flag = GRE_national_defense_flag
+		}
 		ai_will_do = {
 			factor = 75
 		}
@@ -2574,11 +2614,14 @@ focus = {
 				GRE_has_venizelist_government = yes
 				has_power_balance = { id = GRE_venizelos_constantine }
 			}
-			has_idea = GRE_idea_national_schism
+			GRE_has_idea_schism = yes
 			custom_trigger_tooltip = {
 				tooltip = GRE_FRA_expansion_of_macedonian_front
 				has_country_flag = has_retreated_from_new_territories
 			}
+		}
+		bypass = {
+			has_country_flag = GRE_national_defense_flag
 		}
 		ai_will_do = {
 			factor = 125
@@ -2629,8 +2672,7 @@ focus = {
 			}
 		}
 		bypass = {
-			NOT = { has_country_flag = battle_of_influence }
-			has_civil_war = yes
+			has_country_flag = GRE_national_defense_flag
 		}
 		relative_position_id = GRE_organize_the_committee_of_national_defence
 		prerequisite = {
@@ -3450,18 +3492,13 @@ focus = {
 		}
 		available = {
 			GRE_has_venizelist_government = yes
-			has_idea = GRE_idea_national_schism3
+			GRE_has_idea_schism = yes
 		}
 		bypass = {
-			NOT = {
-				has_idea = GRE_idea_national_schism3
-			}
+			GRE_has_idea_schism = no
 		}
 		completion_reward = {
-			swap_ideas = {
-				remove_idea = GRE_idea_national_schism3
-				add_idea = GRE_idea_national_schism4
-			}
+			GRE_improve_schism = yes
 		}
 	}
 	focus = {
@@ -3617,7 +3654,21 @@ focus = {
 		available = {
 			GRE_has_royalist_government = yes
 			NOT = {
-				is_puppet_of = SER
+				is_subject_of = SER
+			}
+		}
+		bypass = {
+			OR = {
+				has_subject = SER
+				SER = {
+					exists = no
+				}
+				AND = {
+					is_in_faction_with = SER
+					SER = {
+						is_faction_leader = no
+					}
+				}
 			}
 		}
 		completion_reward = {
@@ -3634,6 +3685,9 @@ focus = {
 			if = {
 				limit = {
 					is_in_faction_with = SER
+					SER = {
+						is_faction_leader = yes
+					}
 				}
 				leave_faction = yes
 			}
@@ -3743,6 +3797,10 @@ focus = {
 						is_in_faction_with = GER
 						tag = GER
 					}
+					OR = {
+						is_european_tag = yes
+						original_tag = TUR
+					}		
 					is_major = yes
 				}
 				diplomatic_relation = {
@@ -3777,6 +3835,12 @@ focus = {
 		}
 		available = {
 			GRE_has_royalist_government = yes
+		}
+		bypass = {
+			OR = {
+				has_global_flag = GRE_thessaloniki_state_formed
+				has_country_flag = civil_war_has_been_triggered
+			}
 		}
 		completion_reward = {
 			add_popularity = {
@@ -3873,11 +3937,19 @@ focus = {
 		}
 		available = {
 			GRE_has_royalist_government = yes
-			NOT = {
-				has_war_with = BUL
-			}
 		}
 		bypass_if_unavailable = yes
+		bypass = {
+			OR = {
+				has_war_with = BUL
+				is_in_faction_with = BUL
+				is_subject_of = BUL
+				has_subject = BUL
+				NOT = {
+					country_exists = BUL
+				}
+			}
+		}
 		completion_reward = {
 			BUL = {
 				country_event = {
@@ -3912,10 +3984,7 @@ focus = {
 				value = 0.20
 			}
 			set_rule = { can_join_factions = yes }
-			swap_ideas = {
-				remove_idea = GRE_idea_national_schism
-				add_idea = GRE_idea_national_schism2b
-			}
+			GRE_improve_schism = yes
 		}
 		ai_will_do = {
 			factor = 500
@@ -3990,7 +4059,11 @@ focus = {
 		available = {
 			GRE_has_royalist_government = yes
 			SER = { has_war = yes }
-			NOT = { has_war_with = GER }
+			is_neighbor_of = SER
+			NOT = { 
+				has_war_with = GER 
+				has_global_flag = GRE_thessaloniki_state_formed
+			}
 		}
 		ai_will_do = {
 			factor = 50
@@ -4019,6 +4092,14 @@ focus = {
 			}
 			country_event = { id = ww1_greece.121 days = 7 }
 			event_option_tooltip = ww1_greece.121.a
+		}
+		bypass_effect = {
+			if = {
+				limit = {
+					has_power_balance = { id = GRE_venizelos_constantine }
+				}
+				country_event = { id = ww1_greece.121 days = 7 }
+			}
 		}
 	}
 	focus = {
@@ -5055,33 +5136,7 @@ focus = {
 			GRE_has_royalist_government = yes
 		}
 		completion_reward = {
-			if = {
-				limit = {
-					has_idea = GRE_idea_national_schism2b
-				}
-				swap_ideas = {
-					remove_idea = GRE_idea_national_schism2b
-					add_idea = GRE_idea_national_schism3
-				}
-			}
-			if = {
-				limit = {
-					has_idea = GRE_idea_national_schism2
-				}
-				swap_ideas = {
-					remove_idea = GRE_idea_national_schism2
-					add_idea = GRE_idea_national_schism3
-				}
-			}
-			if = {
-				limit = {
-					has_idea = GRE_idea_national_schism
-				}
-				swap_ideas = {
-					remove_idea = GRE_idea_national_schism
-					add_idea = GRE_idea_national_schism3
-				}
-			}
+			GRE_improve_schism = yes
 			add_popularity = {
 				ideology = fascism
 				popularity = 0.10
@@ -5400,11 +5455,9 @@ focus = {
 		}
 		available = {
 			GRE_has_royalist_government = yes
+			is_subject = no
 			NOT = {
 				has_war_with = GER
-			}
-			NOT = {
-				is_in_faction = yes
 			}
 		}
 		bypass = {
@@ -6051,7 +6104,7 @@ focus = {
 				has_war_with = ITA
 			}
 			ITA = {
-				is_puppet = no
+				is_subject = no
 			}
 		}
 		x = -2
@@ -6152,7 +6205,7 @@ focus = {
 			factor = 100
 		}
 		available = {
-			is_puppet = no
+			is_subject = no
 		}
 		completion_reward = {
 			every_state = {
@@ -6302,6 +6355,9 @@ focus = {
 		relative_position_id = GRE_allow_royalist_rallies
 		ai_will_do = {
 			factor = 1
+		}
+		bypass = {
+			GRE_has_idea_schism = no
 		}
 		completion_reward = {
             remove_ideas = GRE_idea_national_schism
