@@ -1,4 +1,4 @@
-﻿add_namespace = ww1_romania
+add_namespace = ww1_romania
 # The Puppet Master
 ###############################
 country_event = {
@@ -288,9 +288,15 @@ country_event = {
 			base = 0
 			modifier = {
 				add = 100
-				has_game_rule = {
-					rule = ROM_ai_behavior
-					option = ROM_CENTRAL_POWERS
+				OR = {
+				    has_game_rule = {
+					    rule = ROM_ai_behavior
+				    	option = ROM_MONARCHIST
+			    	}
+				    has_game_rule = {
+					    rule = ROM_ai_behavior
+				       	option = ROM_CENTRAL_POWERS
+				    }
 				}
 			}
 		}
@@ -2894,7 +2900,7 @@ news_event = {
 	id = ww1_romania.89
 	title = ww1_romania.89.t
 	desc = ww1_romania.89.d
-	picture = GFX_news_event_peter_p_carp
+	picture = GFX_news_event_romania_pnl_government
 	show_major = {
 		is_european_tag = yes
 	}
@@ -2922,12 +2928,12 @@ news_event = {
 	}
 }
 
-## Austria-Hungary cedes bukovina to romania in exchange of joining cent powe
+## Austria-Hungary cedes bukovina to romania in exchange of joining central powers
 news_event = {
 	id = ww1_romania.90
 	title = ww1_romania.90.t
 	desc = ww1_romania.90.desc
-	picture = GFX_news_event_generic_sign_treaty1
+	picture = GFX_news_event_romania_austria
 	major = yes
 	fire_only_once = yes
 	is_triggered_only = yes
@@ -4571,30 +4577,33 @@ country_event = {
 	fire_only_once = yes
 	trigger = {
 		tag = ROM
+		is_subject = no
+		is_in_faction = no
 		has_global_flag = ROM_treaty_of_bucharest
 		has_global_flag = GER_capitulation
+		NOT = {
+			has_global_flag = FRA_capitulation
+			has_war_with = FRA
+			has_war_with = GER
+		}
+		GER = {
+			has_war_with = FRA
+		}
 		ROM = {
 			NOT = {
 				has_country_flag = ROM_treaty_of_bucharest_nullified
+				has_country_flag = ROM_treaty_of_bucharest_violated
 			}
 		}
 	}
 	option = {
 		name = ww1_romania.134.a
 		set_country_flag = ROM_treaty_of_bucharest_violated
-		remove_ideas = idea_armistice
-		FRA = {
-			if = {
-				limit = {
-					is_faction_leader = yes
-				}
-				add_to_faction = ROM
-			}
+		remove_ideas = {
+			idea_armistice
+			standing_alone
 		}
-		add_to_war = {
-			targeted_alliance = FRA
-			enemy = GER
-		}
+		join_great_war_against_GER = yes
 		ai_chance = {
 			factor = 0
 		}
@@ -5219,33 +5228,28 @@ country_event = {
 	fire_only_once = yes
 	option = {
 		name = ww1_romania.156.a
-		every_state = {
+		every_owned_state = {
 			limit = {
-				OR = {
-					AND = {
-						is_owned_and_controlled_by = GER
-						is_core_of = ROM
-					}
+				is_core_of = ROM
+				NOT = {
 					state = 805
 				}
 			}
-			transfer_state_to = ROM
+			transfer_state_to = ROM		
 		}
 		ROM = {
-			diplomatic_relation = {
-				country = GER
-				relation = non_aggression_pact
-				active = yes
+			give_resource_rights = {
+				receiver = GER
+				state = 46
 			}
 		}
-		GER = {
-			diplomatic_relation = {
-				country = ROM
-				relation = non_aggression_pact
-				active = yes
-			}
+		diplomatic_relation = {
+			country = ROM
+			relation = non_aggression_pact
+			active = yes
 		}
 		ROM = {
+			give_military_access = GER
 			country_event = {
 				id = ww1_romania.157
 				days = 1
@@ -5257,12 +5261,9 @@ country_event = {
 	}
 	option = {
 		name = ww1_romania.156.b
-		every_state = {
+		every_owned_state = {
 			limit = {
-				AND = {
-					is_owned_and_controlled_by = GER
-					is_core_of = ROM
-				}
+				is_core_of = ROM
 			}
 			add_resistance = 25
 			add_compliance = -10
@@ -5294,25 +5295,16 @@ country_event = {
 	option = {
 		name = ww1_romania.157.a
 		effect_tooltip = {
-			every_state = {
-				limit = {
-					AND = {
-						is_owned_and_controlled_by = GER
-						is_core_of = ROM
-					}
-				}
-				transfer_state_to = ROM
-			}
 			ROM = {
+				transfer_state = 46
+				give_resource_rights = {
+					receiver = GER
+					state = 46
+				}
+				transfer_state = 81
+				give_military_access = GER
 				diplomatic_relation = {
 					country = GER
-					relation = non_aggression_pact
-					active = yes
-				}
-			}
-			GER = {
-				diplomatic_relation = {
-					country = ROM
 					relation = non_aggression_pact
 					active = yes
 				}
@@ -5332,20 +5324,19 @@ country_event = {
 	option = {
 		name = ww1_romania.158.a
 		effect_tooltip = {
-			every_state = {
-				limit = {
-					AND = {
-						is_owned_and_controlled_by = GER
+			GER = {
+				every_state = {
+					limit = {
 						is_core_of = ROM
 					}
+					add_resistance = 25
+					add_compliance = -10
+					damage_building = {
+						type = industrial_complex
+						damage = 1
+					}
 				}
-				add_resistance = 25
-				add_compliance = -10
-				damage_building = {
-					type = industrial_complex
-					damage = 1
-				}
-			}
+			}			
 		}
 	}
 }
@@ -6223,7 +6214,6 @@ news_event = {
 	desc = ww1_romania.191.d
 	picture = GFX_news_event_budapest
 	major = yes
-	fire_only_once = yes
 	trigger = {
 		has_global_flag = great_war_ends
 		HUN = {
@@ -6235,7 +6225,7 @@ news_event = {
 		NOT = { has_global_flag = romania_occupies_budapest }
 	}
 	mean_time_to_happen = {
-		days = 1
+		days = 2
 	}
 	immediate = {
 		set_global_flag = romania_occupies_budapest
@@ -6512,9 +6502,13 @@ country_event = {
 		custom_effect_tooltip = HUN_romania_will_advance.tt
 		custom_effect_tooltip = HUN_peace_gov_collapse
 		hidden_effect = {
-			country_event = {
+			country_event = { #soviet coup event
 				id = ww1_hungary.1
 				days = 1
+			}
+			country_event = { #tensions on the czech border (leaders to hungarian-czech war)
+				id = ww1_romania.200
+				days = 35
 			}
 		}
 		ROM = {
@@ -6626,10 +6620,6 @@ country_event = {
 			}
 			HUN = {
 				add_ideas = HUN_armistice
-				country_event = {
-					id = ww1_romania.200
-					days = 5
-				}
 				every_state = { #hungary withdraws to tisza
 					limit = {
 						OR = {
@@ -6650,18 +6640,25 @@ country_event = {
 						controller = ROM
 					}
 				}
-				73 = {
-					if = {
-						limit = {
-							is_owned_by = HUN
+				if = {
+					limit = {
+						NOT = {
+							has_war_with = CZE
 						}
-						teleport_armies = {
+					}
+					73 = {
+						if = {
 							limit = {
-								original_tag = HUN
+								is_owned_by = HUN
 							}
-							to_state = 83
+							teleport_armies = {
+								limit = {
+									original_tag = HUN
+								}
+								to_state = 83
+							}
+							transfer_state_to = CZE
 						}
-						transfer_state_to = CZE
 					}
 				}
 				#no state modifiers since war with cze will begin
@@ -6678,12 +6675,6 @@ country_event = {
 			add_idea = HUN_army_collapse
 		}
 		custom_effect_tooltip = HUN_romania_will_advance_surrender.tt
-		hidden_effect = {
-			country_event = {
-				id = ww1_romania.200
-				days = 5
-			}
-		}
 	}
 }
 #czech invasion of slovakia
@@ -6856,9 +6847,9 @@ country_event = {
 		}
 	}
 	picture = GFX_report_event_HUN_hungary_occupies_area
-	option = { #government loses support for failure, entente allows romania to advance and stop the hungarian attack on romania
+	option = { #government loses support for failure, entente allows romania to advance and stop the hungarian attack on czechoslovakia
 		name = ww1_romania.202.a
-		effect_tooltip = {
+		hidden_effect = {
 			ROM = {
 				country_event = ww1_romania.203
 			}
@@ -6933,6 +6924,14 @@ country_event = {
 			remove_idea = HUN_disorganized_army
 			add_idea = HUN_army_collapse
 		}
+		custom_effect_tooltip = HUN_czech_demarcations_broken.tt
+		hidden_effect = {
+			remove_ideas = HUN_czech_armistice
+			CZE = {
+				remove_ideas = CZE_armistice
+			}
+		}
+
     }
 }
 #use .208 as id next, not 207
@@ -6967,6 +6966,53 @@ news_event = {
 	}
 	option = {
 		name = ww1_romania.208.c
+		trigger = {
+			has_war_with = HUN
+		}
+	}
+}
+#hungarian-czech war
+news_event = {
+	id = ww1_romania.209
+	title = ww1_romania.209.t
+	desc = ww1_romania.209.d
+	picture = GFX_news_event_hun_cze_war
+	major = yes
+	trigger = {
+		NOT = {
+			has_global_flag = hungarian_czech_war_news
+		}
+		has_global_flag = ROM_HUN_war_1919
+		original_tag = HUN
+		has_war_with = CZE
+	}
+	immediate = {
+		set_global_flag = hungarian_czech_war_news
+	}
+	mean_time_to_happen = {
+		days = 0
+	}
+	option = {
+		name = ww1_romania.209.a
+		trigger = {
+			OR = {
+				tag = HUN
+				is_subject_of = HUN
+			}
+		}
+	}
+	option = {
+		name = ww1_romania.209.b
+		trigger = {
+			NOT = {
+				tag = HUN
+				is_subject_of = HUN
+				has_war_with = HUN
+			}
+		}
+	}
+	option = {
+		name = ww1_romania.209.c
 		trigger = {
 			has_war_with = HUN
 		}
