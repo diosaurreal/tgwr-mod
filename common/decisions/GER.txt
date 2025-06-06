@@ -1049,9 +1049,6 @@ GER_great_war = {
 				has_country_flag = exasperation_mission_done
 			}
 		}
-		modifier = {
-			power_balance_daily = -0.005
-		}
 		timeout_effect = {
 			set_country_flag = exasperation_mission_done
 			activate_decision = GER_decision_naval_order_of_october_1918
@@ -2148,9 +2145,18 @@ GER_great_war = {
 							has_war_together_with = GER
 							has_war_together_with = FRA
 						}
+						NOT = { tag = GER }
 					}
 					add_war_support = -0.05
 				}
+			}
+			if = {
+				limit = {
+					tag = GER
+					NOT = { has_completed_focus = GER_heeringens_plan }
+				}
+				complete_national_focus = GER_schlieffen_plan_scuppered
+				country_event = ww1_germanrework.46 #Removes Moltke due to stroke
 			}
 			hidden_effect = {
 				set_global_flag = before_the_leaves_fall_failed
@@ -2162,21 +2168,9 @@ GER_great_war = {
 							has_war_together_with = GER
 							has_war_together_with = FRA
 						}
+						NOT = { tag = GER }
 					}
 					add_war_support = -0.05
-				}
-				if = {
-					limit = {
-						GER = {
-							not = {
-								has_completed_focus = GER_heeringens_plan
-							}
-						}
-					}
-					GER = {
-						complete_national_focus = GER_schlieffen_plan_scuppered
-						country_event = ww1_germanrework.46 #Removes Moltke due to stroke
-					}
 				}
 			}
 		}
@@ -9096,39 +9090,57 @@ GER_bundesrat_category = {
 			}
 		}
 	}
-	GER_negotiations_with_baden = {
+
+	GER_negotiations_with_generics = {
 		icon = GFX_decision_generic_political_discourse
 		visible = {
-			986 = {
-				is_owned_by = ROOT
-			}
-			NOT = {
-				has_active_mission = GER_investment_in_baden
-				has_country_flag = GER_political_concessions_to_baden
-				has_country_flag = GER_negotiations_with_baden
+		}
+		state_target = yes
+		target_trigger = {
+			FROM = {
+				OR = {
+					state = 986
+					state = 54
+					state = 50
+					state = 60
+					state = 56
+					state = 61
+					#state = 1164
+					state = 65
+					state = 28
+					state = 1165
+				}
+				is_controlled_by = ROOT
+				is_core_of = GER #elssas is not on game start, but gets core after alsatian constitution is voted in bunderstag
+				NOT = {
+					has_state_flag = GER_bunderstag_negotation_with_FROM
+				}
 			}
 		}
+		on_map_mode = decision_view_only
 		available = {
 		}
-		cost = 25
+		cost = 5
 		complete_effect = {
-			set_country_flag = GER_negotiations_with_baden
+			FROM = {
+				
+				set_state_flag = GER_bunderstag_negotation_with_FROM
+			}
 			country_event = ww1_germanrework.174
 		}
 		ai_will_do = {
 			factor = 0
 		}
 	}
-	#Investment in Baden
-	GER_investment_in_baden = {
+	GER_investment_in_generic = {
 		icon = generic_factory
 		allowed = {
 			tag = GER
 		}
 		available = {
-			custom_trigger_tooltip = {
-				tooltip = tt_build_one_civ_trigger_baden
-				986 = {
+			FROM = {
+				custom_trigger_tooltip = {
+					tooltip = tt_build_one_civ_trigger
 					check_variable = { 
 						var = industrial_complex_level
 						value = civilian_total_after_goal
@@ -9137,38 +9149,64 @@ GER_bundesrat_category = {
 				}
 			}
 		}
-		days_mission_timeout = 365
-		is_good = no
+		selectable_mission = no
+		state_target = yes
+		target_trigger = {
+			FROM = {
+				is_controlled_by = GER
+				has_state_flag = GER_building_mission_civilian_factory
+			}
+		}
 		activation = {
 			always = no
 		}
+		highlight_states = {
+			highlight_states_trigger = {
+				is_controlled_by = GER
+				has_state_flag = GER_building_mission_civilian_factory
+			}
+		}
+		days_mission_timeout = 365
+		is_good = no
 		cancel_trigger = {
 			NOT = {
-				controls_state = 986
+				controls_state = FROM
+			}
+		}
+		cancel_effect = {
+			hidden_effect = {
+				FROM = {
+					clr_state_flag = GER_building_mission_civilian_factory
+				}
 			}
 		}
 		complete_effect = {
-			add_to_variable = {
-				GER_baden_influence = 1
+			GER_increase_target_federal_state_influence = yes
+			hidden_effect = {
+				FROM = {
+					clr_state_flag = GER_building_mission_civilian_factory
+				}
 			}
-			custom_effect_tooltip = {
-				localization_key = GER_get_baden_influence_tt
-				INFLUENCE = "1"
-			}	
 		}
 		timeout_effect = {
 			add_political_power = -50
+			hidden_effect = {
+				FROM = {
+					clr_state_flag = GER_building_mission_civilian_factory
+				}
+			}
 		}
 	}
-	GER_investment_in_baden_infrastructure = {
-		icon = generic_railway
+
+	GER_investment_in_generic_infrastructure = {
+		icon = generic_factory
 		allowed = {
 			tag = GER
 		}
 		available = {
-			custom_trigger_tooltip = {
-				tooltip = tt_build_one_infrastructure_trigger_baden
-				986 = {
+			FROM = {
+				custom_trigger_tooltip = {
+					tooltip = tt_build_one_infrastructure_trigger
 					check_variable = { 
 						var = infrastructure_level
 						value = infrastructure_total_after_goal
@@ -9177,27 +9215,53 @@ GER_bundesrat_category = {
 				}
 			}
 		}
-		days_mission_timeout = 365
-		is_good = no
 		activation = {
 			always = no
 		}
+		selectable_mission = no
+		state_target = yes
+		target_trigger = {
+			FROM = {
+				is_controlled_by = GER
+				has_state_flag = GER_building_mission_infrastructure
+			}
+		}
+		highlight_states = {
+			highlight_states_trigger = {
+				is_controlled_by = GER
+				has_state_flag = GER_building_mission_infrastructure
+			}
+		}
+		days_mission_timeout = 365
+		is_good = no
 		cancel_trigger = {
 			NOT = {
-				controls_state = 986
+				controls_state = FROM
+			}
+		}
+		cancel_effect = {
+			hidden_effect = {
+				FROM = {
+					clr_state_flag = GER_building_mission_infrastructure
+				}
 			}
 		}
 		complete_effect = {
-			add_to_variable = {
-				GER_baden_influence = 1
+			GER_increase_target_federal_state_influence = yes
+			hidden_effect = {
+				FROM = {
+					clr_state_flag = GER_building_mission_infrastructure
+				}
 			}
-			custom_effect_tooltip = {
-				localization_key = GER_get_baden_influence_tt
-				INFLUENCE = "1"
-			}	
+			GER_get_federal_state_influence_points_from_state_id = yes
 		}
 		timeout_effect = {
 			add_political_power = -50
+			hidden_effect = {
+				FROM = {
+					clr_state_flag = GER_building_mission_infrastructure
+				}
+			}
 		}
 	}
 	GER_give_1_influence = {
@@ -9258,6 +9322,50 @@ GER_bundesrat_category = {
 		complete_effect = {
 			set_temp_variable = { ger_modify_influence_points_var = 10000 }
 			GER_modify_influence_points = yes
+		}
+	}
+	GER_debug_give_points_to_oldeburg = {
+		visible = {
+			is_debug = yes
+			tag = GER
+		}
+		state_target = yes
+		target_trigger = {
+			FROM = {
+				state = 56
+			}
+		}
+		
+		complete_effect = {
+			56 = {
+				GER = {
+					GER_get_federal_state_influence_points_from_state_id = yes
+					custom_effect_tooltip = escape_line
+					GER_increase_target_federal_state_influence = yes
+				}
+			}
+		}
+	}
+	GER_debug_give_points_to_baden = {
+		visible = {
+			is_debug = yes
+			tag = GER
+		}
+		state_target = yes
+		target_trigger = {
+			FROM = {
+				state = 986
+			}
+		}
+		
+		complete_effect = {
+			986 = {
+				GER = {
+					GER_get_federal_state_influence_points_from_state_id = yes
+					custom_effect_tooltip = escape_line
+					GER_increase_target_federal_state_influence = yes
+				}
+			}
 		}
 	}
 
@@ -10645,7 +10753,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 				hidden_effect = {
@@ -10703,7 +10813,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 				hidden_effect = {
@@ -10765,7 +10877,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 				hidden_effect = {
@@ -11109,7 +11223,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 
@@ -11184,7 +11300,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 
@@ -11259,7 +11377,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 
@@ -11334,7 +11454,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 				set_country_flag = GER_constitution_for_alsace_unlocked_in_bund
@@ -11404,7 +11526,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 
@@ -11479,7 +11603,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 				set_country_flag = GER_limited_army_bill_law_unlocked_in_bund
@@ -11553,7 +11679,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 				set_country_flag = GER_first_army_law_cen_unlocked_in_bund
@@ -11628,7 +11756,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 				set_country_flag = GER_second_army_law_cen_unlocked_in_bund
@@ -11702,7 +11832,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 				set_country_flag = GER_five_year_army_law_unlocked_in_bund
@@ -11778,7 +11910,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 
@@ -11853,7 +11987,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 				add_political_power = 25
@@ -11927,7 +12063,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 				add_political_power = 25
@@ -12002,7 +12140,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 				add_political_power = 25
@@ -12083,7 +12223,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 
@@ -12158,7 +12300,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 
@@ -12231,7 +12375,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 
@@ -12307,7 +12453,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 
@@ -12322,6 +12470,72 @@ GER_reichstag_category = {
 					custom_effect_tooltip = GER_if_law_passes_reich
 					effect_tooltip = {
 						GER_enabling_act_effect = yes
+					}
+				}
+			}
+			hidden_effect = {
+				GER_reset_sway_reichstag = yes
+			}
+		}
+		ai_will_do = {
+			factor = 5000 #oh yeah
+		}
+	}
+	GER_auxiliary_services_act = {
+		icon = GFX_decision_SOV_place_hq
+		allowed = {
+			original_tag = GER
+		}
+		cost = 10
+		visible = {
+			NOT = {
+				has_country_flag = GER_auxiliary_services_act_passed
+			}
+			OR = {
+				AND = {
+					is_debug = yes
+					has_country_flag = GER_show_debug_decisions
+				}
+				AND = {
+					has_completed_focus = GER_the_hindenburg_program
+					has_war = yes
+				}
+			}
+		}
+		available = {
+			NOT = {
+				has_country_flag = GER_reichstag_vote_in_progress
+			}
+		}
+		days_remove = 21
+
+		complete_effect = {
+			set_country_flag = right_vote_in_progress
+			set_country_flag = GER_reichstag_vote_in_progress
+		}
+
+		remove_effect = {
+			right_vote_temp_var_setter = yes
+			if = {
+				limit = {
+					check_variable = {
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
+					}
+				}
+
+				custom_effect_tooltip = GER_law_pass
+				custom_effect_tooltip = GER_if_law_passes_reich
+				GER_auxiliary_services_act_effect = yes
+
+				set_country_flag = GER_auxiliary_services_act_passed
+
+				else = {
+					custom_effect_tooltip = GER_law_dont_pass
+					custom_effect_tooltip = GER_if_law_passes_reich
+					effect_tooltip = {
+						GER_auxiliary_services_act_effect = yes
 					}
 				}
 			}
@@ -12370,7 +12584,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 				add_political_power = 25
@@ -12448,7 +12664,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 								
@@ -12568,7 +12786,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 								
@@ -12649,7 +12869,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 								
@@ -12724,7 +12946,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 								
