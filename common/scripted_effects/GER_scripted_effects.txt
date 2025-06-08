@@ -3457,7 +3457,6 @@ generic_setup_building_civ_objective = {
     add_to_variable = { civilian_total_after_goal = industrial_complex_level }
     clr_state_flag = GER_bunderstag_negotation_with_FROM
     set_state_flag = GER_building_mission_civilian_factory
-    custom_effect_tooltip = tt_objective
     custom_effect_tooltip = tt_build_one_civ
 }
 
@@ -3466,7 +3465,6 @@ generic_setup_building_infra_objective = {
     add_to_variable = { infrastructure_total_after_goal = infrastructure_level }
     clr_country_flag = GER_bunderstag_negotation_with_FROM
     set_state_flag = GER_building_mission_infrastructure
-    custom_effect_tooltip = tt_objective
     custom_effect_tooltip = tt_build_one_infra
 }
 
@@ -3480,6 +3478,115 @@ GER_increase_target_federal_state_influence = {
     }
 }
 
+GER_increase_target_federal_state_influence_PREV = {
+    custom_effect_tooltip = {
+        localization_key = GER_get_FROM_influence_by_flag_tt
+        INFLUENCE = "1"
+    }
+    FROM = {
+        add_to_variable = { ger_influence_bundesrat_in_this_federal_state = 1 }
+    }
+}
+
 GER_get_federal_state_influence_points_from_state_id = {
     custom_effect_tooltip = GER_get_local_influence_points
+}
+
+GER_start_investment_mission_for_federal_state = {
+   if = {
+        limit = {
+            has_country_flag = GER_negotiating_with_bavaria
+        }
+        activate_mission = GER_investment_in_bavaria
+        every_owned_state = {
+            limit = {
+                is_core_of = BAY
+            }
+            clr_state_flag = GER_bunderstag_negotation_with_FROM
+            set_variable = { civilian_goal = 1 }
+            generic_setup_building_civ_objective = yes
+            custom_effect_tooltip = effect_if_completed
+            custom_effect_tooltip = {
+                localization_key = GER_influence_point_fake_tt
+                INFLUENCE = "1"
+                FEDERAL_STATE = "Bavaria"
+            }
+        }
+        clr_country_flag = GER_negotiating_with_bavaria
+    }
+}
+
+GER_start_investment_infra_mission_for_federal_state = {
+   if = {
+        limit = {
+            has_country_flag = GER_negotiating_with_bavaria
+        }
+        activate_mission = GER_investment_in_bavaria_infrastructure
+        every_owned_state = {
+            limit = {
+                is_core_of = BAY
+            }
+            clr_state_flag = GER_bunderstag_negotation_with_FROM
+            set_variable = { infrastructure_goal = 1 }
+			generic_setup_building_infra_objective = yes
+            custom_effect_tooltip = effect_if_completed
+            custom_effect_tooltip = {
+                localization_key = GER_influence_point_fake_tt
+                INFLUENCE = "1"
+                FEDERAL_STATE = "Bavaria"
+            }
+        }
+        clr_country_flag = GER_negotiating_with_bavaria
+    }
+}
+
+GER_start_political_concession_with_federal_state = {
+   if = {
+        limit = {
+            has_country_flag = GER_negotiating_with_bavaria
+        }
+        hidden_effect = {
+            every_owned_state = {
+                limit = {
+                    is_core_of = BAY
+                }
+                set_state_flag = GER_political_concession_target
+                clr_state_flag = GER_bunderstag_negotation_with_FROM
+                
+            }
+        }
+        custom_effect_tooltip = effect_when_gone
+        custom_effect_tooltip = {
+            localization_key = GER_influence_point_fake_tt
+            INFLUENCE = "1"
+            FEDERAL_STATE = "Bavaria"
+        }
+        clr_country_flag = GER_negotiating_with_bavaria
+    }
+}
+
+GER_end_political_concession_with_federal_state = {
+    random_owned_controlled_state = {
+        limit = {
+            has_state_flag = GER_political_concession_target
+        }
+        clr_state_flag = GER_political_concession_target
+        if = {
+            limit = {
+                is_core_of = BAY
+            }
+            ROOT = {	#dont give it to a precise state
+                add_to_variable = { GER_influence_in_bavaria = 1 }
+            }
+            custom_effect_tooltip = {
+                localization_key = GER_influence_point_fake_tt
+                INFLUENCE = "1"
+                FEDERAL_STATE = "Bavaria"
+            }
+        }
+    }
+}
+
+GER_remove_all_negotiation_flags = {
+    clr_country_flag = GER_negotiating_with_bavaria
 }
