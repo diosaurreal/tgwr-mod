@@ -1400,13 +1400,7 @@ armistice_effect = {
 	}
 	##### Germany #####
 	GER = {
-		GER_wilhelm_ii = {
-			set_portraits = {
-				civilian = {
-					large="gfx/leaders/GER/GER_Wilhelm_II_1918.png"
-				}
-			}
-		}
+		GER_change_wilhelm_ii_portrait = yes
 		if = {
 			limit = {
 				has_country_flag = great_war_loser
@@ -1470,66 +1464,96 @@ armistice_effect = {
 						NOT = { has_cosmetic_tag = BEL_GER }
 					}
 				}
-				GER = {
-					set_autonomy = {
-						target = BEL
-						autonomous_state = autonomy_integrated_puppet
-					}
-					GER_ludwig_von_falkenhausen = {
-						set_nationality = BEL
-					}
-				}
-				BEL = {
-					set_popularities = {
-						democratic = 10
-						neutrality = 40
-						fascism = 40
-						communism = 10
-					}
-					set_war_support = 0.05
-					set_stability = 0.15
-					set_politics = {
-						ruling_party = fascism
-						elections_allowed = no
-					}
-					set_party_name = {
-						ideology = fascism
-						long_name = BEL_occupation_party_long
-						name = BEL_occupation_party
-					}
-					set_cosmetic_tag = BEL_GER
-					GER_ludwig_von_falkenhausen = {
-						if = {
-							limit = { has_ideology = stratocracy }
-							promote_character = stratocracy
+				if = {
+					limit = {
+						GER = {
+							NOT = {
+								has_country_flag = GER_free_belgium	#no, free belgium lies here
+							}
 						}
-						else = {
-							add_country_leader_role = {
-								promote_leader = yes
-								country_leader = {
-									ideology = stratocracy
-									traits = {
-										foreign_leader
-										german_agent
+					}
+					GER = {
+						set_autonomy = {
+							target = BEL
+							autonomous_state = autonomy_integrated_puppet
+						}
+						GER_ludwig_von_falkenhausen = {
+							set_nationality = BEL
+						}
+					}
+					BEL = {
+						set_popularities = {
+							democratic = 10
+							neutrality = 40
+							fascism = 40
+							communism = 10
+						}
+						set_war_support = 0.05
+						set_stability = 0.15
+						set_politics = {
+							ruling_party = fascism
+							elections_allowed = no
+						}
+						set_party_name = {
+							ideology = fascism
+							long_name = BEL_occupation_party_long
+							name = BEL_occupation_party
+						}
+						set_cosmetic_tag = BEL_GER
+						GER_ludwig_von_falkenhausen = {
+							if = {
+								limit = { has_ideology = stratocracy }
+								promote_character = stratocracy
+							}
+							else = {
+								add_country_leader_role = {
+									promote_leader = yes
+									country_leader = {
+										ideology = stratocracy
+										traits = {
+											foreign_leader
+											german_agent
+										}
 									}
 								}
 							}
 						}
+						add_ideas = BEL_belgian_resistance
+						remove_ideas = idea_army_restrictions
+						set_country_flag = dont_trigger_political_event
+						every_owned_state = {
+							limit = {
+								OR = {
+									is_core_of = GER
+									is_claimed_by = GER
+								}
+							}
+							transfer_state_to = GER
+						}
+						add_state_core = 33
 					}
-					add_ideas = BEL_belgian_resistance
-					remove_ideas = idea_army_restrictions
-					set_country_flag = dont_trigger_political_event
-					every_owned_state = {
-						limit = {
-							OR = {
-								is_core_of = GER
-								is_claimed_by = GER
+					else = {
+						#if germany complete the ahistorical focus "Ensure Post War Belgian Liberation"
+						#It makes belgium free
+						if = {
+							limit = {
+								BEL = {
+									is_subject = yes
+								}
+							}
+							BEL = {
+								OVERLORD = {
+									set_autonomy = {
+										target = BEL
+										autonomy_state = autonomy_free
+									}
+								}
 							}
 						}
-						transfer_state_to = GER
+						
 					}
-					add_state_core = 33
 				}
+				#no matter what, belgian compensation
 				if = {
 					limit = {
 						FRA = {
@@ -1552,6 +1576,7 @@ armistice_effect = {
 						}
 					}
 				}
+				
 			}
 			if = {
 				limit = {
@@ -1574,16 +1599,16 @@ armistice_effect = {
 					}
 				}
 			}
-			if = {
-				limit = {
-					has_completed_focus = GER_suppress_the_hungarian_uprising
-					HUN = { has_country_flag = great_war_loser }
-				}
-				set_autonomy = {
-					target = HUN
-					autonomous_state = autonomy_dominion
-				}
-			}
+			# if = {
+			# 	limit = {
+			# 		has_completed_focus = GER_suppress_the_hungarian_uprising
+			# 		HUN = { has_country_flag = great_war_loser }
+			# 	}
+			# 	set_autonomy = {
+			# 		target = HUN
+			# 		autonomous_state = autonomy_dominion
+			# 	}
+			# }
 			if = {
 				limit = {
 					ROM = {
@@ -2150,21 +2175,19 @@ armistice_effect = {
 	### Greece Schism ###
 	if = {
 		limit = {
+			has_global_flag = GRE_thessaloniki_state_formed
 			GRE = {
-				has_global_flag = great_war_ends
-				has_global_flag = GRE_thessaloniki_state_formed
-				NOT = {
-					has_country_flag = GRE_national_defense_flag
-				}
+				has_country_flag = GRE_national_defense_flag
+				has_country_flag = great_war_loser
 				any_other_country = {
 					original_tag = GRE
-					has_country_flag = GRE_national_defense_flag
+					has_country_flag = GRE_monarchist_mainland_flag
 					has_country_flag = great_war_loser
 					exists = yes
 				}
 			}
 		}
-		GRE = {
+		GRM = {
 			THE = {
 				GRE_pavlos_kountouriotis = {
 					remove_country_leader_role = {
@@ -2177,51 +2200,34 @@ armistice_effect = {
 					}
 				}
 				every_character = {
-					set_nationality = GRE
+					set_nationality = GRM
 				}
 				transfer_navy = {
-					target = GRE
+					target = GRM
 				}
 				transfer_units_fraction = {
-					target = GRE
+					target = GRM
 					size = 1
+					target_organization = 1
+					source_organization = 1
 					army_ratio = 0
 					keep_unit_leaders_trigger = {
 						always = yes
 					}
 				}
 				every_state = {
-					limit = {
-						is_core_of = PREV
-					}
+					limit = { is_core_of = PREV }
 					remove_core_of = PREV
-					add_core_of = GRE
+					add_core_of = GRM
 				}
 				every_state = {
-					limit = {
-						is_claimed_by = PREV
-					}
+					limit = { is_claimed_by = PREV }
 					remove_claim_by = PREV
-					remove_claim_by = GRE
 				}
-			}
-			clr_country_flag = empty_focus
-			load_focus_tree = { tree = greek_ww1_focus keep_completed = yes }
-			add_ideas = GRE_idea_national_schism3
-			remove_ideas = {
-				GRE_idea_national_schism
-				GRE_idea_dual_power
-				gre_royalist_port_blocked2
-				GRE_idea_national_schism
-				GRE_idea_national_schism2
-				GRE_idea_national_schism2b
-				GRE_idea_national_schism4
 			}
 			if = {
 				limit = {
-					NOT = {
-						has_country_flag = great_war_winner
-					}
+					NOT = { has_country_flag = great_war_winner }
 				}
 				set_country_flag = great_war_loser
 				add_ideas = idea_armistice
@@ -2233,18 +2239,22 @@ armistice_effect = {
 				}
 				change_tag_from = THE
 			}
+			clr_country_flag = GRE_monarchist_mainland_flag
+			THE = {
+				clr_country_flag = GRE_national_defense_flag
+			}
 		}
 	}
 	else_if = {
 		limit = {
+			has_global_flag = GRE_thessaloniki_state_formed
 			THE = {
 				has_country_flag = GRE_national_defense_flag
-				has_country_flag = great_war_winner
-				has_global_flag = great_war_ends
-				has_global_flag = GRE_thessaloniki_state_formed
+				has_country_flag = great_war_winner		
 				any_other_country = {
 					original_tag = GRE		
 					NOT = {
+						has_war_with = THE
 						has_country_flag = GRE_national_defense_flag
 					}
 				}
@@ -2348,16 +2358,16 @@ armistice_effect = {
 			}
 		}
 	}
-	### GER_paul_von_lettowvorbeck ###
+	### GER_paul_von_lettow_vorbeck ###
 	if = {
 		limit = {
 			TZN = {
 				has_country_flag = great_war_loser
-				has_character = GER_paul_von_lettowvorbeck
+				has_character = GER_paul_von_lettow_vorbeck
 			}
 		}
 		TZN = {
-			GER_paul_von_lettowvorbeck = {
+			GER_paul_von_lettow_vorbeck = {
 				set_nationality = GER
 			}
 		}
@@ -3513,7 +3523,7 @@ conference_effect = {
 					puppet = SWI
 					if = {
 						limit = {
-							has_idea = GER_idea_wilhelm_ii
+							is_GER_a_monarchy = yes
 						}
 						SWI = {
 							set_politics = {
@@ -3535,9 +3545,9 @@ conference_effect = {
 					HOL = {
 						has_country_flag = great_war_loser
 					}
-					GER = {
-						has_completed_focus = GER_threaten_holland
-					}
+					# GER = {
+					# 	has_completed_focus = GER_threaten_holland
+					# }
 				}
 				GER = {
 					puppet = HOL
@@ -3545,7 +3555,7 @@ conference_effect = {
 						limit = {
 							OR = {
 								has_government = neutrality
-								has_idea = GER_idea_wilhelm_ii
+								has_idea = GER_wilhelm_ii
 							}
 						}
 						HOL = {
@@ -3585,95 +3595,95 @@ conference_effect = {
 					}
 				}
 			}
-			if = {
-				limit = {
-					GER = {
-						has_completed_focus = GER_pressure_on_scandinavia
-					}
-				}
-				if = {
-					limit = {
-						SWE = {
-							has_country_flag = great_war_loser
-							is_subject = no
-						}				
-					}
-					GER = {
-						puppet = SWE
-						if = {
-							limit = {
-								has_idea = GER_idea_wilhelm_ii
-							}
-							SWE = {
-								set_politics = {
-									ruling_party = neutrality
-									elections_allowed = no
-								}
-								set_popularities = {
-									democratic = 10
-									neutrality = 70
-									fascism = 10
-									communism = 10
-								}
-							}
-						}
-					}
-				}
-				if = {
-					limit = {
-						DEN = {
-							has_country_flag = great_war_loser
-						}
-					}
-					GER = {
-						puppet = DEN
-						if = {
-							limit = {
-								has_idea = GER_idea_wilhelm_ii	
-							}
-							DEN = {
-								set_politics = {
-									ruling_party = neutrality
-									elections_allowed = no
-								}
-								set_popularities = {
-									democratic = 10
-									neutrality = 70
-									fascism = 10
-									communism = 10
-								}
-							}
-						}
-					}
-				}
-				if = {
-					limit = {
-						NOR = {
-							has_country_flag = great_war_loser
-						}
-					}
-					GER = {
-						puppet = NOR
-						if = {
-							limit = {
-								has_idea = GER_idea_wilhelm_ii
-							}
-							NOR = {
-								set_politics = {
-									ruling_party = neutrality
-									elections_allowed = no
-								}
-								set_popularities = {
-									democratic = 10
-									neutrality = 70
-									fascism = 10
-									communism = 10
-								}
-							}
-						}
-					}
-				}
-			}
+			# if = {
+			# 	limit = {
+			# 		GER = {
+			# 			has_completed_focus = GER_pressure_on_scandinavia
+			# 		}
+			# 	}
+			# 	if = {
+			# 		limit = {
+			# 			SWE = {
+			# 				has_country_flag = great_war_loser
+			# 				is_subject = no
+			# 			}				
+			# 		}
+			# 		GER = {
+			# 			puppet = SWE
+			# 			if = {
+			# 				limit = {
+			# 					has_idea = GER_wilhelm_ii
+			# 				}
+			# 				SWE = {
+			# 					set_politics = {
+			# 						ruling_party = neutrality
+			# 						elections_allowed = no
+			# 					}
+			# 					set_popularities = {
+			# 						democratic = 10
+			# 						neutrality = 70
+			# 						fascism = 10
+			# 						communism = 10
+			# 					}
+			# 				}
+			# 			}
+			# 		}
+			# 	}
+			# 	if = {
+			# 		limit = {
+			# 			DEN = {
+			# 				has_country_flag = great_war_loser
+			# 			}
+			# 		}
+			# 		GER = {
+			# 			puppet = DEN
+			# 			if = {
+			# 				limit = {
+			# 					has_idea = GER_wilhelm_ii	
+			# 				}
+			# 				DEN = {
+			# 					set_politics = {
+			# 						ruling_party = neutrality
+			# 						elections_allowed = no
+			# 					}
+			# 					set_popularities = {
+			# 						democratic = 10
+			# 						neutrality = 70
+			# 						fascism = 10
+			# 						communism = 10
+			# 					}
+			# 				}
+			# 			}
+			# 		}
+			# 	}
+			# 	if = {
+			# 		limit = {
+			# 			NOR = {
+			# 				has_country_flag = great_war_loser
+			# 			}
+			# 		}
+			# 		GER = {
+			# 			puppet = NOR
+			# 			if = {
+			# 				limit = {
+			# 					has_idea = GER_wilhelm_ii
+			# 				}
+			# 				NOR = {
+			# 					set_politics = {
+			# 						ruling_party = neutrality
+			# 						elections_allowed = no
+			# 					}
+			# 					set_popularities = {
+			# 						democratic = 10
+			# 						neutrality = 70
+			# 						fascism = 10
+			# 						communism = 10
+			# 					}
+			# 				}
+			# 			}
+			# 		}
+			# 	}
+			# }
 			if = {
 				limit = {
 					BLR = {
@@ -3700,10 +3710,7 @@ conference_effect = {
 					if = {
 						limit = {
 							GER = {
-								OR = {
-									has_government = neutrality
-									has_idea = GER_idea_wilhelm_ii
-								}
+								is_GER_a_monarchy = yes
 							}	
 						}
 						if = {
@@ -3895,7 +3902,7 @@ conference_effect = {
 					puppet = POL
 					if = {
 						limit = {
-							has_idea = GER_idea_wilhelm_ii
+							is_GER_a_monarchy = yes
 						}
 						POL = {
 							set_politics = {
@@ -3912,7 +3919,12 @@ conference_effect = {
 					}
 				}				
 			}				
-		}	
+		}		
+	}
+	else = {
+		GER = {
+			add_ideas = sour_loser
+		}
 	}
 	### OTTOMANS ###
 	if = {
@@ -4175,59 +4187,7 @@ conference_effect = {
 		}
 	}
 	TUR = {
-		if = {
-			limit = {
-				has_character = GER_colmar_von_der_goltz
-			}
-			GER_colmar_von_der_goltz = {
-				set_character_name = GER_colmar_von_der_goltz
-				set_nationality = GER
-			}
-		}
-		if = {
-			limit = {
-				has_character = GER_otto_liman_von_sanders
-			}
-			GER_otto_liman_von_sanders = {
-				demote_leader = yes
-				remove_unit_leader_trait = recently_promoted
-				set_portraits = {
-					army = {
-						large="gfx/leaders/GER/GER_liman_von_sanders.png"
-						small="gfx/interface/ideas/GER/idea_GER_liman_von_sanders.png"
-						}
-				}
-				set_nationality = GER
-			}
-		}
-		if = {
-			limit = {
-				has_character = GER_kress_von_kressenstein
-			}
-			GER_kress_von_kressenstein = {
-				demote_leader = yes
-				remove_unit_leader_trait = recently_promoted
-				set_nationality = GER
-			}
-		}
-		if = {
-			limit = {
-				has_character = GER_wilhelm_souchon
-			}
-			GER_wilhelm_souchon = {
-				set_nationality = GER
-			}
-		}
-		if = {
-			limit = {
-				has_character = GER_fritz_bronsart_von_schellendorf
-			}
-			GER_fritz_bronsart_von_schellendorf = {
-				demote_leader = yes
-				remove_unit_leader_trait = recently_promoted
-				set_nationality = GER
-			}
-		}
+		restraint_GER_TUR_military_mission_effect = yes
 	}
 	### AUSTRIA ###
 	if = {
@@ -5192,6 +5152,8 @@ conference_effect = {
 					transfer_units_fraction = {
 						target = GRE
 						size = 1
+						target_organization = 1
+						source_organization = 1
 						keep_unit_leaders_trigger = {
 							always = no
 						}
@@ -5506,7 +5468,7 @@ conference_effect = {
 			limit = {
 				GER = {
 					has_country_flag = great_war_winner
-					has_completed_focus = GER_moroccan_crisis
+					has_global_flag = agadir_crisis
 				}
 			}
 			MOR = {
