@@ -124,6 +124,8 @@ country_event = {
 						state = 244
 						state = 513
 						state = 736
+						state = 1197
+						state = 1198
 						state = 1010
 					}
 				}
@@ -300,8 +302,7 @@ country_event = {
 				}
 				declare_war_on = {
 					target = AUS
-					type = take_state_focus
-					generator = { 4 152 153 39 }
+					type = independence_wargoal
 				}
 				division_template = {
 					name = "Bosanski pobunjenici"
@@ -1271,6 +1272,8 @@ country_event = {
 							state = 244
 							state = 513
 							state = 736
+							state = 1197
+							state = 1198
 							state = 1010
 						}
 					}
@@ -1661,6 +1664,9 @@ country_event = {
 			every_owned_state = {
 				limit = {
 					is_core_of = CZE
+					NOT = {
+						state = 1200
+					}
 				}
 				transfer_state_to = CZE
 			}
@@ -4238,6 +4244,7 @@ country_event = {
 		has_global_flag =  AUH_HUN_independence
 		NOT = {
 			has_global_flag = AUH_HUN_civil_war_ends
+			has_global_flag = great_war_ends
 		}
 	}
 	immediate = {
@@ -4252,31 +4259,42 @@ country_event = {
 			base = 100
 		}
 		set_global_flag = AUH_territory_rearranged_by_script
-		HUN = {
-			remove_ideas = standing_alone
+		AUS = {
 			every_owned_state = {
 				limit = {
-					OR = {
-						is_core_of = SLO
-						is_core_of = TRA
-						is_core_of = UKR
-						is_core_of = WUK
-					}
-					is_core_of = HUN
+					region = 27
 				}
-				transfer_state_to = ROOT
+				transfer_state_to = HUN
 			}
 		}
-		CRO = {
-			transfer_state = 109
-			transfer_state = 208
-			transfer_state = 163
-			transfer_state = 103
-			transfer_state = 1006
+		HUN = {
+			remove_ideas = standing_alone
+		}
+		every_state = {
+			limit = {
+				OR = {
+					is_owned_by = AUS
+					is_owned_by = HUN
+				}
+				OR = {
+					state = 109
+					state = 208
+					state = 163
+					state = 103
+					state = 1006
+					state = 575
+				}
+			}
+			transfer_state_to = CRO
 		}
 		if = {
 			limit = {
-				owns_state = 104
+				104 = {
+					OR = {
+						is_owned_by = AUS
+						is_owned_by = HUN
+					}
+				}
 			}
 			BOS = {
 				transfer_state = 104
@@ -4284,24 +4302,18 @@ country_event = {
 		}
 		if = {
 			limit = {
-				575 = {
-					is_controlled_by_ROOT_or_subject = yes
+				244 = {
+					OR = {
+						is_owned_by = AUS
+						is_owned_by = HUN
+					}
 				}
 			}
-			#give it to CRO
-			CRO = {
-				transfer_state = 575
-			}
-		}
-		if = {
-			limit = {
-				NOT = {
-					has_war_with = HUN
+			160 = {
+				owner = {
+					transfer_state = 244
 				}
-			}
-			ITA = {
-				transfer_state = 244
-			}
+			}	
 		}
 		AUS = {
 			AUH_karl_i = {
@@ -4337,69 +4349,160 @@ country_event = {
 				}
 			}
 		}
-		CZE = {
-			transfer_state = 9
-			transfer_state = 69
-			transfer_state = 74
-			transfer_state = 75
-			transfer_state = 72
-			hidden_effect = {
-				inherit_technology = AUS
-			}
+		hidden_effect = {
+			CZE = {
+				if = {
+					limit = { exists = no }
+					inherit_technology = AUS
+				}			
+			}	
 		}
-		RUS = {
-			transfer_state = 88
-			transfer_state = 237
-			transfer_state = 991
+		every_state = {
+			limit = {
+				OR = {
+					is_owned_by = AUS
+					is_owned_by = HUN
+				}
+				is_core_of = CZE
+			}
+			transfer_state_to = CZE
 		}
 		if = {
-			limit = {
-				HUN = {
-					owns_state = 562
+			limit = { 
+				RUS = {
+					exists = yes
+					owns_state = 90
+					controls_state = 90
 				}
 			}
-			WUK = {
-				transfer_state = 562
+			every_state = {
+				limit = {
+					OR = {
+						is_owned_by = AUS
+						is_owned_by = HUN
+					}
+					OR = {
+						state = 88
+						state = 237
+						state = 991
+					}
+				}
+				transfer_state_to = RUS
+			}
+			else_if = {
+				limit = {
+					NOT = { has_global_flag = GAL_POL_united }
+				}			
+				every_state = {
+					limit = {
+						OR = {
+							is_owned_by = AUS
+							is_owned_by = HUN
+						}
+						OR = {
+							state = 88
+							state = 237
+							state = 991
+						}
+						is_core_of = GAL
+					}
+					transfer_state_to = GAL
+				}
+				if = {
+					limit = {
+						country_exists = GAL
+					}
+					set_global_flag = galicia_released
+					hidden_effect = {
+						GAL = {
+							set_cosmetic_tag = GAL_liquidation_comitte
+							set_politics = {
+								ruling_party = neutrality
+								long_name = GAL_liquidation_comitte_party_long 
+								name = GAL_liquidation_comitte_party 
+								elections_allowed = no
+							}
+							set_popularities = {
+								democratic = 46
+								fascism = 0
+								communism = 8
+								neutrality = 46
+							}
+							POL_wincenty_witos = {
+								promote_character = authoritarian_democracy
+							}	
+						}
+					}
+				}
+			}
+			else = {
+				every_state = {
+					limit = {
+						OR = {
+							is_owned_by = AUS
+							is_owned_by = HUN
+						}
+						OR = {
+							state = 88
+							state = 237
+							state = 991
+						}
+					}
+					transfer_state_to = POL
+				}
 			}
 		}
-		if = {
+		every_state = {
 			limit = {
-				HUN = {
-					owns_state = 91
+				OR = {
+					is_owned_by = AUS
+					is_owned_by = HUN
 				}
+				is_core_of = WUK
+				region = 39
 			}
-			WUK = {
-				transfer_state = 91
-			}
-		}
-		if = {
-			limit = {
-				HUN = {
-					owns_state = 89
-				}
-			}
-			WUK = {
-				transfer_state = 89
-			}
+			transfer_state_to = WUK
 		}
 		89 = {
 			owner = {
 				transfer_state = 1007
 			}
 		}
-		ROM = {
-			transfer_state = 1007
+		79 = {
+			owner = {
+				transfer_state = 1007
+			}
 		}
 		if = {
 			limit = {
 				has_global_flag = SER_full_intervention_in_AUH_civil_war_in_HUN_side
 			}
-			SER = {
-				transfer_state = 575
-				transfer_state = 104
+			every_state = {
+				limit = {
+					OR = {
+						is_owned_by = AUS
+						is_owned_by = HUN
+						is_owned_by = CRO
+						is_owned_by = BOS
+					}
+					OR = {
+						state = 575
+						state = 104
+					}
+				}
+				transfer_state_to = SER
 			}
 			HUN = {
 				leave_faction = yes
+			}
+		}
+		HUN = {
+			every_owned_state = {
+				limit = {
+					region = 22
+					is_core_of = AUS
+				}
+				transfer_state_to = AUS
 			}
 		}
 	}
@@ -10846,42 +10949,68 @@ country_event = {
 			limit = {
 				tag = AUS
 			}
-			ITA = {	#miam
-				hidden_effect = {
-					if = {
-						limit = {
-							GER = {
-								has_country_flag = ITA_london_pact_full_flag
-							}
+			if = {
+					limit = {
+						GER = {
+							has_country_flag = ITA_london_pact_full_flag
 						}
-						transfer_state = 244
-						transfer_state = 1006
-						transfer_state = 163
-						transfer_state = 736
-						transfer_state = 1010
-						transfer_state = 39
 					}
-					if = {
+					every_state = {
 						limit = {
-							GER = {
-								has_country_flag = ITA_london_pact_weak_flag
+							is_owned_or_subject_trigger = yes
+							OR = {
+								state = 244
+								state = 1006
+								state = 163
+								state = 736
+								state = 1197
+								state = 1198
+								state = 1010
+								state = 39
 							}
 						}
-						transfer_state = 244
-						transfer_state = 1006
-						transfer_state = 163
-						transfer_state = 736
-						transfer_state = 1010
+						transfer_state_to = ITA
 					}
-					if = {
+				}	
+				else_if = {
+					limit = {
+						GER = {
+							has_country_flag = ITA_london_pact_weak_flag
+						}
+					}
+					every_state = {
 						limit = {
-							GER = {
-								has_country_flag = ITA_london_pact_very_weak
+							is_owned_or_subject_trigger = yes
+							OR = {
+								state = 244
+								state = 1006
+								state = 163
+								state = 736
+								state = 1197
+								state = 1198
+								state = 1010
 							}
 						}
-						transfer_state = 244
-						transfer_state = 1006
-						transfer_state = 163
+						transfer_state_to = ITA
+					}
+				}
+				else_if = {
+					limit = {
+						GER = {
+							has_country_flag = ITA_london_pact_very_weak
+						}
+					}
+					every_state = {
+						limit = {
+							is_owned_or_subject_trigger = yes
+							OR = {
+								state = 244
+								state = 1006
+								state = 163
+								state = 1198
+							}
+						}
+						transfer_state_to = ITA
 					}
 				}
 				SER = {
@@ -10938,7 +11067,6 @@ country_event = {
 						}
 					}
 				}
-			}
 			AUS = {
 				leave_faction = yes
 				add_ideas = neutrality_idea
