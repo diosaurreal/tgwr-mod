@@ -2023,15 +2023,15 @@ GER_modify_bundersrat_votes_in_favor = {
 
 GER_sway_all_states = {
     set_country_flag = baden_swayed
-    set_country_flag = hessen_swayed
+    set_country_flag = hesse_swayed
     set_country_flag = bavaria_swayed
-    set_country_flag = hansestadte_swayed
+    set_country_flag = hanseatic_cities_swayed
     set_country_flag = mecklenburg_swayed
-    set_country_flag = saschen_swayed
-    set_country_flag = braunschweig_swayed
+    set_country_flag = saxony_swayed
+    set_country_flag = brunswick_swayed
     set_country_flag = wurttemberg_swayed
-    set_country_flag = kleinstaaten_swayed
-    set_country_flag = thuringen_swayed
+    set_country_flag = minor_states_swayed
+    set_country_flag = thuringia_swayed
     if = {
 		limit = { has_country_flag = GER_law_alsace_new_member_passed_in_bundesrat }
 		set_country_flag = reichsland_swayed
@@ -2176,18 +2176,18 @@ GER_assign_cooldowns = {
 	}
 	if = {
 		limit = {
-			has_country_flag = GER_called_in_thuringen
+			has_country_flag = GER_called_in_thuringia
 		}
-		clr_country_flag = GER_called_in_thuringen
-		set_country_flag = GER_thuringen_cooldown
-		custom_effect_tooltip = GER_thuringen_cooldown_tt
+		clr_country_flag = GER_called_in_thuringia
+		set_country_flag = GER_thuringia_cooldown
+		custom_effect_tooltip = GER_thuringia_cooldown_tt
 	}
 	else_if = {
 		limit = {
-			has_country_flag = GER_thuringen_cooldown
+			has_country_flag = GER_thuringia_cooldown
 		}
-		clr_country_flag = GER_thuringen_cooldown
-		custom_effect_tooltip = GER_thuringen_cooldown_ends_tt
+		clr_country_flag = GER_thuringia_cooldown
+		custom_effect_tooltip = GER_thuringia_cooldown_ends_tt
 	}
 	if = {
 		limit = {
@@ -2816,7 +2816,53 @@ GER_british_neutrality_effect = {
         add_war_support = -0.2
     }
 }
+GER_spd_slpit = {
+    if = {
+        limit = { 
+            NOT= {
+                has_global_flag = spd_split
+            }
+        }
+        set_global_flag = spd_split
+        effect_tooltip = {
+            set_party_name = {
+                ideology = democratic
+                long_name = GER_majority_social_democratic_party_long
+                name = GER_majority_social_democratic_party
+            }
+            set_party_name = {
+                ideology = communism
+                long_name = GER_independent_social_democratic_party_long
+                name = GER_independent_social_democratic_party
+            }
+        } 
+		hidden_effect = {
+            every_possible_country = {
+                limit = {
+                    has_country_flag = spd_m_party
+                }
+                set_party_name = {
+					ideology = democratic
+					long_name = GER_majority_social_democratic_party_long
+					name = GER_majority_social_democratic_party
+				}
+                clr_country_flag = spd_m_party
+            }
+            every_possible_country = {
+                limit = {
+                    has_country_flag = spd_r_party
+                }
+                set_party_name = {
+					ideology = communism
+					long_name = GER_independent_social_democratic_party_long
+					name = GER_independent_social_democratic_party
+				}
+                clr_country_flag = spd_r_party
+            }
+        } 
+    }
 
+}
 GER_1918_revolution_effect = {
     set_global_flag = GER_1918_revolution
     hidden_effect = {
@@ -2843,14 +2889,6 @@ GER_1918_revolution_effect = {
         long_name = GER_majority_social_democratic_party_long
         name = GER_majority_social_democratic_party
 		elections_allowed = no
-    }
-    PRE = {
-        set_politics = {
-            ruling_party = democratic
-            long_name = GER_majority_social_democratic_party_long
-            name = GER_majority_social_democratic_party
-            elections_allowed = no
-        }
     }
     country_event = {
 		id = ww1_german_revolution.17
@@ -2962,50 +3000,7 @@ GER_1918_revolution_effect = {
 				}	
 			}
 		}
-        set_global_flag = spd_split
-        BAY = {
-            set_party_name = {
-                ideology = democratic
-                long_name = GER_majority_social_democratic_party_long
-                name = GER_majority_social_democratic_party
-            }
-            set_party_name = {
-                ideology = communism
-                long_name = GER_independent_social_democratic_party_long
-                name = GER_independent_social_democratic_party
-            }
-        }
-        WUR = {
-            set_party_name = {
-                ideology = democratic
-                long_name = GER_majority_social_democratic_party_long
-                name = GER_majority_social_democratic_party
-            }
-            set_party_name = {
-                ideology = communism
-                long_name = GER_independent_social_democratic_party_long
-                name = GER_independent_social_democratic_party
-            }
-        }
-        OLD = {
-            set_party_name = {
-                ideology = democratic
-                long_name = GER_majority_social_democratic_party_long
-                name = GER_majority_social_democratic_party
-            }
-            set_party_name = {
-                ideology = communism
-                long_name = GER_independent_social_democratic_party_long
-                name = GER_independent_social_democratic_party
-            }
-        }
-        SAX = {
-            set_party_name = {
-                ideology = communism
-                long_name = GER_independent_social_democratic_party_long
-                name = GER_independent_social_democratic_party
-            }
-        }
+        GER_spd_slpit = yes
         if = {
             limit = {
                 NOT = {
@@ -3659,8 +3654,17 @@ GER_calculate_bundesrat_votes = {
             }          
         }
         add_to_variable = { var = GER_total_bundesrat_votes value = GER_votes_of_prussia }
-        add_to_variable = { var = GER_bundesrat_votes_in_favor value = GER_votes_of_prussia }
-    } 
+        if = {
+            limit = {           
+                OR = {
+                    has_cosmetic_tag = PRE
+                    is_GER_a_monarchy = yes
+                }          
+            }
+            add_to_variable = { var = GER_bundesrat_votes_in_favor value = GER_votes_of_prussia }
+            set_country_flag = GER_called_in_prussia
+        }
+    }
     if = {
         limit = { 
             NOT = { country_exists = BAY }
@@ -3689,7 +3693,7 @@ GER_calculate_bundesrat_votes = {
                 is_core_of = WUR
             }
         }
-        add_to_variable = { var = GER_total_bundesrat_votes value = GER_votes_of_wuttemberg }
+        add_to_variable = { var = GER_total_bundesrat_votes value = GER_votes_of_wurttemberg }
     }
     if = {
         limit = { 
@@ -3726,14 +3730,11 @@ GER_calculate_bundesrat_votes = {
     }
     if = {
         limit = { 
-            # NOT = { country_exists = MEK }
-            # any_owned_state = {             
-            #     is_core_of = ROOT
-            #     OR = {
-            #         is_core_of = MEK
-            #         is_core_of = MEC
-            #     }              
-            # }
+            NOT = { country_exists = BRU }
+            any_owned_state = {             
+                is_core_of = ROOT
+                is_core_of = BRU            
+            }
         }
         add_to_variable = { var = GER_total_bundesrat_votes value = GER_votes_of_brunswick }
     }
@@ -3755,7 +3756,7 @@ GER_calculate_bundesrat_votes = {
             #     is_core_of = ALS             
             # }
         }
-        add_to_variable = { var = GER_total_bundesrat_votes value = GER_votes_of_thurigen }
+        add_to_variable = { var = GER_total_bundesrat_votes value = GER_votes_of_thuringia }
     }
     if = {
         limit = { 
