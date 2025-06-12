@@ -725,7 +725,7 @@ GER_great_war = {
 			has_war_with = ITA
 			is_in_faction_with = AUS
 			OR = {
-				736 = {
+				1197 = {
 					is_controlled_by_ROOT_or_ally = yes
 				}
 				244 = {
@@ -1049,9 +1049,6 @@ GER_great_war = {
 				has_country_flag = exasperation_mission_done
 			}
 		}
-		modifier = {
-			power_balance_daily = -0.005
-		}
 		timeout_effect = {
 			set_country_flag = exasperation_mission_done
 			activate_decision = GER_decision_naval_order_of_october_1918
@@ -1266,6 +1263,7 @@ GER_great_war = {
 						state = 793
 						state = 42
 						state = 51
+						state = 343
 					}
 				}
 				add_dynamic_modifier = {
@@ -1464,7 +1462,7 @@ GER_great_war = {
 				limit = {
 					OR = {
 						state = 793
-						state = 42
+						state = 343
 					}
 				}
 				add_dynamic_modifier = {
@@ -2148,9 +2146,18 @@ GER_great_war = {
 							has_war_together_with = GER
 							has_war_together_with = FRA
 						}
+						NOT = { tag = GER }
 					}
 					add_war_support = -0.05
 				}
+			}
+			if = {
+				limit = {
+					tag = GER
+					NOT = { has_completed_focus = GER_heeringens_plan }
+				}
+				complete_national_focus = GER_schlieffen_plan_scuppered
+				country_event = ww1_germanrework.46 #Removes Moltke due to stroke
 			}
 			hidden_effect = {
 				set_global_flag = before_the_leaves_fall_failed
@@ -2162,21 +2169,9 @@ GER_great_war = {
 							has_war_together_with = GER
 							has_war_together_with = FRA
 						}
+						NOT = { tag = GER }
 					}
 					add_war_support = -0.05
-				}
-				if = {
-					limit = {
-						GER = {
-							not = {
-								has_completed_focus = GER_heeringens_plan
-							}
-						}
-					}
-					GER = {
-						complete_national_focus = GER_schlieffen_plan_scuppered
-						country_event = ww1_germanrework.46 #Removes Moltke due to stroke
-					}
 				}
 			}
 		}
@@ -8726,7 +8721,8 @@ GER_bundesrat_category = {
 			has_country_flag = GER_show_debug_decisions
 		}
 		complete_effect = {
-			set_country_flag = GER_started_voting_bundesrat
+			set_country_flag = GER_vote_in_bundesrat
+GER_calculate_bundesrat_votes = yes
 		}
 		days_remove = 30
         ai_will_do = {
@@ -8739,284 +8735,750 @@ GER_bundesrat_category = {
 				#here should be effects of accepting this law, like apply country_flag and effects (stability, autonomy idk)
 				else = { custom_effect_tooltip = GER_likely_to_be_rejected }
 			}
-			GER_remove_voting_stuff = yes
+			GER_vote_ends = yes
 		}
 	}
-	GER_sway_baden = {
+	GER_call_in_baden = {
 		icon = GFX_decision_generic_political_discourse
 		visible = {
-			#has_country_flag = GER_started_voting_bundesrat
-			NOT = { has_country_flag = baden_swayed }
+			has_country_flag = GER_vote_in_bundesrat
+			NOT = { has_country_flag = GER_called_in_baden }
 		}
-		custom_cost_trigger = { check_variable = { ger_influence_bundesrat > 2 } }
+		available = {
+			NOT = {
+				has_country_flag = GER_baden_cooldown
+			}
+		}
+		custom_cost_trigger = { check_variable = { GER_extra_influence > 2 } }
 		custom_cost_text = decision_cost_3_influence
 		
 		complete_effect = {
-			set_temp_variable = { ger_modify_total_loyalist_count_var = 3 }
-			GER_modify_total_loyalist_count = yes
+			set_country_flag = GER_called_in_baden
+			set_temp_variable = { ger_modify_bundersrat_votes_in_favor_var = 3 }
+			GER_modify_bundersrat_votes_in_favor = yes
 			set_country_flag = baden_swayed
 			set_temp_variable = { ger_modify_influence_points_var = -3 }
 			GER_modify_influence_points = yes
+			custom_effect_tooltip = GER_baden_cooldown_tt
 		}
 		ai_will_do = {
 			factor = 10
 			modifier = {
-				check_variable = {
-					ger_total_loyalist_count > 35
-				}
+				has_majority_in_bundesrat = yes
 				factor = 0
 			}
 		}
 	}
-	GER_sway_hessen = {
+	GER_call_in_hesse = {
 		icon = GFX_decision_generic_political_discourse
 		visible = {
-			#has_country_flag = GER_started_voting_bundesrat
-			NOT = { has_country_flag = hessen_swayed }
+			has_country_flag = GER_vote_in_bundesrat
+			NOT = { has_country_flag = GER_called_in_hesse }
 		}
-		custom_cost_trigger = { check_variable = { ger_influence_bundesrat > 2 } }
+		available = {
+			NOT = {
+				has_country_flag = GER_hesse_cooldown
+			}
+		}
+		custom_cost_trigger = { check_variable = { GER_extra_influence > 2 } }
 		custom_cost_text = decision_cost_3_influence
 		complete_effect = {
-			set_temp_variable = { ger_modify_total_loyalist_count_var = 3 }
-			GER_modify_total_loyalist_count = yes
-			set_country_flag = hessen_swayed
+			set_country_flag = GER_called_in_hesse
+			set_temp_variable = { ger_modify_bundersrat_votes_in_favor_var = 3 }
+			GER_modify_bundersrat_votes_in_favor = yes
+			set_country_flag = hesse_swayed
 			set_temp_variable = { ger_modify_influence_points_var = -3 }
 			GER_modify_influence_points = yes
+			custom_effect_tooltip = GER_hesse_cooldown_tt
 		}
 		ai_will_do = {
 			factor = 10
 			modifier = {
-				check_variable = {
-					ger_total_loyalist_count > 35
-				}
+				has_majority_in_bundesrat = yes
 				factor = 0
 			}
 		}
 	}
-	GER_sway_bayern = {
+	GER_call_in_bavaria = {
 		icon = GFX_decision_generic_political_discourse
 		visible = {
-			#has_country_flag = GER_started_voting_bundesrat
-			NOT = { has_country_flag = bayern_swayed }
+			has_country_flag = GER_vote_in_bundesrat
+			NOT = { has_country_flag = GER_called_in_bavaria }
 		}
-		custom_cost_trigger = { check_variable = { ger_influence_bundesrat > 5 } }
+		available = {
+			NOT = {
+				has_country_flag = GER_bavaria_cooldown
+			}
+		}
+		custom_cost_trigger = { check_variable = { GER_extra_influence > 5 } }
 		custom_cost_text = decision_cost_6_influence
 		complete_effect = {
-			set_temp_variable = { ger_modify_total_loyalist_count_var = 6 }
-			GER_modify_total_loyalist_count = yes
-			set_country_flag = bayern_swayed
+			set_country_flag = GER_called_in_bavaria
+			set_temp_variable = { ger_modify_bundersrat_votes_in_favor_var = 6 }
+			GER_modify_bundersrat_votes_in_favor = yes
+			set_country_flag = bavaria_swayed
 			set_temp_variable = { ger_modify_influence_points_var = -6 }
 			GER_modify_influence_points = yes
+			custom_effect_tooltip = GER_bavaria_cooldown_tt
 		}
 		ai_will_do = {
 			factor = 10
 			modifier = {
-				check_variable = {
-					ger_total_loyalist_count > 35
-				}
+				has_majority_in_bundesrat = yes
 				factor = 0
 			}
 		}
 	}
-	GER_sway_hansestadte = {
+	GER_call_in_hanseatic_cities = {
 		icon = GFX_decision_generic_political_discourse
 		visible = {
-			#has_country_flag = GER_started_voting_bundesrat
-			NOT = { has_country_flag = hansestadte_swayed }
+			has_country_flag = GER_vote_in_bundesrat
+			NOT = { has_country_flag = GER_called_in_free_cities }
 		}
-		custom_cost_trigger = { check_variable = { ger_influence_bundesrat > 2 } }
+		available = {
+			NOT = {
+				has_country_flag = GER_free_cities_cooldown
+			}
+		}
+		custom_cost_trigger = { check_variable = { GER_extra_influence > 2 } }
 		custom_cost_text = decision_cost_3_influence
 		complete_effect = {
-			set_temp_variable = { ger_modify_total_loyalist_count_var = 3 }
-			GER_modify_total_loyalist_count = yes
-			set_country_flag = hansestadte_swayed
+			set_country_flag = GER_called_in_free_cities
+			set_temp_variable = { ger_modify_bundersrat_votes_in_favor_var = 3 }
+			GER_modify_bundersrat_votes_in_favor = yes
+			set_country_flag = hanseatic_cities_swayed
 			set_temp_variable = { ger_modify_influence_points_var = -3 }
 			GER_modify_influence_points = yes
+			custom_effect_tooltip = GER_free_cities_cooldown_tt
 		}
 		ai_will_do = {
 			factor = 10
 			modifier = {
-				check_variable = {
-					ger_total_loyalist_count > 35
-				}
+				has_majority_in_bundesrat = yes
 				factor = 0
 			}
 		}
 	}
-	GER_sway_mecklenburg = {
+	GER_call_in_mecklenburg = {
 		icon = GFX_decision_generic_political_discourse
 		visible = {
-			#has_country_flag = GER_started_voting_bundesrat
-			NOT = { has_country_flag = mecklenburg_swayed }
+			has_country_flag = GER_vote_in_bundesrat
+			NOT = { has_country_flag = GER_called_in_mecklenburg }
 		}
-		custom_cost_trigger = { check_variable = { ger_influence_bundesrat > 1 } }
+		available = {
+			NOT = {
+				has_country_flag = GER_mecklenburg_cooldown
+			}
+		}
+		custom_cost_trigger = { check_variable = { GER_extra_influence > 1 } }
 		custom_cost_text = decision_cost_2_influence
 		complete_effect = {
-			set_temp_variable = { ger_modify_total_loyalist_count_var = 2 }
-			GER_modify_total_loyalist_count = yes
+			set_country_flag = GER_called_in_mecklenburg
+			set_temp_variable = { ger_modify_bundersrat_votes_in_favor_var = 2 }
+			GER_modify_bundersrat_votes_in_favor = yes
 			set_country_flag = mecklenburg_swayed
 			set_temp_variable = { ger_modify_influence_points_var = -2 }
 			GER_modify_influence_points = yes
+			custom_effect_tooltip = GER_mecklenburg_cooldown_tt
 		}
 		ai_will_do = {
 			factor = 10
 			modifier = {
-				check_variable = {
-					ger_total_loyalist_count > 35
-				}
+				has_majority_in_bundesrat = yes
 				factor = 0
 			}
 		}
 	}
-	GER_sway_saschen = {
+	GER_call_in_saxony = {
 		icon = GFX_decision_generic_political_discourse
 		visible = {
-			#has_country_flag = GER_started_voting_bundesrat
-			NOT = { has_country_flag = saschen_swayed }
+			has_country_flag = GER_vote_in_bundesrat
+			NOT = { has_country_flag = GER_called_in_saxony }
 		}
-		custom_cost_trigger = { check_variable = { ger_influence_bundesrat > 3 } }
+		available = {
+			NOT = {
+				has_country_flag = GER_saxony_cooldown
+			}
+		}
+		custom_cost_trigger = { check_variable = { GER_extra_influence > 3 } }
 		custom_cost_text = decision_cost_4_influence
 		complete_effect = {
-			set_temp_variable = { ger_modify_total_loyalist_count_var = 4 }
-			GER_modify_total_loyalist_count = yes
-			set_country_flag = saschen_swayed
+			set_country_flag = GER_called_in_saxony
+			set_temp_variable = { ger_modify_bundersrat_votes_in_favor_var = 4 }
+			GER_modify_bundersrat_votes_in_favor = yes
+			set_country_flag = saxony_swayed
 			set_temp_variable = { ger_modify_influence_points_var = -4 }
 			GER_modify_influence_points = yes
+			custom_effect_tooltip = GER_saxony_cooldown_tt
 		}
 		ai_will_do = {
 			factor = 10
 			modifier = {
-				check_variable = {
-					ger_total_loyalist_count > 35
-				}
+				has_majority_in_bundesrat = yes
 				factor = 0
 			}
 		}
 	}
-	GER_sway_braunschweig = {
+	GER_call_in_brunswick = {
 		icon = GFX_decision_generic_political_discourse
 		visible = {
-			#has_country_flag = GER_started_voting_bundesrat
-			NOT = { has_country_flag = braunschweig_swayed }
+			has_country_flag = GER_vote_in_bundesrat
+			NOT = { has_country_flag = GER_called_in_brunswick }
 		}
-		custom_cost_trigger = { check_variable = { ger_influence_bundesrat > 1 } }
+		available = {
+			NOT = {
+				has_country_flag = GER_brunswick_cooldown
+			}
+		}
+		custom_cost_trigger = { check_variable = { GER_extra_influence > 1 } }
 		custom_cost_text = decision_cost_2_influence
 		complete_effect = {
-			set_temp_variable = { ger_modify_total_loyalist_count_var = 2 }
-			GER_modify_total_loyalist_count = yes
-			set_country_flag = braunschweig_swayed
+			set_country_flag = GER_called_in_brunswick
+			set_temp_variable = { ger_modify_bundersrat_votes_in_favor_var = 2 }
+			GER_modify_bundersrat_votes_in_favor = yes
+			set_country_flag = brunswick_swayed
 			set_temp_variable = { ger_modify_influence_points_var = -2 }
 			GER_modify_influence_points = yes
+			custom_effect_tooltip = GER_brunswick_cooldown_tt
 		}
 		ai_will_do = {
 			factor = 10
 			modifier = {
-				check_variable = {
-					ger_total_loyalist_count > 35
-				}
+				has_majority_in_bundesrat = yes
 				factor = 0
 			}
 		}
 	}
-	GER_sway_wurttemberg = {
+	GER_call_in_wurttemberg = {
 		icon = GFX_decision_generic_political_discourse
 		visible = {
-			#has_country_flag = GER_started_voting_bundesrat
-			NOT = { has_country_flag = wurttemberg_swayed }
+			has_country_flag = GER_vote_in_bundesrat
+			NOT = { has_country_flag = GER_called_in_wurttemberg }
 		}
-		custom_cost_trigger = { check_variable = { ger_influence_bundesrat > 3 } }
+		available = {
+			NOT = {
+				has_country_flag = GER_wurttemberg_cooldown
+			}
+		}
+		custom_cost_trigger = { check_variable = { GER_extra_influence > 3 } }
 		custom_cost_text = decision_cost_4_influence
 		complete_effect = {
-			set_temp_variable = { ger_modify_total_loyalist_count_var = 4 }
-			GER_modify_total_loyalist_count = yes
+			set_country_flag = GER_called_in_wurttemberg
+			set_temp_variable = { ger_modify_bundersrat_votes_in_favor_var = 4 }
+			GER_modify_bundersrat_votes_in_favor = yes
 			set_country_flag = wurttemberg_swayed
 			set_temp_variable = { ger_modify_influence_points_var = -4 }
 			GER_modify_influence_points = yes
+			custom_effect_tooltip = GER_wurttemberg_cooldown_tt
 		}
 		ai_will_do = {
 			factor = 10
 			modifier = {
-				check_variable = {
-					ger_total_loyalist_count > 35
-				}
+				has_majority_in_bundesrat = yes
 				factor = 0
 			}
 		}
 	}
-	GER_sway_kleinstaaten = {
+	GER_call_in_minor_states = {
 		icon = GFX_decision_generic_political_discourse
 		visible = {
-			#has_country_flag = GER_started_voting_bundesrat
-			NOT = { has_country_flag = kleinstaaten_swayed }
+			has_country_flag = GER_vote_in_bundesrat
+			NOT = { has_country_flag = GER_called_in_minor_states }
 		}
-		custom_cost_trigger = { check_variable = { ger_influence_bundesrat > 5 } }
+		available = {
+			NOT = {
+				has_country_flag = GER_minor_states_cooldown
+			}
+		}
+		custom_cost_trigger = { check_variable = { GER_extra_influence > 5 } }
 		custom_cost_text = decision_cost_6_influence
 		complete_effect = {
-			set_temp_variable = { ger_modify_total_loyalist_count_var = 6 }
-			GER_modify_total_loyalist_count = yes
-			set_country_flag = kleinstaaten_swayed
+			set_country_flag = GER_called_in_minor_states
+			set_temp_variable = { ger_modify_bundersrat_votes_in_favor_var = 6 }
+			GER_modify_bundersrat_votes_in_favor = yes
+			set_country_flag = minor_states_swayed
 			set_temp_variable = { ger_modify_influence_points_var = -6 }
 			GER_modify_influence_points = yes
+			custom_effect_tooltip = GER_minor_states_cooldown_tt
 		}
 		ai_will_do = {
 			factor = 10
 			modifier = {
-				check_variable = {
-					ger_total_loyalist_count > 35
-				}
+				has_majority_in_bundesrat = yes
 				factor = 0
 			}
 		}
 	}
-	GER_sway_thuringen = {
+	GER_call_in_thuringia= {
 		icon = GFX_decision_generic_political_discourse
 		visible = {
-			#has_country_flag = GER_started_voting_bundesrat
-			NOT = { has_country_flag = thuringen_swayed }
+			has_country_flag = GER_vote_in_bundesrat
+			NOT = { has_country_flag = GER_called_in_thuringia}
 		}
-		custom_cost_trigger = { check_variable = { ger_influence_bundesrat > 7 } }
+		available = {
+			NOT = {
+				has_country_flag = GER_thuringia_cooldown
+			}
+		}
+		custom_cost_trigger = { check_variable = { GER_extra_influence > 7 } }
 		custom_cost_text = decision_cost_8_influence
 		complete_effect = {
-			set_temp_variable = { ger_modify_total_loyalist_count_var = 8 }
-			GER_modify_total_loyalist_count = yes
-			set_country_flag = thuringen_swayed
+			set_country_flag = GER_called_in_thuringia
+			set_temp_variable = { ger_modify_bundersrat_votes_in_favor_var = 8 }
+			GER_modify_bundersrat_votes_in_favor = yes
+			set_country_flag = thuringia_swayed
 			set_temp_variable = { ger_modify_influence_points_var = -8 }
 			GER_modify_influence_points = yes
+			custom_effect_tooltip = GER_thuringia_cooldown_tt
 		}
 		ai_will_do = {
 			factor = 10
 			modifier = {
-				check_variable = {
-					ger_total_loyalist_count > 35
-				}
+				has_majority_in_bundesrat = yes
 				factor = 0
 			}
 		}
 	}
-	GER_sway_reichsland = {
+	GER_call_in_reichsland = {
 		icon = GFX_decision_generic_political_discourse
 		visible = {
 			has_country_flag = GER_law_alsace_new_member_passed_in_bundesrat #If Alsace is in Bundesrat
-			#has_country_flag = GER_started_voting_bundesrat
-			NOT = { has_country_flag = reichsland_swayed }
+			has_country_flag = GER_vote_in_bundesrat
+			NOT = { has_country_flag = GER_called_in_alsace }
 		}
-		custom_cost_trigger = { check_variable = { ger_influence_bundesrat > 2 } }
+		available = {
+			NOT = {
+				has_country_flag = GER_alsace_cooldown
+			}
+		}
+		custom_cost_trigger = { check_variable = { GER_extra_influence > 2 } }
 		custom_cost_text = decision_cost_3_influence
 		complete_effect = {
-			set_temp_variable = { ger_modify_total_loyalist_count_var = 3 }
-			GER_modify_total_loyalist_count = yes
+			set_country_flag = GER_called_in_alsace
+			set_temp_variable = { ger_modify_bundersrat_votes_in_favor_var = 3 }
+			GER_modify_bundersrat_votes_in_favor = yes
 			set_country_flag = reichsland_swayed
 			set_temp_variable = { ger_modify_influence_points_var = -3 }
 			GER_modify_influence_points = yes
+			custom_effect_tooltip = GER_alsace_cooldown_tt
 		}
 		ai_will_do = {
 			factor = 10
 			modifier = {
-				check_variable = {
-					ger_total_loyalist_count > 35
-				}
+				has_majority_in_bundesrat = yes
 				factor = 0
 			}
+		}
+	}
+
+	GER_negotiations_with_bavaria = {
+		name = GER_negotiations_with_generics
+		icon = GFX_decision_generic_political_discourse
+		visible = {
+			any_owned_state = {
+				is_core_of = BAY
+			}
+			NOT = {
+				country_exists = BAY		
+			}
+		}
+		on_map_mode = decision_view_only
+		fire_only_once = no
+		available = {
+			NOT = {
+				has_country_flag = GER_negotiating_with_federal_state
+				has_active_mission = GER_investment_in_bavaria
+				has_active_mission = GER_investment_in_bavaria_infrastructure
+				any_owned_state = {
+					is_core_of = BAY
+					has_state_flag = GER_political_concession_target
+				}
+			}
+		}
+		#cost = 5
+		highlight_states = {
+			highlight_states_trigger = {
+				is_owned_by = ROOT
+				is_core_of = BAY
+			}
+		}
+		complete_effect = {
+			set_country_flag = GER_negotiating_with_bavaria
+			set_country_flag = GER_negotiating_with_federal_state
+			country_event = ww1_germanrework.174
+			custom_effect_tooltip = escape_line
+			custom_effect_tooltip = GER_influence_points_count_in_bavaria
+		}
+		ai_will_do = {
+			factor = 0
+		}
+	}
+
+	GER_investment_in_bavaria = {
+		icon = generic_factory
+		allowed = {
+			tag = GER
+		}
+		available = {
+			any_owned_state = {
+				is_core_of = BAY
+				custom_trigger_tooltip = {
+					tooltip = tt_build_one_civ_trigger_generic
+					check_variable = { 
+						var = industrial_complex_level
+						value = civilian_total_after_goal
+						compare = greater_than_or_equals
+					}
+				}
+			}
+		}
+		activation = {
+			always = no
+		}
+		highlight_states = {
+			highlight_states_trigger = {
+				is_core_of = BAY
+				is_controlled_by = GER
+				has_state_flag = GER_building_mission_civilian_factory
+			}
+		}
+		days_mission_timeout = 365
+		is_good = no
+		cancel_trigger = {
+			OR = {
+				country_exists = BAY
+				NOT = {
+					any_owned_state = {
+						is_core_of = BAY
+					}
+				}
+			}
+		}
+		cancel_effect = {
+			hidden_effect = {
+				every_state = {
+					limit = {
+						is_core_of = BAY
+					}
+					clr_state_flag = GER_building_mission_civilian_factory
+				}
+			}
+		}
+		complete_effect = {
+			add_to_variable = { GER_influence_in_bavaria = 1 }
+			custom_effect_tooltip = {
+				localization_key = GER_influence_point_fake_tt
+				INFLUENCE = "1"
+				FEDERAL_STATE = german_region_bavaria
+			}
+			hidden_effect = {
+				every_state = {
+					limit = {
+						is_core_of = BAY
+					}
+					clr_state_flag = GER_building_mission_civilian_factory
+				}
+			}
+		}
+		timeout_effect = {
+			add_political_power = -50
+			hidden_effect = {
+				every_state = {
+					limit = {
+						is_core_of = BAY
+					}
+					clr_state_flag = GER_building_mission_civilian_factory
+				}
+			}
+		}
+	}
+
+	GER_investment_in_bavaria_infrastructure = {
+		icon = generic_railway
+		allowed = {
+			tag = GER
+		}
+		available = {
+			any_owned_state = {
+				is_core_of = BAY
+				custom_trigger_tooltip = {
+					tooltip = tt_build_one_infra_trigger_generic
+					check_variable = { 
+						var = infrastructure_level
+						value = infrastructure_total_after_goal
+						compare = greater_than_or_equals
+					}
+				}
+			}
+		}
+		activation = {
+			always = no
+		}
+		highlight_states = {
+			highlight_states_trigger = {
+				is_core_of = BAY
+				is_controlled_by = GER
+				has_state_flag = GER_building_mission_infrastructure
+			}
+		}
+		days_mission_timeout = 180
+		is_good = no
+		cancel_trigger = {
+			OR = {
+				country_exists = BAY
+				NOT = {
+					any_owned_state = {
+						is_core_of = BAY
+					}
+				}
+			}
+		}
+		cancel_effect = {
+			hidden_effect = {
+				every_state = {
+					limit = {
+						is_core_of = BAY
+					}
+					clr_state_flag = GER_building_mission_infrastructure
+				}
+			}
+		}
+		complete_effect = {
+			add_to_variable = { GER_influence_in_bavaria = 1 }
+			custom_effect_tooltip = {
+				localization_key = GER_influence_point_fake_tt
+				INFLUENCE = "1"
+				FEDERAL_STATE =  german_region_bavaria
+			}
+			hidden_effect = {
+				every_owned_state = {
+					limit = {
+						is_core_of = BAY
+					}
+					clr_state_flag = GER_building_mission_infrastructure
+				}
+			}
+		}
+		timeout_effect = {
+			add_political_power = -50
+			hidden_effect = {
+				every_owned_state = {
+					limit = {
+						is_core_of = BAY
+					}
+					clr_state_flag = GER_building_mission_infrastructure
+				}
+			}
+		}
+	}
+	#Saxony
+	GER_negotiations_with_saxony = {
+		name = GER_negotiations_with_generics
+		icon = GFX_decision_generic_political_discourse
+		available = {
+			NOT = {
+				has_country_flag = GER_negotiating_with_federal_state
+				has_active_mission = GER_investment_in_saxony
+				has_active_mission = GER_investment_in_saxony_infrastructure
+				any_owned_state = {
+					is_core_of = SAX
+					has_state_flag = GER_political_concession_target
+				}
+			}
+		}
+		visible = {
+			any_owned_state = {
+				is_core_of = SAX
+			}
+			NOT = {
+				country_exists = SAX
+			}
+		}
+		on_map_mode = decision_view_only
+		fire_only_once = no
+		#cost = 5
+		highlight_states = {
+			highlight_states_trigger = {
+				is_owned_by = ROOT
+				is_core_of = SAX
+			}
+		}
+		complete_effect = {
+			set_country_flag = GER_negotiating_with_saxony
+			set_country_flag = GER_negotiating_with_federal_state
+			country_event = ww1_germanrework.174
+			custom_effect_tooltip = escape_line
+			custom_effect_tooltip = GER_influence_points_count_in_saxony
+		}
+		ai_will_do = {
+			factor = 0
+		}
+	}
+
+	GER_investment_in_saxony = {
+		icon = generic_factory
+		allowed = {
+			tag = GER
+		}
+		available = {
+			any_owned_state = {
+				is_core_of = SAX
+				custom_trigger_tooltip = {
+					tooltip = tt_build_one_civ_trigger_generic
+					check_variable = { 
+						var = industrial_complex_level
+						value = civilian_total_after_goal
+						compare = greater_than_or_equals
+					}
+				}
+			}
+		}
+		activation = {
+			always = no
+		}
+		highlight_states = {
+			highlight_states_trigger = {
+				is_core_of = SAX
+				is_controlled_by = GER
+				has_state_flag = GER_building_mission_civilian_factory
+			}
+		}
+		days_mission_timeout = 365
+		is_good = no
+		cancel_trigger = {
+			OR = {
+				country_exists = SAX
+				NOT = {
+					any_owned_state = {
+						is_core_of = SAX
+					}
+				}
+			}
+		}
+		cancel_effect = {
+			hidden_effect = {
+				every_state = {
+					limit = {
+						is_core_of = SAX
+					}
+					clr_state_flag = GER_building_mission_civilian_factory
+				}
+			}
+		}
+		complete_effect = {
+			add_to_variable = { GER_influence_in_saxony = 1 }
+			custom_effect_tooltip = {
+				localization_key = GER_influence_point_fake_tt
+				INFLUENCE = "1"
+				FEDERAL_STATE = german_region_saxony
+			}
+			hidden_effect = {
+				every_state = {
+					limit = {
+						is_core_of = SAX
+					}
+					clr_state_flag = GER_building_mission_civilian_factory
+				}
+			}
+		}
+		timeout_effect = {
+			add_political_power = -50
+			hidden_effect = {
+				every_state = {
+					limit = {
+						is_core_of = SAX
+					}
+					clr_state_flag = GER_building_mission_civilian_factory
+				}
+			}
+		}
+	}
+
+	GER_investment_in_saxony_infrastructure = {
+		icon = generic_railway
+		allowed = {
+			tag = GER
+		}
+		available = {
+			any_owned_state = {
+				is_core_of = SAX
+				custom_trigger_tooltip = {
+					tooltip = tt_build_one_infra_trigger_generic
+					check_variable = { 
+						var = infrastructure_level
+						value = infrastructure_total_after_goal
+						compare = greater_than_or_equals
+					}
+				}
+			}
+		}
+		activation = {
+			always = no
+		}
+		highlight_states = {
+			highlight_states_trigger = {
+				is_core_of = SAX
+				is_controlled_by = GER
+				has_state_flag = GER_building_mission_infrastructure
+			}
+		}
+		days_mission_timeout = 180
+		is_good = no
+		cancel_trigger = {
+			OR = {
+				country_exists = SAX
+				NOT = {
+					any_owned_state = {
+						is_core_of = SAX
+					}
+				}
+			}
+		}
+		cancel_effect = {
+			hidden_effect = {
+				every_state = {
+					limit = {
+						is_core_of = SAX
+					}
+					clr_state_flag = GER_building_mission_infrastructure
+				}
+			}
+		}
+		complete_effect = {
+			add_to_variable = { GER_influence_in_saxony = 1 }
+			custom_effect_tooltip = {
+				localization_key = GER_influence_point_fake_tt
+				INFLUENCE = "1"
+				FEDERAL_STATE =  german_region_saxony
+			}
+			hidden_effect = {
+				every_state = {
+					limit = {
+						is_core_of = SAX
+					}
+					clr_state_flag = GER_building_mission_infrastructure
+				}
+			}
+		}
+		timeout_effect = {
+			add_political_power = -50
+			hidden_effect = {
+				every_state = {
+					limit = {
+						is_core_of = SAX
+					}
+					clr_state_flag = GER_building_mission_infrastructure
+				}
+			}
+		}
+	}
+	GER_debug_give_influnce_to_political_concession_target = {
+		visible = {
+			is_debug = yes
+			tag = GER
+		}
+		complete_effect = {
+			GER_end_political_concession_with_federal_state = yes
 		}
 	}
 	GER_give_1_influence = {
@@ -9028,7 +9490,7 @@ GER_bundesrat_category = {
 			has_country_flag = GER_show_debug_decisions
 		}
 		icon = GFX_decision_generic_political_discourse
-		visible = { has_country_flag = GER_started_voting_bundesrat }
+		visible = { has_country_flag = GER_vote_in_bundesrat }
 		complete_effect = {
 			set_temp_variable = { ger_modify_influence_points_var = 1 }
 			GER_modify_influence_points = yes
@@ -9043,7 +9505,7 @@ GER_bundesrat_category = {
 			has_country_flag = GER_show_debug_decisions
 		}
 		icon = GFX_decision_generic_political_discourse
-		visible = { has_country_flag = GER_started_voting_bundesrat }
+		visible = { has_country_flag = GER_vote_in_bundesrat }
 		complete_effect = {
 			set_temp_variable = { ger_modify_influence_points_var = 5 }
 			GER_modify_influence_points = yes
@@ -9058,7 +9520,7 @@ GER_bundesrat_category = {
 			has_country_flag = GER_show_debug_decisions
 		}
 		icon = GFX_decision_generic_political_discourse
-		visible = { has_country_flag = GER_started_voting_bundesrat }
+		visible = { has_country_flag = GER_vote_in_bundesrat }
 		complete_effect = {
 			set_temp_variable = { ger_modify_influence_points_var = 10 }
 			GER_modify_influence_points = yes
@@ -9073,10 +9535,89 @@ GER_bundesrat_category = {
 			has_country_flag = GER_show_debug_decisions
 		}
 		icon = GFX_decision_generic_political_discourse
-		visible = { has_country_flag = GER_started_voting_bundesrat }
+		visible = { has_country_flag = GER_vote_in_bundesrat }
 		complete_effect = {
 			set_temp_variable = { ger_modify_influence_points_var = 10000 }
 			GER_modify_influence_points = yes
+		}
+	}
+	GER_debug_calculate_bundesrat_votes = {
+		available = {
+			is_ai = no
+		}
+		visible = {
+			is_debug = yes
+			tag = GER
+		}
+		
+		complete_effect = {
+			GER_calculate_bundesrat_votes = yes
+		}
+	}
+	GER_debug_remove_state_flags = {
+		available = {
+			is_ai = no
+		}
+		visible = {
+			is_debug = yes
+			tag = GER
+		}
+		
+		complete_effect = {
+			every_owned_state = {
+				clr_state_flag = GER_building_mission_civilian_factory
+				clr_state_flag = GER_building_mission_infrastructure
+			}
+		}
+	}
+	GER_debug_give_points_to_oldeburg = {
+		available = {
+			is_ai = no
+		}
+		visible = {
+			is_debug = yes
+			tag = GER
+		}
+		state_target = yes
+		target_trigger = {
+			FROM = {
+				state = 56
+			}
+		}
+		
+		complete_effect = {
+			56 = {
+				GER = {
+					GER_get_federal_state_influence_points_from_state_id = yes
+					custom_effect_tooltip = escape_line
+					GER_increase_target_federal_state_influence = yes
+				}
+			}
+		}
+	}
+	GER_debug_give_points_to_baden = {
+		available = {
+			is_ai = no
+		}
+		visible = {
+			is_debug = yes
+			tag = GER
+		}
+		state_target = yes
+		target_trigger = {
+			FROM = {
+				state = 986
+			}
+		}
+		
+		complete_effect = {
+			986 = {
+				GER = {
+					GER_get_federal_state_influence_points_from_state_id = yes
+					custom_effect_tooltip = escape_line
+					GER_increase_target_federal_state_influence = yes
+				}
+			}
 		}
 	}
 
@@ -9096,15 +9637,12 @@ GER_bundesrat_category = {
 		}
 		available = {
 			NOT = {
-				has_country_flag = GER_started_voting_bundesrat
-			}
-			custom_trigger_tooltip = {
-				tooltip = GER_has_majority_in_bund
-				has_majority_in_bundesrat = yes
+				has_country_flag = GER_vote_in_bundesrat
 			}
 		}
 		complete_effect = {
-			set_country_flag = GER_started_voting_bundesrat
+			set_country_flag = GER_vote_in_bundesrat
+GER_calculate_bundesrat_votes = yes
 		}
 		days_remove = 30
         ai_will_do = {
@@ -9118,7 +9656,7 @@ GER_bundesrat_category = {
 				custom_effect_tooltip = GER_if_law_passes_bund
 				GER_alsace_lorraine_constitution_effect = yes
 
-				GER_remove_all_swayed_states = yes
+				
 
 				custom_effect_tooltip = GER_if_law_fails_bund
 				effect_tooltip = {
@@ -9126,20 +9664,20 @@ GER_bundesrat_category = {
 					add_political_power = -75
 				}
 				set_country_flag = GER_law_alsace_new_member_passed_in_bundesrat
-				else = {
-					custom_effect_tooltip = GER_likely_to_be_rejected
-					custom_effect_tooltip = GER_if_law_passes_bund
-					effect_tooltip = {
-						GER_alsace_lorraine_constitution_effect = yes
-					}
-					custom_effect_tooltip = GER_if_law_fails_bund
-					add_stability = -0.1
-					add_political_power = -75
-
-					GER_remove_all_swayed_states = yes
-				}
 			}
-			GER_remove_voting_stuff = yes
+			else = {
+				custom_effect_tooltip = GER_likely_to_be_rejected
+				custom_effect_tooltip = GER_if_law_passes_bund
+				effect_tooltip = {
+					GER_alsace_lorraine_constitution_effect = yes
+				}
+				custom_effect_tooltip = GER_if_law_fails_bund
+				add_stability = -0.1
+				add_political_power = -75
+
+				
+			}
+			GER_vote_ends = yes
 		}
 	}
 	GER_job_placement_act_bund = {
@@ -9156,16 +9694,13 @@ GER_bundesrat_category = {
 		}
 		available = {
 			NOT = {
-				has_country_flag = GER_started_voting_bundesrat
-			}
-			custom_trigger_tooltip = {
-				tooltip = GER_has_majority_in_bund
-				has_majority_in_bundesrat = yes
+				has_country_flag = GER_vote_in_bundesrat
 			}
 		}
 		complete_effect = {
-			custom_effect_tooltip = GER_bunderstadt_minigame
-			set_country_flag = GER_started_voting_bundesrat
+			custom_effect_tooltip = GER_bundesrat_minigame
+			set_country_flag = GER_vote_in_bundesrat
+GER_calculate_bundesrat_votes = yes
 		}
 		days_remove = 30
 		remove_effect = {
@@ -9176,7 +9711,7 @@ GER_bundesrat_category = {
 				custom_effect_tooltip = GER_if_law_passes_bund
 				GER_rapid_urbanisation_reform_effect = yes
 
-				GER_remove_all_swayed_states = yes
+				
 
 				custom_effect_tooltip = GER_if_law_fails_bund
 				effect_tooltip = {
@@ -9192,11 +9727,9 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-
-					GER_remove_all_swayed_states = yes
 				}
 			}
-			GER_remove_voting_stuff = yes
+			GER_vote_ends = yes
 		}
 		ai_will_do = {
 			factor = 100
@@ -9216,16 +9749,13 @@ GER_bundesrat_category = {
 		}
 		available = {
 			NOT = {
-				has_country_flag = GER_started_voting_bundesrat
-			}
-			custom_trigger_tooltip = {
-				tooltip = GER_has_majority_in_bund
-				has_majority_in_bundesrat = yes
+				has_country_flag = GER_vote_in_bundesrat
 			}
 		}
 		complete_effect = {
-			custom_effect_tooltip = GER_bunderstadt_minigame
-			set_country_flag = GER_started_voting_bundesrat
+			custom_effect_tooltip = GER_bundesrat_minigame
+			set_country_flag = GER_vote_in_bundesrat
+GER_calculate_bundesrat_votes = yes
 		}
 		days_remove = 30
 		remove_effect = {
@@ -9236,7 +9766,7 @@ GER_bundesrat_category = {
 				custom_effect_tooltip = GER_if_law_passes_bund
 				GER_prussian_electoral_reform_effect = yes
 
-				GER_remove_all_swayed_states = yes
+				
 
 				custom_effect_tooltip = GER_if_law_fails_bund
 				effect_tooltip = {
@@ -9252,11 +9782,9 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-
-					GER_remove_all_swayed_states = yes
 				}
 			}
-			GER_remove_voting_stuff = yes
+			GER_vote_ends = yes
 		}
 		ai_will_do = {
 			factor = 100
@@ -9276,16 +9804,13 @@ GER_bundesrat_category = {
 		}
 		available = {
 			NOT = {
-				has_country_flag = GER_started_voting_bundesrat
-			}
-			custom_trigger_tooltip = {
-				tooltip = GER_has_majority_in_bund
-				has_majority_in_bundesrat = yes
+				has_country_flag = GER_vote_in_bundesrat
 			}
 		}
 		complete_effect = {
-			custom_effect_tooltip = GER_bunderstadt_minigame
-			set_country_flag = GER_started_voting_bundesrat
+			custom_effect_tooltip = GER_bundesrat_minigame
+			set_country_flag = GER_vote_in_bundesrat
+GER_calculate_bundesrat_votes = yes
 		}
 		days_remove = 30
 		remove_effect = {
@@ -9296,7 +9821,7 @@ GER_bundesrat_category = {
 				custom_effect_tooltip = GER_if_law_passes_bund
 				GER_healthcare_law_effect = yes
 
-				GER_remove_all_swayed_states = yes
+				
 
 				custom_effect_tooltip = GER_if_law_fails_bund
 				effect_tooltip = {
@@ -9312,11 +9837,9 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-
-					GER_remove_all_swayed_states = yes
 				}
 			}
-			GER_remove_voting_stuff = yes
+			GER_vote_ends = yes
 		}
 		ai_will_do = {
 			factor = 100
@@ -9336,16 +9859,13 @@ GER_bundesrat_category = {
 		}
 		available = {
 			NOT = {
-				has_country_flag = GER_started_voting_bundesrat
-			}
-			custom_trigger_tooltip = {
-				tooltip = GER_has_majority_in_bund
-				has_majority_in_bundesrat = yes
+				has_country_flag = GER_vote_in_bundesrat
 			}
 		}
 		complete_effect = {
-			custom_effect_tooltip = GER_bunderstadt_minigame
-			set_country_flag = GER_started_voting_bundesrat
+			custom_effect_tooltip = GER_bundesrat_minigame
+			set_country_flag = GER_vote_in_bundesrat
+GER_calculate_bundesrat_votes = yes
 		}
 		days_remove = 30
 		remove_effect = {
@@ -9356,7 +9876,7 @@ GER_bundesrat_category = {
 				custom_effect_tooltip = GER_if_law_passes_bund
 				GER_protection_of_home_workers_law_effect = yes
 
-				GER_remove_all_swayed_states = yes
+				
 
 				custom_effect_tooltip = GER_if_law_fails_bund
 				effect_tooltip = {
@@ -9372,11 +9892,9 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-
-					GER_remove_all_swayed_states = yes
 				}
 			}
-			GER_remove_voting_stuff = yes
+			GER_vote_ends = yes
 		}
 		 ai_will_do = {
 			factor = 100
@@ -9396,16 +9914,13 @@ GER_bundesrat_category = {
 		}
 		available = {
 			NOT = {
-				has_country_flag = GER_started_voting_bundesrat
+				has_country_flag = GER_vote_in_bundesrat
 			}
 			controls_state = 763
-			custom_trigger_tooltip = {
-				tooltip = GER_has_majority_in_bund
-				has_majority_in_bundesrat = yes
-			}
 		}
 		complete_effect = {
-			set_country_flag = GER_started_voting_bundesrat
+			set_country_flag = GER_vote_in_bundesrat
+GER_calculate_bundesrat_votes = yes
 		}
 		days_remove = 30
         ai_will_do = {
@@ -9419,7 +9934,7 @@ GER_bundesrat_category = {
 				custom_effect_tooltip = GER_if_law_passes_bund
 				GER_rustungswende_effect = yes
 
-				GER_remove_all_swayed_states = yes
+				
 
 				custom_effect_tooltip = GER_if_law_fails_bund
 				effect_tooltip = {
@@ -9435,11 +9950,9 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-
-					GER_remove_all_swayed_states = yes
 				}
 			}
-			GER_remove_voting_stuff = yes
+			GER_vote_ends = yes
 		}
 	}
 	GER_limited_army_bill_law_bund = {
@@ -9456,15 +9969,12 @@ GER_bundesrat_category = {
 		}
 		available = {
 			NOT = {
-				has_country_flag = GER_started_voting_bundesrat
-			}
-			custom_trigger_tooltip = {
-				tooltip = GER_has_majority_in_bund
-				has_majority_in_bundesrat = yes
+				has_country_flag = GER_vote_in_bundesrat
 			}
 		}
 		complete_effect = {
-			set_country_flag = GER_started_voting_bundesrat
+			set_country_flag = GER_vote_in_bundesrat
+GER_calculate_bundesrat_votes = yes
 		}
 		days_remove = 30
         ai_will_do = {
@@ -9478,7 +9988,7 @@ GER_bundesrat_category = {
 				custom_effect_tooltip = GER_if_law_passes_bund
 				GER_limited_army_bill_effect = yes
 
-				GER_remove_all_swayed_states = yes
+				
 
 				custom_effect_tooltip = GER_if_law_fails_bund
 				effect_tooltip = {
@@ -9494,11 +10004,9 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-
-					GER_remove_all_swayed_states = yes
 				}
 			}
-			GER_remove_voting_stuff = yes
+			GER_vote_ends = yes
 		}
 	}
 	GER_first_army_law_cen_bund = {
@@ -9515,15 +10023,12 @@ GER_bundesrat_category = {
 		}
 		available = {
 			NOT = {
-				has_country_flag = GER_started_voting_bundesrat
-			}
-			custom_trigger_tooltip = {
-				tooltip = GER_has_majority_in_bund
-				has_majority_in_bundesrat = yes
+				has_country_flag = GER_vote_in_bundesrat
 			}
 		}
 		complete_effect = {
-			set_country_flag = GER_started_voting_bundesrat
+			set_country_flag = GER_vote_in_bundesrat
+GER_calculate_bundesrat_votes = yes
 		}
 		days_remove = 30
         ai_will_do = {
@@ -9537,7 +10042,7 @@ GER_bundesrat_category = {
 				custom_effect_tooltip = GER_if_law_passes_bund
 				GER_first_army_expansion_effect = yes
 
-				GER_remove_all_swayed_states = yes
+				
 
 				custom_effect_tooltip = GER_if_law_fails_bund
 				effect_tooltip = {
@@ -9553,11 +10058,9 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-
-					GER_remove_all_swayed_states = yes
 				}
 			}
-			GER_remove_voting_stuff = yes
+			GER_vote_ends = yes
 		}	
 	}
 	GER_second_army_law_cen_bund = {
@@ -9575,15 +10078,12 @@ GER_bundesrat_category = {
 		available = {
 			has_idea = GER_military_expansion_law
 			NOT = {
-				has_country_flag = GER_started_voting_bundesrat
-			}
-			custom_trigger_tooltip = {
-				tooltip = GER_has_majority_in_bund
-				has_majority_in_bundesrat = yes
+				has_country_flag = GER_vote_in_bundesrat
 			}
 		}
 		complete_effect = {
-			set_country_flag = GER_started_voting_bundesrat
+			set_country_flag = GER_vote_in_bundesrat
+GER_calculate_bundesrat_votes = yes
 		}
 		days_remove = 30
         ai_will_do = {
@@ -9597,7 +10097,7 @@ GER_bundesrat_category = {
 				custom_effect_tooltip = GER_if_law_passes_bund
 				GER_second_army_expansion_effect = yes
 
-				GER_remove_all_swayed_states = yes
+				
 
 				custom_effect_tooltip = GER_if_law_fails_bund
 				effect_tooltip = {
@@ -9613,11 +10113,9 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-
-					GER_remove_all_swayed_states = yes
 				}
 			}
-			GER_remove_voting_stuff = yes
+			GER_vote_ends = yes
 		}
 	}
 	GER_five_year_army_law_bund = {
@@ -9634,15 +10132,12 @@ GER_bundesrat_category = {
 		}
 		available = {
 			NOT = {
-				has_country_flag = GER_started_voting_bundesrat
-			}
-			custom_trigger_tooltip = {
-				tooltip = GER_has_majority_in_bund
-				has_majority_in_bundesrat = yes
+				has_country_flag = GER_vote_in_bundesrat
 			}
 		}
 		complete_effect = {
-			set_country_flag = GER_started_voting_bundesrat
+			set_country_flag = GER_vote_in_bundesrat
+GER_calculate_bundesrat_votes = yes
 		}
 		days_remove = 30
         ai_will_do = {
@@ -9656,7 +10151,7 @@ GER_bundesrat_category = {
 				custom_effect_tooltip = GER_if_law_passes_bund
 				GER_five_year_army_law_effect = yes
 
-				GER_remove_all_swayed_states = yes
+				
 
 				custom_effect_tooltip = GER_if_law_fails_bund
 				effect_tooltip = {
@@ -9672,11 +10167,9 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-
-					GER_remove_all_swayed_states = yes
 				}
 			}
-			GER_remove_voting_stuff = yes
+			GER_vote_ends = yes
 		}
 	}
 
@@ -9695,15 +10188,12 @@ GER_bundesrat_category = {
 		}
 		available = {
 			NOT = {
-				has_country_flag = GER_started_voting_bundesrat
-			}
-			custom_trigger_tooltip = {
-				tooltip = GER_has_majority_in_bund
-				has_majority_in_bundesrat = yes
+				has_country_flag = GER_vote_in_bundesrat
 			}
 		}
 		complete_effect = {
-			set_country_flag = GER_started_voting_bundesrat
+			set_country_flag = GER_vote_in_bundesrat
+GER_calculate_bundesrat_votes = yes
 		}
 		days_remove = 30
         ai_will_do = {
@@ -9717,7 +10207,7 @@ GER_bundesrat_category = {
 				custom_effect_tooltip = GER_if_law_passes_bund
 				GER_nationality_inclusive_law = yes
 
-				GER_remove_all_swayed_states = yes
+				
 
 				custom_effect_tooltip = GER_if_law_fails_bund
 				effect_tooltip = {
@@ -9733,11 +10223,9 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-
-					GER_remove_all_swayed_states = yes
 				}
 			}
-			GER_remove_voting_stuff = yes
+			GER_vote_ends = yes
 		}
 	}
 	GER_wealth_tax_law_bund = {
@@ -9754,15 +10242,12 @@ GER_bundesrat_category = {
 		}
 		available = {
 			NOT = {
-				has_country_flag = GER_started_voting_bundesrat
-			}
-			custom_trigger_tooltip = {
-				tooltip = GER_has_majority_in_bund
-				has_majority_in_bundesrat = yes
+				has_country_flag = GER_vote_in_bundesrat
 			}
 		}
 		complete_effect = {
-			set_country_flag = GER_started_voting_bundesrat
+			set_country_flag = GER_vote_in_bundesrat
+GER_calculate_bundesrat_votes = yes
 		}
 		days_remove = 30
         ai_will_do = {
@@ -9776,7 +10261,7 @@ GER_bundesrat_category = {
 				custom_effect_tooltip = GER_if_law_passes_bund
 				GER_progressive_taxation_effect = yes
 
-				GER_remove_all_swayed_states = yes
+				
 
 				custom_effect_tooltip = GER_if_law_fails_bund
 				effect_tooltip = {
@@ -9792,11 +10277,9 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-
-					GER_remove_all_swayed_states = yes
 				}
 			}
-			GER_remove_voting_stuff = yes
+			GER_vote_ends = yes
 		}
 	}
 	GER_1912_liberal_budget_law_bund = {
@@ -9813,15 +10296,12 @@ GER_bundesrat_category = {
 		}
 		available = {
 			NOT = {
-				has_country_flag = GER_started_voting_bundesrat
-			}
-			custom_trigger_tooltip = {
-				tooltip = GER_has_majority_in_bund
-				has_majority_in_bundesrat = yes
+				has_country_flag = GER_vote_in_bundesrat
 			}
 		}
 		complete_effect = {
-			set_country_flag = GER_started_voting_bundesrat
+			set_country_flag = GER_vote_in_bundesrat
+GER_calculate_bundesrat_votes = yes
 		}
 		days_remove = 30
         ai_will_do = {
@@ -9836,7 +10316,7 @@ GER_bundesrat_category = {
 				add_ideas = GER_1912_liberal_federal_budget
 				clr_country_flag = GER_1912_budget
 
-				GER_remove_all_swayed_states = yes
+				
 
 				custom_effect_tooltip = GER_if_law_fails_bund
 				effect_tooltip = {
@@ -9852,11 +10332,9 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-
-					GER_remove_all_swayed_states = yes
 				}
 			}
-			GER_remove_voting_stuff = yes
+			GER_vote_ends = yes
 		}
 	}
 	GER_law_on_hollwegs_national_pension_bund = {
@@ -9873,15 +10351,12 @@ GER_bundesrat_category = {
 		}
 		available = {
 			NOT = {
-				has_country_flag = GER_started_voting_bundesrat
-			}
-			custom_trigger_tooltip = {
-				tooltip = GER_has_majority_in_bund
-				has_majority_in_bundesrat = yes
+				has_country_flag = GER_vote_in_bundesrat
 			}
 		}
 		complete_effect = {
-			set_country_flag = GER_started_voting_bundesrat
+			set_country_flag = GER_vote_in_bundesrat
+GER_calculate_bundesrat_votes = yes
 		}
 		days_remove = 30
         ai_will_do = {
@@ -9895,7 +10370,7 @@ GER_bundesrat_category = {
 				custom_effect_tooltip = GER_if_law_passes_bund
 				GER_national_pension_effect = yes
 
-				GER_remove_all_swayed_states = yes
+				
 
 				custom_effect_tooltip = GER_if_law_fails_bund
 				effect_tooltip = {
@@ -9911,11 +10386,9 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-
-					GER_remove_all_swayed_states = yes
 				}
 			}
-			GER_remove_voting_stuff = yes
+			GER_vote_ends = yes
 		}
 	}
 
@@ -9934,15 +10407,12 @@ GER_bundesrat_category = {
 		}
 		available = {
 			NOT = {
-				has_country_flag = GER_started_voting_bundesrat
-			}
-			custom_trigger_tooltip = {
-				tooltip = GER_has_majority_in_bund
-				has_majority_in_bundesrat = yes
+				has_country_flag = GER_vote_in_bundesrat
 			}
 		}
 		complete_effect = {
-			set_country_flag = GER_started_voting_bundesrat
+			set_country_flag = GER_vote_in_bundesrat
+GER_calculate_bundesrat_votes = yes
 		}
 		days_remove = 30
         ai_will_do = {
@@ -9956,7 +10426,7 @@ GER_bundesrat_category = {
 				custom_effect_tooltip = GER_if_law_passes_bund
 				GER_german_pension_effect = yes
 
-				GER_remove_all_swayed_states = yes
+				
 
 				custom_effect_tooltip = GER_if_law_fails_bund
 				effect_tooltip = {
@@ -9973,11 +10443,9 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-
-					GER_remove_all_swayed_states = yes
 				}
 			}
-			GER_remove_voting_stuff = yes
+			GER_vote_ends = yes
 		}
 	}
 	GER_law_on_the_reich_and_nationality_right_bund = {
@@ -9994,15 +10462,12 @@ GER_bundesrat_category = {
 		}
 		available = {
 			NOT = {
-				has_country_flag = GER_started_voting_bundesrat
-			}
-			custom_trigger_tooltip = {
-				tooltip = GER_has_majority_in_bund
-				has_majority_in_bundesrat = yes
+				has_country_flag = GER_vote_in_bundesrat
 			}
 		}
 		complete_effect = {
-			set_country_flag = GER_started_voting_bundesrat
+			set_country_flag = GER_vote_in_bundesrat
+GER_calculate_bundesrat_votes = yes
 		}
 		days_remove = 30
         ai_will_do = {
@@ -10016,7 +10481,7 @@ GER_bundesrat_category = {
 				custom_effect_tooltip = GER_if_law_passes_bund
 				GER_nationality_discriminatory_law = yes
 
-				GER_remove_all_swayed_states = yes
+				
 
 				custom_effect_tooltip = GER_if_law_fails_bund
 				effect_tooltip = {
@@ -10033,11 +10498,9 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-
-					GER_remove_all_swayed_states = yes
 				}
 			}
-			GER_remove_voting_stuff = yes
+			GER_vote_ends = yes
 		}
 	}
 	GER_law_on_raising_tariffs_bund = {
@@ -10054,15 +10517,12 @@ GER_bundesrat_category = {
 		}
 		available = {
 			NOT = {
-				has_country_flag = GER_started_voting_bundesrat
-			}
-			custom_trigger_tooltip = {
-				tooltip = GER_has_majority_in_bund
-				has_majority_in_bundesrat = yes
+				has_country_flag = GER_vote_in_bundesrat
 			}
 		}
 		complete_effect = {
-			set_country_flag = GER_started_voting_bundesrat
+			set_country_flag = GER_vote_in_bundesrat
+GER_calculate_bundesrat_votes = yes
 		}
 		days_remove = 30
         ai_will_do = {
@@ -10076,7 +10536,7 @@ GER_bundesrat_category = {
 				custom_effect_tooltip = GER_if_law_passes_bund
 				GER_emergency_tariff_effect = yes
 
-				GER_remove_all_swayed_states = yes
+				
 
 				custom_effect_tooltip = GER_if_law_fails_bund
 				effect_tooltip = {
@@ -10092,11 +10552,9 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-
-					GER_remove_all_swayed_states = yes
 				}
 			}
-			GER_remove_voting_stuff = yes
+			GER_vote_ends = yes
 		}
 	}
 	GER_fith_fleet_act_bund = {
@@ -10113,15 +10571,12 @@ GER_bundesrat_category = {
 		}
 		available = {
 			NOT = {
-				has_country_flag = GER_started_voting_bundesrat
-			}
-			custom_trigger_tooltip = {
-				tooltip = GER_has_majority_in_bund
-				has_majority_in_bundesrat = yes
+				has_country_flag = GER_vote_in_bundesrat
 			}
 		}
 		complete_effect = {
-			set_country_flag = GER_started_voting_bundesrat
+			set_country_flag = GER_vote_in_bundesrat
+GER_calculate_bundesrat_votes = yes
 		}
 		days_remove = 30
         ai_will_do = {
@@ -10138,7 +10593,7 @@ GER_bundesrat_category = {
 				custom_effect_tooltip = GER_if_law_passes_bund
 				GER_fith_naval_law_effect = yes
 
-				GER_remove_all_swayed_states = yes
+				
 
 				custom_effect_tooltip = GER_if_law_fails_bund
 				effect_tooltip = {
@@ -10154,11 +10609,9 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-
-					GER_remove_all_swayed_states = yes
 				}
 			}
-			GER_remove_voting_stuff = yes
+			GER_vote_ends = yes
 		}
 	}
 	GER_law_on_polish_landholders_bund = {
@@ -10181,15 +10634,12 @@ GER_bundesrat_category = {
 		}
 		available = {
 			NOT = {
-				has_country_flag = GER_started_voting_bundesrat
-			}
-			custom_trigger_tooltip = {
-				tooltip = GER_has_majority_in_bund
-				has_majority_in_bundesrat = yes
+				has_country_flag = GER_vote_in_bundesrat
 			}
 		}
 		complete_effect = {
-			set_country_flag = GER_started_voting_bundesrat
+			set_country_flag = GER_vote_in_bundesrat
+GER_calculate_bundesrat_votes = yes
 		}
 		days_remove = 30
         ai_will_do = {
@@ -10203,7 +10653,7 @@ GER_bundesrat_category = {
 				custom_effect_tooltip = GER_if_law_passes_bund
 				GER_polish_landholders_effect = yes
 
-				GER_remove_all_swayed_states = yes
+				
 
 				custom_effect_tooltip = GER_if_law_fails_bund
 				effect_tooltip = {
@@ -10219,11 +10669,9 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-
-					GER_remove_all_swayed_states = yes
 				}
 			}
-			GER_remove_voting_stuff = yes
+			GER_vote_ends = yes
 		}
 	}
 	GER_1912_conservative_budget_law_bund = {
@@ -10240,15 +10688,12 @@ GER_bundesrat_category = {
 		}
 		available = {
 			NOT = {
-				has_country_flag = GER_started_voting_bundesrat
-			}
-			custom_trigger_tooltip = {
-				tooltip = GER_has_majority_in_bund
-				has_majority_in_bundesrat = yes
+				has_country_flag = GER_vote_in_bundesrat
 			}
 		}
 		complete_effect = {
-			set_country_flag = GER_started_voting_bundesrat
+			set_country_flag = GER_vote_in_bundesrat
+GER_calculate_bundesrat_votes = yes
 		}
 		days_remove = 30
         ai_will_do = {
@@ -10263,7 +10708,7 @@ GER_bundesrat_category = {
 				add_ideas = GER_1912_conservative_federal_budget
 				clr_country_flag = GER_1912_budget
 
-				GER_remove_all_swayed_states = yes
+				
 
 				custom_effect_tooltip = GER_if_law_fails_bund
 				effect_tooltip = {
@@ -10279,11 +10724,9 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-
-					GER_remove_all_swayed_states = yes
 				}
 			}
-			GER_remove_voting_stuff = yes
+			GER_vote_ends = yes
 		}
 	}
 	GER_government_influence_grow = {
@@ -10307,7 +10750,10 @@ GER_bundesrat_category = {
 		timeout_effect = {
 			set_temp_variable = { ger_modify_influence_points_var = 5 }
 			GER_modify_influence_points = yes
-			custom_effect_tooltip = ww1_germany_influence_plus5
+			custom_effect_tooltip = {
+				localization_key = GER_get_extra_influence
+				INFLUENCE = "5"
+			}
 		}
 	}
 }
@@ -10579,7 +11025,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 				hidden_effect = {
@@ -10637,7 +11085,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 				hidden_effect = {
@@ -10699,7 +11149,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 				hidden_effect = {
@@ -11043,7 +11495,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 
@@ -11118,7 +11572,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 
@@ -11193,7 +11649,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 
@@ -11268,7 +11726,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 				set_country_flag = GER_constitution_for_alsace_unlocked_in_bund
@@ -11338,7 +11798,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 
@@ -11413,7 +11875,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 				set_country_flag = GER_limited_army_bill_law_unlocked_in_bund
@@ -11487,7 +11951,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 				set_country_flag = GER_first_army_law_cen_unlocked_in_bund
@@ -11562,7 +12028,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 				set_country_flag = GER_second_army_law_cen_unlocked_in_bund
@@ -11636,7 +12104,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 				set_country_flag = GER_five_year_army_law_unlocked_in_bund
@@ -11712,7 +12182,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 
@@ -11787,7 +12259,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 				add_political_power = 25
@@ -11861,7 +12335,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 				add_political_power = 25
@@ -11936,7 +12412,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 				add_political_power = 25
@@ -12017,7 +12495,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 
@@ -12092,7 +12572,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 
@@ -12165,7 +12647,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 
@@ -12241,7 +12725,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 
@@ -12256,6 +12742,72 @@ GER_reichstag_category = {
 					custom_effect_tooltip = GER_if_law_passes_reich
 					effect_tooltip = {
 						GER_enabling_act_effect = yes
+					}
+				}
+			}
+			hidden_effect = {
+				GER_reset_sway_reichstag = yes
+			}
+		}
+		ai_will_do = {
+			factor = 5000 #oh yeah
+		}
+	}
+	GER_auxiliary_services_act = {
+		icon = GFX_decision_SOV_place_hq
+		allowed = {
+			original_tag = GER
+		}
+		cost = 10
+		visible = {
+			NOT = {
+				has_country_flag = GER_auxiliary_services_act_passed
+			}
+			OR = {
+				AND = {
+					is_debug = yes
+					has_country_flag = GER_show_debug_decisions
+				}
+				AND = {
+					has_completed_focus = GER_the_hindenburg_program
+					has_war = yes
+				}
+			}
+		}
+		available = {
+			NOT = {
+				has_country_flag = GER_reichstag_vote_in_progress
+			}
+		}
+		days_remove = 21
+
+		complete_effect = {
+			set_country_flag = right_vote_in_progress
+			set_country_flag = GER_reichstag_vote_in_progress
+		}
+
+		remove_effect = {
+			right_vote_temp_var_setter = yes
+			if = {
+				limit = {
+					check_variable = {
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
+					}
+				}
+
+				custom_effect_tooltip = GER_law_pass
+				custom_effect_tooltip = GER_if_law_passes_reich
+				GER_auxiliary_services_act_effect = yes
+
+				set_country_flag = GER_auxiliary_services_act_passed
+
+				else = {
+					custom_effect_tooltip = GER_law_dont_pass
+					custom_effect_tooltip = GER_if_law_passes_reich
+					effect_tooltip = {
+						GER_auxiliary_services_act_effect = yes
 					}
 				}
 			}
@@ -12304,7 +12856,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 				add_political_power = 25
@@ -12382,7 +12936,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 								
@@ -12502,7 +13058,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 								
@@ -12583,7 +13141,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 								
@@ -12658,7 +13218,9 @@ GER_reichstag_category = {
 			if = {
 				limit = {
 					check_variable = {
-						merged_vote_strengh > 198
+						var = merged_vote_strengh
+						value = 199
+						compare = greater_than_or_equals
 					}
 				}
 								
@@ -12889,7 +13451,7 @@ GER_economic_actions = {
 			original_tag = GER
 		}
 		available = {
-			59 = {
+			1163 = {
 				is_owned_and_controlled_by = ROOT
 			}
 		}
@@ -12902,14 +13464,14 @@ GER_economic_actions = {
 		}
 		on_map_mode = map_and_decisions_view
 		highlight_states = {
-			highlight_state_targets = { state = 59 } 
+			highlight_state_targets = { state = 1163 } 
 			highlight_color_while_active = 1
 		}
 		ai_will_do = {
 			factor = 100
 		}
 		remove_effect = {
-			59 = {
+			1163 = {
 				add_extra_state_shared_building_slots = 1
 				add_building_construction = {
 					type = dockyard
@@ -13970,7 +14532,7 @@ GER_military_constructions = {
 			highlight_provinces = {
 				11502
 				1346
-				9559
+				11502
 			}
 			highlight_color_while_active = 1
 		}
@@ -13982,7 +14544,7 @@ GER_military_constructions = {
 				add_building_construction = {
 					type = bunker
 					level = 1
-					province = 9559
+					province = 11502
 				}
 				add_building_construction = {
 					type = bunker
@@ -14323,7 +14885,7 @@ GER_kriegsrohfstoffabteilung_category = {
 		}
 		available = {
 			has_completed_focus = GER_setup_the_kra
-			59 = {
+			1165 = {
 				is_owned_and_controlled_by = ROOT
 			}
 		}
@@ -14337,7 +14899,7 @@ GER_kriegsrohfstoffabteilung_category = {
 			highlight_color_while_active = 1
 		}
 		complete_effect = {
-			59 = {
+			1165 = {
 				if = {
 					limit = {
 						ROOT = {
