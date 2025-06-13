@@ -2034,12 +2034,27 @@ GER_sway_all_states = {
     set_country_flag = thuringia_swayed
     if = {
 		limit = { has_country_flag = GER_law_alsace_new_member_passed_in_bundesrat }
-		set_country_flag = reichsland_swayed
+		set_country_flag = alsace_lorraine_swayed
     }
 }
 
 GER_assign_cooldowns = {
-	if = {
+    if = {
+		limit = {
+			has_country_flag = GER_called_in_prussia
+		}
+		clr_country_flag = GER_called_in_prussia
+		set_country_flag = GER_prussia_cooldown
+		custom_effect_tooltip = GER_prussia_cooldown_tt
+	}
+	else_if = {
+		limit = {
+			has_country_flag = GER_prussia_cooldown
+		}
+		clr_country_flag = GER_prussia_cooldown
+		custom_effect_tooltip = GER_prussia_cooldown_ends_tt
+	}
+	else_if = {
 		limit = {
 			has_country_flag = GER_called_in_baden
 		}
@@ -2207,7 +2222,7 @@ GER_assign_cooldowns = {
 }
 GER_vote_ends = {
     custom_effect_tooltip = GER_vote_ends_tt
-	set_variable = { GER_bundesrat_votes_in_favor = 17 } #should be count Prussia on the player side ?
+	GER_calculate_bundesrat_votes = yes
 	GER_assign_cooldowns = yes
 	clr_country_flag = GER_vote_in_bundesrat
 }
@@ -2343,9 +2358,14 @@ GER_nationality_inclusive_law = {
 }
 
 GER_prussian_electoral_reform_effect = {
-    swap_ideas = {
-        add_idea = GER_idea_bismarksche_reichsverassung2
-        remove_idea = GER_idea_bismarksche_reichsverassung
+    if = {
+        limit = {
+            has_idea = GER_idea_bismarksche_reichsverassung
+        }
+        swap_ideas = {
+            add_idea = GER_idea_bismarksche_reichsverassung2
+            remove_idea = GER_idea_bismarksche_reichsverassung
+        }
     }
     set_country_flag = prussian_electoral_reform_passed
     if = {
@@ -3505,7 +3525,7 @@ GER_start_investment_mission_for_federal_state = {
             custom_effect_tooltip = {
                 localization_key = GER_influence_point_fake_tt
                 INFLUENCE = "1"
-                FEDERAL_STATE = german_region_bavaria
+                FEDERAL_STATE = GER_bundesrat_bavaria_tt
             }
         }
         clr_country_flag = GER_negotiating_with_bavaria
@@ -3521,7 +3541,7 @@ GER_start_investment_mission_for_federal_state = {
             custom_effect_tooltip = {
                 localization_key = GER_influence_point_fake_tt
                 INFLUENCE = "1"
-                FEDERAL_STATE = german_region_saxony
+                FEDERAL_STATE = GER_bundesrat_saxony_tt
             }
         }
         clr_country_flag = GER_negotiating_with_saxony
@@ -3531,6 +3551,22 @@ GER_start_investment_mission_for_federal_state = {
 
 GER_start_investment_infra_mission_for_federal_state = {
     if = {
+        limit = { has_country_flag = GER_negotiating_with_prussia  }
+        activate_mission = GER_investment_in_prussia_infrastructure
+        every_owned_state = {
+            limit = { is_claimed_by = PRE }
+            set_variable = { infrastructure_goal = 1 }
+			generic_setup_building_infra_objective = yes
+            custom_effect_tooltip = effect_if_completed
+            custom_effect_tooltip = {
+                localization_key = GER_influence_point_fake_tt
+                INFLUENCE = "1"
+                FEDERAL_STATE = GER_bundesrat_prussia_tt
+            }
+        }
+        clr_country_flag = GER_negotiating_with_bavaria
+    }
+    else_if = {
         limit = { has_country_flag = GER_negotiating_with_bavaria  }
         activate_mission = GER_investment_in_bavaria_infrastructure
         every_owned_state = {
@@ -3541,7 +3577,7 @@ GER_start_investment_infra_mission_for_federal_state = {
             custom_effect_tooltip = {
                 localization_key = GER_influence_point_fake_tt
                 INFLUENCE = "1"
-                FEDERAL_STATE = german_region_bavaria
+                FEDERAL_STATE = GER_bundesrat_bavaria_tt
             }
         }
         clr_country_flag = GER_negotiating_with_bavaria
@@ -3557,7 +3593,7 @@ GER_start_investment_infra_mission_for_federal_state = {
             custom_effect_tooltip = {
                 localization_key = GER_influence_point_fake_tt
                 INFLUENCE = "1"
-                FEDERAL_STATE = german_region_saxony
+                FEDERAL_STATE = GER_bundesrat_saxony_tt
             }
         }
         clr_country_flag = GER_negotiating_with_saxony
@@ -3567,6 +3603,22 @@ GER_start_investment_infra_mission_for_federal_state = {
 
 GER_start_political_concession_with_federal_state = {
     if = {
+        limit = { has_country_flag = GER_negotiating_with_prussia }
+        hidden_effect = {
+            random_owned_state = {
+                limit = { is_claimed_by = PRE }
+                set_state_flag = GER_political_concession_target               
+            }
+        }
+        custom_effect_tooltip = effect_when_gone
+        custom_effect_tooltip = {
+            localization_key = GER_influence_point_fake_tt
+            INFLUENCE = "1"
+            FEDERAL_STATE = GER_bundesrat_prussia_tt
+        }
+        clr_country_flag = GER_negotiating_with_prussia
+    }
+    else_if = {
         limit = { has_country_flag = GER_negotiating_with_bavaria }
         hidden_effect = {
             random_owned_state = {
@@ -3578,7 +3630,7 @@ GER_start_political_concession_with_federal_state = {
         custom_effect_tooltip = {
             localization_key = GER_influence_point_fake_tt
             INFLUENCE = "1"
-            FEDERAL_STATE = german_region_bavaria
+            FEDERAL_STATE = GER_bundesrat_bavaria_tt
         }
         clr_country_flag = GER_negotiating_with_bavaria
     }
@@ -3594,7 +3646,7 @@ GER_start_political_concession_with_federal_state = {
         custom_effect_tooltip = {
             localization_key = GER_influence_point_fake_tt
             INFLUENCE = "1"
-            FEDERAL_STATE = german_region_saxony
+            FEDERAL_STATE = GER_bundesrat_saxony_tt
         }
         clr_country_flag = GER_negotiating_with_saxony
     }
@@ -3615,7 +3667,7 @@ GER_end_political_concession_with_federal_state = {
             custom_effect_tooltip = {
                 localization_key = GER_influence_point_fake_tt
                 INFLUENCE = "1"
-                FEDERAL_STATE = german_region_bavaria
+                FEDERAL_STATE = GER_bundesrat_bavaria_tt
             }
         }
         else_if = {
@@ -3626,7 +3678,7 @@ GER_end_political_concession_with_federal_state = {
             custom_effect_tooltip = {
                 localization_key = GER_influence_point_fake_tt
                 INFLUENCE = "1"
-                FEDERAL_STATE = german_region_saxony
+                FEDERAL_STATE = GER_bundesrat_saxony_tt
             }
         }
     }
@@ -3634,6 +3686,7 @@ GER_end_political_concession_with_federal_state = {
 
 GER_remove_all_negotiation_flags = {
     clr_country_flag = GER_negotiating_with_federal_state
+    clr_country_flag = GER_negotiating_with_prussia
     clr_country_flag = GER_negotiating_with_bavaria
     clr_country_flag = GER_negotiating_with_saxony
 }
