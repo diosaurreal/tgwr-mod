@@ -4,7 +4,7 @@ country_event = {
 	id = ww1_sweden.1
 	title = ww1_generic.1.t
 	desc = ww1_generic.1.d
-	picture = GFX_report_event_election_vote
+	picture = GFX_report_event_SWE_riksdag
 
 	trigger = {
 		has_government = democratic
@@ -413,7 +413,7 @@ country_event = {
 	id = ww1_sweden.15
 	title = ww1_sweden.15.t
 	desc = ww1_sweden.15.d
-	picture = GFX_report_event_generic_parliament
+	picture = GFX_report_event_SWE_riksdag
 	trigger = {
 		tag = SWE
 		has_government = democratic
@@ -794,40 +794,120 @@ country_event = {
 	desc = ww1_sweden.28.d
 	picture = GFX_report_event_generic_conference
 	trigger = {
-		original_tag = SWE
-		has_country_flag = great_war_loser
 		OR = {
-			has_completed_focus = SWE_swedish_domination
-			has_completed_focus = SWE_sweden_norway_is_back
-			has_completed_focus = SWE_anslutning
-		}
+			AND = {
+				original_tag = SWE
+				has_country_flag = great_war_loser
+				OR = {
+					has_completed_focus = SWE_swedish_domination
+					has_completed_focus = SWE_sweden_norway_is_back
+					has_completed_focus = SWE_anslutning
+				}
+			}
+			AND = {
+				tag = NOR
+				has_cosmetic_tag = NOR_union
+				NOT = {
+					is_subject_of = SWE
+				}
+			}
+		}		
 	}
 	fire_only_once = yes
 	option = {
 		name = ww1_sweden.28.a
-		drop_cosmetic_tag = yes
 		if = {
 			limit = {
-				NOR = {
-					exists = no
-				}
+				original_tag = SWE
 			}
-			release = NOR
+			drop_cosmetic_tag = yes
 			if = {
 				limit = {
-					GER = { has_country_flag = great_war_winner }
-					NOT = { ENG = { has_country_flag = great_war_winner } }
+					NOR = {
+						exists = no
+					}
 				}
-				GER = { puppet = NOR }
+				release = NOR		
+				if = {
+					limit = {
+						GER = { has_country_flag = great_war_winner }
+						NOT = { ENG = { has_country_flag = great_war_winner } }
+					}
+					NOR = { set_country_flag = protectorate }
+					GER = { 
+						set_autonomy = {
+							target = NOR
+							autonomy_state = autonomy_tgwr_informal_protectorate
+						}
+					}
+				}
+				else_if = {
+					limit = {
+						ENG = { has_country_flag = great_war_winner }
+						NOT = { GER = { has_country_flag = great_war_winner } }
+					}
+					NOR = { set_country_flag = protectorate }
+					ENG = { 
+						set_autonomy = {
+							target = NOR
+							autonomy_state = autonomy_tgwr_informal_protectorate
+						}
+					}
+				}
 			}
+			else_if = {
+				limit = { has_subject = NOR }
+				end_puppet = NOR
+				NOR = { clr_country_flag = monarchist_puppet } 
+			}	
+		}
+		NOR = {
 			if = {
 				limit = {
-					ENG = { has_country_flag = great_war_winner }
-					NOT = { GER = { has_country_flag = great_war_winner } }
+					has_cosmetic_tag = NOR_union
 				}
-				ENG = { puppet = NOR }
-			}
-		}				
+				set_party_name = {
+					ideology = neutrality
+					long_name = NOR_neutrality_party
+					name = NOR_neutrality_party
+				}
+				if = {
+					limit = {
+						has_idea = SWE_gustaf_v_evil
+					}
+					remove_ideas = SWE_gustaf_v_evil					
+				}
+				add_country_leader_role = {
+					character = NOR_haakon_vii
+					promote_leader = yes
+					country_leader = { 
+						ideology = semi_constitutional_monarchy
+					}
+				}
+				add_ideas = NOR_haakon_vii
+				hidden_effect = {
+					drop_cosmetic_tag = yes
+					if = {
+						limit = {
+							has_character = SWE_knut_gillis_bildt
+						}
+						SWE_knut_gillis_bildt = {
+							set_nationality = SWE
+						}
+					}
+					set_politics = {
+						ruling_party = democratic
+						elections_allowed = yes
+					}
+					set_popularities = {
+						democratic = 64
+						fascism = 0
+						communism = 4
+						neutrality = 32
+					}
+				}
+			}	
+		}			
 	}
 }
 

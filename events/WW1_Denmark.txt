@@ -144,7 +144,7 @@ country_event = {
 	}
 }
 
-# JUTLAND REFERENDUM
+# Schleswig plebiscites
 #######################
 country_event = {
 	id = ww1_denmark.3
@@ -157,6 +157,7 @@ country_event = {
 	}
 	trigger = {
 		original_tag = DEN
+		has_global_flag = interbellum
 		any_other_country = {
 			owns_state = 751
 			has_country_flag = great_war_loser
@@ -165,7 +166,7 @@ country_event = {
 				has_war_with = PREV
 				has_subject = PREV
 			}
-		}
+		}	
 	}
 	immediate = {
 		hidden_effect = {
@@ -179,14 +180,16 @@ country_event = {
 		751 = {
 			set_demilitarized_zone = no
 			remove_core_of = GER
-			remove_core_of = SHL
 			transfer_state_to = PREV
 		}
 		ai_chance = {
 			factor = 100
 			modifier = {
 				factor = 0
-				has_country_flag = great_war_winner
+				OR = {
+					has_country_flag = great_war_winner
+					is_historical_focus_on = yes
+				}			
 			}
 		}
 	}
@@ -195,14 +198,25 @@ country_event = {
 		trigger = {
 			has_country_flag = great_war_winner
 		}
-		751 = {
-			set_demilitarized_zone = no
-			remove_core_of = GER
-			remove_core_of = SHL
+		every_state = {
+			limit = {
+				OWNER = {
+					has_country_flag = great_war_loser
+				}
+				OR = {
+					state = 751
+					state = 1118
+				}		
+			}
+			set_demilitarized_zone = no		
 			transfer_state_to = PREV
-		}
-		58 = {
-			transfer_state_to = PREV
+			if = {
+				limit = {
+					is_core_of = DEN
+				}
+				remove_core_of = GER
+			}
+				
 		}
 		ai_chance = {
 			factor = 50
@@ -217,10 +231,16 @@ country_event = {
 		751 = {
 			set_demilitarized_zone = no
 			remove_core_of = GER
-			remove_core_of = SHL
+			#remove_core_of = SHL
 			transfer_state_to = PREV
 		}
-		58 = {
+		every_state = {
+			limit = {
+				OWNER = {
+					has_country_flag = great_war_loser
+				}
+				is_core_of = SHL
+			}
 			transfer_state_to = SHL
 		}
 		if = {
@@ -252,10 +272,62 @@ country_event = {
 		}
 		58 = {
 			owner = {
+				transfer_state = 1118
 				transfer_state = 751
 			}
 		}
 		remove_state_core = 751
+		remove_state_claim = 1118
+		ai_chance = {
+			factor = 200
+		}
+	}
+	option = {
+		name = ww1_denmark.3.f
+		trigger = {
+			OR = {
+				has_idea = DEN_christian_x
+				has_government = neutrality
+				has_government = fascism
+			}		
+			NOT = {
+				has_country_flag = great_war_winner
+				has_country_flag = great_war_loser
+			}
+			1118 = {
+				OWNER = {
+					has_country_flag = great_war_loser
+				}
+			}
+		}
+		751 = {
+			set_demilitarized_zone = no
+			remove_core_of = GER
+			#remove_core_of = SHL
+			transfer_state_to = PREV
+		}
+		add_state_claim = 1118
+		if = {
+			limit = {
+				has_government = democratic
+				has_idea = DEN_christian_x
+			}
+			add_stability = -0.1
+			add_political_power = -50
+			set_politics = {
+				ruling_party = neutrality
+				elections_allowed = no
+			}
+			activate_advisor = DEN_otto_liebe
+			set_country_flag = dont_trigger_political_event
+			hidden_effect = {
+				remove_ideas = DEN_christian_x		
+				country_event = {
+					id = ww1_denmark.5
+					days = 6
+				}
+			}	
+		}	
 		ai_chance = {
 			factor = 200
 		}
@@ -292,3 +364,82 @@ country_event = {
 		}
 	}
 }
+
+# Easter Crisis
+country_event = {
+	id = ww1_denmark.5
+	title = ww1_denmark.5.t
+	desc = ww1_denmark.5.d
+	picture = GFX_report_event_gathering_protest
+	fire_only_once = yes
+	is_triggered_only = yes
+	option = {
+		name = ww1_denmark.5.a
+		set_politics = {
+			ruling_party = democratic
+			last_election = "1916.4.26"
+			elections_allowed = yes
+		}
+		clr_country_flag = dont_trigger_political_event
+		deactivate_advisor = DEN_otto_liebe
+		hidden_effect = {
+			add_ideas = DEN_christian_x
+		}
+		remove_state_claim = 58
+		ai_chance = {
+			base = 100
+		}
+	}
+	option = {
+		name = ww1_denmark.5.b
+		clr_country_flag = dont_trigger_political_event
+		add_stability = -0.2
+		add_political_power = -100
+		add_popularity = {
+			ideology = democratic
+			popularity = -0.2
+		}
+		1118 = {
+			transfer_state_to = DEN
+			start_resistance = GER
+			add_resistance = 50
+		}
+		ai_chance = {
+			base = 20
+			modifier = {
+				factor = 0
+				is_historical_focus_on = yes
+			}
+		}
+	}
+}
+
+# Social Democratic government
+country_event = {
+	id = ww1_denmark.6
+	title = ww1_denmark.6.t
+	desc = ww1_denmark.6.d
+	picture = GFX_report_event_election_vote
+	fire_only_once = yes
+	trigger = {
+		tag = DEN
+		date > 1924.4.1
+		has_government = democratic
+		has_elections = yes
+		has_war = no
+		has_character = DEN_thorvald_stauning
+	}
+	mean_time_to_happen = {
+		days = 24
+	}
+	option = {
+		name = ww1_denmark.6.a
+		promote_character = DEN_thorvald_stauning
+		set_party_name = {
+			ideology = democratic
+			long_name = DEN_social_democratic_party
+			name = DEN_social_democratic_party
+		}
+	}
+}
+

@@ -1,4 +1,4 @@
-﻿add_namespace = ww1_romania
+add_namespace = ww1_romania
 # The Puppet Master
 ###############################
 country_event = {
@@ -288,9 +288,15 @@ country_event = {
 			base = 0
 			modifier = {
 				add = 100
-				has_game_rule = {
-					rule = ROM_ai_behavior
-					option = ROM_CENTRAL_POWERS
+				OR = {
+				    has_game_rule = {
+					    rule = ROM_ai_behavior
+				    	option = ROM_MONARCHIST
+			    	}
+				    has_game_rule = {
+					    rule = ROM_ai_behavior
+				       	option = ROM_CENTRAL_POWERS
+				    }
 				}
 			}
 		}
@@ -755,7 +761,7 @@ country_event = {
 		ROM_king_effect = yes
 	}
 }
-
+# Death of Carol I
 country_event = {
 	id = ww1_romania.27
 	title = ww1_romania.27.t
@@ -775,23 +781,26 @@ country_event = {
 	}
 	option = {
 		name = ww1_romania.27.a
-		retire_character = ROM_carol_i
 		set_global_flag = ROM_ferd_king
-		ROM_king_effect = yes
+		set_character_name = {
+			character = ROM_ferdinand_i
+			name = ROM_ferdinand_i
+		}
 		if = {
 			limit = {
 				has_country_leader = {
 					character = ROM_carol_i
-				}
+				}	
 			}
 			promote_character = ROM_ferdinand_i
 			else = {
 				effect_tooltip = {
 					promote_character = ROM_ferdinand_i
 				}
-			}
+			}	
 		}
-		IF = {
+		retire_character = ROM_carol_i
+		if = {
 			limit = {
 				has_ROM_conservative_government = yes
 			}
@@ -801,7 +810,7 @@ country_event = {
 			custom_effect_tooltip = king_opinion_worse.tt
 			ROM_king_effect = yes
 		}
-		else_if = {
+		if = {
 			limit = {
 				OR = {
 					has_ROM_liberal_government = yes
@@ -814,6 +823,7 @@ country_event = {
 			custom_effect_tooltip = king_opinion_improve.tt
 			ROM_king_effect = yes
 		}
+		ROM_king_effect = yes
 	}
 }
 
@@ -1704,6 +1714,7 @@ country_event = {
 		name = ww1_romania.65.a
 		complete_national_focus = ROM_new_times
 		complete_national_focus = ROM_victory_in_the_great_war
+		complete_national_focus = ROM_balkan_diplomacy
 		set_country_flag = ROM_great_war_ended
 	}
 }
@@ -1951,7 +1962,7 @@ country_event = {
 	option = {
 		name = ww1_romania.93.a
 		set_country_flag = ROM_aurel_vlaicu_dies
-		retire_character = ROM_aurel_vlaicu_advisor
+		retire_character = ROM_aurel_vlaicu
 		add_political_power = -25
 	}
 }
@@ -2161,14 +2172,19 @@ country_event = {
 		}
 		complete_national_focus = ROM_the_conservative_conservatives
 		set_politics = {
-			ruling_party = democratic
+			ruling_party = neutrality
 			elections_allowed = yes
 			name = ROM_conservative_party
 			long_name = ROM_conservative_party_long
 		}
+		hidden_effect = {
+			add_popularity = {
+    			ideology = neutrality
+    			popularity = 0.1
+			}
+		}
 		ROM_barbu_delavrancea = {
 			promote_character = {
-				ideology = liberal_conservatism
 				ideology = authoritarian_democracy
 			}	
 		}
@@ -2280,9 +2296,6 @@ country_event = {
 			owns_state = 1020
 		}
 	}
-	mean_time_to_happen = {
-		days = 30
-	}
 	immediate = {
 		hidden_effect = {
 			every_state = {
@@ -2296,17 +2309,20 @@ country_event = {
 		}
 	}
 	option = {
-		if = {
-			limit = {
-				has_army_manpower = {
-					size < 70000
-				}
-			}
-			hidden_effect = {
-				load_oob = "ROM_1918"
-			}
-			custom_effect_tooltip = ROM_spawn_1918_army
+		hidden_effect = {
+			news_event = ww1_romania.208
 		}
+	#	if = { # spawns in armisitce effect now so romania can deploy troops to front
+	#		limit = {
+	#			has_army_manpower = {
+	#				size < 70000
+	#			}
+	#		}
+	#		hidden_effect = {
+	#			load_oob = "ROM_1918"
+	#		}
+	#		custom_effect_tooltip = ROM_spawn_1918_army
+	#	}
 		trigger = {
 			ROM = {
 				has_capitulated = no
@@ -2318,8 +2334,103 @@ country_event = {
 			factor = 100
 		}
 		hidden_effect = {
+			country_event = {
+				id = ww1_romania.192
+				days = 2
+			}
 			HUN = {
+				country_event = {
+					id = ww1_romania.192
+					days = 2
+				}
 				add_ideas = ROM_hungarian_war_surrender_limit
+				add_ideas = HUN_disorganized_army
+				add_ideas = HUN_socialist_unrest
+				if = { #make hungary stronger if romania is strong
+				    limit = {
+						ROM = {
+							has_army_manpower = {
+								size > 350000
+							}
+						}
+					}
+					division_template = {
+						name = "Milícia"
+						regiments = {
+							militia = {
+								x = 0
+								y = 0
+							}
+							militia = {
+								x = 0
+								y = 1
+							}
+							militia = {
+								x = 0
+								y = 2
+							}
+						}
+					}
+					43 = {
+						create_unit = {
+							division = "name = \"Milícia\" division_template = \"Milícia\" start_experience_factor = 0.2 start_equipment_factor = 0.15"
+							owner = HUN
+							count = 4
+						}
+					}
+				}
+				else_if = {
+					limit = {
+						ROM = {
+							has_army_manpower = {
+								size > 250000
+							}
+						}
+					}
+					division_template = {
+						name = "Milícia"
+						regiments = {
+							militia = {
+								x = 0
+								y = 0
+							}
+							militia = {
+								x = 0
+								y = 1
+							}
+							militia = {
+								x = 0
+								y = 2
+							}
+						}
+					}
+					43 = {
+						create_unit = {
+							division = "name = \"Milícia\" division_template = \"Milícia\" start_experience_factor = 0.2 start_equipment_factor = 0.15"
+							owner = HUN
+							count = 2
+						}
+					}
+				}
+				else = {
+					division_template = {
+						name = "Milícia"
+						regiments = {
+							militia = {
+								x = 0
+								y = 0
+							}
+							militia = {
+								x = 0
+								y = 1
+							}
+							militia = {
+								x = 0
+								y = 2
+							}
+						}
+					}
+				}
 			}
 			set_global_flag = ROM_HUN_war_1919
 			if = {
@@ -2411,7 +2522,21 @@ country_event = {
 		ai_chance = {
 			factor = 100
 		}
-		complete_national_focus = ROM_victory_in_hungarian_war
+		if = {
+			limit = {
+				has_focus_tree = romania_focus
+			}
+			complete_national_focus = ROM_victory_in_hungarian_war
+		}
+		if = {
+			limit = {
+				has_focus_tree = romania_focus
+				NOT = {
+					has_completed_focus = ROM_anti_hungarian_propaganda
+				}
+			}
+			unlock_national_focus = ROM_anti_hungarian_propaganda
+		}
 		if = {
 			limit = { has_country_flag = great_war_winner }
 			country_event = {
@@ -2447,6 +2572,22 @@ country_event = {
 			country_event = {
 				id = ww1_hungary.2
 				days = 10
+			}
+			if = {
+				limit = { #hungary surrenders to just romania
+					HUN =  {
+						NOT = {
+							has_war_with = CZE
+						}
+					}
+				}
+				news_event = ww1_romania.190
+			}
+			else_if = { #hungary surrenders to romania and czechoslovakia
+				limit = {
+					has_war_with = CZE
+				}
+				news_event = ww1_romania.83
 			}
 			if = {
 				limit = {
@@ -2544,7 +2685,6 @@ country_event = {
 				}
 			}
 		}
-		news_event = ww1_romania.83
 		hidden_effect = {
 			clr_global_flag = ROM_HUN_war_1919
 			every_country = {
@@ -2728,7 +2868,9 @@ news_event = {
 	title = ww1_romania.88.t
 	desc = ww1_romania.88.d
 	picture = GFX_news_event_peter_p_carp
-	major = yes
+	show_major = {
+		is_european_tag = yes
+	}
 	is_triggered_only = yes
 	option = {
 		name = ww1_romania.88.a
@@ -2758,8 +2900,10 @@ news_event = {
 	id = ww1_romania.89
 	title = ww1_romania.89.t
 	desc = ww1_romania.89.d
-	picture = GFX_news_event_peter_p_carp
-	major = yes
+	picture = GFX_news_event_romania_pnl_government
+	show_major = {
+		is_european_tag = yes
+	}
 	is_triggered_only = yes
 	option = {
 		name = ww1_romania.89.a
@@ -2784,12 +2928,12 @@ news_event = {
 	}
 }
 
-## Austria-Hungary cedes bukovina to romania in exchange of joining cent powe
+## Austria-Hungary cedes bukovina to romania in exchange of joining central powers
 news_event = {
 	id = ww1_romania.90
 	title = ww1_romania.90.t
 	desc = ww1_romania.90.desc
-	picture = GFX_news_event_generic_sign_treaty1
+	picture = GFX_news_event_romania_austria
 	major = yes
 	fire_only_once = yes
 	is_triggered_only = yes
@@ -2892,6 +3036,7 @@ country_event = {
 		trigger = {
 			NOT = {
 				has_completed_focus = ROM_transition_towards_a_socialist_economy
+				has_government = communism
 			}
 		}
 		ai_chance = {
@@ -2902,7 +3047,10 @@ country_event = {
 		name = ww1_romania.92.c
 		complete_national_focus = ROM_prioritise_economic_growth
 		trigger = {
-			has_completed_focus = ROM_transition_towards_a_socialist_economy
+			OR = {
+				has_government = communism
+				has_completed_focus = ROM_nationalize_steel_industry
+			}
 		}
 		ai_chance = {
 			factor = 1
@@ -2928,6 +3076,10 @@ country_event = {
 		name = ww1_romania.94.a
 		add_political_power = -100
 		remove_ideas = ROM_grand_coalition_idea3
+		hidden_effect = {
+			remove_ideas = ROM_grand_coalition_idea2
+			remove_ideas = ROM_grand_coalition_idea
+		}
 	}
 }
 
@@ -3500,7 +3652,7 @@ country_event = {
 	desc = ww1_romania.110.d
 	picture = GFX_report_event_romanian_soldiers
 	fire_only_once = yes
-	is_triggered_only = yes
+	is_triggered_only = yes	
 	option = {
 		# Condemn
 		name = ww1_romania.110.a
@@ -3539,6 +3691,9 @@ country_event = {
 	picture = GFX_report_event_europe_funeral
 	fire_only_once = yes
 	is_triggered_only = yes
+	trigger = {
+		has_subject = HUN
+	}
 	option = {
 		name = ww1_romania.111.a
 		add_political_power = -25
@@ -3557,6 +3712,14 @@ country_event = {
 			end_wars = yes
 			end_civil_wars = yes
 		}
+		if = {
+			limit = {
+				HUN = {
+					is_in_faction_with = ROM
+				}
+			}
+			leave_faction = yes
+		}
 		hidden_effect = {
 			set_country_flag = ROM_freed_hungary
 		}
@@ -3569,6 +3732,9 @@ country_event = {
 	desc = ww1_romania.112.d
 	fire_only_once = yes
 	is_triggered_only = yes
+	trigger = {
+		has_subject = HUN
+	}
 	option = {
 		name = ww1_romania.112.a
 		hidden_effect = {
@@ -3586,6 +3752,14 @@ country_event = {
 			end_wars = yes
 			end_civil_wars = yes
 		}
+		if = {
+			limit = {
+				HUN = {
+					is_in_faction_with = ROM
+				}
+			}
+			leave_faction = yes
+		}
 		hidden_effect = {
 			set_country_flag = ROM_freed_hungary
 		}
@@ -3598,6 +3772,9 @@ country_event = {
 	desc = ww1_romania.113.d
 	fire_only_once = yes
 	is_triggered_only = yes
+	trigger = {
+		has_subject = HUN
+	}
 	option = {
 		name = ww1_romania.113.a
 		add_political_power = -100
@@ -3616,6 +3793,14 @@ country_event = {
 			end_wars = yes
 			end_civil_wars = yes
 		}
+		if = {
+			limit = {
+				HUN = {
+					is_in_faction_with = ROM
+				}
+			}
+			leave_faction = yes
+		}
 		hidden_effect = {
 			set_country_flag = ROM_freed_hungary
 		}
@@ -3628,6 +3813,9 @@ country_event = {
 	desc = ww1_romania.114.d
 	fire_only_once = yes
 	is_triggered_only = yes
+	trigger = {
+		has_subject = HUN
+	}	
 	option = {
 		name = ww1_romania.114.a
 		trigger = {
@@ -3641,6 +3829,14 @@ country_event = {
 			end_wars = yes
 			end_civil_wars = yes
 		}
+		if = {
+			limit = {
+				HUN = {
+					is_in_faction_with = ROM
+				}
+			}
+			leave_faction = yes
+		}
 		hidden_effect = {
 			set_country_flag = ROM_freed_hungary
 		}
@@ -3652,12 +3848,15 @@ country_event = {
 		}
 		HUN = {
 			set_country_flag = protectorate
-		}
-		set_autonomy = {
-			target = HUN
-			autonomous_state = autonomy_tgwr_protectorate
-			end_wars = yes
-			end_civil_wars = yes
+			get_current_government_type = yes
+			PREV = {
+				set_autonomy = {
+					target = PREV
+					autonomous_state = autonomy_tgwr_protectorate
+					end_wars = yes
+				}
+			}	
+			restore_previous_government_type = yes
 		}
 		add_stability = -0.05
 	}
@@ -3903,6 +4102,7 @@ country_event = {
 		set_variable = {
 			kings_approval_of_government = 0
 		}
+		
 		complete_national_focus = ROM_the_second_great_disaster
 		complete_national_focus = ROM_install_a_royal_dictatorship
 		remove_dynamic_modifier = {
@@ -4112,28 +4312,24 @@ country_event = {
 			owns_state = 78
 		}
 		OR = {
-			UKR = {
-				exists = yes
-			}
-			WUK = {
-				exists = yes
-			}
-			RUS = {
-				exists = yes
-			}
-		}
-		OR = {
 			has_completed_focus = ROM_victory_in_the_great_war
 			has_completed_focus = ROM_defeat_in_gw
 		}
 	}
 	option = {
 		name = ww1_romania.127.a
+		add_stability = -0.1
 		78 = {
+			remove_core_of = ROM
+			hidden_effect = {
+				start_resistance = yes	
+			}
+			add_resistance = 50
 			add_dynamic_modifier = {
 				modifier = ROM_khotyn_uprising
 			}
 		}
+		custom_effect_tooltip = ROM_you_should_kill_rebels.tt
 		set_country_flag = ROM_khotyn_uprising_happens
 		ai_chance = {
 			factor = 100
@@ -4150,12 +4346,11 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_romania.128.a
-		ROM_barbu_delavrancea = {
-			promote_character = {
-				ideology = liberal_conservatism
-				ideology = authoritarian_democracy
-			}	
+		promote_character = {
+			ideology = liberal_conservatism
+			character = ROM_barbu_delavrancea
 		}
+		
 	}
 }
 
@@ -4381,30 +4576,33 @@ country_event = {
 	fire_only_once = yes
 	trigger = {
 		tag = ROM
+		is_subject = no
+		is_in_faction = no
 		has_global_flag = ROM_treaty_of_bucharest
 		has_global_flag = GER_capitulation
+		NOT = {
+			has_global_flag = FRA_capitulation
+			has_war_with = FRA
+			has_war_with = GER
+		}
+		GER = {
+			has_war_with = FRA
+		}
 		ROM = {
 			NOT = {
 				has_country_flag = ROM_treaty_of_bucharest_nullified
+				has_country_flag = ROM_treaty_of_bucharest_violated
 			}
 		}
 	}
 	option = {
 		name = ww1_romania.134.a
 		set_country_flag = ROM_treaty_of_bucharest_violated
-		remove_ideas = idea_armistice
-		FRA = {
-			if = {
-				limit = {
-					is_faction_leader = yes
-				}
-				add_to_faction = ROM
-			}
+		remove_ideas = {
+			idea_armistice
+			standing_alone
 		}
-		add_to_war = {
-			targeted_alliance = FRA
-			enemy = GER
-		}
+		join_great_war_against_GER = yes
 		ai_chance = {
 			factor = 0
 		}
@@ -4502,11 +4700,6 @@ country_event = {
 		GER = {
 			add_ideas = ROM_occupation_costs_rom2
 		}
-		805 = {
-			add_dynamic_modifier = {
-				modifier = ROM_armistice_of_focsani_dobrogea_de_nord
-			}
-		}
 		hidden_effect = {
 			set_capital = {
 				state = 79
@@ -4543,6 +4736,9 @@ country_event = {
 		805 = {
 			transfer_state_to = ROM
 			set_demilitarized_zone = yes
+			add_dynamic_modifier = {
+				modifier = ROM_armistice_of_focsani_dobrogea_de_nord
+			}
 		}
 		846 = {
 			transfer_state_to = GER
@@ -4571,6 +4767,9 @@ country_event = {
 	picture = GFX_report_event_romanian_soldiers
 	option = {
 		name = ww1_romania.138.e
+		ai_chance = {
+			base = 50
+		}
 		set_country_flag = ROM_z_hypothesis_flag
 		custom_effect_tooltip = ROM_strike_swift_and_hard_tt
 		effect_tooltip = {
@@ -4582,9 +4781,6 @@ country_event = {
 	}
 	option = {
 		name = ww1_romania.138.a
-		ai_chance = {
-			base = 50
-		}
 		custom_effect_tooltip = ROM_south_wall.tt
 		hidden_effect = {
 			81 = {
@@ -4820,59 +5016,7 @@ country_event = {
 	}
 }
 
-## Defense Pact with Serbia
-country_event = {
-	id = ww1_romania.144
-	title = ww1_romania.144.t
-	desc = ww1_romania.144.d
-	fire_only_once = yes
-	is_triggered_only = yes
-	picture = GFX_report_event_generic_sign_treaty2
-	option = {
-		name = ww1_romania.144.a
-		give_guarantee = SER
-		SER = {
-			give_guarantee = ROM
-		}
-		ROM = {
-			country_event = ww1_romania.146
-		}
-	}
-	option = {
-		name = ww1_romania.144.b
-		ROM = {
-			country_event = ww1_romania.145
-		}
-	}
-}
-
-#Womp Womp - Serbia refuses
-country_event = {
-	id = ww1_romania.145
-	title = ww1_romania.145.t
-	desc = ww1_romania.145.d
-	fire_only_once = yes
-	is_triggered_only = yes
-	picture = GFX_report_event_generic_sign_treaty2
-	option = {
-		name = ww1_romania.145.a
-	}
-}
-
-#yay!! - Serbia accepts
-country_event = {
-	id = ww1_romania.146
-	title = ww1_romania.146.t
-	desc = ww1_romania.146.d
-	fire_only_once = yes
-	is_triggered_only = yes
-	picture = GFX_report_event_generic_sign_treaty2
-	option = {
-		name = ww1_romania.146.a
-	}
-}
-
-#hungarians protest renaming of szekelyfold
+#hungarians protest suppression of language
 country_event = {
 	id = ww1_romania.147
 	title = ww1_romania.147.t
@@ -4882,8 +5026,10 @@ country_event = {
 	picture = GFX_report_event_american_hunger_march
 	option = {
 		name = ww1_romania.147.a
+		add_stability = -0.05
 		778 = {
-			add_resistance = 15
+			add_resistance = 20
+			add_compliance = -10
 		}
 	}
 }
@@ -5066,6 +5212,7 @@ country_event = {
 		name = ww1_romania.155.a
 		complete_national_focus = ROM_new_times
 		complete_national_focus = ROM_victory_in_the_great_war
+		complete_national_focus = ROM_balkan_diplomacy
 		set_country_flag = ROM_great_war_ended
 	}
 }
@@ -5080,33 +5227,28 @@ country_event = {
 	fire_only_once = yes
 	option = {
 		name = ww1_romania.156.a
-		every_state = {
+		every_owned_state = {
 			limit = {
-				OR = {
-					AND = {
-						is_owned_and_controlled_by = GER
-						is_core_of = ROM
-					}
+				is_core_of = ROM
+				NOT = {
 					state = 805
 				}
 			}
-			transfer_state_to = ROM
+			transfer_state_to = ROM		
 		}
 		ROM = {
-			diplomatic_relation = {
-				country = GER
-				relation = non_aggression_pact
-				active = yes
+			give_resource_rights = {
+				receiver = GER
+				state = 46
 			}
 		}
-		GER = {
-			diplomatic_relation = {
-				country = ROM
-				relation = non_aggression_pact
-				active = yes
-			}
+		diplomatic_relation = {
+			country = ROM
+			relation = non_aggression_pact
+			active = yes
 		}
 		ROM = {
+			give_military_access = GER
 			country_event = {
 				id = ww1_romania.157
 				days = 1
@@ -5118,12 +5260,9 @@ country_event = {
 	}
 	option = {
 		name = ww1_romania.156.b
-		every_state = {
+		every_owned_state = {
 			limit = {
-				AND = {
-					is_owned_and_controlled_by = GER
-					is_core_of = ROM
-				}
+				is_core_of = ROM
 			}
 			add_resistance = 25
 			add_compliance = -10
@@ -5155,25 +5294,16 @@ country_event = {
 	option = {
 		name = ww1_romania.157.a
 		effect_tooltip = {
-			every_state = {
-				limit = {
-					AND = {
-						is_owned_and_controlled_by = GER
-						is_core_of = ROM
-					}
-				}
-				transfer_state_to = ROM
-			}
 			ROM = {
+				transfer_state = 46
+				give_resource_rights = {
+					receiver = GER
+					state = 46
+				}
+				transfer_state = 81
+				give_military_access = GER
 				diplomatic_relation = {
 					country = GER
-					relation = non_aggression_pact
-					active = yes
-				}
-			}
-			GER = {
-				diplomatic_relation = {
-					country = ROM
 					relation = non_aggression_pact
 					active = yes
 				}
@@ -5193,20 +5323,19 @@ country_event = {
 	option = {
 		name = ww1_romania.158.a
 		effect_tooltip = {
-			every_state = {
-				limit = {
-					AND = {
-						is_owned_and_controlled_by = GER
+			GER = {
+				every_state = {
+					limit = {
 						is_core_of = ROM
 					}
+					add_resistance = 25
+					add_compliance = -10
+					damage_building = {
+						type = industrial_complex
+						damage = 1
+					}
 				}
-				add_resistance = 25
-				add_compliance = -10
-				damage_building = {
-					type = industrial_complex
-					damage = 1
-				}
-			}
+			}			
 		}
 	}
 }
@@ -5645,5 +5774,1246 @@ country_event = {
 		complete_national_focus = ROM_hostile_takeover_of_government
 		complete_national_focus = ROM_a_unifying_figure_head
 		complete_national_focus = ROM_new_constitution
+	}
+}
+
+# Death of Ferdinand I
+############################
+country_event = {
+	id = ww1_romania.180
+	title = ww1_romania.180.t
+	picture = GFX_report_event_europe_funeral
+	desc = {
+		text = ww1_romania.180.d
+		trigger = {
+			NOT = {
+				has_country_flag = great_war_loser
+			}
+		}
+	}
+	desc = {
+		text = ww1_romania.180.d_carol
+		trigger = {
+			has_country_flag = great_war_loser
+		}
+	}
+	fire_only_once = yes
+	trigger = {
+		original_tag = ROM
+		has_country_leader = {
+			character = ROM_ferdinand_i
+			ruling_only = no
+		}
+		date > 1927.7.20
+	}
+	mean_time_to_happen = {
+		days = 0
+	}
+	option = {
+		name = ww1_romania.180.a
+		trigger = {
+			NOT = {
+				has_country_flag = great_war_loser
+			}
+		}	
+		set_global_flag = ROM_ferd_death
+		ROM_king_effect = yes
+		set_character_name = {
+			character = ROM_prince_nicolae
+			name = ROM_prince_nicolae
+		}
+		if = {
+			limit = {
+				has_country_leader = {
+					character = ROM_ferdinand_i
+				}
+			}
+			add_country_leader_role = {
+				character = ROM_prince_nicolae
+				promote_leader = yes
+				country_leader = {
+					desc = ROM_prince_nicolae_desc
+					ideology = semi_constitutional_monarchy
+					traits = { no_interest_in_politics }
+				}
+			}
+			else = {
+				add_country_leader_role = {
+					character = ROM_prince_nicolae
+					country_leader = {
+						desc = ROM_prince_nicolae_desc
+						ideology = semi_constitutional_monarchy
+						traits = { no_interest_in_politics }
+					}
+				}
+				add_ideas = ROM_prince_nicolae
+			}
+		}
+		retire_character = ROM_ferdinand_i	
+	}
+	option = {
+		name = ww1_romania.180.b
+		trigger = {
+			has_country_flag = great_war_loser
+		}
+		set_global_flag = ROM_ferd_death
+		retire_character = ROM_ferdinand_i
+		set_character_name = {
+			character = ROM_carol_ii
+			name = ROM_carol_ii
+		}
+		ROM_king_effect = yes
+		set_politics = {
+			ruling_party = neutrality
+			long_name = ROM_neutrality_party_long
+			name = ROM_neutrality_party
+			elections_allowed = yes
+		}
+		add_country_leader_role = {
+			character = ROM_carol_ii
+			promote_leader = yes
+			country_leader = {
+				ideology = semi_constitutional_monarchy
+				traits = { hedonist }
+			}
+		}
+		add_ideas = ROM_king_carol_ii_hedonist	
+	}
+}
+
+# Carol II
+#############################
+country_event = {
+	id = ww1_romania.181
+	title = ww1_romania.181.t
+	desc = ww1_romania.181.d
+	picture = GFX_report_event_carol_party
+	fire_only_once = yes
+	trigger = {
+		original_tag = ROM
+		has_country_leader = {
+			character = ROM_prince_nicolae
+			ruling_only = no
+		}
+		date > 1930.6.1
+	}
+	mean_time_to_happen = {
+		days = 8
+	}
+	option = {
+		name = ww1_romania.180.b
+		remove_ideas = ROM_prince_nicolae
+		remove_country_leader_role = {
+			character = ROM_prince_nicolae
+			ideology = semi_constitutional_monarchy
+		} 
+		set_character_name = {
+			character = ROM_prince_nicolae
+			name = ROM_nicolae_hohenzollern_sigmaringen
+		}
+		add_ideas = ROM_king_carol_ii_hedonist		
+		set_character_name = {
+			character = ROM_carol_ii
+			name = ROM_carol_ii
+		}
+		if = {
+			limit = {
+				has_country_leader = {
+					character = ROM_prince_nicolae
+				}
+			}
+			add_country_leader_role = {
+				character = ROM_carol_ii
+				promote_leader = yes
+				country_leader = {
+					ideology = semi_constitutional_monarchy
+					traits = { hedonist }
+				 }
+			}
+			else = {
+				add_country_leader_role = {
+					character = ROM_carol_ii
+					country_leader = {
+						ideology = semi_constitutional_monarchy
+						traits = { hedonist }
+					}
+				}			
+			}
+		}
+	}
+}
+
+# Carol II with Iron Guard
+#############################
+country_event = {
+	id = ww1_romania.182
+	title = ww1_romania.181.t
+	desc = ww1_romania.181.d
+	picture = GFX_report_event_carol_party
+	fire_only_once = yes
+	trigger = {
+		original_tag = ROM
+		has_country_leader = {
+			character = ROM_carol_ii
+		}
+		date > 1934.1.1
+		has_country_flag = great_war_loser
+		GER = {
+			has_country_flag = great_war_winner
+		}
+	}
+	mean_time_to_happen = {
+		days = 20
+	}
+	option = {
+		name = ww1_romania.182.a		
+		set_politics = {
+			ruling_party = fascism
+			long_name = ROM_legionary_party_long
+			name = ROM_legionary_party
+			elections_allowed = no
+		}
+		hidden_effect = {
+			set_cosmetic_tag = ROM_legionary
+			set_popularities = {
+				communism = 0
+				democratic = 38
+				neutrality = 18
+				fascism = 44
+			}
+		}
+		add_country_leader_role = {
+			character = ROM_corneliu_zelea_codreanu
+			promote_leader = yes
+			country_leader = {
+				ideology = fascism_ideology
+			}
+		}
+	}
+}
+#Chitila Inspection
+country_event = {
+	id = ww1_romania.183
+	title = ww1_romania.183.t
+	desc = ww1_romania.183.d
+	is_triggered_only = yes
+	picture = GFX_report_event_romania_plane
+	option = {
+		name = ww1_romania.183.a
+		set_country_flag = ROM_cerchez_co_inspection
+		air_experience = 15
+		unlock_decision_tooltip = ROM_order_farmans_from_cerchez_and_co
+	}
+}
+#Romania requests mutual guarantees
+country_event = {
+	id = ww1_romania.184
+	title = ww1_romania.184.t
+	desc = ww1_romania.184.d
+	is_triggered_only = yes
+	picture = GFX_report_event_generic_sign_treaty1
+	option = {
+		name = ww1_romania.184.a
+		ai_chance = {
+			base = 100
+			modifier = {
+				has_same_ideology = yes
+				factor = 2
+			}
+			modifier = {
+				is_historical_focus_on = yes
+				factor = 2
+			}
+		}
+		ROOT = {
+			give_guarantee = ROM
+		}
+		ROM = {
+			give_guarantee = ROOT
+			country_event = {
+				id = ww1_romania.185
+				days = 1
+			}
+		}
+	}
+	option = {
+		name = ww1_romania.184.b
+		ai_chance = {
+			base = 0
+			modifier = {
+				has_same_ideology = no
+				add = 5
+			}
+		}
+	}
+}
+#Mutual guarantee accepted
+country_event = {
+	id = ww1_romania.185
+	title = ww1_romania.185.t
+	desc = ww1_romania.185.d
+	is_triggered_only = yes
+	picture = GFX_report_event_generic_sign_treaty1
+	option = {
+		name = ww1_romania.185.a
+	}
+}
+#little entente formation request
+country_event = {
+	id = ww1_romania.186
+	title = ww1_romania.186.t
+	desc = ww1_romania.186.d
+	is_triggered_only = yes
+	picture = GFX_report_event_generic_sign_treaty1
+	option = {
+		name = ww1_romania.186.a
+		ai_chance = {
+			base = 100
+			modifier = {
+				has_same_ideology = yes
+				factor = 2
+			}
+			modifier = {
+				is_historical_focus_on = yes
+				factor = 2
+			}
+		}
+		custom_effect_tooltip = historical_tt
+		ROM = {
+			add_to_faction = ROOT
+			country_event = {
+				id = ww1_romania.187
+				hours = 2
+			}
+		}
+	}
+	option = {
+		name = ww1_romania.186.b
+		ai_chance = {
+			base = 0
+			modifier = {
+				has_same_ideology = no
+				add = 5
+			}
+		}
+	}
+}
+#little entente request accepted
+country_event = {
+	id = ww1_romania.187
+	title = ww1_romania.187.t
+	desc = ww1_romania.187.d
+	is_triggered_only = yes
+	picture = GFX_report_event_generic_sign_treaty1
+	option = {
+		name = ww1_romania.187.a
+	}
+}
+#romania requests french guarantees
+country_event = {
+	id = ww1_romania.188
+	title = ww1_romania.188.t
+	desc = ww1_romania.188.d
+	is_triggered_only = yes
+	picture = GFX_report_event_generic_sign_treaty1
+	option = {
+		name = ww1_romania.188.a
+		add_political_power = 5
+		FRA = {
+			give_guarantee = ROM
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 100
+				is_historical_focus_on = yes
+				FRA = {
+					OR = {
+						has_government = democratic
+						has_government = neutrality
+					}
+				}
+			}
+			modifier = {
+				factor = -50
+				FRA = {
+					has_government = communism
+				}
+				ROM = {
+					NOT = {
+						has_government = communism
+					}
+				}
+			}
+		}
+	}
+	option = {
+		name = ww1_romania.188.b
+		add_war_support = -0.01
+		ai_chance = {
+			base = 1
+			modifier = {
+				factor = 0
+				is_historical_focus_on = yes
+				FRA = {
+					OR = {
+						has_government = democratic
+						has_government = neutrality
+					}
+				}
+			}
+		}
+	}
+}
+#france accepts offer
+country_event = {
+	id = ww1_romania.189
+	title = ww1_romania.189.t
+	desc = ww1_romania.189.d
+	is_triggered_only = yes
+	picture = GFX_report_event_generic_sign_treaty1
+	option = {
+		name = ww1_romania.189.a
+	}
+}
+#romania beats hungary
+news_event = {
+	id = ww1_romania.190
+	title = ww1_romania.190.t
+	desc = ww1_romania.190.d
+	picture = GFX_news_event_cze_little_entente
+	major = yes
+	is_triggered_only = yes
+	option = {
+		name = ww1_romania.190.a
+		trigger = {
+			tag = ROM
+		}
+	}
+	option = {
+		name = ww1_romania.190.b
+		trigger = {
+			NOT = {
+				tag = HUN
+				tag = ROM
+			}
+		}
+	}
+	option = {
+		name = ww1_romania.190.c
+		trigger = {
+			tag = HUN
+		}
+	}
+}
+#romania occupies budapest
+news_event = {
+	id = ww1_romania.191
+	title = ww1_romania.191.t
+	desc = ww1_romania.191.d
+	picture = GFX_news_event_budapest
+	major = yes
+	trigger = {
+		has_global_flag = great_war_ends
+		HUN = {
+			owns_state = 43
+			ROM = {
+				controls_province = 9660
+			}
+		}
+		NOT = { has_global_flag = romania_occupies_budapest }
+	}
+	mean_time_to_happen = {
+		days = 2
+	}
+	immediate = {
+		set_global_flag = romania_occupies_budapest
+	}
+	option = {
+		name = ww1_romania.191.a
+		trigger = {
+			OR = {
+				tag = HUN
+				is_subject_of = HUN
+			}
+		}
+	}
+	option = {
+		name = ww1_romania.191.b
+		trigger = {
+			NOT = {
+				OR = {
+					tag = HUN
+					is_subject_of = HUN
+					has_war_with = HUN
+				}
+			}
+		}
+	}
+	option = {
+		name = ww1_romania.191.c
+		trigger = {
+			has_war_with = HUN
+		}
+	}
+}
+#belgrade armistice
+country_event = {
+	id = ww1_romania.192
+	title = ww1_romania.192.t
+	desc = ww1_romania.192.d
+	picture = GFX_report_event_generic_sign_treaty1
+	is_triggered_only = yes
+	option = {
+		name = ww1_romania.192.a
+		set_global_flag = ROM_belgrade_armistice
+		if = {
+			limit = {
+				original_tag = ROM
+			}
+			custom_effect_tooltip = ROM_armistice.tt
+			unlock_decision_tooltip = ROM_break_the_belgrade_armistice
+		}
+		if = {
+			limit = {
+				original_tag = HUN
+			}
+			custom_effect_tooltip = HUN_armistice.tt
+		}
+		hidden_effect = {
+			ROM = {
+				add_ideas = ROM_armistice
+			}
+			HUN = {
+				add_ideas = HUN_armistice
+				every_state = {
+					limit = {
+						OR = {
+							state = 84
+							state = 778
+							state = 866
+							state = 868
+						}
+						is_owned_by = HUN
+					}
+					teleport_armies = {
+						limit = {
+							original_tag = HUN
+						}
+						to_state = 76
+					}
+					set_state_province_controller = {
+						controller = ROM
+					}
+				}
+				every_state = {
+					limit = {
+						OR = {
+							state = 76
+							state = 1044
+							state = 83
+							state = 1020
+							state = 154
+						}
+						is_owned_by = HUN
+					}
+					add_dynamic_modifier = {
+						modifier = HUN_demarcation_line
+					}
+				}
+			}
+		}
+	}
+}
+#romania violated the belgrade armistice
+country_event = {
+	id = ww1_romania.193
+	title = ww1_romania.193.t
+	desc = ww1_romania.193.d
+	is_triggered_only = yes
+	picture = GFX_report_event_romanian_soldiers
+	option = {
+		name = ww1_romania.193.a
+		custom_effect_tooltip = HUN_demarcations_broken.tt
+	}
+}
+#triple entente protests our actions
+country_event = {
+	id = ww1_romania.194
+	title = ww1_romania.194.t
+	desc = ww1_romania.194.d
+	is_triggered_only = yes
+	picture = GFX_report_event_generic_sign_treaty2
+	option = {
+		name = ww1_romania.194.a
+	}
+}
+#triple entente orders a new demarcation line - arad, ordea 
+country_event = {
+	id = ww1_romania.195
+	title = ww1_romania.195.t
+	desc = ww1_romania.195.d
+	fire_only_once = yes
+	picture = GFX_report_event_generic_sign_treaty1
+	trigger = {
+		has_global_flag = ROM_belgrade_armistice_broke
+		original_tag = ROM
+		ROM = {
+			OR = {
+				controls_province = 9704
+				controls_province = 13284
+				controls_province = 6714
+				controls_province = 6711
+				controls_province = 693
+				controls_province = 9640
+				controls_province = 6682
+				controls_province = 9656
+				controls_province = 679
+			}
+		}
+	}
+	option = {
+		name = ww1_romania.195.a
+		if = {
+			limit = {
+				original_tag = ROM
+			}
+			custom_effect_tooltip = ROM_armistice.tt
+		}
+		if = {
+			limit = {
+				original_tag = HUN
+			}
+			custom_effect_tooltip = HUN_armistice.tt
+		}
+		hidden_effect = {
+			ROM = {
+				add_ideas = ROM_armistice
+				every_state = {
+					limit = { #bring romania back to new demarcation line if they advanced too far
+						OR = {
+							state = 154
+							state = 1020
+							state = 83
+							state = 43
+						}
+						is_owned_by = HUN
+					}
+					teleport_armies = {
+						limit = {
+							original_tag = ROM
+							owns_state = 82
+						}
+						to_state = 82
+					}
+					teleport_armies = {
+						limit = {
+							original_tag = ROM
+							NOT = {
+								owns_state = 82
+							}
+						}
+						to_state = 76
+					}
+					set_state_province_controller = {
+						controller = HUN
+					}
+				}
+			}
+			HUN = {
+				country_event = ww1_romania.207
+				add_ideas = HUN_armistice
+				every_state = { #hungary withdraws
+					limit = {
+						OR = {
+							state = 84
+							state = 778
+							state = 76
+							state = 1044
+							state = 82
+						}
+						OR = {
+							is_owned_by = HUN
+							is_owned_by = ROM
+						}
+					}
+					teleport_armies = {
+						limit = {
+							original_tag = HUN
+						}
+						to_state = 83
+					}
+					set_state_province_controller = {
+						controller = ROM
+					}
+				}
+				every_state = { #state modifiers
+					limit = {
+						OR = {
+							state = 83
+							state = 1020
+							state = 154
+							state = 73
+						}
+						is_owned_by = HUN
+					}
+					add_dynamic_modifier = {
+						modifier = HUN_demarcation_line
+					}
+				}
+			}
+		}
+	}
+}
+#hungary notified of new entente demarcation line
+country_event = {
+	id = ww1_romania.207
+	title = ww1_romania.195.t
+	desc = ww1_romania.195.d
+	fire_only_once = yes
+	is_triggered_only = yes
+	picture = GFX_report_event_generic_sign_treaty1
+	immediate = {
+		hidden_effect = {
+			HUN = {
+				country_event = { #vix note
+				id = ww1_romania.196
+				days = 20
+				}
+			}
+		}
+	}
+	option = {
+		name = ww1_romania.195.a
+		custom_effect_tooltip = HUN_armistice.tt
+	}
+}
+#vix note, hungary ordered to withdraw further - collapse of hungarian republic
+country_event = {
+	id = ww1_romania.196
+	title = ww1_romania.196.t
+	desc = ww1_romania.196.d
+	is_triggered_only = yes
+	picture = GFX_report_event_generic_sign_treaty1
+	option = { #we cannot accept this!
+		name = ww1_romania.196.a
+		custom_effect_tooltip = historical_tt
+		custom_effect_tooltip = HUN_romania_will_advance.tt
+		custom_effect_tooltip = HUN_peace_gov_collapse
+		hidden_effect = {
+			country_event = { #soviet coup event
+				id = ww1_hungary.1
+				days = 1
+			}
+			country_event = { #tensions on the czech border (leaders to hungarian-czech war)
+				id = ww1_romania.200
+				days = 35
+			}
+		}
+		ROM = {
+			country_event = {
+				id = ww1_romania.197
+				days = 1
+			}
+		}
+		ai_chance = {
+			base = 10000
+		}
+	}
+	option = { #accept, highly unpopular, will probably still lead to soviet coup
+		name = ww1_romania.196.b
+		trigger = {
+			always = no	#will do later
+		}
+	}
+}
+#romania notified of rejection of vix note and soviet coup
+country_event = {
+	id = ww1_romania.197
+	title = ww1_romania.197.t
+	desc = ww1_romania.197.d
+	is_triggered_only = yes
+	picture = GFX_report_event_romanian_soldiers
+	option = { #enforce the line ourselves
+		name = ww1_romania.197.a
+		set_global_flag = ROM_vix_note_rejected
+		custom_effect_tooltip = ROM_demarcations_broken.tt
+		hidden_effect = {
+			remove_ideas = ROM_armistice
+			every_state = {
+				limit = {
+					OR = {
+						state = 83
+						state = 1020
+						state = 154
+						state = 73
+					}
+					is_owned_by = HUN
+				}
+				remove_dynamic_modifier = {
+					modifier = HUN_demarcation_line
+				}
+			}
+			HUN = {
+				remove_ideas = HUN_armistice
+			}
+		}
+	}
+}
+#hungarian army collapses under romanian offensive
+country_event = {
+	id = ww1_romania.198
+	title = ww1_romania.198.t
+	desc = ww1_romania.198.d
+	fire_only_once = yes
+	trigger = {
+		has_global_flag = ROM_HUN_war_1919
+		has_global_flag = ROM_vix_note_rejected
+		original_tag = HUN
+		ROM = {
+			OR = {
+				controls_province = 9706
+				controls_province = 3730
+				controls_province = 730
+				controls_province = 699
+				controls_province = 11646
+				controls_province = 679
+			}
+		}
+	}
+	picture = GFX_report_event_dead_soldiers
+	option = { #withdraw to the tisza river
+		name = ww1_romania.198.a
+		clr_global_flag = ROM_vix_note_rejected
+		if = {
+			limit = {
+				original_tag = ROM
+			}
+			custom_effect_tooltip = ROM_armistice.tt
+		}
+		if = {
+			limit = {
+				original_tag = HUN
+			}
+			custom_effect_tooltip = HUN_armistice.tt
+		}
+		hidden_effect = {
+			ROM = {
+				add_ideas = ROM_armistice
+				#hungarian retreat event
+				every_state = {
+					limit = { #bring romania back to tisza line if they advanced too far
+						state = 43
+						is_owned_by = HUN
+					}
+					teleport_armies = {
+						limit = {
+							original_tag = ROM
+						}
+						to_state = 154
+					}
+					set_state_province_controller = {
+						controller = HUN
+					}
+				}
+			}
+			HUN = {
+				add_ideas = HUN_armistice
+				every_state = { #hungary withdraws to tisza
+					limit = {
+						OR = {
+							state = 154
+							state = 1020
+							state = 83
+							state = 1044
+						}
+						is_owned_by = HUN
+					}
+					teleport_armies = {
+						limit = {
+							original_tag = HUN
+						}
+						to_state = 83
+					}
+					set_state_province_controller = {
+						controller = ROM
+					}
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_war_with = CZE
+						}
+					}
+					73 = {
+						if = {
+							limit = {
+								is_owned_by = HUN
+							}
+							teleport_armies = {
+								limit = {
+									original_tag = HUN
+								}
+								to_state = 83
+							}
+							transfer_state_to = CZE
+						}
+					}
+				}
+				#no state modifiers since war with cze will begin
+			}
+		}
+		ai_chance = {
+			base = 1000
+		}
+	}
+	option = {
+		name = ww1_romania.198.b
+		swap_ideas = {
+			remove_idea = HUN_disorganized_army
+			add_idea = HUN_army_collapse
+		}
+		custom_effect_tooltip = HUN_romania_will_advance_surrender.tt
+	}
+}
+#czech invasion of slovakia
+country_event = {
+	id = ww1_romania.199
+	title = ww1_romania.199.t
+	desc = ww1_romania.199.d
+	is_triggered_only = yes
+	picture = GFX_report_event_czech_soldiers_02
+	option = { 
+		name = ww1_romania.199.a
+    }
+}
+#tensions on the czech border
+country_event = {
+	id = ww1_romania.200
+	title = ww1_romania.200.t
+	desc = ww1_romania.200.d
+	is_triggered_only = yes
+	picture = GFX_report_event_czech_soldiers_02
+	option = { #launch a major offensive against czechoslovakia
+		name = ww1_romania.200.a
+		if = {
+			limit = {
+				owns_state = 664
+			}
+			664 = {
+				transfer_state_to = CZE
+			}
+		}
+		custom_effect_tooltip = HUN_launch_offensive_cze.tt
+		activate_mission = HUN_invade_cze_mission
+    }
+}
+#fall of presov, entente demands retreat from slovakia
+country_event = {
+	id = ww1_romania.201
+	title = ww1_romania.201.t
+	desc = ww1_romania.201.d
+	fire_only_once = yes
+	trigger = {
+		original_tag = HUN
+		OR = {
+			HUN = {
+				controls_province = 3581
+				has_country_flag = HUN_take_presov
+			}
+			SLO = {
+				is_subject_of = HUN
+				controls_province = 3581
+				HUN = {
+					has_country_flag = HUN_take_presov
+				}
+			}
+		}
+	}
+	immediate = {
+		set_country_flag = HUN_took_presov
+		hidden_effect = {
+			remove_ideas = HUN_czech_offensive
+		}
+	}
+	picture = GFX_report_event_HUN_hungary_occupies_area
+	option = { #retreat
+		name = ww1_romania.201.a
+		custom_effect_tooltip = historical_tt
+		clr_country_flag = HUN_take_presov
+		country_event = {
+			id = ww1_romania.204
+			days = 2
+		}
+		custom_effect_tooltip = CZE_armistice.tt
+		hidden_effect = {
+			CZE = {
+				add_ideas = CZE_armistice
+				every_state = {
+					limit = { #bring czech troops back
+						OR = {
+							state = 664
+							state = 155
+							state = 147
+							state = 43
+						}
+						is_owned_by = HUN
+					}
+					teleport_armies = {
+						limit = {
+							original_tag = CZE
+						}
+						to_state = 70
+					}
+					set_state_province_controller = {
+						controller = HUN
+					}
+				}
+			}
+			HUN = {
+				add_ideas = HUN_czech_armistice
+				every_state = { #hungary withdraws to south slovakia
+					limit = {
+						OR = {
+							state = 71
+							state = 70
+							state = 73
+							state = 1043
+						}
+						OR = {
+							is_owned_by = CZE
+							is_owned_by = HUN
+							is_owned_by = SLO
+						}
+					}
+					teleport_armies = {
+						limit = {
+							original_tag = HUN
+						}
+						to_state = 664
+					}
+					set_state_province_controller = {
+						controller = CZE
+					}
+				}
+			}
+		}
+		ai_chance = {
+			base = 1000
+		}
+    }
+	option = { #disobey entente demand to retreat, entente lets romania push further
+		name = ww1_romania.201.b
+		custom_effect_tooltip = HUN_demarcations_broken.tt
+		ROM = {
+			country_event = ww1_romania.203
+		}
+		swap_ideas = {
+			remove_idea = HUN_disorganized_army
+			add_idea = HUN_army_collapse
+		}
+		hidden_effect = {
+			ROM = {
+				remove_ideas = ROM_armistice
+			}
+			HUN = {
+				remove_ideas = HUN_armistice
+			}
+		}
+	}
+}
+#failure to take presov
+country_event = {
+	id = ww1_romania.202
+	title = ww1_romania.202.t
+	desc = ww1_romania.202.d
+	fire_only_once = yes
+	trigger = {
+		has_country_flag = HUN_take_presov
+		NOT = {
+			has_country_flag = HUN_took_presov
+			has_idea = HUN_czech_offensive
+		}
+	}
+	immediate = {
+		hidden_effect = {
+			clr_country_flag = HUN_take_presov
+			remove_ideas = HUN_armistice
+			ROM = {
+				remove_ideas = ROM_armistice
+				country_event = ww1_romania.203
+			}
+		}
+	}
+	picture = GFX_report_event_HUN_hungary_occupies_area
+	option = { #government loses support for failure, entente allows romania to advance and stop the hungarian attack on czechoslovakia
+		name = ww1_romania.202.a
+		hidden_effect = {
+			ROM = {
+				country_event = ww1_romania.203
+			}
+		}
+		add_political_power = -100
+		add_war_support = -0.1
+		add_stability = -0.1
+		custom_effect_tooltip = HUN_demarcations_broken.tt
+    }
+}
+#romania notified of entente permission to advance further following czech offensive
+country_event = {
+	id = ww1_romania.203
+	title = ww1_romania.203.t
+	desc = ww1_romania.203.d
+	is_triggered_only = yes
+	picture = GFX_report_event_romanian_soldiers
+	option = { #time to kill hungarians
+		name = ww1_romania.203.a
+		custom_effect_tooltip = ROM_demarcations_broken.tt
+    }
+}
+#hungarian romanian offensive preparations
+country_event = {
+	id = ww1_romania.204
+	title = ww1_romania.204.t
+	desc = ww1_romania.204.d
+	is_triggered_only = yes
+	picture = GFX_report_event_romanian_soldiers
+	option = { #prepare offensive
+		name = ww1_romania.204.a
+		set_country_flag = HUN_preparing_rom_offensive
+		activate_mission = HUN_rom_offensive_mission
+		hidden_effect = {
+			ROM = {
+				country_event = {
+					id = ww1_romania.205
+					days = 5
+				}
+			}
+		}
+    }
+}
+#romania notified of hungarian offensive plans
+country_event = {
+	id = ww1_romania.205
+	title = ww1_romania.205.t
+	desc = ww1_romania.205.d
+	is_triggered_only = yes
+	picture = GFX_report_event_HUN_hungary_occupies_area
+	option = { #they aint gonna win
+		name = ww1_romania.205.a
+    }
+}
+#complete army collapse to romania
+country_event = {
+	id = ww1_romania.206
+	title = ww1_romania.206.t
+	desc = ww1_romania.206.d
+	fire_only_once = yes
+	trigger = {
+		original_tag = HUN
+		NOT = {
+			has_idea = HUN_desperate_rom_offensive
+		}
+		has_country_flag = HUN_rom_offensive
+	}
+	picture = GFX_report_event_dead_soldiers
+	option = { #it was nice trying
+		name = ww1_romania.206.a
+		swap_ideas = {
+			remove_idea = HUN_disorganized_army
+			add_idea = HUN_army_collapse
+		}
+		custom_effect_tooltip = HUN_czech_demarcations_broken.tt
+		hidden_effect = {
+			remove_ideas = HUN_czech_armistice
+			CZE = {
+				remove_ideas = CZE_armistice
+			}
+		}
+
+    }
+}
+#use .208 as id next, not 207
+#romanian invasion of transylvania (hungarian-romanian war begins)
+news_event = {
+	id = ww1_romania.208
+	title = ww1_romania.208.t
+	desc = ww1_romania.208.d
+	picture = GFX_news_event_romanian_soldiers
+	major = yes
+	is_triggered_only = yes
+	option = {
+		name = ww1_romania.208.a
+		trigger = {
+			OR = {
+				tag = HUN
+				is_subject_of = HUN
+			}
+		}
+	}
+	option = {
+		name = ww1_romania.208.b
+		trigger = {
+			NOT = {
+				OR = {
+					tag = HUN
+					is_subject_of = HUN
+					has_war_with = HUN
+				}
+			}
+		}
+	}
+	option = {
+		name = ww1_romania.208.c
+		trigger = {
+			has_war_with = HUN
+		}
+	}
+}
+#hungarian-czech war
+news_event = {
+	id = ww1_romania.209
+	title = ww1_romania.209.t
+	desc = ww1_romania.209.d
+	picture = GFX_news_event_hun_cze_war
+	major = yes
+	trigger = {
+		NOT = {
+			has_global_flag = hungarian_czech_war_news
+		}
+		has_global_flag = ROM_HUN_war_1919
+		original_tag = HUN
+		has_war_with = CZE
+	}
+	immediate = {
+		set_global_flag = hungarian_czech_war_news
+	}
+	mean_time_to_happen = {
+		days = 0
+	}
+	option = {
+		name = ww1_romania.209.a
+		trigger = {
+			OR = {
+				tag = HUN
+				is_subject_of = HUN
+			}
+		}
+	}
+	option = {
+		name = ww1_romania.209.b
+		trigger = {
+			NOT = {
+				tag = HUN
+				is_subject_of = HUN
+				has_war_with = HUN
+			}
+		}
+	}
+	option = {
+		name = ww1_romania.209.c
+		trigger = {
+			has_war_with = HUN
+		}
 	}
 }

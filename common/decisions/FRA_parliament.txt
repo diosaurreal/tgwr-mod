@@ -595,6 +595,7 @@ parliament_gui_decision_category = {
 			set_variable = { var = independent_republicans value = 20 }
 			set_variable = { var = seatNumbers value = 600 }
 
+			apply_focus_tree_effects = yes
 			parliament_reassign_seats = yes
 			set_country_flag = FRA_SFIO_legislative_elections_done
 			set_country_flag = FRA_parliament_dissolved
@@ -1400,6 +1401,96 @@ parliament_gui_decision_category = {
 		}
 	}
 
+	FRA_abolition_of_futa_jallon_special_status = {
+		icon = GFX_decision_SOV_place_hq
+		allowed = {
+			original_tag = FRA
+		}
+		activation = {
+			NOT = {
+				has_country_flag = FRA_parliament_dissolved
+			}
+			date > 1912.02.12
+			NOT = { has_country_flag =  FRA_abolition_of_futa_jallon_special_status_done }
+			FUJ = {
+				is_subject_of = FRA
+			}
+		}
+		available = {
+			has_country_flag = FRA_parliament_dissolved
+			has_country_flag =  FRA_abolition_of_futa_jallon_special_status_done
+		}
+		#days_re_enable = 60
+		cancel_if_not_visible = yes
+		days_mission_timeout = 21
+		is_good = yes
+		fire_only_once = yes
+
+		timeout_effect = {
+			custom_effect_tooltip = FRA_150_seats_tt
+			if = {
+				limit = {
+					check_variable = {
+						democrat_alliance < 150
+					}
+					check_variable = {
+						alternative_coalition_seats < 150
+					}
+				}
+				hidden_effect = { add_stability = -0.01 }
+				custom_effect_tooltip = FRA_vote_will_fail
+				else = {
+					if = {
+						limit = {
+							check_variable = {
+								democrat_alliance < 150
+							}
+						}
+						custom_effect_tooltip = FRA_vote_will_pass_by_majority
+						else = {
+							custom_effect_tooltip = FRA_vote_will_pass
+						}
+					}
+					hidden_effect = {
+						set_country_flag = FRA_abolition_of_futa_jallon_special_status_done	
+						if = {
+							limit = {
+								has_subject = AOF
+							}
+							AOF = {
+								annex_country = {
+									target = FUJ
+									transfer_troops = no
+								}								
+							}
+							else = {
+								annex_country = {
+									target = FUJ
+									transfer_troops = no
+								}
+							}
+						}
+						FUJ = {
+							drop_cosmetic_tag = yes
+							clr_country_flag = protectorate
+						}
+					}
+				}
+			}
+			custom_effect_tooltip = FRA_effect_if_law_pass
+			effect_tooltip = {
+				annex_country = {
+					target = FUJ
+					transfer_troops = no
+				}
+			}
+			custom_effect_tooltip = FRA_effect_if_law_fail
+			effect_tooltip = {
+				add_stability = -0.01
+			}
+		}
+	}
+
 	FRA_decommissioning_northern_defensive_works = {
 		icon = GFX_decision_SOV_place_hq
 		allowed = {
@@ -1803,13 +1894,45 @@ parliament_gui_decision_category = {
 		days_mission_timeout = 750
 		activation = {
 			tag = FRA
-			owns_state = 556
+			OR = {
+				556 = {
+					is_controlled_by_ROOT_or_subject = yes
+					has_dynamic_modifier = {
+						modifier = generic_tribal_slavery
+					}
+				}
+				1162 = {
+					is_controlled_by_ROOT_or_subject = yes
+					has_dynamic_modifier = {
+						modifier = generic_tribal_slavery
+					}
+				}
+			}
 		}
 		available = {
 			OR = {
 				has_completed_focus = FRA_ww1_press_abolition_of_slavery_in_africa
-				NOT = {
-					owns_state = 556
+				AND = {
+					556 = {
+						OR = {
+							is_controlled_by_ROOT_or_subject = no
+							NOT = {
+								has_dynamic_modifier = {
+									modifier = generic_tribal_slavery
+								}
+							}					
+						}						
+					}
+					1162 = {
+						OR = {
+							is_controlled_by_ROOT_or_subject = no
+							NOT = {
+								has_dynamic_modifier = {
+									modifier = generic_tribal_slavery
+								}
+							}					
+						}
+					}
 				}
 			}
 		}
@@ -1818,7 +1941,13 @@ parliament_gui_decision_category = {
 				id = ww1_france.492
 				days = 2
 			}
-			556 = {
+			every_state = {
+				limit = {
+					is_controlled_by_ROOT_or_subject = yes
+					has_dynamic_modifier = {
+						modifier = generic_tribal_slavery
+					}
+				}
 				add_resistance = 25
 				add_compliance = -50
 			}
@@ -4757,6 +4886,90 @@ parliament_gui_decision_category = {
 		}
 	}
 
+	FRA_decree_on_algerian_conscription = {
+		icon = GFX_decision_SOV_place_hq
+		allowed = {
+			original_tag = FRA
+		}
+		cost = 25
+		visible = {
+			has_country_flag = FRA_continue_fransication_program
+			NOT = {
+				has_country_flag = FRA_decree_on_algerian_conscription
+			}
+		}
+		available = {
+			custom_trigger_tooltip = {
+				tooltip = FRA_250_seats
+				check_variable = {
+					democrat_alliance > 250
+				}
+			}
+			any_controlled_state = {
+				is_core_of = ALG
+			}
+		}
+		fire_only_once = yes
+		days_remove = 21
+		remove_effect = {
+			set_country_flag = FRA_decree_on_algerian_conscription
+			custom_effect_tooltip = FRA_250_seats_tt
+			if = {
+				limit = {
+					check_variable = {
+						democrat_alliance < 250
+					}
+				}
+				hidden_effect = { add_stability = -0.01 }
+				custom_effect_tooltip = FRA_vote_will_fail
+				else = {
+					custom_effect_tooltip = FRA_vote_will_pass
+					hidden_effect = {
+						every_controlled_state = {
+							limit = {
+								is_core_of = ALG
+								impassable = no
+							}
+							remove_dynamic_modifier = {
+								modifier = FRA_french_algeria
+							}
+							add_dynamic_modifier = {
+								modifier = FRA_french_algeria2
+							}
+						}
+					}
+				}
+			}
+			custom_effect_tooltip = FRA_effect_if_law_pass
+			effect_tooltip = {
+				every_controlled_state = {
+					limit = {
+						is_core_of = ALG
+						impassable = no
+					}
+					hidden_effect = {
+						remove_dynamic_modifier = {
+							modifier = FRA_french_algeria
+						}
+						add_dynamic_modifier = {
+							modifier = FRA_french_algeria2
+						}
+					}
+					custom_effect_tooltip = increase_french_algeria_modifier_by_15_pop
+					
+				}
+				far_left_hate = yes
+			}
+			custom_effect_tooltip = FRA_effect_if_law_fail
+			effect_tooltip = {
+				add_stability = -0.01
+			}
+		}
+		ai_will_do = {
+			factor = 500
+		}
+	}
+
 	FRA_invest_in_CGE = {
 		icon = GFX_decision_SOV_place_hq
 		allowed = {
@@ -5955,7 +6168,6 @@ parliament_gui_decision_category = {
 
 	FRA_delay_legislatives_elections = {
 		icon = GFX_decision_SOV_place_hq
-		desc = FRA_join_the_coalition_desc
 		allowed = {
 			original_tag = FRA
 		}
@@ -5994,6 +6206,12 @@ parliament_gui_decision_category = {
 			modifier = {
 				date < 1918.1.1	#skip 1918 legislative elections and put it in 1919 like irl
 				date > 1919.1.1
+				factor = 0
+			}
+			modifier = {
+				NOT = {
+					has_completed_focus = FRA_ww1_save_the_republic #only on strictly historical run
+				}
 				factor = 0
 			}
 		}

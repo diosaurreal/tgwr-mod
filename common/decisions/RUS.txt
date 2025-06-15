@@ -297,6 +297,9 @@ foreign_politics = {
 				is_balkan_nation = no
 			}
 		}
+		target_root_trigger = {
+			SER = { has_defensive_war = yes }
+		}
 		visible = {
 			is_subject = no
 			NOT = {
@@ -326,11 +329,9 @@ foreign_politics = {
 		days_remove = 45
 		war_with_target_on_remove = yes
 		remove_effect = {
-			SER = {
-				add_to_war = {
-					targeted_alliance = ROOT
-					enemy = FROM
-				}
+			add_to_war = {
+				targeted_alliance = SER
+				enemy = FROM
 			}
 		}
 	}
@@ -855,14 +856,18 @@ economy_decisions = {
 				owns_state = 563
 				owns_state = 967
 			}
-		}
-		available = {
 			NOT = {
 				has_railway_connection = {
 					start_province = 10574
+					target_province = 7763
+				}
+				has_railway_connection = {
+					start_province = 7763
 					target_province = 12189
 				}
 			}
+		}
+		available = {	
 			num_of_available_civilian_factories > 3
 			409 = { is_owned_and_controlled_by = ROOT }
 			561 = { is_owned_and_controlled_by = ROOT }
@@ -876,7 +881,11 @@ economy_decisions = {
 		}
 		remove_effect = {
 			build_railway = {
-				path = { 10574 12556 12543 7851 10678 12657 7763 12654 1082 4246 12261 4805 12192 12189 }
+				path = { 10574 12556 12543 7851 10678 12657 7763 }
+				level = 1
+			}
+			build_railway = {
+				path = { 7763 12654 1802 4246 12261 4805 12192 12189 }
 				level = 1
 			}
 		}
@@ -2057,7 +2066,7 @@ RUS_release_country = {
 					state = 86
 					state = 85
 					state = 5
-					state = 63
+					state = 68
 					state = 404
 					state = 762
 					state = 67
@@ -2068,6 +2077,7 @@ RUS_release_country = {
 					NOT = {
 						is_core_of = BLR
 						is_core_of = UKR
+						is_core_of = WUK
 					}
 				}
 			}
@@ -2136,7 +2146,7 @@ RUS_release_country = {
 						state = 86
 						state = 85
 						state = 5
-						state = 63
+						state = 68
 						state = 404
 						state = 762
 						state = 67
@@ -2147,6 +2157,7 @@ RUS_release_country = {
 						NOT = {
 							is_core_of = BLR
 							is_core_of = UKR
+							is_core_of = WUK
 						}
 					}
 				}
@@ -2219,10 +2230,7 @@ RUS_release_country = {
 					load_oob = "UKR_army"
 				}
 			}
-			every_possible_country = {
-				limit = {
-					has_character = UKR_pavlo_skoropadskyi
-				}
+			RUS = {
 				UKR_pavlo_skoropadskyi = {		
 					set_nationality = UKR	
 					if = {
@@ -2485,10 +2493,11 @@ GER_great_war = {
 			}
 		}
 		custom_cost_trigger = {
-			command_power > 9
+			command_power > 9.9
 		}
 		custom_cost_text = decision_cost_CP_10
 		complete_effect = {
+			add_command_power = -10
 			set_country_flag = plan_III_sent_to_serbia
 			FROM = {
 				country_event = {
@@ -2675,6 +2684,78 @@ GER_great_war = {
 				country_event = ww1_political.4
 			}
 			custom_effect_tooltip = rus_demobilize_army_tt
+		}
+	}
+	RUS_sue_for_peace_GER = {
+		name = sue_for_peace_FROM
+		icon = GFX_decision_eng_trade_unions_support
+		allowed = {
+			original_tag = RUS
+		}
+		target_trigger = {
+			FROM = { tag = GER }
+		}
+		visible = {
+			has_global_flag = great_war
+			has_war_with = FROM
+			has_capitulated = no
+			is_subject = no
+			is_faction_leader = no
+			NOT = {
+				tag = SOV
+				country_exists = SOV
+				has_global_flag = compiegne_armistice
+				has_global_flag = frankfurt_armistice
+				has_global_flag = great_war_ends
+				has_global_flag = russian_revolution
+				has_global_flag = russ_kapitulation
+			}
+			FROM = {
+				is_subject = no
+				has_capitulated = no
+			}
+			has_war_with = FROM
+			surrender_progress < 0.99 #prevent effect collide
+		}
+		available = {
+			NOT = {
+				has_active_mission = RUS_mission_tsar_abdication
+				has_active_mission = RUS_threat_of_bolshevik_revolution
+			}
+			surrender_progress > 0.2
+			195 = { #Petrograd
+				is_owned_by = ROOT
+				is_controlled_by_FROM_or_ally = yes
+			}
+			217 = { #Tzaritzyn
+				is_owned_by = ROOT
+				is_controlled_by_FROM_or_ally = yes
+			}
+			219 = { #Moscow
+				is_owned_by = ROOT
+				is_controlled_by_FROM_or_ally = yes
+			}
+		}
+		fire_only_once = yes
+		ai_will_do = {
+			factor = 400
+			modifier = {
+				factor = 0
+				surrender_progress < 0.5
+				has_war_support > 0.3
+			}
+			modifier = {
+				factor = 0
+				has_game_rule = {
+					rule = allow_scripted_peace_treaty
+					option = "BLOCKED"
+				}
+			}
+		}
+		complete_effect = {
+			FROM = {
+				country_event = ww1_russia.98
+			}
 		}
 	}
 }
