@@ -6503,7 +6503,7 @@ country_event = { #Berlin-Baghdad railway
 	is_triggered_only = yes
 	option = {
 		name = ottoman.64.a
-		effect_tooltip = { activate_mission = TUR_berlin_baghdad_railway_phase_1 }
+		event_option_tooltip = ottoman.65.a
 		custom_effect_tooltip = historical_tt
 		hidden_effect = { FROM = { country_event = { id = ottoman.65 hours = 8 } } }
 		ai_chance = {
@@ -6602,20 +6602,22 @@ country_event = { #Berlin-Baghdad railway yes
 		activate_mission = GER_berlin_baghdad_railway_phase_1
 		hidden_effect = {
 			FROM = { activate_mission = TUR_berlin_baghdad_railway_phase_1 }
-			if = {
-				limit = {
-					ENG = {
-						NOT = {
-							has_completed_focus = ENG_Pax_Britannica
-							is_in_faction_with = GER
-							is_in_faction_with = TUR
-							has_war_with = GER
-							has_war_with = TUR
+			hidden_effect = {
+				if = {
+					limit = {
+						ENG = {
+							NOT = {
+								has_completed_focus = ENG_Pax_Britannica
+								is_in_faction_with = GER
+								is_in_faction_with = TUR
+								has_war_with = GER
+								has_war_with = TUR
+							}
+							is_subject = no
 						}
-						is_subject = no
 					}
+					ENG = { country_event = { id = ottoman.67 hours = 8 } } #conflict with Germany
 				}
-				ENG = { country_event = { id = ottoman.67 hours = 8 } }
 			}
 		}
 	}
@@ -6665,11 +6667,12 @@ country_event = { #Berlin-Baghdad railway british demand
 	is_triggered_only = yes
 	option = {
 		name = ottoman.68.a
-		#custom_effect_tooltip = historical_tt
+		custom_effect_tooltip = historical_tt
 		ENG = { country_event = { id = ottoman.69 hours = 8 } }
 		add_political_power = -75
 		set_global_flag = end_berlin_baghad_railway_at_baghdad
 		custom_effect_tooltip = ottoman.68.tt
+		set_global_flag = berlin_baghdad_dispute_ended
 		ai_chance = { factor = 10 }
 	}
 	option = {
@@ -6729,24 +6732,10 @@ country_event = { #Berlin-Baghdad railway germany refuse
 					}
 				}
 			}
-			FRA = {
-				country_event = {
-					id = ww1_ottoman.166
-					hours = 3
-				}
-			}
+			FRA = { country_event = { id = ottoman.226 hours = 8 } }
 			if = {
-				limit = {
-					RUS = {
-						is_in_faction_with = FRA
-					}
-				}
-				RUS = {
-					country_event = {
-						id = ww1_ottoman.166
-						hours = 3
-					}
-				}
+				limit = { RUS = { is_in_faction_with = FRA } }
+				RUS = { country_event = { id = ottoman.226 hours = 8 } }
 			}
 		}
 		else = {
@@ -14079,3 +14068,172 @@ news_event = { #sarikamish tragedy
 		name = ottoman.225.a
 	}
 }
+
+# Berlin-Baghdad: France/Russia Answers to Britain
+country_event = {
+	id = ottoman.226
+	title = ottoman.226.t
+	desc = ottoman.226.d
+	is_triggered_only = yes
+	picture = GFX_report_event_generic_sign_treaty2
+	option = {
+		name = ottoman.226.a
+		set_country_flag = berlin_baghdad_dispute_guaranteed
+		FROM = { country_event = { id = ottoman.227 hours = 8 } }
+		ai_chance = {
+			base = 100
+		}
+	}
+	option = {
+		name = ottoman.226.b
+		effect_tooltip = {
+			FROM = {
+				add_opinion_modifier = {
+					target = ROOT
+					modifier = HOI4TGW_Opinion_alliance_malus
+				}
+			}
+		}
+		FROM = { country_event = { id = ottoman.228 hours = 8 } }
+		ai_chance = {
+			base = 0
+			modifier = {
+				add = 50
+				has_opinion = {
+					target = FROM
+					value < 0
+				}
+			}
+			modifier = {
+				add = 50
+				has_opinion = {
+					target = GER
+					value > 30
+				}
+			}
+			modifier = {
+				add = 100
+				has_opinion = {
+					target = GER
+					value > 50
+				}
+			}
+			modifier = {
+				add = 100
+				has_war_support < 0.3
+			}
+		}
+	}
+}
+
+country_event = { # Berlin-Baghdad: France/Russia Says Yes To War
+	id = ottoman.227
+	title = ottoman.227.t
+	desc = ottoman.227.d
+	is_triggered_only = yes
+	picture = GFX_report_event_generic_sign_treaty2
+	option = {
+		name = ottoman.227.a
+		set_country_flag = berlin_baghdad_dispute_guaranteed
+	}
+}
+country_event = { # Berlin-Baghdad: France/Russia Says No To War
+	id = ottoman.228
+	title = ottoman.228.t
+	desc = ottoman.228.d
+	is_triggered_only = yes
+	picture = GFX_report_event_generic_sign_treaty2
+	option = {
+		name = ottoman.228.a
+		add_opinion_modifier = {
+			target = FROM
+			modifier = HOI4TGW_Opinion_alliance_malus
+		}
+	}
+}
+
+# Berlin-Baghdad: British Decides To War
+country_event = {
+	id = ottoman.229
+	title = ottoman.229.t
+	desc = ottoman.229.d
+	picture = GFX_report_event_british_inspect_troops
+	fire_only_once = yes
+	trigger = {
+		has_country_flag = berlin_baghdad_dispute_guaranteed
+		tag = ENG
+		is_subject = no
+		has_capitulated = no
+		NOT = {
+			has_global_flag = great_war
+			has_country_flag = great_war_loser
+			has_war_with = GER
+		}
+		country_exists = GER
+	}
+	mean_time_to_happen = { days = 30 }
+	option = {
+		name = ottoman.229.a
+		GER = { country_event = { id = ottoman.230 hours = 8 } }
+		custom_effect_tooltip = disagree_effect_tooltip
+		effect_tooltip = {
+			declare_war_on = {
+				target = GER
+				type = topple_government
+			}
+		}
+	}
+}
+
+# Berlin-Baghdad: German Final Answer
+country_event = {
+	id = ottoman.230
+	title = ottoman.230.t
+	desc = ottoman.230.d
+	is_triggered_only = yes
+	picture = GFX_report_event_german_inspect_troops
+	trigger = {
+		NOT = {
+			has_global_flag = great_war
+			has_war_with = ENG
+		}
+	}
+	option = {
+		name = ottoman.68.a
+		ENG = { country_event = { id = ottoman.69 hours = 8 } }
+		add_political_power = -75
+		set_global_flag = end_berlin_baghad_railway_at_baghdad
+		custom_effect_tooltip = ottoman.68.tt
+		set_global_flag = berlin_baghdad_dispute_ended
+		ai_chance = { factor = 10 }
+	}
+	option = { #war
+		name = ottoman.230.b
+		FROM = {
+			declare_war_on = {
+				target = ROOT
+				type = topple_government
+			}
+			every_other_country = {
+				limit = { has_country_flag = berlin_baghdad_dispute_guaranteed }
+				add_to_war = {
+					targeted_alliance = PREV
+					enemy = ROOT
+					hostility_reason = berlin_baghdad_dispute_guaranteed
+				}
+			}
+		}
+		add_named_threat = {
+			threat = 5
+			name = ottoman.230.b
+		}
+		ai_chance = {
+			factor = 2
+			modifier = {
+				factor = 0
+				is_historical_focus_on = yes
+			}
+		}
+	}
+}
+
