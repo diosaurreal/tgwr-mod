@@ -360,13 +360,6 @@ country_event = {
 		# 	}
 		# }
 		hidden_effect = {
-			every_state = {
-				ROOT = {
-					delete_unit = {
-						state = PREV
-					}
-				}
-			}
 			every_owned_state = {
 				if = {
 					limit = {
@@ -422,11 +415,9 @@ country_event = {
 			add_ideas = FRA_land_army_restrictions
 			add_ideas = FRA_naval_army_restrictions
 			remove_ideas = idea_army_restrictions
-			country_lock_all_division_template = yes
 			mark_focus_tree_layout_dirty = yes
 			set_country_flag = dont_trigger_political_event
 		}
-		custom_effect_tooltip = FRA_disband_army
 		custom_effect_tooltip = FRA_disband_factories
 		custom_effect_tooltip = FRA_military_restrictions_event
 	}
@@ -542,22 +533,6 @@ country_event = {
 	}
 }
 
-# Workers' Armoury Raid
-country_event = {
-	title = ww1_france.55.t
-	desc = ww1_france.55.d
-	id = ww1_france.55
-	picture = GFX_report_event_gathering_protest
-	is_triggered_only = yes
-	option = {
-		name = ww1_france.55.a
-		add_days_mission_timeout = {
-			mission = communist_uprising
-			days = -30
-		}
-	}
-}
-
 # Les Patriotes to protect the Old Regime
 country_event = {
 	title = ww1_france.56.t
@@ -635,22 +610,6 @@ country_event = {
 				division = "division_template = \"Patriotes\" start_experience_factor = 0.1 start_equipment_factor = 0.75"
 				owner = ROOT
 			}
-		}
-	}
-}
-
-# General Strike
-country_event = {
-	title = ww1_france.59.t
-	desc = ww1_france.59.d
-	id = ww1_france.59
-	picture = GFX_report_event_gathering_protest
-	is_triggered_only = yes
-	option = {
-		name = ww1_france.59.a
-		add_days_mission_timeout = {
-			mission = communist_uprising
-			days = -140
 		}
 	}
 }
@@ -11135,6 +11094,11 @@ country_event = {
 	is_triggered_only = yes
 	immediate = {
 		hidden_effect = {
+			set_country_flag = {
+				flag = tgwr_no_unit_limits
+				days = 365
+				value = 1
+			}
 			division_template = {
 				name = "Partisans"
 				is_locked = yes
@@ -11160,7 +11124,6 @@ country_event = {
 						has_government = communism
 					}
 				}
-				
 				FRA_create_FRC = yes
 				FRC = {
 					FRA_jean_longuet = {
@@ -11188,20 +11151,58 @@ country_event = {
 						owner = FRC
 					}
 				}
-				
-				transfer_units_fraction = {
-					target = FRC
-					size = 0.30
-					target_organization = 1
-					source_organization = 1
-					stockpile_ratio = 0.50
-					keep_unit_leaders_trigger = {
-						NOT = {
-							is_character = FRA_maurice_sarrail
-							is_character = FRA_jacques_sadoul
-							is_character = FRA_charles_nollet
-						}	
+				if = {
+					limit = {
+						has_country_flag = NFA_coup_succeed
 					}
+					add_manpower = 250000
+					transfer_units_fraction = {
+						target = FRC
+						size = 0.45
+						target_organization = 1
+						source_organization = 1
+						stockpile_ratio = 0.55
+						keep_unit_leaders_trigger = {
+							NOT = {
+								is_character = FRA_maurice_sarrail
+								is_character = FRA_jacques_sadoul
+								is_character = FRA_charles_nollet
+							}	
+							OR = {
+								is_character = FRA_philippe_petain
+								has_trait = old_guard
+								has_trait = old_guard_navy
+								has_trait = trait_royalist
+								has_trait = war_hero
+							}
+						}
+					}
+					else = {
+						transfer_units_fraction = {
+							target = FRC
+							size = 0.30
+							target_organization = 1
+							source_organization = 1
+							stockpile_ratio = 0.50
+							keep_unit_leaders_trigger = {
+								NOT = {
+									is_character = FRA_maurice_sarrail
+									is_character = FRA_jacques_sadoul
+									is_character = FRA_charles_nollet
+								}	
+								OR = {
+									is_character = FRA_philippe_petain
+									has_trait = old_guard
+									has_trait = old_guard_navy
+									has_trait = trait_royalist
+									has_trait = war_hero
+								}
+							}
+						}
+					}
+				}
+				FRC = {
+					activate_advisor = FRA_maurice_sarrail
 				}
 			}
 			if = {
@@ -11278,7 +11279,7 @@ country_event = {
 				}
 				country_event = {
 					id = ww1_france.320
-					days = 7
+					days = 14
 				}
 			}
 		}
@@ -11485,6 +11486,17 @@ country_event = {
 				}
 			}
 			set_global_flag = FRA_three_side_civil_war
+			FRA = {
+				every_state = {
+					teleport_armies = {
+						limit = {
+							tag = FRA
+						}
+						to_state_array = core_states
+					}
+				}	
+				load_focus_tree = france_nationalist_focus
+			}
 		}
 		
 		
@@ -12146,6 +12158,7 @@ country_event = {
 			long_name = FRA_junte_militaire
 			name = FRA_junte_militaire
 		}
+		add_ideas = FRA_disunited_french_front
 		add_manpower = -1
 	}
 	option = {
@@ -21822,5 +21835,29 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_france.594.a
+	}
+}
+
+#France get info that commune has motivated separatist insurrections in FROM
+country_event = {
+	id = ww1_france.595
+	title = ww1_france.595.t
+	desc = ww1_france.595.d
+	picture = GFX_sfio_2
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.595.a
+	}
+}
+
+#corsica get free but... didnt join the commune!
+country_event = {
+	id = ww1_france.596
+	title = ww1_france.596.t
+	desc = ww1_france.596.d
+	picture = GFX_sfio_1
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.596.a
 	}
 }
