@@ -1102,6 +1102,7 @@ GER_reload_parliament_gui = {
 
 	# Clear the temp_seat array used previously since it's not needed anymore.
 	clear_array = temp_seat
+    set_variable_to_random = GER.parliament_update
 }
 
 # Bonus code for adding/subtracting seats
@@ -2094,10 +2095,10 @@ GER_sway_all_states = {
     if = {
         limit = { 
             GER_is_any_minor_state_available_in_bundesrat = yes
-            NOT = { has_country_flag = GER_call_in_minor_states }
+            NOT = { has_country_flag = GER_called_in_minor_states }
         }
-        set_country_flag = GER_call_in_minor_states
-		set_temp_variable = { ger_modify_bundersrat_votes_in_favor_var = GER_call_in_minor_states }
+        set_country_flag = GER_called_in_minor_states
+		set_temp_variable = { ger_modify_bundersrat_votes_in_favor_var = GER_votes_of_minor_states }
 		GER_modify_bundersrat_votes_in_favor = yes
     }
     if = {
@@ -2109,6 +2110,25 @@ GER_sway_all_states = {
 		set_temp_variable = { ger_modify_bundersrat_votes_in_favor_var = GER_votes_of_free_cities }
 		GER_modify_bundersrat_votes_in_favor = yes
     }
+    if = {
+        limit = { 
+            GER_is_austria_available_in_bundesrat = yes
+            NOT = { has_country_flag = GER_called_in_austria }
+        }
+        set_country_flag = GER_called_in_austria
+		set_temp_variable = { ger_modify_bundersrat_votes_in_favor_var = GER_votes_of_austria }
+		GER_modify_bundersrat_votes_in_favor = yes
+    }
+    if = {
+        limit = { 
+            GER_is_austria_available_in_bundesrat = yes
+            NOT = { has_country_flag = GER_called_in_luxembourg }
+        }
+        set_country_flag = GER_called_in_luxembourg
+		set_temp_variable = { ger_modify_bundersrat_votes_in_favor_var = GER_votes_of_luxembourg }
+		GER_modify_bundersrat_votes_in_favor = yes
+    }
+    GER_update_bundesrat_gui = yes
 }
 
 GER_assign_cooldowns = {
@@ -2357,6 +2377,7 @@ GER_reset_sway_reichstag = {
         value = 0.00
     }
     clr_country_flag = right_vote_in_progress
+    set_variable_to_random = GER.parliament_update
 }
 
 GER_upgrade_idea_rising_unions = {
@@ -2423,13 +2444,14 @@ GER_alsace_lorraine_constitution_effect = {
             modifier = GER_Reichsland_elsass_lothringen
         }
     }
-    custom_effect_tooltip = ww1_germanytooltip19
+    custom_effect_tooltip = GER_elsass_bundesrat_representation_tt
     add_to_variable = { GER_influence_in_alsace_lorraine = 3 }
 	custom_effect_tooltip = {
 		localization_key = GER_add_INFLUENCE_to_FEDERAL_STATE_tt
 		INFLUENCE = "3"
 		FEDERAL_STATE = GER_bundesrat_alsace_lorraine_tt
 	}
+    GER_update_bundesrat_gui = yes
 }
 
 GER_national_pension_effect = {
@@ -2744,7 +2766,6 @@ GER_enabling_act_effect = {
     set_country_flag = GER_pass_enabling_act_tt
     country_event = {
         id = ww1_germanrework.102
-        days = 2
     }
 }
 
@@ -2753,7 +2774,6 @@ GER_auxiliary_services_act_effect = {
     unlock_decision_tooltip = GER_toggle_hiddenburg_program
     country_event = {
         id = ww1_germanrework.175
-        days = 2
     }
 }
 
@@ -3882,6 +3902,7 @@ GER_start_investment_mission_for_federal_state = {
         clr_country_flag = GER_negotiating_with_luxembourg
     }
     clr_country_flag = GER_negotiating_with_federal_state
+    GER_update_bundesrat_gui = yes
 }
 
 GER_start_investment_infra_mission_for_federal_state = {
@@ -4180,6 +4201,7 @@ GER_start_investment_infra_mission_for_federal_state = {
         clr_country_flag = GER_negotiating_with_luxembourg
     }
     clr_country_flag = GER_negotiating_with_federal_state
+    GER_update_bundesrat_gui = yes
 }
 
 GER_start_political_concession_with_federal_state = {
@@ -4478,6 +4500,7 @@ GER_start_political_concession_with_federal_state = {
         clr_country_flag = GER_negotiating_with_luxembourg
     }
     clr_country_flag = GER_negotiating_with_federal_state
+    GER_update_bundesrat_gui = yes
 }
 
 GER_remove_all_negotiation_flags = {
@@ -4496,8 +4519,12 @@ GER_remove_all_negotiation_flags = {
     clr_country_flag = GER_negotiating_with_free_cities
     clr_country_flag = GER_negotiating_with_austria
     clr_country_flag = GER_negotiating_with_luxembourg
+    GER_update_bundesrat_gui = yes
 }
 
+GER_update_bundesrat_gui = {
+	set_variable_to_random = GER.bundesrat_update
+}
 GER_calculate_mecklenburg_votes = {
     set_variable = { GER_votes_of_mecklenburg = 0 }
     if = {
@@ -4599,5 +4626,24 @@ GER_calculate_bundesrat_votes = {
     if = {
         limit = { GER_is_austria_available_in_bundesrat = yes }
         add_to_variable = { var = GER_total_bundesrat_votes value = GER_votes_of_austria }
+    }
+    GER_update_bundesrat_gui = yes
+}
+
+GER_improve_firepower_doctrine = {
+    if = {
+        limit = {
+            has_idea = FRA_firepower
+        }
+        swap_ideas = {
+            add_idea = FRA_firepower2bis
+            remove_idea = FRA_firepower
+        }
+        else_if = {
+            limit = {
+                NOT = { has_idea = FRA_firepower2bis  }
+            }        
+            add_ideas = FRA_firepower
+        }
     }
 }
