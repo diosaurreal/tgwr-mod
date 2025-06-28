@@ -13,7 +13,6 @@ ideas = {
 				NOT = {
 					has_country_flag = great_war_loser
 				}
-				has_active_mission = GER_viability_of_the_coalition
 			}
 			modifier = {
 				stability_weekly = 0.0025
@@ -1698,13 +1697,11 @@ ideas = {
 			modifier = {
 				political_power_factor = 0.15
 				stability_factor = 0.1
-				neutrality_drift = 0.1
+				neutrality_drift = 0.05
 				democratic_drift = 0.05
-				communism_drift = -0.05
 				trade_laws_cost_factor = -0.10
 				mobilization_laws_cost_factor = -0.10
 				political_advisor_cost_factor = -0.15
-				drift_defence_factor = 0.5
 			}
 		}
 		GER_idea_bismarksche_reichsverassung2 = {
@@ -1966,6 +1963,9 @@ ideas = {
 				has_capitulated = no
 				NOT = {
 					has_country_flag = great_war_loser
+				}
+				NOT = {
+					has_war_with = BEL
 				}
 			}
 			modifier = {
@@ -3155,7 +3155,7 @@ ideas = {
 				}
 			}
 		}
-		GER_Heeringer_air_plan = {
+		GER_heeringen_air_plan = {
 			picture = generic_air_manufacturer_1
 			allowed = {
 				always = no
@@ -3363,38 +3363,135 @@ ideas = {
 			}
 		}
 		GER_political_concessions = {
-			picture = GER_german_trade
+			picture = ARG_political_corruption_modifier
 			allowed = {
 				always = no
 			}
 			allowed_civil_war = {
-				always = no
+				tag = GER
+				any_owned_state = {
+					has_state_flag = GER_political_concession_target
+					is_core_of = ROOT
+				}
 			}
 			available = {
 				tag = GER
-				any_controlled_state = {
+				any_owned_state = {
 					has_state_flag = GER_political_concession_target
+					is_core_of = ROOT
 				}
 			}
 			modifier = {
-				political_power_cost = 0.5
+				political_power_gain = -0.25
 				consumer_goods_factor = 0.1
 			}
+			on_add = {
+				GER_update_bundesrat_gui = yes	
+			}
 			on_remove = {
-				random_owned_controlled_state = {
+				random_owned_state = {
 					limit = {
 						has_state_flag = GER_political_concession_target
+						is_core_of = ROOT
 					}
 					clr_state_flag = GER_political_concession_target
 					if = {
-						limit = {
-							PREV = {
-								is_core_of = BAY
-							}
-						}
+						limit = { is_claimed_by = PRE }
+						add_to_variable = { GER_influence_in_prussia = 1 }
+					}
+					else_if = {
+						limit = { is_core_of = BAY }
 						add_to_variable = { GER_influence_in_bavaria = 1 }
 					}
+					else_if = {
+						limit = { is_core_of = SAX }
+						add_to_variable = { GER_influence_in_saxony = 1 }
+					}
+					else_if = {
+						limit = { is_core_of = WUR }
+						add_to_variable = { GER_influence_in_wurttemberg = 1 }
+					}
+					else_if = {
+						limit = { is_core_of = BAD }
+						add_to_variable = { GER_influence_in_baden  = 1 }
+					}
+					else_if = {
+						limit = { is_core_of = HES }
+						add_to_variable = { GER_influence_in_hesse =  1 }
+					}
+					else_if = {
+						limit = { 
+							OR = {
+								is_core_of = MEK
+								is_core_of = MEC
+							} 
+						}
+						add_to_variable = { GER_influence_in_mecklenburg = 1 }
+					}
+					else_if = {
+						limit = { is_core_of = BRU }
+						add_to_variable = { GER_influence_in_brunswick =  1 }
+					}
+					else_if = {
+						limit = { is_core_of = ALS }
+						add_to_variable = { GER_influence_in_alsace_lorraine =  1 }
+					}
+					else_if = {
+						limit = { 
+							OR = {
+								state = 60
+								state = 1173
+								state = 1174
+								state = 1175
+								state = 1176
+								state = 1177
+								state = 1178
+								state = 1179
+								state = 1179
+							}
+						}
+						add_to_variable = { GER_influence_in_thuringia = 1 }
+					}
+					else_if = {
+						limit = { 
+							OR = {
+								is_core_of = OLD
+								#is_core_of = MEC
+								is_core_of = ANH
+								is_core_of = WLD
+								is_core_of = LIP
+								is_core_of = SCM
+							}
+						}
+						add_to_variable = { GER_influence_in_minor_states = 1 }
+					}
+					else_if = {
+						limit = { 
+							OR = {
+								state = 1163
+								state = 1165
+								state = 1166
+							}
+						}
+						add_to_variable = { GER_influence_in_free_cities = 1 }
+					}
+					else_if = {
+						limit = {
+							region = 22
+							is_core_of = AUS 
+						}
+						add_to_variable = { GER_influence_in_austria =  1 }
+					}
+					else_if = {
+						limit = { is_core_of = LUX }
+						add_to_variable = { GER_influence_in__luxembourg =  1 }
+					}
 				}
+				every_state = {
+					limit = { has_state_flag = GER_political_concession_target }
+					clr_state_flag = GER_political_concession_target
+				}
+				GER_update_bundesrat_gui = yes	
 			}
 		}
 	}
@@ -3617,6 +3714,12 @@ ideas = {
 				OR = {
 					original_tag = GER
 					is_greater_germany = yes
+					original_tag = WUR
+				}
+			}
+			available = {
+				50 = {
+					is_owned_or_subject_trigger = yes
 				}
 			}
 			research_bonus = {
@@ -3687,6 +3790,12 @@ ideas = {
 			}
 			equipment_bonus = {
 				artillery_equipment = {
+					soft_attack = 0.15
+					hard_attack = 0.15
+					reliability_factor = 0.1 
+					instant = yes
+				}
+				howitzer_equipment = {
 					soft_attack = 0.15
 					hard_attack = 0.15
 					reliability_factor = 0.1 
