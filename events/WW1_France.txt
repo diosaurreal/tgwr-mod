@@ -189,7 +189,6 @@ country_event = {
 		original_tag = FRA
 		date > 1914.1.1
 		has_elections = yes
-		has_government = democratic
 		NOT = {
 			has_country_flag = FRA_1914_elections_start
 		}
@@ -285,18 +284,15 @@ country_event = {
 	id = ww1_france.46
 	picture = ww1_france_46
 	fire_only_once = yes
-	mean_time_to_happen = {
-		days = 30
-	}
+	is_triggered_only = yes
 	trigger = {
-		original_tag = FRA
-		date > 1914.1.1
 		has_character = FRA_paul_deroulede
-		has_start_date < 1914.6.14
+	}
+	immediate = {
+		set_country_flag = FRA_paul_deroulede_is_dead
 	}
 	option = {
 		name = ww1_france.40.a
-		set_country_flag = FRA_paul_deroulede_is_dead
 		retire_character = FRA_paul_deroulede
 	}
 }
@@ -457,8 +453,9 @@ country_event = {
 	picture = GFX_report_event_spr_anarchist_uprising2
 	fire_only_once = yes
 	trigger = {
+		always = no #obselete
 		tag = FRA
-		has_completed_focus = FRA_ww1_emergency_council
+		#has_completed_focus = FRA_ww1_emergency_council
 		has_global_flag = frankfurt_treaty
 		has_country_flag = great_war_loser
 		is_subject = no
@@ -3154,35 +3151,6 @@ country_event = {
 		}
 	}
 	option = {
-		name = ww1_france.69.k
-		trigger = {
-			has_completed_focus = FRA_ww1_rally_the_piou_piou
-			has_completed_focus = FRA_ww1_rally_the_piou_piou
-		}
-		FRA_alexandre_ribot = {
-			if = {
-				limit = { has_ideology = liberal_conservatism }
-				promote_character = liberal_conservatism
-			}
-			else = {
-				add_country_leader_role = {
-					country_leader = {
-						ideology = liberal_conservatism
-						traits={ tenacious_negotiator financial_expert }
-					}
-					promote_leader = yes
-				}
-			}
-		}
-		ai_chance = {
-			factor = 100
-			modifier = {
-				has_completed_focus = FRA_ww1_rally_the_piou_piou	
-				factor = 10000
-			}
-		}
-	}
-	option = {
 		name = ww1_france.69.l
 		trigger = {
 			has_completed_focus = FRA_ww1_rally_the_piou_piou
@@ -3447,35 +3415,6 @@ country_event = {
 					has_completed_focus = FRA_ww1_rally_the_piou_piou
 				}
 				factor = 5000
-			}
-		}
-	}
-	option = {
-		name = ww1_france.69.k
-		trigger = {
-			has_completed_focus = FRA_ww1_rally_the_piou_piou
-			has_completed_focus = FRA_ww1_rally_the_piou_piou
-		}
-		FRA_alexandre_ribot = {
-			if = {
-				limit = { has_ideology = liberal_conservatism }
-				promote_character = liberal_conservatism
-			}
-			else = {
-				add_country_leader_role = {
-					country_leader = {
-						ideology = liberal_conservatism
-						traits={ tenacious_negotiator financial_expert }
-					}
-					promote_leader = yes
-				}
-			}
-		}
-		ai_chance = {
-			factor = 100
-			modifier = {
-				has_completed_focus = FRA_ww1_rally_the_piou_piou	
-				factor = 10000
 			}
 		}
 	}
@@ -4883,6 +4822,7 @@ country_event = {
 	option = {
 		name = ww1_france.92.a
 		transfer_state = 28
+		transfer_state = 1107
 		news_event = {
 			days = 2
 			id = ww1_france.94
@@ -4925,7 +4865,7 @@ country_event = {
 }
 
 
-#Germany surrender alsace-lorraine surrender
+#Germany surrender alsace_lorraine-lorraine surrender
 news_event = {
 	id = ww1_france.94
 	title = ww1_france.94.t
@@ -5355,7 +5295,7 @@ country_event = {
 	}
 }
 
-# FRANCE OCCUPY MEMEL
+# DECISION OVER MEMELLAND
 #########################
 country_event = {
 	id = ww1_france.224
@@ -5368,6 +5308,9 @@ country_event = {
 		hidden_effect = {
 			188 = {
 				remove_dynamic_modifier = { modifier = international_city }
+				remove_core_of = GER
+			}
+			946 = {
 				remove_core_of = GER
 			}
 		}
@@ -6308,6 +6251,7 @@ country_event = {
 						state = 863
 						state = 864
 						state = 28
+						state = 1107
 					}
 					is_controlled_by = FRA
 				}
@@ -6374,6 +6318,8 @@ country_event = {
 			transfer_units_fraction = {
 				target = FRC
 				size = 0.65
+				target_organization = 1
+				source_organization = 1
 				stockpile_ratio = 0.6
 				army_ratio = 0.55
 				navy_ratio = 0.25
@@ -6502,12 +6448,16 @@ country_event = {
 						transfer_units_fraction = {
 							target = PREV
 							size = 1.0
+							target_organization = 1
+							source_organization = 1
 						}
 					}
 					check_communism_civil_war_popularity = yes
 					transfer_units_fraction = {
 						target = ROOT
 						size = civil_war_size_var
+						target_organization = 1
+						source_organization = 1
 						keep_unit_leaders_trigger = {
 							OR = {
 								has_trait = old_guard
@@ -6539,89 +6489,171 @@ country_event = {
 				set_cosmetic_tag = NFA
 				reserve_dynamic_country = yes
 			}
-			every_possible_country = {
-				limit = {
-					has_character = FRA_hubert_lyautey
-				}
+			FRA = {
 				FRA_hubert_lyautey = {
 					set_nationality = NFA
-				}
-			}
-			every_possible_country = {
-				limit = {
-					has_character = FRA_joseph_joffre
+					if = {
+						limit = {
+							has_ideology = stratocracy
+						}
+						promote_character = stratocracy
+						else = {
+							add_country_leader_role = {
+								promote_leader = yes
+								country_leader = {
+									ideology = stratocracy
+									traits = { great_war_hero generallissimo }
+								}
+							}
+						}
+					}
+					if = {
+						limit = {
+							has_ideology = personalistic_dictatorship
+						}
+						promote_character = personalistic_dictatorship
+						else = {
+							add_country_leader_role = {
+								promote_leader = yes
+								country_leader = {
+									ideology = personalistic_dictatorship
+									traits = { great_war_hero generallissimo }
+								}
+							}
+						}
+					}
 				}
 				FRA_joseph_joffre = {
 					set_nationality = NFA
-				}
-			}
-			every_possible_country = {
-				limit = {
-					has_character = FRA_ferdinand_foch
+					if = {
+						limit = {
+							has_ideology = stratocracy
+						}
+						promote_character = stratocracy
+						else = {
+							add_country_leader_role = {
+								promote_leader = yes
+								country_leader = {
+									ideology = stratocracy
+									traits = { great_war_hero generallissimo }
+								}
+							}
+						}
+					}
+					if = {
+						limit = {
+							has_ideology = personalistic_dictatorship
+						}
+						promote_character = personalistic_dictatorship
+						else = {
+							add_country_leader_role = {
+								promote_leader = yes
+								country_leader = {
+									ideology = personalistic_dictatorship
+									traits = { great_war_hero generallissimo }
+								}
+							}
+						}
+					}
 				}
 				FRA_ferdinand_foch = {
 					set_nationality = NFA
-				}
-			}
-			every_possible_country = {
-				limit = {
-					has_character = FRA_philippe_petain
+					if = {
+						limit = {
+							has_ideology = stratocracy
+						}
+						promote_character = stratocracy
+						else = {
+							add_country_leader_role = {
+								promote_leader = yes
+								country_leader = {
+									ideology = stratocracy
+									traits = { great_war_hero generallissimo }
+								}
+							}
+						}
+					}
+					if = {
+						limit = {
+							has_ideology = personalistic_dictatorship
+						}
+						promote_character = personalistic_dictatorship
+						else = {
+							add_country_leader_role = {
+								promote_leader = yes
+								country_leader = {
+									ideology = personalistic_dictatorship
+									traits = { great_war_hero generallissimo }
+								}
+							}
+						}
+					}
 				}
 				FRA_philippe_petain = {
 					set_nationality = NFA
-				}
-			}
-			every_possible_country = {
-				limit = {
-					has_character = FRA_gouvernement_provisoire
+					if = {
+						limit = {
+							has_ideology = stratocracy
+						}
+						promote_character = stratocracy
+						else = {
+							add_country_leader_role = {
+								promote_leader = yes
+								country_leader = {
+									ideology = stratocracy
+									traits = { great_war_hero generallissimo }
+								}
+							}
+						}
+					}
+					if = {
+						limit = {
+							has_ideology = personalistic_dictatorship
+						}
+						promote_character = personalistic_dictatorship
+						else = {
+							add_country_leader_role = {
+								promote_leader = yes
+								country_leader = {
+									ideology = personalistic_dictatorship
+									traits = { great_war_hero generallissimo }
+								}
+							}
+						}
+					}
 				}
 				FRA_gouvernement_provisoire = {
 					set_nationality = NFA
-				}
-			}
-			every_possible_country = {
-				limit = {
-					has_character = FRA_napoleon_vi
+					if = {
+						limit = {
+							has_ideology = conservatism
+						}
+						promote_character = conservatism
+						else = {
+							add_country_leader_role = {
+								promote_leader = yes
+								country_leader = {
+									ideology = conservatism
+								}
+							}
+						}
+					}
 				}
 				FRA_napoleon_vi = {
 					set_nationality = NFA
 				}
-			}
-			every_possible_country = {
-				limit = {
-					has_character = FRA_napoleon_v
-				}
 				FRA_napoleon_v = {
 					set_nationality = NFA
-				}
-			}
-			every_possible_country = {
-				limit = {
-					has_character = FRA_jacques_i
 				}
 				FRA_jacques_i = {
 					set_nationality = NFA
 				}
-			}
-			every_possible_country = {
-				limit = {
-					has_character = FRA_charles_xii
-				}
 				FRA_charles_xii = {
 					set_nationality = NFA
 				}
-			}
-			every_possible_country = {
-				limit = {
-					has_character = FRA_jules_guesde
-				}
 				FRA_jules_guesde = { #to fill the slot
 					set_nationality = NFA
-				}
-			}
-			every_possible_country = {
-				limit = {
-					has_character = FRA_maurice_pujo
+					promote_character = yes
 				}
 				FRA_maurice_pujo = {
 					set_nationality = NFA
@@ -6726,151 +6758,6 @@ country_event = {
 				}
 			}
 			NFA = {
-				FRA_hubert_lyautey = {
-					if = {
-						limit = {
-							has_ideology = stratocracy
-						}
-						promote_character = stratocracy
-						else = {
-							add_country_leader_role = {
-								promote_leader = yes
-								country_leader = {
-									ideology = stratocracy
-									traits = { great_war_hero generallissimo }
-								}
-							}
-						}
-					}
-					if = {
-						limit = {
-							has_ideology = personalistic_dictatorship
-						}
-						promote_character = personalistic_dictatorship
-						else = {
-							add_country_leader_role = {
-								promote_leader = yes
-								country_leader = {
-									ideology = personalistic_dictatorship
-									traits = { great_war_hero generallissimo }
-								}
-							}
-						}
-					}
-				}
-				FRA_joseph_joffre = {
-					if = {
-						limit = {
-							has_ideology = stratocracy
-						}
-						promote_character = stratocracy
-						else = {
-							add_country_leader_role = {
-								promote_leader = yes
-								country_leader = {
-									ideology = stratocracy
-									traits = { great_war_hero generallissimo }
-								}
-							}
-						}
-					}
-					if = {
-						limit = {
-							has_ideology = personalistic_dictatorship
-						}
-						promote_character = personalistic_dictatorship
-						else = {
-							add_country_leader_role = {
-								promote_leader = yes
-								country_leader = {
-									ideology = personalistic_dictatorship
-									traits = { great_war_hero generallissimo }
-								}
-							}
-						}
-					}
-				}
-				FRA_ferdinand_foch = {
-					if = {
-						limit = {
-							has_ideology = stratocracy
-						}
-						promote_character = stratocracy
-						else = {
-							add_country_leader_role = {
-								promote_leader = yes
-								country_leader = {
-									ideology = stratocracy
-									traits = { great_war_hero generallissimo }
-								}
-							}
-						}
-					}
-					if = {
-						limit = {
-							has_ideology = personalistic_dictatorship
-						}
-						promote_character = personalistic_dictatorship
-						else = {
-							add_country_leader_role = {
-								promote_leader = yes
-								country_leader = {
-									ideology = personalistic_dictatorship
-									traits = { great_war_hero generallissimo }
-								}
-							}
-						}
-					}
-				}
-				FRA_philippe_petain = {
-					if = {
-						limit = {
-							has_ideology = stratocracy
-						}
-						promote_character = stratocracy
-						else = {
-							add_country_leader_role = {
-								promote_leader = yes
-								country_leader = {
-									ideology = stratocracy
-									traits = { great_war_hero generallissimo }
-								}
-							}
-						}
-					}
-					if = {
-						limit = {
-							has_ideology = personalistic_dictatorship
-						}
-						promote_character = personalistic_dictatorship
-						else = {
-							add_country_leader_role = {
-								promote_leader = yes
-								country_leader = {
-									ideology = personalistic_dictatorship
-									traits = { great_war_hero generallissimo }
-								}
-							}
-						}
-					}
-				}
-				FRA_gouvernement_provisoire = {
-					if = {
-						limit = {
-							has_ideology = conservatism
-						}
-						promote_character = conservatism
-						else = {
-							add_country_leader_role = {
-								promote_leader = yes
-								country_leader = {
-									ideology = conservatism
-								}
-							}
-						}
-					}
-				}
-				promote_character = FRA_jules_guesde
 				add_ideas = FRA_idea_disunited_french_front_cw
 				every_owned_state = {
 					set_state_flag = nationalist_french_states
@@ -7117,6 +7004,8 @@ country_event = {
 				transfer_units_fraction = {
 					target = NFA
 					size = 0.45
+					target_organization = 1
+					source_organization = 1
 					stockpile_ratio = 0.1
 					army_ratio = 0.45
 					navy_ratio = 0.75
@@ -7555,18 +7444,16 @@ country_event = {
 		ai_chance = {
 			factor = 85
 		}
-		ITA = {
-			transfer_state = 735
-			transfer_state = 834
-			transfer_state = 1
-			if = {
-				limit = {
-					owns_state = 661
-					owns_state = 448
+		every_owned_state = {
+			limit = {
+				OR = {
+					state = 735
+					state = 834
+					state = 1
+					is_core_of = TUN
 				}
-				transfer_state = 458
-				transfer_state = 665
 			}
+			transfer_state_to = ITA
 		}
 		every_other_country = {
 			limit = {
@@ -7628,29 +7515,29 @@ country_event = {
 			every_enemy_country = {
 				limit = {
 					NOT = {
-						original_tag = MLI
+						original_tag = VOL
 					}
 				}
 				white_peace = ROOT
 			}
 			# to fix weird desert mechanism
-			if = {
-				limit = {
-					owns_state = 781
-				}
-				transfer_state = 515
-				if = {
-					limit = {
-						567 = {
-							owner = {
-								NOT = { original_tag = TUR }
-							}
-						}
-					}
-					transfer_state = 567
-					transfer_state = 775
-				}
-			}
+			# if = {
+			# 	limit = {
+			# 		owns_state = 781
+			# 	}
+			# 	transfer_state = 515
+			# 	if = {
+			# 		limit = {
+			# 			567 = {
+			# 				owner = {
+			# 					NOT = { original_tag = TUR }
+			# 				}
+			# 			}
+			# 		}
+			# 		transfer_state = 567
+			# 		transfer_state = 775
+			# 	}
+			# }
 		}
 	}
 	option = {
@@ -7759,6 +7646,7 @@ country_event = {
 					region = 225
 					region = 226
 					is_core_of = MLI
+					is_core_of = VOL
 					is_core_of = NGR
 					is_core_of = IVO
 				}
@@ -8096,7 +7984,7 @@ news_event = {
 						has_completed_focus = RUS_resist_the_duma
 						has_completed_focus = ENG_Royal_Prerogative
 						has_completed_focus = BRA_monarchy_restored
-						has_completed_focus = GER_weltpolitik
+						has_completed_focus = GER_wilhelmine_germany
 						original_tag = FRA
 					}
 				}
@@ -8472,7 +8360,7 @@ country_event = {
 	fire_only_once = yes
 	trigger = {
 		original_tag = FRA
-		has_character = FRA_milan_ratislav_stefanik
+		has_character = FRA_milan_rastislav_stefanik
 		is_subject = no
 		# War is not over yet
 		has_global_flag = great_war
@@ -8482,9 +8370,8 @@ country_event = {
 			has_country_flag = FRA_czechoslovak_legion_flag
 		}
 		# Czechoslovakia is being oppressed
-		any_other_country = {
+		any_enemy_country = {
 			is_major = yes
-			has_war_with = ROOT
 			OR = {
 				any_owned_state = {
 					OR = {
@@ -8521,18 +8408,7 @@ country_event = {
 	option = {
 		name = ww1_france.246.a
 		add_manpower = 9600
-		effect_tooltip = {
-			FRA_milan_ratislav_stefanik = {
-				add_corps_commander_role = {
-					skill = 3
-					attack_skill = 2
-					defense_skill = 3
-					planning_skill = 2
-					logistics_skill = 3
-					traits = { politically_connected trickster guerilla_fighter }
-				}
-			}
-		}
+		show_unit_leaders_tooltip = FRA_milan_rastislav_stefanik
 		set_country_flag = FRA_czechoslovak_legion_flag
 		hidden_effect = {
 			CZE = {
@@ -8560,7 +8436,7 @@ country_event = {
 	fire_only_once = yes
 	trigger = {
 		original_tag = FRA
-		has_character = FRA_milan_ratislav_stefanik
+		has_character = FRA_milan_rastislav_stefanik
 		has_country_flag = FRA_czechoslovak_legion_flag
 		has_war = no
 		OR = {
@@ -8577,10 +8453,9 @@ country_event = {
 	}
 	option = {
 		name = ww1_france.247.a
+		clr_country_flag = FRA_czechoslovak_legion_flag
 		add_manpower = -9600
-		FRA_milan_ratislav_stefanik = {
-			promote_leader = yes
-			add_unit_leader_trait = war_hero
+		FRA_milan_rastislav_stefanik = {	
 			if = {
 				limit = {
 					country_exists = SLO
@@ -8589,11 +8464,14 @@ country_event = {
 				set_nationality = SLO
 				hidden_effect = {
 					SLO = {
-						add_manpower = 9600
+						add_manpower = 3600
 						country_event = {
 							id = ww1_france.248
 							hours = 4
 						}
+					}
+					CZE = {
+						add_manpower = 6000
 					}
 				}
 				else_if = {
@@ -8612,6 +8490,8 @@ country_event = {
 					}
 				}
 			}
+			promote_leader = yes
+			add_unit_leader_trait = war_hero
 		}
 	}
 }
@@ -8625,7 +8505,7 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_france.248.a
-		retire_character = FRA_milan_ratislav_stefanik
+		retire_character = FRA_milan_rastislav_stefanik
 		hidden_effect = {
 			SLO = { retire_character = SLO_milan_rastislav_stefanik }
 		}
@@ -9414,19 +9294,11 @@ country_event = {
 	desc = ww1_france.269.d
 	picture = GFX_Franz_Reichelt
 	fire_only_once = yes
-	trigger = {
-		date > 1912.02.04
-		has_start_date < 1914.6.14
-		tag = FRA
-		NOT = {
-			has_country_flag = Franz_Reichelt_death
-		}
-	}
+	is_triggered_only = yes
 	option = {
 		name = ww1_france.269.a
 		add_manpower = -1
 		air_experience = 1
-		set_country_flag = Franz_Reichelt_death
 	}
 }
 
@@ -10050,7 +9922,10 @@ country_event = {
 	trigger = {
 		tag = FRA
 		has_idea = FRA_ruhr_occupation
-		controls_state = 873
+		OR = {
+			owns_state = 873
+			owns_state = 1185
+		}
 	}
 	mean_time_to_happen = {
 		days = 90
@@ -10076,7 +9951,10 @@ country_event = {
 	trigger = {
 		tag = FRA
 		has_idea = FRA_ruhr_occupation2
-		controls_state = 873
+		OR = {
+			owns_state = 873
+			owns_state = 1185
+		}
 	}
 	mean_time_to_happen = {
 		days = 220
@@ -10127,7 +10005,10 @@ country_event = {
 	trigger = {
 		tag = FRA
 		has_idea = FRA_ruhr_occupation2
-		controls_state = 873
+		OR = {
+			owns_state = 873
+			owns_state = 1185
+		}
 		NOT = {
 			has_country_flag = royalist_action_ruhr
 		}
@@ -10445,6 +10326,18 @@ country_event = {
 				modifier = FRA_autonomous_region 
 			}
 		}
+		if = {
+			limit = {
+				1107 = {
+					is_owned_by = ROOT
+				}	
+			}
+			1107 = {
+				add_dynamic_modifier = {
+					modifier = FRA_autonomous_region 
+				}
+			}
+		}
 		ai_chance = {
 			factor = 0
 		}
@@ -10608,12 +10501,15 @@ country_event = {
 				state = 551
 				state = 549
 				state = 660
+				state = 1142
 				state = 774
 				state = 1059
 				state = 781
 				state = 558
+				state = 1145
 				state = 776
 				state = 556
+				state = 1162
 				state = 272 
 				state = 557
 				state = 969
@@ -10633,12 +10529,15 @@ country_event = {
 					state = 551
 					state = 549
 					state = 660
+					state = 1142
 					state = 774
 					state = 1059
 					state = 781
 					state = 558
+					state = 1145
 					state = 776
 					state = 556
+					state = 1162
 					state = 272 
 					state = 557
 					state = 969
@@ -10719,232 +10618,7 @@ country_event = {
 		ai_chance = {
 			factor = 500
 		}
-		effect_tooltip = {
-			FRA = {
-				white_peace = GER
-				add_ideas = standing_alone
-				add_ideas = disarmed_nation
-				add_ideas = interwar_recovery
-				add_ideas = idea_armistice
-			}
-		}
-		hidden_effect = {
-			if = {
-				limit = {
-					ENG = {
-						is_in_faction_with = FRA
-						NOT = {
-							has_country_flag = has_capitulated_with_france_early
-						}
-						has_war_with = GER
-					}
-				}
-				ENG = {
-					set_country_flag = entente_leader
-					set_faction_leader = yes
-				}
-			}
-			else_if = {
-				limit = {
-					RUS = {
-						is_in_faction_with = FRA
-						NOT = {
-							has_country_flag = has_capitulated_with_france_early
-							has_global_flag = russ_kapitulation
-							tag = SOV
-						}
-						has_war_with = GER
-					}
-				}
-				RUS = {
-					set_country_flag = entente_leader
-					set_faction_leader = yes
-				}
-			}
-			else = {
-				random_country = {
-					limit = {
-						is_in_faction_with = FRA
-						has_war_with = GER
-						is_major = yes
-						NOT = {
-							tag = FRA
-						}
-					}
-					set_country_flag = entente_leader
-					set_faction_leader = yes
-				}
-			}
-			every_country = {
-				limit = {
-					OR = {
-						is_subject_of = FRA
-						original_tag = FRA
-					}
-				}
-				set_country_flag = FRA_surrender_alone
-				set_global_flag = FRA_surrender_alone
-				set_country_flag = { flag = has_capitulated_with_france_early days = 180 value = 1 }
-				leave_faction = yes
-				add_ideas = standing_alone
-				add_ideas = disarmed_nation
-				add_ideas = interwar_recovery
-				add_ideas = idea_armistice
-			}
-			every_country = {
-				limit = {
-					has_war_with = FRA
-				}
-				every_country = {
-					limit = {
-						OR = {
-							tag = FRA
-							is_subject_of = FRA
-						}
-					}
-					white_peace = PREV
-					diplomatic_relation = {
-						country = PREV
-						relation = non_aggression_pact
-						active = yes
-					}
-				}
-			}
-			if = {
-				limit = {
-					has_active_mission = GER_mission_famine_timer_early
-				}
-				add_days_mission_timeout = {
-					mission = GER_mission_famine_timer_early
-					days = 200
-				}
-			}
-			else_if = {
-				limit = {
-					has_active_mission = GER_mission_famine_timer
-				}
-				add_days_mission_timeout = {
-					mission = GER_mission_famine_timer
-					days = 150
-				}
-			}
-			every_country = {
-				diplomatic_relation = {
-					country = FRA
-					relation = guarantee
-					active = no
-				}
-				diplomatic_relation = {
-					country = FRA
-					relation = military_access
-					active = no
-				}
-				diplomatic_relation = {
-					country = FRA
-					relation = docking_rights
-					active = no
-				}
-				FRA = {
-					diplomatic_relation = {
-						country = PREV
-						relation = guarantee
-						active = no
-					}
-					diplomatic_relation = {
-						country = PREV
-						relation = military_access
-						active = no
-					}
-					diplomatic_relation = {
-						country = PREV
-						relation = docking_rights
-						active = no
-					}
-				}
-			}
-			every_country = {
-				limit = {
-					OR = {
-						is_in_faction_with = GER
-						is_subject_of = GER
-						original_tag = GER
-					}
-					NOT = {
-						has_country_flag = has_capitulated_with_france_early
-						has_war_with = GER
-					}
-				}
-				remove_wargoal = {
-					target = FRA
-					type = all
-				}
-				every_state = {
-					limit = {
-						OWNER = {
-							has_country_flag = has_capitulated_with_france_early
-						}
-						NOT = {
-							OWNER = {
-								is_in_faction_with = GER
-								is_subject_of = GER
-								has_war_together_with = GER
-							}
-						}
-						OR = {
-							is_claimed_by = PREV
-							is_core_of = PREV
-						}
-					}
-					transfer_state_to = PREV
-				}
-				every_state = {
-					limit = {
-						OWNER = {
-							has_country_flag = has_capitulated_with_france_early
-						}
-						is_core_of = FRA
-						NOT = {
-							OR = {
-								is_claimed_by = PREV
-								is_core_of = PREV
-							}
-						}
-					}
-					transfer_state_to = FRA	## restitution of occupation zones in France
-				}
-				FRA = {
-					give_military_access = PREV
-					set_truce = {
-						target = PREV
-						days = 365
-					}
-				}
-			}
-		}
-		custom_effect_tooltip = ww1_france.306.tt
-		effect_tooltip = {
-			every_state = {
-				limit = {
-					OWNER = {
-						OR = {
-							tag = FRA
-							is_subject_of = FRA
-						}
-					}
-					OR = {
-						is_claimed_by = GER
-						is_core_of = GER
-					}
-				}
-				transfer_state_to = GER
-			}
-		}
-		FRA = {
-			country_event = {
-				id = ww1_france.307
-				days = 3
-			}
-		}
+		FRA_french_surrender_effect = yes
 
 	}
 }
@@ -11518,6 +11192,8 @@ country_event = {
 				transfer_units_fraction = {
 					target = FRC
 					size = 0.30
+					target_organization = 1
+					source_organization = 1
 					stockpile_ratio = 0.50
 					keep_unit_leaders_trigger = {
 						NOT = {
@@ -11557,7 +11233,6 @@ country_event = {
 							state = 25
 							state = 19
 							state = 23
-							state = 33
 						}
 						is_controlled_by = FRA
 					}
@@ -11571,6 +11246,8 @@ country_event = {
 				transfer_units_fraction = {
 					target = NFA
 					size = 0.45	#NFA has more soldiers
+					target_organization = 1
+					source_organization = 1
 					stockpile_ratio = 0.45
 					navy_ratio = 0.0 #but no navy
 					keep_unit_leaders_trigger = {
@@ -11737,8 +11414,6 @@ country_event = {
 							state = 21
 							state = 20
 							state = 23
-
-							state = 33
 							state = 15
 							state = 785
 							state = 16
@@ -12341,21 +12016,21 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_france.24.a
-		if = {
-			limit = {
-				tag = FRA
-			}
-			add_state_core = 459
-			set_capital = { state = 459 }
-			# to fix weird desert mechanism
-			if = {
-				limit = {
-					owns_state = 567
-				}
-				transfer_state = 515
-				transfer_state = 775
-			}
-		}
+		# if = {
+		# 	limit = {
+		# 		tag = FRA
+		# 	}
+		# 	add_state_core = 459
+		# 	set_capital = { state = 459 }
+		# 	# to fix weird desert mechanism
+		# 	if = {
+		# 		limit = {
+		# 			owns_state = 567
+		# 		}
+		# 		transfer_state = 515
+		# 		transfer_state = 775
+		# 	}
+		# }
 		every_enemy_country = {
 			limit = {
 				OR = {
@@ -12472,6 +12147,11 @@ country_event = {
 			}
 		}
 		retire_character = FRA_joseph_caillaux
+		set_party_name = {
+			ideology = neutrality
+			long_name = FRA_junte_militaire
+			name = FRA_junte_militaire
+		}
 		add_manpower = -1
 	}
 	option = {
@@ -12501,7 +12181,7 @@ country_event = {
 			# mali insurrection mess with french civil war
 			has_global_flag = french_civil_war
 		}
-		556 = {
+		1162 = {
 			is_owned_and_controlled_by = FRA
 		}
 		NOT = {
@@ -12520,7 +12200,7 @@ country_event = {
 		# 	base = 1000
 		# }
 		# custom_effect_tooltip = historical_tt
-		556 = {
+		1162 = {
 			add_dynamic_modifier = {
 				modifier = FRA_volta_bani_war
 				days = 740 
@@ -12543,7 +12223,7 @@ country_event = {
 		# 	}
 		# }
 		custom_effect_tooltip = dangerous_tt
-		556 = {
+		1162 = {
 			add_dynamic_modifier = {
 				modifier = FRA_volta_insurrection
 				days = 740 
@@ -12570,23 +12250,23 @@ country_event = {
 		hidden_effect = {
 			if = {
 				limit = {
-					556 = {
+					1162 = {
 						OWNER = {
 							NOT = {
-								tag = MLI
+								tag = VOL
 							}
 						}
 					}
 				}
 				OWNER = {
-					release = MLI
+					release = VOL
 				}
 			}
-			556 = {
-				add_core_of = MLI
+			1162 = {
+				add_core_of = VOL
 			}
 			news_event = ww1_france.336
-			MLI = {
+			VOL = {
 				add_ideas = MLI_disorganized_tribes
 				add_ideas = standing_alone
 				division_template = {
@@ -12607,10 +12287,10 @@ country_event = {
 						}
 					}
 				}
-				556 = {
+				1162 = {
 					create_unit = {
 						division = "division_template = \"Militia\" start_experience_factor = 0 start_equipment_factor = 0.25"
-						owner = MLI
+						owner = VOL
 						count = 5
 					}
 				}
@@ -12639,12 +12319,12 @@ country_event = {
 		name = ww1_france.335.a	#its war !
 		every_state = {
 			limit = {
-				is_owned_by = MLI
+				is_owned_by = VOL
 			}
 			add_claim_by = ROOT
 		}
 		declare_war_on = {
-			target = MLI
+			target = VOL
 			type = annex_everything
 		}
 		ai_chance = {
@@ -12663,7 +12343,7 @@ country_event = {
 			modifier = {
 				factor = 0
 				strength_ratio = {
-					tag = MLI
+					tag = VOL
 					ratio > 1
 				}
 			}
@@ -12679,15 +12359,15 @@ country_event = {
 		trigger = { is_ai = no }
 		every_state = {
 			limit = {
-				is_owned_by = MLI
+				is_owned_by = VOL
 			}
 			add_claim_by = ROOT
 		}
 		declare_war_on = {
-			target = MLI
+			target = VOL
 			type = annex_everything
 		}
-		MLI = {
+		VOL = {
 			change_tag_from = ROOT
 		}
 	}
@@ -12871,11 +12551,15 @@ country_event = {
 		NOT = {
 			has_country_flag = scientists_exodus
 		}
+		OR = {
+			has_completed_focus = FRA_kick_moderates
+			has_completed_focus = FRA_enforce_state_atheism
+		}
 	}
 	immediate = {
 		set_country_flag = scientists_exodus
 	}
-	mean_time_to_happen = { days = 256 }
+	mean_time_to_happen = { days = 26 }
 	option = {
 		name = ww1_france.341.a	
 		add_stability = -0.05
@@ -13234,71 +12918,20 @@ country_event = {
 	option = {	## we should release african republics
 		# you can't just release mordern african republics there
 		# and it is not sure that the tribes would just accept socialism there
-		trigger = {
-			NOT = {
-				country_exists = SEN
-				country_exists = RCG
-			}
-		}
 		name = ww1_france.354.a
+		#Afrique-Occidentale françise	
 		hidden_effect = {
-			every_owned_state = {
-				limit = {
-					OR = {
-						region = 140
-						region = 226
-						is_core_of = MRT
-						is_core_of = MLI
-						is_core_of = NGR
-					}
-				}
-				add_core_of = SEN
-				transfer_state_to = SEN
-			}
-			SEN = {
-				set_politics = {
-					ruling_party = communism
-					elections_allowed = no
-				}
-				set_cosmetic_tag = AOF
-			}
-			every_owned_state = {
-				limit = {
-					OR = {
-						region = 183
-						region = 184
-						region = 227
-						state = 775
-					}
-				}
-				add_core_of = RCG
-				transfer_state_to = RCG
-			}
-			RCG = {
-				set_politics = {
-					ruling_party = communism
-					elections_allowed = no
-				}
-				set_cosmetic_tag = AEF
-			}
+			create_AOF = yes
 		}
-		every_other_country = {
-			limit = {
-				has_government = communism
-				capital_scope = {
-					is_on_continent = africa
-				}
-				OR = {
-					tag = SEN
-					tag = RCG
-					is_subject_of = FRA
-				}
-			}
-			ROOT = {
-				set_autonomy = {
-					target = PREV
-					autonomy_state = autonomy_dominion
-				}
+		set_autonomy = {
+			target = AOF
+			autonomy_state = autonomy_satellite
+			end_wars = no
+		}	
+		AOF = {
+			set_politics = {
+				ruling_party = communism
+				elections_allowed = no
 			}
 			hidden_effect = {
 				set_popularities = {
@@ -13307,20 +12940,41 @@ country_event = {
 					fascism = 0
 					communism = 66
 				}
-				set_politics = {
-					ruling_party = communism
-					elections_allowed = no
-				}
-				create_country_leader = {
-					name = FRA_african_union_council
-					picture = "gfx/leaders/GER/GER_workers_councils.png"
-					ideology = reformist_socialism
+			}
+		}
+
+		#Afrique équatoriale française
+		hidden_effect = {
+			create_AEF = yes
+		}
+		set_autonomy = {
+			target = AEF
+			autonomy_state = autonomy_satellite
+			end_wars = no
+		}
+		AEF = {
+			set_politics = {
+				ruling_party = communism
+				elections_allowed = no
+			}
+			hidden_effect = {
+				set_popularities = {
+					democratic = 20
+					neutrality = 14
+					fascism = 0
+					communism = 66
 				}
 			}
 		}
 	}
 	option = {	## they must be integrated as part of france
 		name = ww1_france.354.b
+		trigger = {
+			NOT = {
+				has_global_flag = AOF
+				has_global_flag = AEF
+			}
+		}
 		every_owned_state = {
 			limit = {
 				OR = {
@@ -13331,8 +12985,12 @@ country_event = {
 					region = 227
 					is_core_of = MRT
 					is_core_of = MLI
+					is_core_of = VOL
 					is_core_of = NGR
 					state = 775
+					state = 1125
+					state = 1126
+					state = 1127
 				}
 			}
 			add_dynamic_modifier = {
@@ -14495,7 +14153,7 @@ country_event = {
 	title = ww1_france.379.t
 	desc = ww1_france.379.d
 	trigger = {
-		has_global_flag = kis_xinhairenews
+		has_global_flag = xinhai_revolution
 		NOT = {
 			has_country_flag = FRA_IND_vietnam_quang_phuc_hoi
 		}
@@ -14656,26 +14314,11 @@ country_event = {
 		name = ww1_france.382.a
 		add_stability = 0.15
 		get_current_government_type = yes
-		set_country_flag = autonomy_dominion
-		if = {
-			limit = {
-				OVERLORD = {
-					has_dlc = "Man the Guns"
-				}
-			}
-			OVERLORD = {
-				set_autonomy = {
-					target = ROOT
-					autonomous_state = autonomy_supervised_state
-				}
-			}
-			else = {
-				OVERLORD = {
-					set_autonomy = {
-						target = ROOT
-						autonomous_state = autonomy_dominion
-					}
-				}
+		clr_country_flag = protectorate
+		OVERLORD = {
+			set_autonomy = {
+				target = ROOT
+				autonomous_state = autonomy_dominion
 			}
 		}
 		restore_previous_government_type = yes
@@ -15036,7 +14679,7 @@ country_event = {
 		tag = FRA
 		OR = {
 			date > 1916.12.1
-			country_exists = MLI
+			country_exists = VOL
 		}
 		OR = {
 			any_enemy_country = {
@@ -15200,7 +14843,7 @@ country_event = {
 	option = {
 		name = ww1_france.395.a
 		add_popularity = {
-			popularity = 0.05
+			popularity = 0.02
 			ideology = communism
 		}
 	}
@@ -15547,6 +15190,9 @@ country_event = {
 		if = {
 			limit = {
 				has_character = FRA_philippe_petain
+				NOT = {
+					has_government = communism
+				}
 			}
 			FRA_philippe_petain = {
 				if = {
@@ -16395,7 +16041,7 @@ country_event = {
 					tag = ROM
 					tag = USA
 					tag = BEL
-					tag = YUG
+					tag = SER
 					tag = RUS
 				}
 				check_variable = {
@@ -17540,7 +17186,7 @@ country_event = {
 		}
 		date > 1919.2.20
 		NOT = {
-			has_country_flag = FRA_alsace_UPR
+			has_country_flag = FRA_alsace_lorraine_UPR
 		}
 	}
 	mean_time_to_happen = {
@@ -17554,7 +17200,7 @@ country_event = {
 				modifier = FRA_UPR_activism 
 			}
 		}
-		set_country_flag = FRA_alsace_UPR
+		set_country_flag = FRA_alsace_lorraine_UPR
 	}
 }
 
@@ -18065,7 +17711,7 @@ country_event = {
 	title = ww1_france.479.t
 	desc = ww1_france.479.d
 	is_triggered_only = yes
-	fire_only_once = yes
+	fire_only_once = no
 	picture = GFX_french_soldiers
 	option = {
 		name = ww1_france.479.a
@@ -19504,17 +19150,7 @@ country_event = {
 	title = ww1_france.528.t
 	desc = ww1_france.528.d
 	fire_only_once = yes
-	trigger = {
-		tag = FRA
-		has_government = communism
-		has_country_flag = player_coalition_is_minority
-		NOT = {
-			has_country_flag = government_cant_be_replaced
-		}
-	}
-	mean_time_to_happen = {
-		days = 24
-	}
+	is_triggered_only = yes
 	picture = GFX_sfio_3
 	option = {
 		name = ww1_france.528.a
@@ -19541,8 +19177,7 @@ country_event = {
 					}
 				}
 				MOR = {
-					drop_cosmetic_tag = yes
-					set_cosmetic_tag = MOR_FRA
+					set_cosmetic_tag = MOR_1915
 				}
 			}
 			drop_cosmetic_tag = yes
@@ -19572,6 +19207,36 @@ country_event = {
 					}
 				}
 			}
+		}
+		ai_chance = {
+			factor = 5
+		}
+	}
+	option = {
+		name = ww1_france.528.b
+		custom_effect_tooltip = FRA_you_reformed_the_high_command_and_have_high_popularity
+		add_stability = -0.15
+		custom_effect_tooltip = FRA_parliament_dissolved_tt
+		set_country_flag = FRA_parliament_dissolved
+		
+		set_variable = { var = SFIO value = 600 } 
+		set_variable = { var = independent_socialist value = 0 } 
+		set_variable = { var = democratic_republican_alliance value = 0 }
+		set_variable = { var = radical_party value = 0 } 
+		set_variable = { var = independent_radicals value = 0 } 
+		set_variable = { var = republicain_federation value = 0 } 
+		set_variable = { var = popular_liberal_action value = 0 } 
+		set_variable = { var = nationalists value = 0 }
+		set_variable = { var = vacant value = 0 }
+		set_variable = { var = conservatives value = 0 }
+		set_variable = { var = independent_republicans value = 0 }
+		parliament_reassign_seats = yes
+		set_variable = {
+			democrat_alliance = 600 #issou
+		}
+		set_variable = { var = democrat_alliance_percent value = 100 } 
+		ai_chance = {
+			factor = 500
 		}
 	}
 }
@@ -19676,5 +19341,2433 @@ country_event = {
 			popularity = -0.1
 		}
 		far_right_right_hate = yes
+	}
+}
+
+#France invest in iron fields in ukraine
+country_event = {
+	id = ww1_france.533
+	title = ww1_france.533.t
+	desc = ww1_france.533.d
+	is_triggered_only = yes
+	fire_only_once = yes
+	picture = GFX_report_event_generic_factory
+	option = {
+		name = ww1_france.533.a
+		227 = {
+			add_resource = {
+				type = steel
+				amount = 4
+			}
+			add_extra_state_shared_building_slots = 1
+			add_building_construction = {
+				type = industrial_complex
+				level = 1
+				instant_build = yes
+			}
+			OWNER = {
+				add_opinion_modifier = {
+					target = FROM
+					modifier = large_increase
+				}
+			}
+		}
+	}
+}
+
+#mauras new book
+country_event = {
+	id = ww1_france.534
+	title = ww1_france.534.t
+	desc = ww1_france.534.d
+	trigger = {
+		date > 1910.11.11
+		tag = FRA
+		NOT = {
+			has_country_flag = charles_maurras_writing_1910
+		}
+	}
+	fire_only_once = yes
+	picture = GFX_charles_maurras_writing
+	immediate = {
+		hidden_effect = {
+			set_country_flag = charles_maurras_writing_1910
+		}
+	}
+	option = {
+		name = ww1_france.534.a
+		trigger = {
+			has_completed_focus = FRA_ww1_rally_the_piou_piou
+		}
+		add_war_support = 0.02
+		add_popularity = {
+			ideology = neutrality
+			popularity = 0.02
+		}
+	}
+	option = {
+		name = ww1_france.534.b
+		trigger = {
+			NOT = {
+				has_completed_focus = FRA_ww1_rally_the_piou_piou
+			}
+		}
+		add_war_support = 0.02
+		add_popularity = {
+			ideology = neutrality
+			popularity = 0.02
+		}
+	}
+}
+
+#France conducted 1912 bombing experiments
+country_event = {
+	id = ww1_france.535
+	title = ww1_france.535.t
+	desc = ww1_france.535.d
+	is_triggered_only = yes
+	fire_only_once = yes
+	picture = GFX_bleriot_ix_plane
+	option = {
+		name = ww1_france.535.a
+		add_war_support = 0.01
+	}
+}
+
+#rebels complete the first focus of the rebel tree
+country_event = {
+	id = ww1_france.536
+	trigger = {
+		tag = IND
+		is_subject_of = FRA
+		OR = {
+			country_exists = YUN
+			has_global_flag = QIN_first_second_up
+		}
+		NOT = {
+			has_country_flag = IND_create_hideout_in_yunnan
+		}
+		NOT = {
+			has_completed_focus = IND_create_hideout_in_yunnan
+		}
+		NOT = {
+			has_country_flag = IND_playing_as_separatists
+		}
+	}
+	mean_time_to_happen = {
+		days = 6
+	}
+	fire_only_once = no
+	hidden = yes
+	immediate = {
+		set_country_flag = IND_create_hideout_in_yunnan
+		set_country_flag = {
+			flag = IND_create_hideout_in_yunnan_focus
+			days = 70
+			value = 1
+		}
+		if = {
+			limit = {
+				NOT = {
+					has_shine_effect_on_focus = IND_create_hideout_in_yunnan
+				}
+			}
+			activate_shine_on_focus = IND_create_hideout_in_yunnan
+			else = {
+				deactivate_shine_on_focus = IND_create_hideout_in_yunnan
+			}
+		}
+	}
+}
+
+#first rebel focus is completed
+country_event = {
+	id = ww1_france.537
+	trigger = {
+		tag = IND
+		has_country_flag = IND_create_hideout_in_yunnan
+		NOT = {
+			has_country_flag = IND_create_hideout_in_yunnan_focus
+		}
+		NOT = {
+			has_completed_focus = IND_create_hideout_in_yunnan
+		}
+	}
+	mean_time_to_happen = {
+		days = 6
+	}
+	fire_only_once = no
+	hidden = yes
+	immediate = {
+		complete_national_focus = IND_create_hideout_in_yunnan
+		if = {
+			limit = {
+				NOT = {
+					has_shine_effect_on_focus = IND_create_hideout_in_yunnan
+				}
+			}
+			activate_shine_on_focus = IND_create_hideout_in_yunnan
+			else = {
+				deactivate_shine_on_focus = IND_create_hideout_in_yunnan
+			}
+		}
+	}
+}
+
+#sun yat sen writing are converted into vietnamese
+country_event = {
+	id = ww1_france.538
+	title = ww1_france.538.t
+	desc = ww1_france.538.d
+	is_triggered_only = yes
+	fire_only_once = no
+	picture = GFX_report_event_chi_yuan_cabinet
+	option = {
+		name = ww1_france.538.a
+		if = {
+			limit = {
+				tag = IND
+			}
+			IND = {
+				add_stability = -0.05
+				add_popularity = {
+					ideology = neutrality
+					popularity = -0.05
+				}
+			}
+			else = {
+				effect_tooltip = {
+					IND = {
+						add_stability = -0.05
+						add_popularity = {
+							ideology = neutrality
+							popularity = -0.05
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+#rebels are agitating the country after xinhai revolution
+country_event = {
+	id = ww1_france.539
+	trigger = {
+		tag = IND
+		is_subject_of = FRA
+		OR = {
+			country_exists = CHI
+			has_global_flag = QIN_flag_first_xinhai
+		}
+		NOT = {
+			has_country_flag = IND_translate_sun_yat_sen_writing
+		}
+		has_completed_focus = IND_create_hideout_in_yunnan
+		NOT = {
+			has_completed_focus = IND_translate_sun_yat_sen_writing
+		}
+		NOT = {
+			has_country_flag = IND_playing_as_separatists
+		}
+	}
+	mean_time_to_happen = {
+		days = 6
+	}
+	fire_only_once = no
+	hidden = yes
+	immediate = {
+		set_country_flag = IND_translate_sun_yat_sen_writing
+		set_country_flag = {
+			flag = IND_translate_sun_yat_sen_writing_focus
+			days = 70
+			value = 1
+		}
+		if = {
+			limit = {
+				NOT = {
+					has_shine_effect_on_focus = IND_translate_sun_yat_sen_writing
+				}
+			}
+			activate_shine_on_focus = IND_translate_sun_yat_sen_writing
+			else = {
+				deactivate_shine_on_focus = IND_translate_sun_yat_sen_writing
+			}
+		}
+	}
+}
+
+#second rebel focus is completed
+country_event = {
+	id = ww1_france.540
+	trigger = {
+		tag = IND
+		has_country_flag = IND_translate_sun_yat_sen_writing
+		NOT = {
+			has_country_flag = IND_translate_sun_yat_sen_writing_focus
+		}
+		NOT = {
+			has_completed_focus = IND_translate_sun_yat_sen_writing
+		}
+	}
+	mean_time_to_happen = {
+		days = 6
+	}
+	fire_only_once = no
+	hidden = yes
+	immediate = {
+		complete_national_focus = IND_translate_sun_yat_sen_writing
+		if = {
+			limit = {
+				NOT = {
+					has_shine_effect_on_focus = IND_translate_sun_yat_sen_writing
+				}
+			}
+			activate_shine_on_focus = IND_translate_sun_yat_sen_writing
+			else = {
+				deactivate_shine_on_focus = IND_translate_sun_yat_sen_writing
+			}
+		}
+	}
+}
+
+#attack from minorties in northern tonkin
+country_event = {
+	id = ww1_france.541
+	title = ww1_france.541.t
+	desc = ww1_france.541.d
+	is_triggered_only = yes
+	fire_only_once = yes
+	picture = GFX_riots_in_france
+	option = {
+		name = ww1_france.541.a
+		if = {
+			limit = {
+				tag = IND
+			}
+			IND = {
+				add_stability = -0.05
+				add_popularity = {
+					ideology = neutrality
+					popularity = -0.05
+				}
+			}
+			else = {
+				effect_tooltip = {
+					IND = {
+						add_stability = -0.05
+						add_popularity = {
+							ideology = neutrality
+							popularity = -0.05
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+#minorities attack the northern front
+country_event = {
+	id = ww1_france.542
+	trigger = {
+		tag = IND
+		is_subject_of = FRA
+		NOT = {
+			has_country_flag = IND_agitate_yao_and_hmong_minorities
+		}
+		has_completed_focus = IND_translate_sun_yat_sen_writing
+		NOT = {
+			has_completed_focus = IND_agitate_yao_and_hmong_minorities
+		}
+		NOT = {
+			has_country_flag = IND_playing_as_separatists
+		}
+	}
+	mean_time_to_happen = {
+		days = 6
+	}
+	fire_only_once = no
+	hidden = yes
+	immediate = {
+		set_country_flag = IND_agitate_yao_and_hmong_minorities
+		set_country_flag = {
+			flag = IND_agitate_yao_and_hmong_minorities_focus
+			days = 70
+			value = 1
+		}
+		if = {
+			limit = {
+				NOT = {
+					has_shine_effect_on_focus = IND_agitate_yao_and_hmong_minorities
+				}
+			}
+			activate_shine_on_focus = IND_agitate_yao_and_hmong_minorities
+			else = {
+				deactivate_shine_on_focus = IND_agitate_yao_and_hmong_minorities
+			}
+		}
+	}
+}
+
+#third rebel focus is completed
+country_event = {
+	id = ww1_france.543
+	trigger = {
+		tag = IND
+		has_country_flag = IND_agitate_yao_and_hmong_minorities
+		NOT = {
+			has_country_flag = IND_agitate_yao_and_hmong_minorities_focus
+		}
+		NOT = {
+			has_completed_focus = IND_agitate_yao_and_hmong_minorities
+		}
+	}
+	mean_time_to_happen = {
+		days = 6
+	}
+	fire_only_once = no
+	hidden = yes
+	immediate = {
+		complete_national_focus = IND_agitate_yao_and_hmong_minorities
+		if = {
+			limit = {
+				NOT = {
+					has_shine_effect_on_focus = IND_agitate_yao_and_hmong_minorities
+				}
+			}
+			activate_shine_on_focus = IND_agitate_yao_and_hmong_minorities
+			else = {
+				deactivate_shine_on_focus = IND_agitate_yao_and_hmong_minorities
+			}
+		}
+	}
+}
+
+#IND_quand_phuc_hoi formation
+country_event = {
+	id = ww1_france.544
+	trigger = {
+		tag = IND
+		is_subject_of = FRA
+		NOT = {
+			has_country_flag = IND_quand_phuc_hoi
+		}
+		has_completed_focus = IND_translate_sun_yat_sen_writing
+		has_completed_focus = IND_agitate_yao_and_hmong_minorities
+		NOT = {
+			has_completed_focus = IND_quand_phuc_hoi
+		}
+		NOT = {
+			has_country_flag = IND_playing_as_separatists
+		}
+	}
+	mean_time_to_happen = {
+		days = 6
+	}
+	fire_only_once = no
+	hidden = yes
+	immediate = {
+		set_country_flag = IND_quand_phuc_hoi
+		set_country_flag = {
+			flag = IND_quand_phuc_hoi_focus
+			days = 70
+			value = 1
+		}
+		if = {
+			limit = {
+				NOT = {
+					has_shine_effect_on_focus = IND_quand_phuc_hoi
+				}
+			}
+			activate_shine_on_focus = IND_quand_phuc_hoi
+			else = {
+				deactivate_shine_on_focus = IND_quand_phuc_hoi
+			}
+		}
+	}
+}
+
+#fourth rebel focus is completed
+country_event = {
+	id = ww1_france.545
+	trigger = {
+		tag = IND
+		has_country_flag = IND_quand_phuc_hoi
+		NOT = {
+			has_country_flag = IND_quand_phuc_hoi_focus
+		}
+		NOT = {
+			has_completed_focus = IND_quand_phuc_hoi
+		}
+	}
+	mean_time_to_happen = {
+		days = 6
+	}
+	fire_only_once = no
+	hidden = yes
+	immediate = {
+		complete_national_focus = IND_quand_phuc_hoi
+		if = {
+			limit = {
+				NOT = {
+					has_shine_effect_on_focus = IND_quand_phuc_hoi
+				}
+			}
+			activate_shine_on_focus = IND_quand_phuc_hoi
+			else = {
+				deactivate_shine_on_focus = IND_quand_phuc_hoi
+			}
+		}
+	}
+}
+
+#AI can do resistance decisions regulary
+country_event = {
+	id = ww1_france.546
+	trigger = {
+		tag = IND
+		has_completed_focus = IND_create_hideout_in_yunnan
+		NOT = {
+			has_country_flag = IND_playing_as_separatists
+			has_country_flag = VIT_is_doing_something
+		}
+	}
+	mean_time_to_happen = {
+		days = 14
+	}
+	fire_only_once = no
+	hidden = yes
+	immediate = {
+		if = {
+			limit = {
+				VIN = {
+					has_equipment = {
+						infantry_equipment < 500
+					}
+				}
+			}
+			activate_decision = IND_gather_guns
+			else = {
+				random_list = {
+					70 = {
+						activate_decision = IND_gather_guns
+					}
+					30 = {
+						activate_decision = IND_prepare_equipment
+					}
+					20 = {
+						activate_decision = IND_train_partisans
+					}
+				}
+			}
+		}
+	}
+}
+
+#IND_bases_in_guangxi AI will now start the influence war
+country_event = {
+	id = ww1_france.547
+	trigger = {
+		tag = IND
+		is_subject_of = FRA
+		NOT = {
+			has_country_flag = IND_bases_in_guangxi
+		}
+		has_completed_focus = IND_quand_phuc_hoi
+		NOT = {
+			has_completed_focus = IND_bases_in_guangxi
+		}
+		NOT = {
+			has_country_flag = IND_playing_as_separatists
+		}
+	}
+	mean_time_to_happen = {
+		days = 6
+	}
+	fire_only_once = no
+	hidden = yes
+	immediate = {
+		set_country_flag = IND_bases_in_guangxi
+		set_country_flag = {
+			flag = IND_bases_in_guangxi_focus
+			days = 70
+			value = 1
+		}
+		if = {
+			limit = {
+				NOT = {
+					has_shine_effect_on_focus = IND_bases_in_guangxi
+				}
+			}
+			activate_shine_on_focus = IND_bases_in_guangxi
+			else = {
+				deactivate_shine_on_focus = IND_bases_in_guangxi
+			}
+		}
+	}
+}
+
+#fourth rebel focus is completed
+country_event = {
+	id = ww1_france.548
+	trigger = {
+		tag = IND
+		has_country_flag = IND_bases_in_guangxi
+		NOT = {
+			has_country_flag = IND_bases_in_guangxi_focus
+		}
+		NOT = {
+			has_completed_focus = IND_bases_in_guangxi
+		}
+	}
+	mean_time_to_happen = {
+		days = 6
+	}
+	fire_only_once = no
+	hidden = yes
+	immediate = {
+		complete_national_focus = IND_bases_in_guangxi
+		if = {
+			limit = {
+				NOT = {
+					has_shine_effect_on_focus = IND_bases_in_guangxi
+				}
+			}
+			activate_shine_on_focus = IND_bases_in_guangxi
+			else = {
+				deactivate_shine_on_focus = IND_bases_in_guangxi
+			}
+		}
+	}
+}
+
+#IND_raise_fonds_in_honkong
+country_event = {
+	id = ww1_france.549
+	trigger = {
+		tag = IND
+		is_subject_of = FRA
+		NOT = {
+			has_country_flag = IND_raise_fonds_in_honkong
+		}
+		has_completed_focus = IND_bases_in_guangxi
+		NOT = {
+			has_completed_focus = IND_raise_fonds_in_honkong
+		}
+		NOT = {
+			has_country_flag = IND_playing_as_separatists
+		}
+	}
+	mean_time_to_happen = {
+		days = 6
+	}
+	fire_only_once = no
+	hidden = yes
+	immediate = {
+		set_country_flag = IND_raise_fonds_in_honkong
+		set_country_flag = {
+			flag = IND_raise_fonds_in_honkong_focus
+			days = 70
+			value = 1
+		}
+		if = {
+			limit = {
+				NOT = {
+					has_shine_effect_on_focus = IND_raise_fonds_in_honkong
+				}
+			}
+			activate_shine_on_focus = IND_raise_fonds_in_honkong
+			else = {
+				deactivate_shine_on_focus = IND_raise_fonds_in_honkong
+			}
+		}
+	}
+}
+
+#sixth rebel focus is completed
+country_event = {
+	id = ww1_france.550
+	trigger = {
+		tag = IND
+		has_country_flag = IND_raise_fonds_in_honkong
+		NOT = {
+			has_country_flag = IND_raise_fonds_in_honkong_focus
+		}
+		NOT = {
+			has_completed_focus = IND_raise_fonds_in_honkong
+		}
+	}
+	mean_time_to_happen = {
+		days = 6
+	}
+	fire_only_once = no
+	hidden = yes
+	immediate = {
+		complete_national_focus = IND_raise_fonds_in_honkong
+		if = {
+			limit = {
+				NOT = {
+					has_shine_effect_on_focus = IND_raise_fonds_in_honkong
+				}
+			}
+			activate_shine_on_focus = IND_raise_fonds_in_honkong
+			else = {
+				deactivate_shine_on_focus = IND_raise_fonds_in_honkong
+			}
+		}
+	}
+}
+
+#IND_actions_in_laos 
+country_event = {
+	id = ww1_france.561
+	trigger = {
+		tag = IND
+		is_subject_of = FRA
+		NOT = {
+			has_country_flag = IND_actions_in_laos
+		}
+		has_completed_focus = IND_raise_fonds_in_honkong
+		NOT = {
+			has_completed_focus = IND_actions_in_laos
+		}
+		NOT = {
+			has_country_flag = IND_playing_as_separatists
+		}
+	}
+	mean_time_to_happen = {
+		days = 6
+	}
+	fire_only_once = no
+	hidden = yes
+	immediate = {
+		set_country_flag = IND_actions_in_laos
+		set_country_flag = {
+			flag = IND_actions_in_laos_focus
+			days = 70
+			value = 1
+		}
+		if = {
+			limit = {
+				NOT = {
+					has_shine_effect_on_focus = IND_actions_in_laos
+				}
+			}
+			activate_shine_on_focus = IND_actions_in_laos
+			else = {
+				deactivate_shine_on_focus = IND_actions_in_laos
+			}
+		}
+	}
+}
+
+#sixth 2 rebel focus is completed
+country_event = {
+	id = ww1_france.562
+	trigger = {
+		tag = IND
+		has_country_flag = IND_actions_in_laos
+		NOT = {
+			has_country_flag = IND_actions_in_laos_focus
+		}
+		NOT = {
+			has_completed_focus = IND_actions_in_laos
+		}
+	}
+	mean_time_to_happen = {
+		days = 6
+	}
+	fire_only_once = no
+	hidden = yes
+	immediate = {
+		complete_national_focus = IND_actions_in_laos
+		if = {
+			limit = {
+				NOT = {
+					has_shine_effect_on_focus = IND_actions_in_laos
+				}
+			}
+			activate_shine_on_focus = IND_actions_in_laos
+			else = {
+				deactivate_shine_on_focus = IND_actions_in_laos
+			}
+		}
+	}
+}
+
+#IND_ask_japanese_support 
+country_event = {
+	id = ww1_france.551
+	trigger = {
+		tag = IND
+		is_subject_of = FRA
+		NOT = {
+			has_country_flag = IND_ask_japanese_support
+		}
+		has_completed_focus = IND_actions_in_laos
+		NOT = {
+			has_completed_focus = IND_ask_japanese_support
+		}
+		NOT = {
+			has_country_flag = IND_playing_as_separatists
+		}
+	}
+	mean_time_to_happen = {
+		days = 6
+	}
+	fire_only_once = no
+	hidden = yes
+	immediate = {
+		set_country_flag = IND_ask_japanese_support
+		set_country_flag = {
+			flag = IND_ask_japanese_support_focus
+			days = 70
+			value = 1
+		}
+		if = {
+			limit = {
+				NOT = {
+					has_shine_effect_on_focus = IND_ask_japanese_support
+				}
+			}
+			activate_shine_on_focus = IND_ask_japanese_support
+			else = {
+				deactivate_shine_on_focus = IND_ask_japanese_support
+			}
+		}
+	}
+}
+
+#seventh rebel focus is completed
+country_event = {
+	id = ww1_france.552
+	trigger = {
+		tag = IND
+		has_country_flag = IND_ask_japanese_support
+		NOT = {
+			has_country_flag = IND_ask_japanese_support_focus
+		}
+		NOT = {
+			has_completed_focus = IND_ask_japanese_support
+		}
+	}
+	mean_time_to_happen = {
+		days = 6
+	}
+	fire_only_once = no
+	hidden = yes
+	immediate = {
+		complete_national_focus = IND_ask_japanese_support
+		if = {
+			limit = {
+				NOT = {
+					has_shine_effect_on_focus = IND_ask_japanese_support
+				}
+			}
+			activate_shine_on_focus = IND_ask_japanese_support
+			else = {
+				deactivate_shine_on_focus = IND_ask_japanese_support
+			}
+		}
+	}
+}
+
+#Long Jiguang intervention : arrestation of Phan Bội Châu
+country_event = {
+	id = ww1_france.553
+	title = ww1_france.553.t
+	desc = ww1_france.553.d
+	is_triggered_only = yes
+	fire_only_once = no
+	picture = GFX_report_event_long_jiguang
+	option = {
+		name = ww1_france.553.a
+		if = {
+			limit = {
+				tag = IND
+			}
+			IND = {
+				add_stability = 0.10
+				set_country_flag = long_jiguang_intervention
+				set_country_flag = IND_end_of_nationalist_resistance
+			}
+			hidden_effect = {
+				VIN = {
+					set_country_flag = long_jiguang_intervention
+					set_country_flag = IND_end_of_nationalist_resistance
+				}
+			}
+			else = {
+				effect_tooltip = {
+					IND = {
+						add_stability = 0.10
+					}
+				}
+			}
+		}
+		custom_effect_tooltip = IND_end_of_nationalist_resistance
+		hidden_effect = {
+			every_owned_state = {
+				if = {
+					limit = {
+						has_dynamic_modifier = {
+							modifier = IND_low_nationalist_agitation_modifier
+						}
+					}
+					remove_dynamic_modifier = {
+						modifier = IND_low_nationalist_agitation_modifier
+					}
+				}
+				if = {
+					limit = {
+						has_dynamic_modifier = {
+							modifier = IND_medium_nationalist_agitation_modifier
+						}
+					}
+					remove_dynamic_modifier = {
+						modifier = IND_medium_nationalist_agitation_modifier
+					}
+				}
+				if = {
+					limit = {
+						has_dynamic_modifier = {
+							modifier = IND_high_nationalist_agitation_modifier
+						}
+					}
+					remove_dynamic_modifier = {
+						modifier = IND_high_nationalist_agitation_modifier
+					}
+				}
+			}
+		}
+	}
+}
+
+#Nguyễn Thần Hiến has been captured in honkong
+
+#Vietnam want japanese support (japan will say no)
+country_event = {
+	id = ww1_france.554
+	title = ww1_france.554.t
+	desc = ww1_france.554.d
+	is_triggered_only = yes
+	fire_only_once = yes
+	picture = GFX_saigon_streets
+	option = {
+		name = ww1_france.554.a
+		add_political_power = -100
+		add_popularity = {
+			ideology = fascism
+			popularity = 0.05
+		}
+		add_war_support = 0.05
+		VIN = {
+			add_opinion_modifier = {
+				target = JAP
+				modifier = large_increase
+			}
+		}
+		custom_effect_tooltip = JAP_FRA_may_discover_this
+		FROM = {
+			country_event = {
+				id = ww1_france.555
+				days = 2
+			}
+		}
+		ai_chance = {
+			factor = 100
+			modifier = {
+				is_historical_focus_on = yes
+				NOT = {
+					has_game_rule = {
+						rule = IND_ai_behavior
+						option = IND_VIETNAMESE_REVOLUTION
+					}
+				}
+				factor = 0
+			}
+		}
+	}
+	option = {
+		name = ww1_france.554.b
+		custom_effect_tooltip = historical_tt
+		add_stability = 0.02
+		VIN = {
+			add_opinion_modifier = {
+				target = JAP
+				modifier = medium_decrease
+			}
+		}
+		FROM = {
+			country_event = {
+				id = ww1_france.556
+				days = 2
+			}
+		}
+		ai_chance = {
+			factor = 100
+			modifier = {
+				has_game_rule = {
+					rule = IND_ai_behavior
+					option = IND_VIETNAMESE_REVOLUTION
+				}
+				factor = 0
+			}
+		}
+	}
+}
+#japan accepted (ahistorical)
+country_event = {
+	id = ww1_france.555
+	title = ww1_france.555.t
+	desc = ww1_france.555.d
+	is_triggered_only = yes
+	fire_only_once = yes
+	picture = GFX_saigon_streets
+	option = {
+		name = ww1_france.555.a
+		#YES ?!
+		custom_effect_tooltip = unlock_focus_return_to_japan
+		set_country_flag = JAP_support_separatism
+		VIN = {
+			set_country_flag = JAP_support_separatism
+			add_war_support = 0.15
+			add_manpower = 15000
+		}
+	}
+}
+
+#japan refused (historical)
+country_event = {
+	id = ww1_france.556
+	title = ww1_france.556.t
+	desc = ww1_france.556.d
+	is_triggered_only = yes
+	fire_only_once = yes
+	picture = GFX_saigon_streets
+	option = {
+		name = ww1_france.556.a
+		#YES ?!
+		VIN = {
+			add_war_support = -0.05
+		}
+	}
+}
+
+#IND_oppose_phan_chau_trinh historical they were opposed
+country_event = {
+	id = ww1_france.557
+	trigger = {
+		tag = IND
+		is_subject_of = FRA
+		NOT = {
+			has_country_flag = IND_oppose_phan_chau_trinh
+		}
+		has_completed_focus = IND_ask_japanese_support
+		NOT = {
+			has_completed_focus = IND_oppose_phan_chau_trinh
+		}
+		NOT = {
+			has_country_flag = IND_playing_as_separatists
+		}
+	}
+	mean_time_to_happen = {
+		days = 6
+	}
+	fire_only_once = no
+	hidden = yes
+	immediate = {
+		set_country_flag = IND_oppose_phan_chau_trinh
+		set_country_flag = {
+			flag = IND_oppose_phan_chau_trinh_focus
+			days = 70
+			value = 1
+		}
+		if = {
+			limit = {
+				NOT = {
+					has_shine_effect_on_focus = IND_oppose_phan_chau_trinh
+				}
+			}
+			activate_shine_on_focus = IND_oppose_phan_chau_trinh
+			else = {
+				deactivate_shine_on_focus = IND_oppose_phan_chau_trinh
+			}
+		}
+	}
+}
+
+#eighth rebel focus is completed
+country_event = {
+	id = ww1_france.558
+	trigger = {
+		tag = IND
+		has_country_flag = IND_oppose_phan_chau_trinh
+		NOT = {
+			has_country_flag = IND_oppose_phan_chau_trinh_focus
+		}
+		NOT = {
+			has_completed_focus = IND_oppose_phan_chau_trinh
+		}
+	}
+	mean_time_to_happen = {
+		days = 6
+	}
+	fire_only_once = no
+	hidden = yes
+	immediate = {
+		complete_national_focus = IND_oppose_phan_chau_trinh
+		if = {
+			limit = {
+				NOT = {
+					has_shine_effect_on_focus = IND_oppose_phan_chau_trinh
+				}
+			}
+			activate_shine_on_focus = IND_oppose_phan_chau_trinh
+			else = {
+				deactivate_shine_on_focus = IND_oppose_phan_chau_trinh
+			}
+		}
+	}
+}
+
+#IND_installation_in_china last focus before china arrest resistance in its territory
+country_event = {
+	id = ww1_france.559
+	trigger = {
+		tag = IND
+		is_subject_of = FRA
+		NOT = {
+			has_country_flag = IND_installation_in_china
+		}
+		has_completed_focus = IND_oppose_phan_chau_trinh
+		NOT = {
+			has_completed_focus = IND_installation_in_china
+		}
+		NOT = {
+			has_country_flag = IND_playing_as_separatists
+		}
+		NOT = {
+			has_game_rule = {
+				rule = IND_ai_behavior
+				option = IND_VIETNAMESE_REVOLUTION
+			}
+		}
+	}
+	mean_time_to_happen = {
+		days = 6
+	}
+	fire_only_once = no
+	hidden = yes
+	immediate = {
+		set_country_flag = IND_installation_in_china
+		set_country_flag = {
+			flag = IND_installation_in_china_focus
+			days = 70
+			value = 1
+		}
+		if = {
+			limit = {
+				NOT = {
+					has_shine_effect_on_focus = IND_installation_in_china
+				}
+			}
+			activate_shine_on_focus = IND_installation_in_china
+			else = {
+				deactivate_shine_on_focus = IND_installation_in_china
+			}
+		}
+	}
+}
+
+#nineth rebel focus is completed
+country_event = {
+	id = ww1_france.560
+	trigger = {
+		tag = IND
+		has_country_flag = IND_installation_in_china
+		NOT = {
+			has_country_flag = IND_installation_in_china_focus
+		}
+		NOT = {
+			has_completed_focus = IND_installation_in_china
+		}
+	}
+	mean_time_to_happen = {
+		days = 6
+	}
+	fire_only_once = no
+	hidden = yes
+	immediate = {
+		complete_national_focus = IND_installation_in_china
+		if = {
+			limit = {
+				NOT = {
+					has_shine_effect_on_focus = IND_installation_in_china
+				}
+			}
+			activate_shine_on_focus = IND_installation_in_china
+			else = {
+				deactivate_shine_on_focus = IND_installation_in_china
+			}
+		}
+	}
+}
+
+#Philippine police arrest Phan Bội Châu
+country_event = {
+	id = ww1_france.563
+	title = ww1_france.563.t
+	desc = ww1_france.563.d
+	is_triggered_only = yes
+	fire_only_once = yes
+	picture = GFX_saigon_streets
+	option = {
+		name = ww1_france.563.a
+		if = {
+			limit = {
+				tag = IND
+			}
+			IND = {
+				add_stability = 0.10
+				set_country_flag = philippine_intervention
+				set_country_flag = IND_end_of_nationalist_resistance
+			}
+			hidden_effect = {
+				VIN = {
+					set_country_flag = philippine_intervention
+					set_country_flag = IND_end_of_nationalist_resistance
+				}
+			}
+			else = {
+				effect_tooltip = {
+					IND = {
+						add_stability = 0.10
+					}
+				}
+			}
+		}
+		custom_effect_tooltip = IND_end_of_nationalist_resistance
+	}
+}
+
+#Phan Bội Châu ask for german support
+country_event = {
+	id = ww1_france.564
+	title = ww1_france.564.t
+	desc = ww1_france.564.d
+	is_triggered_only = yes
+	fire_only_once = yes
+	picture = GFX_saigon_streets
+	option = {
+		name = ww1_france.564.a
+		add_political_power = -100
+		VIN = {
+			effect_tooltip = {
+				add_equipment_to_stockpile = {
+					type = infantry_equipment_0
+					amount = 2500
+					producer = GER
+				}
+				add_equipment_to_stockpile = {
+					type = support_equipment
+					amount = 500
+					producer = GER
+				}
+				add_war_support = 0.2
+				add_manpower = 75000
+				add_opinion_modifier = {
+					target = GER
+					modifier = large_increase
+				}
+			}
+		}
+		FROM = {
+			country_event = {
+				id = ww1_france.565
+				days = 2
+			}
+		}
+		ai_chance = {
+			factor = 100
+		}
+	}
+	option = {
+		name = ww1_france.564.b
+		VIN = {
+			add_opinion_modifier = {
+				target = GER
+				modifier = medium_decrease
+			}
+		}
+		FROM = {
+			country_event = {
+				id = ww1_france.566
+				days = 2
+			}
+		}
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+#germany accepts
+country_event = {
+	id = ww1_france.565
+	title = ww1_france.565.t
+	desc = ww1_france.565.d
+	is_triggered_only = yes
+	fire_only_once = yes
+	picture = GFX_saigon_streets
+	option = {
+		name = ww1_france.565.a
+		VIN = {
+			add_equipment_to_stockpile = {
+				type = infantry_equipment_0
+				amount = 2500
+				producer = GER
+			}
+			add_equipment_to_stockpile = {
+				type = support_equipment
+				amount = 500
+				producer = GER
+			}
+			add_war_support = 0.2
+			add_manpower = 75000
+			add_opinion_modifier = {
+				target = GER
+				modifier = large_increase
+			}
+		}
+	}
+}
+
+#germany refused
+country_event = {
+	id = ww1_france.566
+	title = ww1_france.566.t
+	desc = ww1_france.566.d
+	is_triggered_only = yes
+	fire_only_once = yes
+	picture = GFX_saigon_streets
+	option = {
+		name = ww1_france.566.a
+		VIN = {
+			add_opinion_modifier = {
+				target = GER
+				modifier = large_decrease
+			}
+		}
+	}
+}
+
+#Phan Bội Châu ask for Siamese support
+country_event = {
+	id = ww1_france.567
+	title = ww1_france.567.t
+	desc = ww1_france.567.d
+	is_triggered_only = yes
+	fire_only_once = yes
+	picture = GFX_saigon_streets
+	option = {
+		name = ww1_france.567.a
+		add_political_power = -100
+		custom_effect_tooltip = IND_spawn_in_cambdoge_and_xianbouli
+		FROM = {
+			country_event = {
+				id = ww1_france.568
+				days = 2
+			}
+		}
+		ai_chance = {
+			factor = 100
+		}
+	}
+	option = {
+		name = ww1_france.567.b
+		VIN = {
+			add_opinion_modifier = {
+				target = GER
+				modifier = medium_decrease
+			}
+		}
+		FROM = {
+			country_event = {
+				id = ww1_france.569
+				days = 2
+			}
+		}
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+#Siam accepts
+country_event = {
+	id = ww1_france.568
+	title = ww1_france.568.t
+	desc = ww1_france.568.d
+	is_triggered_only = yes
+	fire_only_once = yes
+	picture = GFX_saigon_streets
+	option = {
+		name = ww1_france.568.a
+		set_country_flag = IND_resistance_from_siam
+		VIN = {
+			set_country_flag = IND_resistance_from_siam
+		}
+	}
+}
+
+#Siam refused
+country_event = {
+	id = ww1_france.569
+	title = ww1_france.569.t
+	desc = ww1_france.569.d
+	is_triggered_only = yes
+	fire_only_once = yes
+	picture = GFX_saigon_streets
+	option = {
+		name = ww1_france.569.a
+		VIN = {
+			add_opinion_modifier = {
+				target = GER
+				modifier = large_decrease
+			}
+		}
+	}
+}
+
+#revolt in indochina
+country_event = {
+	id = ww1_france.570
+	title = ww1_france.570.t
+	desc = ww1_france.570.d
+	is_triggered_only = yes
+	fire_only_once = yes
+	picture = GFX_saigon_streets
+	immediate = {
+		hidden_effect = {
+			VIN = {
+				division_template = {
+					name = "Partisans"	
+					division_names_group = VIN_INF_01
+					regiments = {
+						militia = { x = 0 y = 0 }
+						militia = { x = 0 y = 1 }
+						militia = { x = 0 y = 2 }
+					}
+					is_locked = yes
+				}
+			}
+			
+			every_controlled_state = {
+				limit = {
+					check_variable = { var = IND_resistance_level value = 1 compare = greater_than }
+				}
+				transfer_state_to = VIN
+			}
+			VIN = {
+				declare_war_on = {
+					target = IND
+					type = annex_everything
+				}
+			}
+			VIN = {
+				every_owned_state = {
+					create_unit = {
+						division = "division_template = \"Partisans\" start_experience_factor = 0.1 start_equipment_factor = 0.1"
+						owner = VIN
+						count = 2
+					}
+				}
+			}
+			if = {
+				limit = {
+					has_country_flag = IND_resistance_from_siam
+				}
+				VIN = {
+					give_military_access = SIA
+				}
+				SIA = {
+					give_military_access = VIN
+				}
+				819 = {
+					create_unit = {
+						division = "division_template = \"Partisans\" start_experience_factor = 0.1 start_equipment_factor = 0.1"
+						owner = VIN
+						allow_spawning_on_enemy_provs = yes
+					}
+				}
+				822 = {
+					create_unit = {
+						division = "division_template = \"Partisans\" start_experience_factor = 0.1 start_equipment_factor = 0.1"
+						owner = VIN
+						allow_spawning_on_enemy_provs = yes
+					}
+				}
+		}
+		
+		}
+	}
+	option = {
+		name = ww1_france.570.a
+		if = {
+			limit = {
+				is_ai = no
+			}
+			VIN = {
+				change_tag_from = IND
+			}
+		}
+	}
+	option = {
+		name = ww1_france.570.b
+		
+	}
+}
+
+
+#IND_return_to_japan ahistorical for successfull revolt
+country_event = {
+	id = ww1_france.571
+	trigger = {
+		tag = IND
+		is_subject_of = FRA
+		NOT = {
+			has_country_flag = IND_return_to_japan
+		}
+		has_completed_focus = IND_oppose_phan_chau_trinh
+		NOT = {
+			has_completed_focus = IND_return_to_japan
+		}
+		NOT = {
+			has_country_flag = IND_playing_as_separatists
+		}
+		has_game_rule = {
+			rule = IND_ai_behavior
+			option = IND_VIETNAMESE_REVOLUTION
+		}
+	}
+	mean_time_to_happen = {
+		days = 6
+	}
+	fire_only_once = no
+	hidden = yes
+	immediate = {
+		set_country_flag = IND_return_to_japan
+		set_country_flag = {
+			flag = IND_return_to_japan_focus
+			days = 70
+			value = 1
+		}
+		if = {
+			limit = {
+				NOT = {
+					has_shine_effect_on_focus = IND_return_to_japan
+				}
+			}
+			activate_shine_on_focus = IND_return_to_japan
+			else = {
+				deactivate_shine_on_focus = IND_return_to_japan
+			}
+		}
+	}
+}
+
+#ahistorical IND_return_to_japan
+country_event = {
+	id = ww1_france.572
+	trigger = {
+		tag = IND
+		has_country_flag = IND_return_to_japan
+		NOT = {
+			has_country_flag = IND_return_to_japan_focus
+		}
+		NOT = {
+			has_completed_focus = IND_return_to_japan
+		}
+	}
+	mean_time_to_happen = {
+		days = 6
+	}
+	fire_only_once = no
+	hidden = yes
+	immediate = {
+		complete_national_focus = IND_return_to_japan
+		if = {
+			limit = {
+				NOT = {
+					has_shine_effect_on_focus = IND_return_to_japan
+				}
+			}
+			activate_shine_on_focus = IND_return_to_japan
+			else = {
+				deactivate_shine_on_focus = IND_return_to_japan
+			}
+		}
+	}
+}
+
+#IND_ask_german_support ahistorical for successfull revolt
+country_event = {
+	id = ww1_france.573
+	trigger = {
+		tag = IND
+		is_subject_of = FRA
+		NOT = {
+			has_country_flag = IND_ask_german_support
+		}
+		has_completed_focus = IND_return_to_japan
+		NOT = {
+			has_completed_focus = IND_ask_german_support
+		}
+		NOT = {
+			has_country_flag = IND_playing_as_separatists
+		}
+		has_game_rule = {
+			rule = IND_ai_behavior
+			option = IND_VIETNAMESE_REVOLUTION
+		}
+		GER = {
+			is_major = yes
+			NOT = {
+				has_country_flag = great_war_loser
+			}
+		}
+	}
+	mean_time_to_happen = {
+		days = 6
+	}
+	fire_only_once = no
+	hidden = yes
+	immediate = {
+		set_country_flag = IND_ask_german_support
+		set_country_flag = {
+			flag = IND_ask_german_support_focus
+			days = 70
+			value = 1
+		}
+		if = {
+			limit = {
+				NOT = {
+					has_shine_effect_on_focus = IND_ask_german_support
+				}
+			}
+			activate_shine_on_focus = IND_ask_german_support
+			else = {
+				deactivate_shine_on_focus = IND_ask_german_support
+			}
+		}
+	}
+}
+
+#ahistorical IND_ask_german_support
+country_event = {
+	id = ww1_france.574
+	trigger = {
+		tag = IND
+		has_country_flag = IND_ask_german_support
+		NOT = {
+			has_country_flag = IND_ask_german_support_focus
+		}
+		NOT = {
+			has_completed_focus = IND_ask_german_support
+		}
+	}
+	mean_time_to_happen = {
+		days = 6
+	}
+	fire_only_once = no
+	hidden = yes
+	immediate = {
+		complete_national_focus = IND_ask_german_support
+		if = {
+			limit = {
+				NOT = {
+					has_shine_effect_on_focus = IND_ask_german_support
+				}
+			}
+			activate_shine_on_focus = IND_ask_german_support
+			else = {
+				deactivate_shine_on_focus = IND_ask_german_support
+			}
+		}
+	}
+}
+
+#IND_deal_with_siam ahistorical for successfull revolt
+country_event = {
+	id = ww1_france.575
+	trigger = {
+		tag = IND
+		is_subject_of = FRA
+		NOT = {
+			has_country_flag = IND_deal_with_siam
+		}
+		has_completed_focus = IND_ask_german_support
+		NOT = {
+			has_completed_focus = IND_deal_with_siam
+		}
+		NOT = {
+			has_country_flag = IND_playing_as_separatists
+		}
+		has_game_rule = {
+			rule = IND_ai_behavior
+			option = IND_VIETNAMESE_REVOLUTION
+		}
+		SIA = {
+			is_subject = no
+			NOT = {
+				has_country_flag = great_war_loser
+			}
+		}
+	}
+	mean_time_to_happen = {
+		days = 6
+	}
+	fire_only_once = no
+	hidden = yes
+	immediate = {
+		set_country_flag = IND_deal_with_siam
+		set_country_flag = {
+			flag = IND_deal_with_siam_focus
+			days = 70
+			value = 1
+		}
+		if = {
+			limit = {
+				NOT = {
+					has_shine_effect_on_focus = IND_deal_with_siam
+				}
+			}
+			activate_shine_on_focus = IND_deal_with_siam
+			else = {
+				deactivate_shine_on_focus = IND_deal_with_siam
+			}
+		}
+	}
+}
+
+#ahistorical IND_deal_with_siam
+country_event = {
+	id = ww1_france.576
+	trigger = {
+		tag = IND
+		has_country_flag = IND_deal_with_siam
+		NOT = {
+			has_country_flag = IND_deal_with_siam_focus
+		}
+		NOT = {
+			has_completed_focus = IND_deal_with_siam
+		}
+	}
+	mean_time_to_happen = {
+		days = 6
+	}
+	fire_only_once = no
+	hidden = yes
+	immediate = {
+		complete_national_focus = IND_deal_with_siam
+		if = {
+			limit = {
+				NOT = {
+					has_shine_effect_on_focus = IND_deal_with_siam
+				}
+			}
+			activate_shine_on_focus = IND_deal_with_siam
+			else = {
+				deactivate_shine_on_focus = IND_deal_with_siam
+			}
+		}
+	}
+}
+
+#IND_breaktrough_china ahistorical for successfull revolt
+country_event = {
+	id = ww1_france.577
+	trigger = {
+		tag = IND
+		is_subject_of = FRA
+		NOT = {
+			has_country_flag = IND_breaktrough_china
+		}
+		has_completed_focus = IND_deal_with_siam
+		NOT = {
+			has_completed_focus = IND_breaktrough_china
+		}
+		NOT = {
+			has_country_flag = IND_playing_as_separatists
+		}
+		has_game_rule = {
+			rule = IND_ai_behavior
+			option = IND_VIETNAMESE_REVOLUTION
+		}
+		VIN = {
+			has_equipment = { infantry_equipment > 999 }
+			has_manpower > 50000
+			has_war_support > 0.5
+		}
+		any_owned_state = {
+			custom_trigger_tooltip = {
+				check_variable = { var = IND_resistance_level value = 1 compare = greater_than }
+				tooltip = IND_level_2_resistance
+			}
+		}
+	}
+	mean_time_to_happen = {
+		days = 6
+	}
+	fire_only_once = no
+	hidden = yes
+	immediate = {
+		set_country_flag = IND_breaktrough_china
+		set_country_flag = {
+			flag = IND_breaktrough_china_focus
+			days = 70
+			value = 1
+		}
+		if = {
+			limit = {
+				NOT = {
+					has_shine_effect_on_focus = IND_breaktrough_china
+				}
+			}
+			activate_shine_on_focus = IND_breaktrough_china
+			else = {
+				deactivate_shine_on_focus = IND_breaktrough_china
+			}
+		}
+	}
+}
+
+#ahistorical IND_breaktrough_china
+country_event = {
+	id = ww1_france.578
+	trigger = {
+		tag = IND
+		has_country_flag = IND_breaktrough_china
+		NOT = {
+			has_country_flag = IND_breaktrough_china_focus
+		}
+		NOT = {
+			has_completed_focus = IND_breaktrough_china
+		}
+	}
+	mean_time_to_happen = {
+		days = 6
+	}
+	fire_only_once = no
+	hidden = yes
+	immediate = {
+		complete_national_focus = IND_breaktrough_china
+		if = {
+			limit = {
+				NOT = {
+					has_shine_effect_on_focus = IND_breaktrough_china
+				}
+			}
+			activate_shine_on_focus = IND_breaktrough_china
+			else = {
+				deactivate_shine_on_focus = IND_breaktrough_china
+			}
+		}
+	}
+}
+
+#French naval budget question
+country_event = {
+	id = ww1_france.579
+	title = ww1_france.579.t
+	desc = ww1_france.579.d
+	picture = GFX_dockyards_france
+	fire_only_once = yes
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.579.a	#balanced budget
+		custom_effect_tooltip = historical_tt
+		add_political_power = 25
+		ai_chance = {
+			factor = 80
+		}
+	}
+	option = {
+		name = ww1_france.579.b #increased budget
+		
+		add_ideas = FRA_excessive_marine_nationale_budget
+		far_left_left_center_hate = yes
+		ai_chance = {
+			factor = 20
+			modifier = {
+				is_historical_focus_on = yes
+				factor = 0
+			}
+		}
+	}
+}
+
+#conseil de guerre naval mission
+country_event = {
+	id = ww1_france.580
+	title = ww1_france.580.t
+	desc = ww1_france.580.d
+	picture = GFX_savoy_manoeuvers
+	fire_only_once = yes
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.580.a	#submarine innovation and such
+		14 = {
+			add_building_construction = {
+				type = naval_facility
+				level = 1
+				instant_build = yes
+				province = 3552
+			}
+		}
+		ai_chance = {
+			factor = 50
+		}
+	}
+	option = {
+		name = ww1_france.580.b #increase naval production
+		random_owned_controlled_state = {
+			limit = {
+				is_core_of = ROOT
+				is_coastal = yes
+			}
+			add_extra_state_shared_building_slots = 2
+			add_building_construction = {
+				type = dockyard
+				level = 2
+				instant_build = yes
+			}
+		}
+		ai_chance = {
+			factor = 50
+		}
+	}
+	option = {
+		name = ww1_france.580.c #advisors
+		navy_experience = 75
+		add_doctrine_cost_reduction = {
+			name = FRA_ww1_conseil_de_guerre_naval
+			category = naval_doctrine
+			cost_reduction = 0.5
+		}
+		ai_chance = {
+			factor = 25
+		}
+	}
+}
+
+#What happen when France release Algeria as autonomous region
+country_event = {
+	id = ww1_france.581
+	title = ww1_france.581.t
+	desc = ww1_france.581.d
+	picture = GFX_algeria_streets
+	fire_only_once = yes
+	is_triggered_only = yes
+	immediate = {
+		hidden_effect = {
+			ALG = {
+				country_event = {
+					id = ww1_france.582
+					days = 25
+				}
+			}
+		}
+	}
+	option = {
+		name = ww1_france.581.a
+		add_stability = 0.02
+	}
+	option = {
+		name = ww1_france.581.b
+		ALG = {
+			change_tag_from = FRA
+		}
+	}
+}
+
+#Formation of the Algerian force
+country_event = {
+	id = ww1_france.582
+	title = ww1_france.582.t
+	desc = ww1_france.582.d
+	picture = GFX_algeria_streets
+	fire_only_once = yes
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.582.a
+		division_template = {
+			name = "Division d'Infanterie Algérienne"	
+			division_names_group = FRA_INF_01
+			regiments = {
+				infantry = { x = 0 y = 0 }
+				infantry = { x = 0 y = 1 }
+				infantry = { x = 0 y = 2 }
+				infantry = { x = 0 y = 3 }
+				infantry = { x = 1 y = 0 }
+				infantry = { x = 1 y = 1 }
+				infantry = { x = 1 y = 2 }
+				infantry = { x = 1 y = 3 }
+				infantry = { x = 2 y = 0 }
+				infantry = { x = 2 y = 1 }
+				infantry = { x = 2 y = 2 }
+				infantry = { x = 2 y = 3 }
+				infantry = { x = 3 y = 0 }
+				infantry = { x = 3 y = 1 }
+				infantry = { x = 3 y = 2 }
+				infantry = { x = 3 y = 3 }
+				artillery_brigade = { x = 0 y = 4 }
+				cavalry = { x = 4 y = 0 }
+			}
+			priority = 1
+		}
+		459 = {
+			create_unit = {
+				division = "name = \"1ère Division D'Infanterie\" division_template = \"Division d'Infanterie Algérienne\" start_experience_factor = 0.5 start_equipment_factor = 0.7"
+				owner = ROOT
+			}
+			create_unit = {
+				division = "name = \"2ème Division D'Infanterie\" division_template = \"Division d'Infanterie Algérienne\" start_experience_factor = 0.5 start_equipment_factor = 0.7"
+				owner = ROOT
+			}
+			create_unit = {
+				division = "name = \"3ème Division D'Infanterie\" division_template = \"Division d'Infanterie Algérienne\" start_experience_factor = 0.5 start_equipment_factor = 0.7"
+				owner = ROOT
+			}
+		}
+	}
+}
+
+#autonomy for african governors
+country_event = {
+	id = ww1_france.583
+	title = ww1_france.583.t
+	desc = ww1_france.583.d
+	picture = GFX_algeria_streets
+	fire_only_once = yes
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.583.a
+		hidden_effect = {
+			create_AOF = yes
+			create_AEF = yes
+		}
+		effect_tooltip = {
+			release_autonomy = {
+				target = SEN
+				autonomy_state = autonomy_integrated_puppet
+			}
+			SEN = {
+				set_cosmetic_tag = AOF
+			}
+			release_autonomy = {
+				target = RCG
+				autonomy_state = autonomy_integrated_puppet
+			}
+			RCG = {
+				set_cosmetic_tag = AEF
+			}
+		}
+		if = {
+			limit = {
+				has_template = "Régiment de tirailleurs"
+			}
+			delete_unit_template_and_units = {
+				division_template = "Régiment de tirailleurs"
+				disband = yes
+			}
+			else = {
+				#smart player deleted/changed templates to save manpower and equipment, but im not so naive
+				custom_effect_tooltip = FRA_you_already_disbanded_african_army
+				add_equipment_to_stockpile = {
+					type = infantry_equipment
+					amount = -2500
+				}
+				add_equipment_to_stockpile = {
+					type = artillery_equipment
+					amount = -250
+				}
+			}
+		}
+	}
+}
+
+#Spain ask northern morocco
+country_event = {
+	id = ww1_france.584
+	title = ww1_france.584.t
+	desc = ww1_france.584.d
+	picture = GFX_algeria_streets
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.584.a
+		SPR = {
+			country_event = {
+				id = ww1_morocco.20
+				days = 2
+			}
+		}
+		ai_chance = {
+			factor = 100
+		}
+	}
+	option = {
+		name = ww1_france.584.b
+		add_political_power = -100
+		custom_effect_tooltip = FRA_this_might_break_cartagena_treaty
+		SPR = {
+			country_event = {
+				id = ww1_france.585
+				days = 2
+			}
+		}
+		ai_chance = {
+			factor = 0
+		}
+	}
+}
+
+#France refused!
+country_event = {
+	id = ww1_france.585
+	title = ww1_france.585.t
+	desc = ww1_france.585.d
+	picture = GFX_algeria_streets
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.585.a
+		#break cartagena pact
+		remove_ideas = SPR_pact_of_cartagena_1907
+		add_war_support = 0.05
+		every_state = {
+			limit = {
+				OR = {
+					is_core_of = MOR
+					is_core_of = RMO #moroccan resistance
+				}
+			}
+			add_claim_by = SPR
+		}
+		every_country = {
+			limit = {
+				OR = {
+					tag = FRA
+					tag = ENG
+				}
+			}
+			country_event = {
+				id = ww1_france.586
+				days = 2
+			}
+		}
+		trigger ={
+			has_idea = SPR_pact_of_cartagena_1907
+		}
+	}
+	option = {
+		name = ww1_france.585.b
+		#peace
+		add_political_power = -50
+		add_war_support = -0.05
+	}
+}
+
+#france and uk are informed spain retire from cartagena treaty
+country_event = {
+	id = ww1_france.586
+	title = ww1_france.586.t
+	desc = ww1_france.586.d
+	picture = GFX_algeria_streets
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.586.a
+		effect_tooltip = {
+			SPR = {
+				remove_ideas = SPR_pact_of_cartagena_1907
+			}
+			every_state = {
+				limit = {
+					is_core_of = MOR
+				}
+				add_claim_by = SPR
+			}
+		}
+	}
+}
+
+#Spain called to help France/Britain, from Cartagena treaty
+country_event = {
+	id = ww1_france.587
+	title = ww1_france.587.t
+	desc = ww1_france.587.d
+	picture = GFX_battleship_liberte_class
+	immediate = {
+		set_country_flag = called_by_cartagena_pact
+	}
+	mean_time_to_happen = {
+		days = 3
+	}
+	trigger = {
+		tag = SPR
+		SPR = {
+			has_idea = SPR_pact_of_cartagena_1907
+			NOT = {
+				has_war_with = FRA
+				has_war_with = ENG
+				is_in_faction_with = AUS
+				is_in_faction_with = ITA
+			}
+			has_civil_war = no
+			has_capitulated = no
+			NOT = {
+				has_country_flag = called_by_cartagena_pact
+			}
+		}
+		NOT = {
+			FRA = {
+				OR = {
+					is_in_faction_with = AUS
+					is_in_faction_with = ITA
+				}
+			}
+			ENG = {
+				OR = {
+					is_in_faction_with = AUS
+					is_in_faction_with = ITA
+				}
+			}			
+		}
+		OR = {
+			FRA = {
+				has_war_with = AUS
+				has_war_with = ITA
+				NOT = {
+					has_war_with = ENG
+				}	
+			}
+			ENG = {
+				has_war_with = AUS
+				has_war_with = ITA
+				NOT = {
+					has_war_with = FRA
+				}
+			}
+		}	
+	}
+	option = {
+		name = ww1_france.587.a
+		#yeah we join
+		if = {
+			limit = {
+				FRA = {
+					has_war_with = AUS
+					has_war_with = ITA
+				}	
+			}
+			add_to_war = {
+				targeted_alliance = FRA
+				enemy = AUS
+			}
+			else = {
+				add_to_war = {
+					targeted_alliance = ENG
+					enemy = AUS
+				}
+			}
+		}
+		if = {
+			limit = {
+				has_global_flag = great_war
+			}
+			news_event = ww1_france.589 #so everyone will know what happened
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+				surrender_progress > 0.1
+			}
+		}
+	}
+	option = {
+		name = ww1_france.587.b
+		remove_ideas = SPR_pact_of_cartagena_1907
+		every_other_country = {
+			limit = {
+				OR = {
+					tag = FRA
+					tag = ENG
+				}
+				has_war_with = AUS
+				has_war_with = ITA
+				NOT = {
+					has_war_with = ROOT
+				}
+			}
+			add_opinion_modifier = {
+				modifier = faction_traitor
+				target = ROOT
+				days = 365
+			}
+		
+			add_opinion_modifier = {
+				modifier = faction_traitor_trade
+				target = ROOT
+				days = 365
+			}
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				add = 10
+				surrender_progress > 0.1
+			}
+		}
+	}
+}
+
+#France/Britain called to help Spain, from Cartagena treaty
+country_event = {
+	id = ww1_france.588
+	title = ww1_france.587.t
+	desc = ww1_france.588.d
+	picture = GFX_battleship_liberte_class
+	immediate = {
+		set_country_flag = called_by_cartagena_pact
+	}
+	mean_time_to_happen = {
+		days = 3
+	}
+	trigger = {
+		OR = {
+			tag = FRA
+			tag = ENG
+		}	
+		NOT = {
+			has_war_with = SPR
+			has_war_with = FRA
+			has_war_with = ENG
+			is_in_faction_with = AUS
+			is_in_faction_with = ITA
+		}
+		NOT = {
+			has_country_flag = called_by_cartagena_pact
+		}
+		is_subject = no
+		has_civil_war = no
+		has_capitulated = no
+		SPR = {
+			has_idea = SPR_pact_of_cartagena_1907
+			has_war_with = AUS
+			has_war_with = ITA			
+		}
+	}
+	option = {
+		name = ww1_france.587.a
+		#yeah we join
+		add_to_war = {
+			targeted_alliance = SPR
+			enemy = AUS
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+				surrender_progress > 0.1
+			}
+		}
+	}
+	option = {
+		name = ww1_france.587.b
+		SPR = {
+			remove_ideas = SPR_pact_of_cartagena_1907
+		}
+		every_other_country = {
+			limit = {
+				OR = {
+					tag = FRA
+					tag = ENG
+					tag = SPR
+				}
+				has_war_with = AUS
+				has_war_with = ITA
+				NOT = {
+					has_war_with = ROOT
+				}
+			}
+			add_opinion_modifier = {
+				modifier = faction_traitor
+				target = ROOT
+				days = 365
+			}
+		
+			add_opinion_modifier = {
+				modifier = faction_traitor_trade
+				target = ROOT
+				days = 365
+			}
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				add = 10
+				surrender_progress > 0.1
+			}
+		}
+	}
+}
+
+#Spain join great war due to cartagena pact
+news_event = {
+	id = ww1_france.589
+	title = ww1_france.589.t
+	desc = ww1_france.589.d
+	picture = GFX_news_event_espana_class_battleship
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.589.a
+		trigger = {
+			OR = {
+				tag = SPR
+				has_war_together_with = SPR
+			}
+			
+		}
+	}
+	option = {
+		name = ww1_france.589.b
+		trigger = {
+			has_war_with = SPR
+		}
+	}
+	option = {
+		name = ww1_france.589.c
+		trigger = {
+			NOT = {
+				tag = SPR
+				has_war_with = SPR
+				has_war_together_with = SPR
+			}
+		}
+	}
+}
+
+#French defeat, but after Russian revolution. 
+country_event = {
+	title = ww1_france.590.t
+	desc = ww1_france.590.d
+	id = ww1_france.590
+	picture = GFX_report_event_german_parade_paris
+	is_triggered_only = yes
+	option = {
+		name =  ww1_france.590.a	# we must collaborate with the germans - caillaux governement
+		FRA_french_surrender_effect = yes
 	}
 }

@@ -13,7 +13,10 @@ peace_deals = {
 			FROM = {
 				tag = AUS
 			}	
-		}	
+		}
+		# target_root_trigger = {
+		# 	has_war_with = FROM
+		# }
 		visible = {
 			tag = BLL
 			has_war_with = AUS
@@ -189,6 +192,9 @@ peace_deals = {
 				tag = BLL
 			}	
 		}
+		# target_root_trigger = {
+		# 	has_war_with = FROM
+		# }
 		visible = {
 			is_subject = no
 			has_war_with = BLL
@@ -259,6 +265,12 @@ AUH_franzferdinand = {
 		allowed = {
 			original_tag = SER
 		}	
+
+		target_trigger = {
+			FROM = {
+				tag = AUS
+			}		
+		}
 		
 		available = {
 			OR = {
@@ -269,32 +281,42 @@ AUH_franzferdinand = {
 					has_war_with = SER
 				}
 				has_global_flag = kis_serbia_accept
+				has_global_flag = july_crisis_ends
 			}
 		}
 		
 		activation = {
-			has_global_flag = archduke_dead_serbia
+			has_global_flag = july_crisis_alert
+			NOT = {
+				has_global_flag = july_crisis_ends
+			}
 		}
 
 		fire_only_once = yes		
 
 		is_good = no
-		days_mission_timeout = 25
+		days_mission_timeout = 28
 
-		ai_will_do = {
-			factor = 0
-		}
+		war_with_on_timeout = AUS
 
 		timeout_effect = {
-			SER = { country_event = { id = ww1_franzferdinand.2 } }
-		}	
+			effect_tooltip = {
+				AUS = { country_event = ww1_franzferdinand.4 }
+			}		
+		}
 	}
 	
 	european_crisis_mission = {
 		icon = GFX_decision_generic_ignite_civil_war
 		
 		allowed = {
-			NOT = { tag = SER }
+			NOT = { original_tag = SER }
+		}
+
+		target_trigger = {
+			FROM = {
+				tag = SER
+			}		
 		}
 		
 		available = {
@@ -314,28 +336,40 @@ AUH_franzferdinand = {
 			OR = {
 				is_in_faction_with = GER
 				is_in_faction_with = FRA
+				is_actual_major = yes
 			}
 		}
 		
 		activation = {
-			has_global_flag = archduke_dead_serbia
+			has_global_flag = july_crisis_alert
 			NOT = { has_global_flag = july_crisis_ends }
 		}
 
 		fire_only_once = yes		
 
 		is_good = no
-		days_mission_timeout = 25
+		days_mission_timeout = 28
 
-		ai_will_do = {
-			factor = 0
-		}
+		complete_effect = {		
+			if = {
+				limit = {
+					tag = AUS
+				}
+				delete_crisis = yes
+				set_global_flag = july_crisis_ends		
+			}
+		}	
 
 		timeout_effect = {
-			set_global_flag = july_crisis_ends
+			if = {
+				limit = {
+					tag = AUS
+				}
+				set_global_flag = july_crisis_ends
+				country_event = ww1_franzferdinand.4
+			}
 			custom_effect_tooltip = european_crisis_mission_tt
-		}		
-
+		}
 	}
 	
 	RUS_start_mobilization = {
@@ -349,7 +383,7 @@ AUH_franzferdinand = {
 		visible = {
 			is_subject = no
 			has_capitulated = no
-			has_global_flag = archduke_dead_serbia
+			has_global_flag = july_crisis_alert
 			NOT = {
 				has_global_flag = july_crisis_ends
 				has_war_with = SER
@@ -357,6 +391,7 @@ AUH_franzferdinand = {
 			}
 		}
 		fire_only_once = yes
+		war_with_on_timeout = AUS
 		ai_will_do = {
 			base = 400
 			modifier = {
@@ -640,12 +675,8 @@ AUH_terrorism = {
 		cost = 0
 		fire_only_once = yes
 		on_map_mode = map_and_decisions_view
-		available = {
-			has_country_flag = AUH_suppress_slav_opposition
-		}
-		visible = {
-			has_subject = BOS
-		}
+		available = { has_completed_focus = AUH_suppress_slav_opposition }
+		visible = { has_subject = BOS }
 		highlight_states = {
 			highlight_states_trigger = { 
 				state = 104
@@ -971,8 +1002,7 @@ AUH_terrorism = {
 		ai_will_do = {
 			factor = 50
 		}
-		remove_effect = {
-			
+		remove_effect = {		
 			88 = {
 				add_extra_state_shared_building_slots = 1
 				add_building_construction = {
@@ -980,42 +1010,8 @@ AUH_terrorism = {
 					level = 1
 					instant_build = yes
 				}
-				add_core_of = AUS
 			}
-			if = {
-				limit = {
-					has_idea = AUH_polish_separatism4
-				}
-				remove_ideas = AUH_polish_separatism4
-			}
-			if = {
-				limit = {
-					has_idea = AUH_polish_separatism3
-				}
-				swap_ideas = {
-					remove_idea = AUH_polish_separatism3
-					add_idea = AUH_polish_separatism4
-				}
-			}
-			if = {
-				limit = {
-					has_idea = AUH_polish_separatism2
-				}
-				swap_ideas = {
-					remove_idea = AUH_polish_separatism2
-					add_idea = AUH_polish_separatism3
-				}
-			}
-			if = {
-				limit = {
-					has_idea = AUH_polish_separatism
-				}
-				swap_ideas = {
-					remove_idea = AUH_polish_separatism
-					add_idea = AUH_polish_separatism2
-				}
-			}
-			
+			AUH_fix_GAL_poverty = yes			
 		}
 	}
 
@@ -1048,41 +1044,8 @@ AUH_terrorism = {
 		remove_effect = {
 			237 = {
 				add_manpower = 15000
-				add_core_of = AUS
 			}
-			if = {
-				limit = {
-					has_idea = AUH_polish_separatism4
-				}
-				remove_ideas = AUH_polish_separatism4
-			}
-			if = {
-				limit = {
-					has_idea = AUH_polish_separatism3
-				}
-				swap_ideas = {
-					remove_idea = AUH_polish_separatism3
-					add_idea = AUH_polish_separatism4
-				}
-			}
-			if = {
-				limit = {
-					has_idea = AUH_polish_separatism2
-				}
-				swap_ideas = {
-					remove_idea = AUH_polish_separatism2
-					add_idea = AUH_polish_separatism3
-				}
-			}
-			if = {
-				limit = {
-					has_idea = AUH_polish_separatism
-				}
-				swap_ideas = {
-					remove_idea = AUH_polish_separatism
-					add_idea = AUH_polish_separatism2
-				}
-			}
+			AUH_fix_GAL_poverty = yes
 		}
 	}
 
@@ -1117,42 +1080,7 @@ AUH_terrorism = {
 				level = 1
 				path = { 9427 11413 442 6499 6522 3434 9468 11479 }
 			}
-			562 = {
-				add_core_of = AUS
-			}
-			if = {
-				limit = {
-					has_idea = AUH_polish_separatism4
-				}
-				remove_ideas = AUH_polish_separatism4
-			}
-			if = {
-				limit = {
-					has_idea = AUH_polish_separatism3
-				}
-				swap_ideas = {
-					remove_idea = AUH_polish_separatism3
-					add_idea = AUH_polish_separatism4
-				}
-			}
-			if = {
-				limit = {
-					has_idea = AUH_polish_separatism2
-				}
-				swap_ideas = {
-					remove_idea = AUH_polish_separatism2
-					add_idea = AUH_polish_separatism3
-				}
-			}
-			if = {
-				limit = {
-					has_idea = AUH_polish_separatism
-				}
-				swap_ideas = {
-					remove_idea = AUH_polish_separatism
-					add_idea = AUH_polish_separatism2
-				}
-			}
+			AUH_fix_GAL_poverty = yes
 		}
 	}
 
@@ -1188,42 +1116,7 @@ AUH_terrorism = {
 				amount = 8
 				state = 89
 			}
-			89 = {
-				add_core_of = AUS
-			}
-			if = {
-				limit = {
-					has_idea = AUH_polish_separatism4
-				}
-				remove_ideas = AUH_polish_separatism4
-			}
-			if = {
-				limit = {
-					has_idea = AUH_polish_separatism3
-				}
-				swap_ideas = {
-					remove_idea = AUH_polish_separatism3
-					add_idea = AUH_polish_separatism4
-				}
-			}
-			if = {
-				limit = {
-					has_idea = AUH_polish_separatism2
-				}
-				swap_ideas = {
-					remove_idea = AUH_polish_separatism2
-					add_idea = AUH_polish_separatism3
-				}
-			}
-			if = {
-				limit = {
-					has_idea = AUH_polish_separatism
-				}
-				swap_ideas = {
-					remove_idea = AUH_polish_separatism
-					add_idea = AUH_polish_separatism2
-				}
-			}
+			AUH_fix_GAL_poverty = yes
 		}
 	}
 
@@ -1256,41 +1149,8 @@ AUH_terrorism = {
 		remove_effect = {
 			91 = {
 				add_extra_state_shared_building_slots = 2
-				add_core_of = AUS
 			}
-			if = {
-				limit = {
-					has_idea = AUH_polish_separatism4
-				}
-				remove_ideas = AUH_polish_separatism4
-			}
-			if = {
-				limit = {
-					has_idea = AUH_polish_separatism3
-				}
-				swap_ideas = {
-					remove_idea = AUH_polish_separatism3
-					add_idea = AUH_polish_separatism4
-				}
-			}
-			if = {
-				limit = {
-					has_idea = AUH_polish_separatism2
-				}
-				swap_ideas = {
-					remove_idea = AUH_polish_separatism2
-					add_idea = AUH_polish_separatism3
-				}
-			}
-			if = {
-				limit = {
-					has_idea = AUH_polish_separatism
-				}
-				swap_ideas = {
-					remove_idea = AUH_polish_separatism
-					add_idea = AUH_polish_separatism2
-				}
-			}
+			AUH_fix_GAL_poverty = yes
 		}
 	}
 
@@ -1515,10 +1375,6 @@ AUH_trialism = {
 		timeout_effect = {
 			effect_tooltip = {
 				AUH_apply_trialism = yes
-			}
-			add_victory_points = {
-				province = 11581
-				value = 12
 			}
 			hidden_effect = {
 				news_event = {
@@ -1841,6 +1697,8 @@ prestigious_projects = {
 					transfer_units_fraction= {
 						target = ROOT
 						size = 1
+						target_organization = 1
+						source_organization = 1
 						stockpile_ratio = 1
 						army_ratio = 1
 						navy_ratio = 1
@@ -1891,7 +1749,7 @@ prestigious_projects = {
 		}
 		visible = {
 			GER = { exists = no }
-			NOT = { has_cosmetic_tag = AUH_HRE }
+			NOT = { has_cosmetic_tag = AUS_HRE }
 			any_owned_state = {
 				region = 6
 			}
@@ -1908,7 +1766,17 @@ prestigious_projects = {
 			factor = 0
 		}
 		complete_effect = {
-			set_cosmetic_tag = AUH_HRE
+			set_cosmetic_tag = AUS_HRE
+			if = {
+				limit = {
+					has_country_leader = {
+						character = AUH_franz_ferdinand
+					}
+				}
+				AUH_franz_ferdinand = {
+					set_character_name = AUH_franz_iii
+				}
+			}
 		}
 	}
 }
@@ -1951,15 +1819,7 @@ AUH_greater_austria_category = {
 			every_state = {
 				limit = {
 					owns_or_subject_of = yes
-					OR = {
-						state = 9
-						state = 69
-						state = 72
-						state = 74
-						state = 75
-						state = 992
-						state = 993
-					}
+					is_core_of = CZE
 				}
 				if = {
 					limit = {
@@ -2057,14 +1917,13 @@ AUH_greater_austria_category = {
 			every_state = {
 				limit = {
 					is_owned_by = FROM
-					is_core_of = UKR
+					is_core_of = WUK
 					NOT = {
 						state = 73
 						state = 237
 						state = 1043
 					}
 				}
-				add_core_of = WUK
 				transfer_state_to = WUK
 			}
 			if = {
@@ -2198,6 +2057,7 @@ AUH_greater_austria_category = {
 						is_core_of = SLV
 						is_core_of = SLO
 						is_core_of = UKR
+						is_core_of = WUK
 						is_core_of = TRA
 						is_core_of = SER
 					}
@@ -2224,9 +2084,8 @@ AUH_greater_austria_category = {
 				every_state = {
 					limit = {
 						is_owned_by = FROM
-						is_core_of = UKR
+						is_core_of = WUK
 					}
-					add_core_of = WUK
 					transfer_state_to = WUK
 				}
 				if = {
@@ -2370,7 +2229,7 @@ AUH_greater_austria_category = {
 								}
 							}							
 							CRO = {
-								set_cosmetic_tag = CRO_AUH
+								set_cosmetic_tag = CRO_AUS
 							}
 						}
 					}
@@ -2577,6 +2436,9 @@ AUH_greater_austria_category = {
 			is_greater_german_cosmetic = no
 			NOT = { has_cosmetic_tag = AUS_USGA }
 			OR = {
+				any_owned_state = {
+					is_core_of = SLV
+				}
 				owns_state = 102
 				has_subject = SLV
 			}
@@ -2679,6 +2541,8 @@ AUH_greater_austria_category = {
 						state = 513
 						state = 736
 						state = 1010
+						state = 1197
+						state = 1198
 					}
 				}
 				add_core_of = VNC
@@ -2894,6 +2758,9 @@ AUH_greater_austria_category = {
 					transfer_units_fraction= {
 						target = ROOT
 						size = 1
+						target_organization = 1
+						source_organization = 1
+						
 						stockpile_ratio = 1
 						army_ratio = 1
 						navy_ratio = 1
@@ -2913,7 +2780,15 @@ AUH_greater_austria_category = {
 					}
 				}
 			}
-			set_cosmetic_tag = AUS_USGA
+			if = {
+				limit = {
+					NOT = {
+						has_cosmetic_tag = AUS_HRE
+					}
+				}
+				set_cosmetic_tag = AUS_USGA
+				set_country_flag = AUS_USGA
+			}	
 			if = {
 				limit = {
 					is_in_faction = no
@@ -2933,6 +2808,9 @@ peace_deals = {
 		target_trigger = {
 			FROM = { tag = GER }
 		}
+		# target_root_trigger = {
+		# 	has_war_with = FROM
+		# }
 		available = {
 			surrender_progress > 0.3
 		}
@@ -2979,6 +2857,9 @@ peace_deals = {
 		target_trigger = {
 			FROM = { tag = HUN }
 		}
+		# target_root_trigger = {
+		# 	has_war_with = FROM
+		# }
 		available = {
 			surrender_progress > 0.5
 		}
@@ -3211,92 +3092,6 @@ AUH_conrad_decision_category = {
 		}
 	}
 }
-interwar_decisions = {
-	AUH_decision_mitteleuropa_guarantee = {
-		allowed = {
-			tag = AUS
-		}
-		available = {
-			has_capitulated = no
-			GER = {
-				has_capitulated = no
-				surrender_progress > 0.3
-			}
-		}
-		visible = {
-			is_subject = no
-			has_country_flag = great_war_winner
-			GER = {
-				is_subject = no
-				has_country_flag = great_war_winner
-				has_completed_focus = GER_mitteleuropa_pact
-				NOT = {
-					has_war_with = ROOT
-					is_in_faction_with = ROOT
-				}
-			}
-		}
-		fire_only_once = yes
-		ai_will_do = {
-			base = 0
-			modifier = {
-				add = 1000
-				GER = {
-					surrender_progress > 0.5
-				}
-			}
-		}
-		target_trigger = {
-			FROM = {
-				has_war_with = GER
-				NOT = {
-					is_subject_of = ROOT
-					is_in_faction_with = ROOT
-				}
-			}
-		}
-		war_with_target_on_remove = yes
-		days_remove = 45
-		remove_effect = {
-			if = {
-				limit = {
-					is_in_faction = yes
-				}
-				if = {
-					limit = {
-						is_faction_leader = yes
-					}
-					GER = {
-						every_other_country = {
-							limit = {
-								OR = {
-									tag = ROOT
-									is_in_faction_with = ROOT
-								}
-							}
-							PREV = { add_to_faction = PREV }
-						}
-					}
-				}
-				else = {
-					GER = {
-						add_to_faction = ROOT
-					}
-				}
-			}
-			else = {
-				GER = {
-					add_to_faction = ROOT
-				}
-			}
-			add_to_war = {
-				targeted_alliance = GER
-				enemy = FROM
-			}
-			# news_event = ww1_auh.41
-		}
-	}
-}
 
 AUH_collaboration_governement = {
 
@@ -3520,11 +3315,6 @@ AUH_collaboration_governement = {
 		}
 		complete_effect = {
 			set_country_flag = has_puppet_ukraine
-			UKR = {
-				transfer_state = 198
-				transfer_state = 201
-				transfer_state = 202
-			}
 			every_state = {
 				limit = {
 					is_controlled_by_ROOT_or_ally = yes
@@ -3532,8 +3322,12 @@ AUH_collaboration_governement = {
 						is_core_of = AUS
 						region = 39 ## galician region, dont give them...
 					}
-					is_core_of = UKR
+					OR = {
+						is_core_of = UKR
+						is_core_of = WUK
+					}					
 				}
+				add_core_of = UKR
 				transfer_state_to = UKR
 			}
 			AUS = {
@@ -4506,6 +4300,15 @@ AUH_famine_decisions = {
 				FROM = {
 					state_population > 1000000
 				}
+				NOT = {
+					FROM = {
+						region = 5	#it would increase resistance on german front, we dont need that
+						region = 19
+						state = 6
+						state = 34
+						state = 907
+					}
+				}
 			}
 		}
 		visible = {
@@ -4584,6 +4387,9 @@ GER_great_war = {
 		target_trigger = {
 			FROM = { tag = FRA }
 		}
+		# target_root_trigger = {
+		# 	has_war_with = FROM
+		# }
 		available = {
 			OR = {
 				has_idea = AUH_famine_effect_early

@@ -193,6 +193,9 @@ FRA_the_next_revolution = {
 				is_owned_by = ROOT
 			}
 		}
+		target_root_trigger = {
+			has_country_flag = great_war_loser
+		}
 		fixed_random_seed = no
 		cost = 0
 		days_re_enable = 30
@@ -397,6 +400,10 @@ FRA_keep_guard_over_the_versailles_system = {
 		target_trigger = {
 			FROM = { tag = GER }
 		}
+		target_root_trigger = {
+			has_global_flag = interbellum
+			has_country_flag = great_war_winner
+		}
 		fire_only_once = yes
 		cost = 250
 		ai_will_do = {
@@ -447,18 +454,14 @@ FRA_keep_guard_over_the_versailles_system = {
 			has_capitulated = no
 			has_war = no
 			has_country_flag = great_war_winner
-			OR = {
-				GER = {
-					controls_state = 873
-					is_neighbor_of = PREV
+			FROM = {		
+				OR = {
+					owns_state = 873
+					owns_state = 1185
 				}
-				HAN = {
-					controls_state = 873
-					is_neighbor_of = PREV
-				}
-			}
-			GER = {
 				has_capitulated = no
+			}	
+			GER = {
 				has_country_flag = great_war_loser
 			}
 			has_country_flag = can_occupy_ruhr
@@ -468,7 +471,14 @@ FRA_keep_guard_over_the_versailles_system = {
 			has_country_flag = can_occupy_ruhr
 		}
 		target_trigger = {
-			FROM = { tag = GER }
+			FROM = { 
+				tag = GER 
+				is_neighbor_of = PREV
+			}
+		}
+		target_root_trigger = {
+			has_country_flag = great_war_winner
+			has_country_flag = can_occupy_ruhr
 		}
 		fire_only_once = yes
 		cost = 0
@@ -504,7 +514,6 @@ FRA_keep_guard_over_the_versailles_system = {
 			}
 		}
 		remove_effect = {
-			transfer_state = 873
 			add_ideas = FRA_ruhr_occupation
 			set_global_flag = ruhr_occupation
 			news_event = ww1_germany.135
@@ -514,14 +523,16 @@ FRA_keep_guard_over_the_versailles_system = {
 					modifier = medium_decrease
 				}
 			}
-			random_country = {
-				limit = {
-					owns_state = 793
+			FROM = {
+				every_owned_state = {
+					limit = {
+						OR = {
+							state = 873
+							state = 1185
+						}
+					}
+					transfer_state_to = ROOT					
 				}
-				transfer_state = 51
-				add_ideas = FRA_ruhr_occupation
-			}
-			GER = {
 				country_event = {
 					id = ww1_germany.136
 					days = 7
@@ -551,7 +562,10 @@ FRA_keep_guard_over_the_versailles_system = {
 			has_global_flag = interbellum
 			has_country_flag = great_war_winner
 			is_subject = no
-			owns_state = 873
+			OR = {
+				owns_state = 873
+				owns_state = 1185
+			}		
 			GER = {
 				has_country_flag = great_war_loser
 				is_subject = no
@@ -560,6 +574,10 @@ FRA_keep_guard_over_the_versailles_system = {
 		}
 		target_trigger = {
 			FROM = { tag = GER }
+		}
+		target_root_trigger = {
+			has_global_flag = interbellum
+			has_country_flag = great_war_winner
 		}
 		fire_only_once = yes
 		cost = 0
@@ -630,6 +648,10 @@ FRA_keep_guard_over_the_versailles_system = {
 			FROM = {
 				tag = GER
 			}
+		}
+		target_root_trigger = {
+			has_global_flag = interbellum
+			has_country_flag = great_war_winner
 		}
 		fire_only_once = yes
 		cost = 250
@@ -719,10 +741,15 @@ FRA_keep_guard_over_the_versailles_system = {
 			NOT = {
 				has_global_flag = prussian_blue
 				country_exists = WUR
+				country_exists = BAD
 			}
 		}
 		target_trigger = {
 			FROM = { tag = GER }
+		}
+		target_root_trigger = {
+			has_global_flag = interbellum
+			has_country_flag = great_war_winner
 		}
 		fire_only_once = yes
 		cost = 100
@@ -819,6 +846,10 @@ FRA_keep_guard_over_the_versailles_system = {
 		}
 		target_trigger = {
 			FROM = { tag = GER }
+		}
+		target_root_trigger = {
+			has_global_flag = interbellum
+			has_country_flag = great_war_winner
 		}
 		fire_only_once = no
 		cost = 250
@@ -1043,7 +1074,9 @@ FRA_support_in_polish_war = {
 		}
 
 		available = {
-			always = no
+			POL = {
+				has_war = no
+			}
 		}
 
 		days_mission_timeout = 30
@@ -1080,6 +1113,9 @@ FRA_support_in_polish_war = {
 
 	send_equipment_to_POL_rifles = {
 		name = send_equipment_to_FROM_rifles
+		allowed = {
+			original_tag = FRA
+		}
 		visible = {
 			is_major = yes
 			NOT = {
@@ -1094,19 +1130,22 @@ FRA_support_in_polish_war = {
 		cost = 0
 		days_remove = 30
 		days_re_enable = 30
-		target_trigger = {
-			has_country_flag = can_send_to_POL
+		target_trigger = {		
 			FROM = {
-				AND = {
-					tag = POL
-					has_idea = POL_french_advisors
-				}
+				tag = POL
+				has_idea = POL_french_advisors
 			}
+		}
+		target_root_trigger = {
+			has_country_flag = can_send_to_POL
 		}
 		available = {
 			custom_trigger_tooltip = {
 				tooltip = SRA_lend_lease_ongoing_tt
 				check_variable = {SRA_available_shipments > 0} 
+			}
+			has_equipment = {
+				infantry_equipment > 4999
 			}
 		}
 		complete_effect = {
@@ -1118,12 +1157,17 @@ FRA_support_in_polish_war = {
 			add_to_variable = {
 				SRA_available_shipments = -1
 			}
+			set_country_flag = {
+				flag = FRA_already_sent_something_earlier
+				value = 1
+				days = 70
+			}
 		}
 		remove_effect = {
 			effect_tooltip = {
 				send_equipment = {
 					equipment = infantry_equipment
-					amount = 10000
+					amount = 5000
 					target = POL
 				}
 			}
@@ -1131,6 +1175,16 @@ FRA_support_in_polish_war = {
 		}
 		ai_will_do = {
 			base = 100
+			modifier = {
+				factor = 0
+				has_country_flag = FRA_already_sent_something_earlier
+			}
+			modifier = {
+				factor = 0
+				has_equipment = {
+					infantry_equipment < 10000
+				}
+			}
 			modifier = {
 				factor = 0
 				POL = {
@@ -1143,7 +1197,10 @@ FRA_support_in_polish_war = {
 		}
 	}
 	send_equipment_to_POL_support = {
-		name = send_equipment_to_SRA_support 
+		name = send_equipment_to_SRA_support
+		allowed = {
+			original_tag = FRA
+		}
 		visible = {
 			is_major = yes
 			NOT = {
@@ -1159,18 +1216,21 @@ FRA_support_in_polish_war = {
 		days_remove = 30
 		days_re_enable = 30
 		target_trigger = {
-			has_country_flag = can_send_to_POL
 			FROM = {
-				AND = {
-					has_idea = POL_french_advisors
-					tag = POL
-				}
+				tag = POL
+				has_idea = POL_french_advisors				
 			}
+		}
+		target_root_trigger = {
+			has_country_flag = can_send_to_POL
 		}
 		available = {
 			custom_trigger_tooltip = {
 				tooltip = SRA_lend_lease_ongoing_tt
 				check_variable = {SRA_available_shipments > 0} 
+			}
+			has_equipment = {
+				support_equipment > 149
 			}
 		}
 		complete_effect = {
@@ -1181,6 +1241,11 @@ FRA_support_in_polish_war = {
 			}
 			add_to_variable = {
 				SRA_available_shipments = -1
+			}
+			set_country_flag = {
+				flag = FRA_already_sent_something_earlier
+				value = 1
+				days = 70
 			}
 		}
 		remove_effect = {
@@ -1197,6 +1262,16 @@ FRA_support_in_polish_war = {
 			base = 90
 			modifier = {
 				factor = 0
+				has_country_flag = FRA_already_sent_something_earlier
+			}
+			modifier = {
+				factor = 0
+				has_equipment = {
+					support_equipment < 500
+				}
+			}
+			modifier = {
+				factor = 0
 				POL = {
 					stockpile_ratio = {
 						archetype = support_equipment
@@ -1208,6 +1283,9 @@ FRA_support_in_polish_war = {
 	}
 	send_equipment_to_POL_artillery = {
 		name = send_equipment_to_SRA_artillery
+		allowed = {
+			original_tag = FRA
+		}
 		visible = {
 			is_major = yes
 			NOT = {
@@ -1223,18 +1301,21 @@ FRA_support_in_polish_war = {
 		days_remove = 30
 		days_re_enable = 30
 		target_trigger = {
-			has_country_flag = can_send_to_POL
 			FROM = {
-				AND = {
-					has_idea = POL_french_advisors
-					tag = POL
-				}
+				tag = POL
+				has_idea = POL_french_advisors			
 			}
+		}
+		target_root_trigger = {
+			has_country_flag = can_send_to_POL
 		}
 		available = {
 			custom_trigger_tooltip = {
 				tooltip = SRA_lend_lease_ongoing_tt
 				check_variable = {SRA_available_shipments > 0} 
+			}
+			has_equipment = {
+				artillery_equipment > 149
 			}
 		}
 		complete_effect = {
@@ -1245,6 +1326,11 @@ FRA_support_in_polish_war = {
 			}
 			add_to_variable = {
 				SRA_available_shipments = -1
+			}
+			set_country_flag = {
+				flag = FRA_already_sent_something_earlier
+				value = 1
+				days = 70
 			}
 		}
 		remove_effect = {
@@ -1261,6 +1347,16 @@ FRA_support_in_polish_war = {
 			base = 100
 			modifier = {
 				factor = 0
+				has_country_flag = FRA_already_sent_something_earlier
+			}
+			modifier = {
+				factor = 0
+				has_equipment = {
+					artillery_equipment < 500
+				}
+			}
+			modifier = {
+				factor = 0
 				POL = {
 					stockpile_ratio = {
 						archetype = artillery_equipment
@@ -1272,6 +1368,9 @@ FRA_support_in_polish_war = {
 	}
 	send_equipment_to_POL_truck = {
 		name = send_equipment_to_SRA_truck
+		allowed = {
+			original_tag = FRA
+		}
 		visible = {
 			is_major = yes
 			NOT = {
@@ -1287,18 +1386,21 @@ FRA_support_in_polish_war = {
 		days_remove = 30
 		days_re_enable = 30
 		target_trigger = {
-			has_country_flag = can_send_to_POL
 			FROM = {
-				AND = {
-					has_idea = POL_french_advisors
-					tag = POL
-				}
+				tag = POL
+				has_idea = POL_french_advisors
 			}
+		}
+		target_root_trigger = {
+			has_country_flag = can_send_to_POL
 		}
 		available = {
 			custom_trigger_tooltip = {
 				tooltip = SRA_lend_lease_ongoing_tt
 				check_variable = {SRA_available_shipments > 0} 
+			}
+			has_equipment = {
+				motorized_equipment > 49
 			}
 		}
 		complete_effect = {
@@ -1309,6 +1411,11 @@ FRA_support_in_polish_war = {
 			}
 			add_to_variable = {
 				SRA_available_shipments = -1
+			}
+			set_country_flag = {
+				flag = FRA_already_sent_something_earlier
+				value = 1
+				days = 70
 			}
 		}
 		remove_effect = {
@@ -1325,6 +1432,16 @@ FRA_support_in_polish_war = {
 			base = 100
 			modifier = {
 				factor = 0
+				has_country_flag = FRA_already_sent_something_earlier
+			}
+			modifier = {
+				factor = 0
+				has_equipment = {
+					motorized_equipment < 200
+				}
+			}
+			modifier = {
+				factor = 0
 				POL = {
 					stockpile_ratio = {
 						archetype = motorized_equipment_1
@@ -1336,6 +1453,9 @@ FRA_support_in_polish_war = {
 	}
 	send_equipment_to_POL_tanks = {
 		name = send_equipment_to_SRA_tanks
+		allowed = {
+			original_tag = FRA
+		}
 		visible = {
 			is_major = yes
 			NOT = {
@@ -1351,18 +1471,21 @@ FRA_support_in_polish_war = {
 		days_remove = 30
 		days_re_enable = 30
 		target_trigger = {
-			has_country_flag = can_send_to_POL
 			FROM = {
-				AND = {
-					has_idea = POL_french_advisors
-					tag = POL
-				}
+				tag = POL
+				has_idea = POL_french_advisors
 			}
+		}
+		target_root_trigger = {
+			has_country_flag = can_send_to_POL
 		}
 		available = {
 			custom_trigger_tooltip = {
 				tooltip = SRA_lend_lease_ongoing_tt
 				check_variable = {SRA_available_shipments > 0} 
+			}
+			has_equipment = {
+				light_tank_chassis > 39
 			}
 		}
 		complete_effect = {
@@ -1374,6 +1497,11 @@ FRA_support_in_polish_war = {
 					SRA_available_shipments = -1
 				}
 			}
+			set_country_flag = {
+				flag = FRA_already_sent_something_earlier
+				value = 1
+				days = 70
+			}
 		}
 		remove_effect = {
 			effect_tooltip = {
@@ -1382,15 +1510,15 @@ FRA_support_in_polish_war = {
 						has_dlc = "No Step Back"
 					}
 					send_equipment = {
-						equipment = heavy_tank_chassis
-						amount = 10
+						equipment = light_tank_chassis
+						amount = 40
 						target = POL
 					}
 				}
 				else = {
 					send_equipment = {
-						equipment = heavy_tank_equipment_1
-						amount = 10
+						equipment = light_tank_equipment_1
+						amount = 40
 						target = POL
 					}
 				}
@@ -1398,11 +1526,24 @@ FRA_support_in_polish_war = {
 			custom_effect_tooltip = back_in_30_days
 		}
 		ai_will_do = {
-			base = 1
+			base = 100
+			modifier = {
+				factor = 0
+				has_country_flag = FRA_already_sent_something_earlier
+			}
+			modifier = {
+				factor = 0
+				has_equipment = {
+					light_tank_chassis < 120
+				}
+			}
 		}
 	}
 	send_equipment_to_POL_fighter = {
 		name = send_equipment_to_SRA_fighter
+		allowed = {
+			original_tag = FRA
+		}
 		visible = {
 			is_major = yes
 			NOT = {
@@ -1418,18 +1559,21 @@ FRA_support_in_polish_war = {
 		days_remove = 30
 		days_re_enable = 30
 		target_trigger = {
-			has_country_flag = can_send_to_POL
 			FROM = {
-				AND = {
-					has_idea = POL_french_advisors
-					tag = POL
-				}
+				tag = POL
+				has_idea = POL_french_advisors
 			}
+		}
+		target_root_trigger = {
+			has_country_flag = can_send_to_POL
 		}
 		available = {
 			custom_trigger_tooltip = {
 				tooltip = SRA_lend_lease_ongoing_tt
 				check_variable = {SRA_available_shipments > 0} 
+			}
+			has_equipment = {
+				fighter_equipment > 14
 			}
 		}
 		complete_effect = {
@@ -1440,6 +1584,11 @@ FRA_support_in_polish_war = {
 			}
 			add_to_variable = {
 				SRA_available_shipments = -1
+			}
+			set_country_flag = {
+				flag = FRA_already_sent_something_earlier
+				value = 1
+				days = 20
 			}
 		}
 		remove_effect = {
@@ -1454,6 +1603,16 @@ FRA_support_in_polish_war = {
 		}
 		ai_will_do = {
 			base = 100
+			modifier = {
+				factor = 0
+				has_country_flag = FRA_already_sent_something_earlier
+			}
+			modifier = {
+				factor = 0
+				has_equipment = {
+					fighter_equipment < 120
+				}
+			}
 			modifier = {
 				factor = 0
 				POL = {

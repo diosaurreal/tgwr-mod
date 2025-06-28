@@ -102,11 +102,15 @@ NDefines.NAI.SEND_VOLUNTEER_AIDESIRE_SAME_IDEOLOGY_CIVIL_WAR = 0		-- Added to AI
 NDefines.NMilitary.UNIT_DIGIN_SPEED = 0.5
 
 NDefines.NAI.MAX_DISTANCE_NAVAL_INVASION = 150.0
-NDefines.NDiplomacy.IDEOLOGY_JOIN_FACTION_MIN_LEVEL = 0
+NDefines.NAI.CALL_ALLY_PUPPET_INVITE_OVERLORD = 100    -- Desire for a puppet to call its overlord into the war -- Vanilla is -1000
+NDefines.NDiplomacy.IDEOLOGY_JOIN_FACTION_MIN_LEVEL = -1
 NDefines.NDiplomacy.MARKET_ACCESS_ACCEPTANCE_SAME_IDEOLOGY = 0				 -- Acceptance value added if same ideology (Vanilla is 15)
 NDefines.NDiplomacy.MARKET_ACCESS_ACCEPTANCE_TRADE_INFLUENCE = 0.2 			 -- Acceptance factor for trade influence (Vanilla is 0.70)
 
-NDefines.NRailwayGun.RAILWAY_GUN_RANGE = 15							-- The range of railway guns in pixels (Vanilla is 30)
+NDefines.NRailwayGun.RAILWAY_GUN_POSSIBLE_RANGES = { 15, 10, 30 }	-- Possible values for railway gun range in pixel.
+																	-- For optimization reasons, they are listed here and equipment DB must use one of those.
+																	-- when writing railway gun in equipment, use the index in this array
+																	-- the first value in array is the default value
 
 NDefines.NGraphics.VICTORY_POINT_MAP_ICON_TEXT_CUTOFF = {200, 350, 600}  	-- Vanilla is 100, 250, 500
 NDefines.NGraphics.VICTORY_POINTS_DISTANCE_CUTOFF = {300, 500, 1000} 		-- Vanilla is 300, 500, 1500

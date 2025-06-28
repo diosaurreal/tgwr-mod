@@ -272,27 +272,20 @@ country_event = {
 	desc = ww1_hungary.1.d
 	picture = GFX_report_event_hungary_gains_transylvania
 	fire_only_once = yes
-	trigger = {
-		tag = HUN
-		is_subject = no
-		has_global_flag = versallies_treaty
-		OR = {
-			AUS = {
-				has_country_flag = collapse_of_austria_hungary_HUN
-			}
-			NOT = {
-				country_exists = AUS
+	is_triggered_only = yes
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					SER = {
+						has_country_flag = great_war_winner
+					}
+				 }
+				 1139 = {
+					transfer_state_to = SER
+				 }
 			}
 		}
-		country_exists = ROM
-		has_war_with = ROM
-		NOT = {
-			has_government = communism
-		}
-		longest_war_length > 3	#wait from november to march for soviet revolution
-	}
-	mean_time_to_happen = {
-		days = 4
 	}
 	option = {
 		name = ww1_hungary.1.a
@@ -305,7 +298,7 @@ country_event = {
 		add_ideas = standing_alone	
 		hidden_effect = {
 			# Claim on Greater Hungary
-			add_ideas = HUN_disorganized_army
+			remove_ideas = idea_army_restrictions
 			every_state = {
 				limit = {
 					NOT = {
@@ -357,34 +350,39 @@ country_event = {
 			}
 		}
 		division_template = {
-			name = "Miilícia"
+			name = "Milícia"
 			regiments = {
-				infantry = {
+				militia = {
 					x = 0
 					y = 0
 				}
-				infantry = {
+				militia = {
 					x = 0
 					y = 1
 				}
-				infantry = {
+				militia = {
 					x = 0
 					y = 2
+				}
+				militia = {
+					x = 0
+					y = 3
 				}
 			}
 		}
 		43 = {
 			create_unit = {
-				division = "name = \"I Brigád\" division_template = \"Miilícia\" start_experience_factor = 0.2"
+				division = "name = \"Nemzetközi Brigád\" division_template = \"Milícia\" start_experience_factor = 0.3"
 				owner = ROOT
 			}
 			create_unit = {
-				division = "name = \"II Brigád\" division_template = \"Miilícia\" start_experience_factor = 0.2"
+				division = "name = \"I Brigád\" division_template = \"Milícia\" start_experience_factor = 0.2 start_equipment_factor = 0.15"
 				owner = ROOT
 			}
 			create_unit = {
-				division = "name = \"III Brigád\" division_template = \"Miilícia\" start_experience_factor = 0.2"
+				division = "name = \"Munkás Milícia\" division_template = \"Milícia\" start_experience_factor = 0 start_equipment_factor = 0.1"
 				owner = ROOT
+				count = 4
 			}
 		}
 		ai_chance = {
@@ -413,10 +411,7 @@ country_event = {
 				add_country_leader_trait = anti_communist
 			}
 			else = {
-				every_possible_country = {
-					limit = {
-						has_character = AUH_joseph_august_von_osterreich
-					}
+				AUS = {
 					AUH_joseph_august_von_osterreich = {
 						set_nationality = HUN
 						set_character_name = HUN_joseph_august
@@ -502,24 +497,22 @@ country_event = {
 			limit = {
 				owns_state = 147
 			}
-			random_other_country = {
-				limit = {
-					owns_state = 4
+			4 = {
+				owner = {
+					transfer_state = 147
 				}
-				transfer_state = 147
-			}
+			}	
 		}
 		# Prekmurje
 		if = {
 			limit = {
 				owns_state = 875
 			}
-			random_other_country = {
-				limit = {
-					owns_state = 102
+			1196 = {
+				owner = {
+					transfer_state = 875
 				}
-				transfer_state = 875
-			}
+			}	
 		}
 		# Timisoara
 		if = {
@@ -529,12 +522,11 @@ country_event = {
 					FRA = { owns_state = 82 }
 				}
 			}
-			random_other_country = {
-				limit = {
-					owns_state = 84
+			84 = {
+				owner = {
+					transfer_state = 82
 				}
-				transfer_state = 82
-			}
+			}	
 		}
 		# West Banat
 		every_state = {
@@ -624,7 +616,7 @@ news_event = {
 	desc = ww1_hungary.4.d
 	major = yes
 	is_triggered_only = yes
-	picture = EVENT_hoi4tgw_trialism
+	picture = GFX_news_event_hungary_royal_coup
 	option = {
 		name = ww1_hungary.4.a
 	}
@@ -708,10 +700,7 @@ country_event = {
 				}
 			}
 			else = {
-				every_possible_country = {
-					limit = {
-						has_character = HUN_miklos_horthy
-					}
+				AUS = {
 					HUN_miklos_horthy = {
 						set_nationality = HUN
 						add_country_leader_role = {
@@ -795,7 +784,7 @@ news_event = {
 	}
 }
 
-# Conditional surrender to Soviet Hungary
+# Conditional surrender to Hungary
 country_event = {
 	id = ww1_hungary.8
 	title = ww1_hungary.8.t
@@ -805,22 +794,50 @@ country_event = {
 	option = {
 		name = ww1_hungary.8.a
 		set_country_flag = hungarian_soviet_truce
-		ROM = {
-			complete_national_focus = ROM_defeat_in_hungarian_war
-		}
-		ROM = {
+		FROM = {
 			white_peace = HUN
 			leave_faction = yes
-			add_popularity = {
-				ideology = communism
-				popularity = 0.10
+			if = {
+				limit = {
+					HUN = {
+						has_government = communism
+					}
+				}
+				add_popularity = {
+					ideology = communism
+					popularity = 0.10
+				}
 			}
 			every_state = {
 				limit = {
-					is_owned_by = ROM
+					is_owned_by = PREV
 					is_core_of = HUN
+					NOT = {
+						AND = {
+							is_core_of = SLO
+							SLO = {
+								is_subject_of = HUN
+							}
+						}
+					}
 				}
 				transfer_state_to = HUN
+			}
+			every_state = {
+				limit = {
+					is_owned_by = PREV
+					is_core_of = SLO
+					SLO = {
+						is_subject_of = HUN
+					}
+				}
+				transfer_state_to = SLO
+			}
+			if = {
+				limit = {
+					has_focus_tree = romania_focus
+				}
+				complete_national_focus = ROM_defeat_in_hungarian_war
 			}
 		}
 		ai_chance = {
@@ -829,6 +846,9 @@ country_event = {
 	}
 	option = {
 		name = ww1_hungary.8.b
+		add_war_support = -0.2
+		add_stability = -0.2
+		add_political_power = -250
 		FROM = { country_event = ww1_hungary.9 }
 		ai_chance = {
 			base = 0
@@ -849,3 +869,4 @@ country_event = {
 		add_political_power = -45
 	}
 }
+
