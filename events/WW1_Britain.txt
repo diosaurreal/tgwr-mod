@@ -1821,7 +1821,7 @@ country_event = {
 					promote_leader = yes
 					country_leader = {
 						ideology = syndicalism
-						traits = {  }
+						traits = { social_reformer }
 					}
 				}
 			}
@@ -2332,7 +2332,7 @@ country_event = {
 						idea_token = ENG_clement_attlee
 						slot = army_chief
 						traits = {
-							army_chief_offensive_2
+							army_chief_offensive_1
 						}
 					}
 				}
@@ -2379,18 +2379,7 @@ country_event = {
 							idea_token = ENG_harry_pollitt
 							slot = political_advisor
 							traits = {
-								communist_revolutionary
-							}
-						}
-					}
-				}
-				ENG_oswald_mosley = {
-					add_advisor_role = {
-						advisor = {
-							idea_token = ENG_oswald_mosley
-							slot = army_chief
-							traits = {
-								army_chief_morale_3
+								socialist_justice
 							}
 						}
 					}
@@ -2402,6 +2391,55 @@ country_event = {
 							slot = political_advisor
 							traits = {
 								ENG_the_first_british_communist
+							}
+							cost = 75
+						}
+					}
+				}
+				if = {
+					limit = {
+						has_character = ENG_julian_byng
+					}
+					ENG_julian_byng = {
+						add_advisor_role = {
+							advisor = {
+								idea_token = ENG_julian_byng
+								slot = high_command
+								traits = {
+									army_armored_1
+								}
+							}
+						}
+					}
+				}
+				if = {
+					limit = {
+						has_character = ENG_william_hickie
+					}
+					ENG_william_hickie = {
+						add_advisor_role = {
+							advisor = {
+								idea_token = ENG_william_hickie
+								slot = high_command
+								traits = {
+									army_infantry_1
+								}
+							}
+						}
+					}
+				}
+				if = {
+					limit = {
+						has_character = ENG_lewis_pugh_evans
+					}
+					ENG_lewis_pugh_evans = {
+						add_advisor_role = {
+							advisor = {
+								idea_token = ENG_lewis_pugh_evans
+								slot = theorist
+								traits = {
+									mobile_warfare_expert
+								}
 							}
 						}
 					}
@@ -2578,6 +2616,71 @@ country_event = {
 			}
 		}
 	}
+	option = {
+		name = ww1_belgium.15.a #reuse
+		declare_war_on = {
+			target = UOB
+			type = civil_war
+		}
+		hidden_effect = {
+			add_civil_war_target = UOB
+			release_british_cw_territories = yes
+			every_other_country = {
+				limit = {
+					OR = {
+						tag = CAN
+						tag = AST
+						tag = NZL
+						tag = SAF
+						tag = IRE
+						tag = NIR
+					}
+					NOT = {
+						has_government = communism
+						has_country_leader_ideology = national_syndicalism
+					}
+				}
+				add_timed_idea = {
+					idea = ENG_idea_influence_of_revolution
+					days = 365
+				}
+			}
+			news_event = {
+				id = eng_news.3
+				hours = 3
+			}
+			#civil war mobilisation
+			if = {
+				limit = {
+					has_idea = volunteer_only
+				}
+				add_ideas = limited_conscription
+			}
+			if = {
+				limit = {
+					has_idea = civilian_economy
+				}
+				add_ideas = low_economic_mobilisation
+			}
+			UOB = {
+				if = {
+					limit = {
+						has_idea = volunteer_only
+					}
+					add_ideas = limited_conscription
+				}
+				if = {
+					limit = {
+						has_idea = civilian_economy
+					}
+					add_ideas = low_economic_mobilisation
+				}
+			}
+		}
+		UOB = {
+			change_tag_from = ROOT
+		}
+	}
 }
 
 #Mosley crosses the floor
@@ -2606,6 +2709,15 @@ country_event = {
 				defense_skill = 1
 				planning_skill = 2
 				logistics_skill = 3
+			}
+			add_advisor_role = {
+				advisor = {
+					idea_token = ENG_oswald_mosley
+					slot = army_chief
+					traits = {
+						army_chief_morale_3
+					}
+				}
 			}
 		}
 	}
@@ -2649,6 +2761,17 @@ country_event = {
 	option = {
 		name = ww1_england.40.a
 		add_country_leader_trait = eng_syndicalist_heroine #eng_hero_of_revolution
+		meta_effect = {
+			text = {
+				set_politics = {
+					ruling_party = communism
+					last_election = "[CURRENT_DATE]"
+					election_frequency = 48
+					elections_allowed = yes
+				}
+			}
+			CURRENT_DATE = "[?global.date.GetDateStringNoHour]"
+		}
 		ai_chance = {
 			base = 3
 			modifier = {
@@ -2660,15 +2783,51 @@ country_event = {
 	option = {
 		name = ww1_england.40.b
 		ENG_oswald_mosley = {
-			add_country_leader_role = {
-				promote_leader = yes
-					country_leader = {
-					ideology = vanguardism
-					traits = { eng_revolutionary_icon }
+			if = {
+				limit = {
+					has_ideology = vanguardism
 				}
-			}			
+				promote_character = vanguardism
+			}
+			else = {
+				add_country_leader_role = {
+					promote_leader = yes
+						country_leader = {
+						ideology = vanguardism
+						traits = { eng_revolutionary_icon }
+					}
+				}
+			}
+		}
+		meta_effect = {
+			text = {
+				set_politics = {
+					ruling_party = communism
+					last_election = "[CURRENT_DATE]"
+					election_frequency = 48
+					elections_allowed = yes
+				}
+			}
+			CURRENT_DATE = "[?global.date.GetDateStringNoHour]"
 		}
 		hidden_effect = {
+			ENG_oswald_mosley = {
+				if = {
+					limit = {
+						has_ideology = national_syndicalism
+					}
+					promote_character = national_syndicalism
+				}
+				else = {
+					add_country_leader_role = {
+						promote_leader = yes
+							country_leader = {
+							ideology = national_syndicalism
+							traits = { eng_revolutionary_icon_3 }
+						}
+					}
+				}
+			}
 			add_country_leader_role = {
 				character = ENG_oswald_mosley
 				promote_leader = yes
@@ -2697,13 +2856,32 @@ country_event = {
 	option = {
 		name = ww1_england.40.c
 		ENG_clement_attlee = {
-			add_country_leader_role = {
-				promote_leader = yes
-				country_leader = {
-					ideology = reformist_socialism
-					traits = { eng_major_attlee }
+			if = {
+				limit = {
+					has_ideology = reformist_socialism
+				}
+				promote_character = reformist_socialism
+			}
+			else = {
+				add_country_leader_role = {
+					promote_leader = yes
+						country_leader = {
+						ideology = reformist_socialism
+						traits = { eng_major_attlee }
+					}
 				}
 			}
+		}
+		meta_effect = {
+			text = {
+				set_politics = {
+					ruling_party = communism
+					last_election = "[CURRENT_DATE]"
+					election_frequency = 48
+					elections_allowed = yes
+				}
+			}
+			CURRENT_DATE = "[?global.date.GetDateStringNoHour]"
 		}
 		ai_chance = {
 			base = 5
@@ -2817,6 +2995,7 @@ country_event = {
 			name = ENG_red_army
 		}
 		set_cosmetic_tag = UOB
+		suspend_elections = yes
 		hidden_effect = {
 			set_country_flag = ENG_socialist_britain_flag
 			load_focus_tree = uk_iw_focus
