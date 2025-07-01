@@ -2172,46 +2172,63 @@ country_event = {
 	picture = GFX_report_event_yugoslavia_partisans
 	fire_only_once = yes
 	is_triggered_only = yes
-	option = {
-		name = ww1_england.38.a
+	immediate = {
 		hidden_effect = {
-			news_event = {
-				id = eng_news.3
-			}
-		}
-		start_civil_war = {
-			ideology = communism
-			size = 0.5
-			states = {
-				130
-				122
-				123
-				132
-				131
-				133
-			}
-			keep_political_party_members = yes	
-			keep_unit_leaders_trigger = {
-				OR = {
-					has_trait = trait_royalist
-					has_trait = trait_royal
-					#has_trait = old_guard #the whole point of trait_royalist is to mark which generals stay and which leave
-					#has_trait = politically_connected
-					#has_trait = old_guard_navy
-					#has_trait = trait_royal
-					#has_trait = harsh_leader
+			create_dynamic_country = {
+				original_tag = ROOT
+				every_state = {
+					limit = {
+						is_core_of = ROOT
+					}
+					add_core_of = PREV
 				}
-			}
-			hidden_effect = {
+				every_state = {
+					limit = {
+						is_claimed_by = ROOT
+					}
+					add_claim_by = PREV
+				}
+				set_politics = {
+					ruling_party = communism
+					elections_allowed = no
+				}
+				set_popularities = {
+					democratic = 22
+					neutrality = 0
+					fascism = 14
+					communism = 64
+				}
+				set_capital = { state = 16 }
+				set_country_flag = ENG_socialist_britain_flag
 				set_party_name = {
 					ideology = democratic
 					long_name = ENG_labour_party
 					name = ENG_labour_party
 				}
 				set_cosmetic_tag = UOB
+				reserve_dynamic_country = yes
 			}
-		}
-		hidden_effect = {
+			every_owned_state = {
+				limit = {
+					OR = {
+						region = 2
+						state = 122
+						state = 123
+						state = 133
+					}
+				}
+				transfer_state_to = UOB
+			}
+			transfer_units_fraction = {
+				target = UOB
+				size = 0.5
+				keep_unit_leaders_trigger = {
+					OR = {
+						has_trait = trait_royalist
+						has_trait = trait_royal
+					}
+				}
+			}
 			load_focus_tree = uk_cw_focus
 			set_global_flag = british_civil_war
 			set_country_flag = british_white_civil_war
@@ -2242,11 +2259,6 @@ country_event = {
 						OR = {
 							has_trait = trait_royalist
 							has_trait = trait_royal
-							#has_trait = old_guard
-							#has_trait = politically_connected
-							#has_trait = old_guard_navy
-							#has_trait = trait_royal
-							#has_trait = harsh_leader
 						}
 					}
 					set_nationality = BRE
@@ -2384,25 +2396,6 @@ country_event = {
 				ideology = fascism
 				popularity = 0.32
 			}
-			# transfer_units_fraction = {
-			# 	target = UOB
-			# 	size = 0.27
-			# 	stockpile_ratio = 0.37
-			# 	army_ratio = 0.2
-			# 	navy_ratio = 0
-			# 	air_ratio = 0.1
-			# 	keep_unit_leaders_trigger = {
-			# 		OR = {
-			# 			has_trait = trait_royalist
-			# 			has_trait = trait_royal
-			# 			has_trait = old_guard
-			# 			has_trait = politically_connected
-			# 			has_trait = old_guard_navy
-			# 			has_trait = trait_royal
-			# 			has_trait = harsh_leader
-			# 		}
-			# 	}
-			# }
 			swap_ideas = {
 				remove_idea = ENG_general_strike
 				add_idea = ENG_general_strike_cw
@@ -2432,6 +2425,16 @@ country_event = {
 					count = 5
 				}
 			}
+		}
+	}
+	option = {
+		name = ww1_england.38.a
+		declare_war_on = {
+			target = UOB
+			type = civil_war
+		}
+		hidden_effect = {	
+			add_civil_war_target = UOB
 			release_british_cw_territories = yes
 			every_other_country = {
 				limit = {
@@ -2452,6 +2455,10 @@ country_event = {
 					idea = ENG_idea_influence_of_revolution
 					days = 365
 				}
+			}
+			news_event = {
+				id = eng_news.3
+				hours = 3
 			}
 		}
 	}
@@ -13440,6 +13447,9 @@ country_event = {
 	picture = GFX_report_event_generic_peaceful_annexation
 	is_triggered_only = yes
 	trigger = {
+		any_other_country = {
+			has_country_flag = has_british_monarchy
+		}
 		NOT = {
 			has_country_flag = has_british_monarchy
 		}
