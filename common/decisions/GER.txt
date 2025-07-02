@@ -5908,13 +5908,6 @@ prestigious_projects = {
 	GER_decision_mittelafrika = {
 		icon = GFX_decision_generic_operation
 		allowed = { tag = GER }
-		available = {
-			has_war = no
-			has_global_flag = frankfurt_treaty
-			any_owned_state = {
-				GER_is_MAF_state = yes
-			}
-		}
 		visible = {
 			is_subject = no
 			# has_completed_focus = GER_claim_mittelafrika
@@ -5925,6 +5918,10 @@ prestigious_projects = {
 			MAF = { exists = no }
 			NOT = { has_government = communism }
 			NOT = { has_country_flag = great_war_loser }
+		}
+		available = {
+			has_war = no
+			has_global_flag = frankfurt_treaty
 		}
 		cost = 100
 		days_remove = 50
@@ -5963,77 +5960,28 @@ prestigious_projects = {
 		target_root_trigger = {
 			has_global_flag = frankfurt_treaty
 		}
-		available = {
-			has_war = no
-			has_subject = MAF
-			has_global_flag = frankfurt_treaty
-			OR = {
-				any_owned_state = {
-					NOT = {
-						is_owned_by = MAF
-					}
-					OR = {
-						region = 140
-						region = 184
-						region = 185
-						region = 215
-						region = 217
-						region = 223
-						region = 224
-						region = 226
-						region = 227
-						state = 902 #West Nile
-						state = 903 #Zanzibar
-						state = 660
-						state = 1142
-						state = 769
-					}
-				}
-				has_subject = TOG
-				has_subject = NMB
-				has_subject = TZN
-				has_subject = CMR
-				has_subject = LIB
-				has_subject = KEN #Kenya Revolt :(
-			}
-		}
 		visible = {
 			is_subject = no
 			has_subject = MAF
 			NOT = { has_country_flag = great_war_loser }
-			OR = {
-				any_owned_state = {
-					NOT = {
-						is_owned_by = MAF
-					}
-					OR = {
-						region = 140
-						region = 184
-						region = 185
-						region = 215
-						region = 217
-						region = 223
-						region = 224
-						region = 226
-						region = 227
-						state = 902 #West Nile
-						state = 903 #Zanzibar
-						state = 660
-						state = 1142
-						state = 769
-					}
+			any_state = {
+				NOT = {
+					is_owned_by = MAF
 				}
-				has_subject = TOG
-				has_subject = NMB
-				has_subject = TZN
-				has_subject = CMR
-				has_subject = LIB
-				has_subject = KEN #Kenya Revolt :(
+				GER_is_MAF_state = yes
+				owns_or_subject_of = yes
 			}
 			# has_completed_focus = GER_claim_mittelafrika
 			has_global_flag = great_war_ends
 			NOT = {
 				has_government = communism
+			}
+		}
+		available = {
+			has_war = no
+			has_global_flag = frankfurt_treaty
+			custom_override_tooltip = {
+				tooltip = GER_control_maf_state
 			}
 		}
 		cancel_trigger = {
@@ -6044,120 +5992,67 @@ prestigious_projects = {
 					NOT = { has_subject = MAF }
 					has_government = communism
 				}
-			}	
+			}
 		}	
 		cancel_effect = {
 			add_political_power = 25
 		}
 		cost = 30
 		days_remove = 20
-		days_re_enable = 50
+		days_re_enable = 10
 		ai_will_do = {
 			factor = 100
 		}
 		remove_effect = {
-			every_owned_state = {
+			every_state = {
 				limit = {
 					NOT = {
 						is_owned_by = MAF
 					}
-					OR = {
-						region = 140
-						region = 184
-						region = 185
-						region = 215
-						region = 217
-						region = 223
-						region = 224
-						region = 226
-						region = 227
-						state = 902 #West Nile
-						state = 903 #Zanzibar
-						state = 660
-						state = 1142
-						state = 769
-					}
+					GER_is_MAF_state = yes
+					owns_or_subject_of = yes
 				}
-				transfer_state_to = MAF
-				remove_claim_by = ROOT
+
+				# If the country is a subject, and all its states are in Africa, completely annex it
 				if = {
 					limit = {
-						OR = {
-							# Togoland
-							state = 777
-							state = 794
-							# Kamerun
-							state = 539
-							state = 769
-							state = 813
-							state = 814
-							state = 1143
-							state = 815
-							state = 1144
-							# Ostafrika
-							state = 546
-							state = 768
-							# Südwestafrika
-							state = 541
-							state = 1050
+						owner = {
+							# Don't know why this is needed, but got "MAF trying to annex itself" error without it sometimes, please enlighten me
+							NOT = {
+								tag = MAF
+							}
+							is_subject_of = ROOT
+							all_owned_state = {
+								is_on_continent = africa
+							}
+						}
+					}
+					owner = {
+						drop_cosmetic_tag = yes
+						every_unit_leader = { set_nationality = MAF }
+						MAF = {
+							annex_country = {
+								target = PREV
+								transfer_troops = yes
+							}
+						}
+					}
+				}
+
+				transfer_state_to = MAF
+				remove_claim_by = ROOT
+
+				if = {
+					limit = {
+						THIS = {
+							GER_is_MAF_core = yes
 						}
 					}
 					add_core_of = MAF
 				}
 			}
-			every_other_country = {
-				limit = {
-					is_subject_of = GER
-					OR = {
-						tag = TOG
-						tag = NMB
-						tag = TZN
-						tag = CMR
-						tag = KEN
-						tag = LIB
-					}
-				}
-				hidden_effect = {
-					drop_cosmetic_tag = yes
-					every_owned_state = {
-						limit = {
-							is_on_continent = africa
-							is_core_of = PREV
-						}
-						transfer_state_to = MAF
-						if = {
-							limit = {
-								OR = {
-									# Togoland
-									state = 777
-									state = 794
-									# Kamerun
-									state = 539
-									state = 769
-									state = 813
-									state = 814
-									state = 1143
-									state = 815
-									state = 1144
-									# Ostafrika
-									state = 546
-									state = 768
-									# Südwestafrika
-									state = 541
-								}
-							}
-							add_core_of = MAF
-						}
-					}
-					every_unit_leader = { set_nationality = MAF }
-				}
-				MAF = { 
-					annex_country = {
-						target = PREV
-						 transfer_troops = yes
-					} 
-				}
-			}
+
+			# Set capital to Dar es Salaam
 			if = {
 				limit = {
 					MAF = {
@@ -6171,8 +6066,10 @@ prestigious_projects = {
 					set_capital = { state = 546 }
 				}
 			}
+
 			hidden_effect = {
 				MAF = {
+					# What is the historical background of this bro
 					every_owned_state = {
 						limit = {
 							OR = {
@@ -6183,6 +6080,8 @@ prestigious_projects = {
 						}
 						set_demilitarized_zone = yes
 					}
+
+					# Military access to Ethiopia to access Djibouti
 					if = {
 						limit = {
 							ETH = { is_neighbor_of = PREV }
