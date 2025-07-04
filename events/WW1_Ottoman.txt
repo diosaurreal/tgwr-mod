@@ -2622,7 +2622,7 @@ country_event = {
 	}
 }
 
-# Berlin-Baghdad: Germany changes route
+# Berlin-Baghdad: Germany ignores
 ####
 country_event = {
 	id = ww1_ottoman.58
@@ -2634,9 +2634,41 @@ country_event = {
 		name = ww1_ottoman.58.a
 		news_event = ww1_ottoman.59
 		add_political_power = -100
-		create_wargoal = {
-			type = topple_government
-			target = GER
+		if = {
+			limit = {
+				OR = {
+					is_in_faction_with = FRA
+					NOT = {
+						has_war_with = FRA
+						has_global_flag = great_war
+					}
+				}
+			}
+			FRA = {
+				country_event = {
+					id = ww1_ottoman.166
+					hours = 3
+				}
+			}
+			if = {
+				limit = {
+					RUS = {
+						is_in_faction_with = FRA
+					}
+				}
+				RUS = {
+					country_event = {
+						id = ww1_ottoman.166
+						hours = 3
+					}
+				}
+			}
+		}
+		else = {
+			create_wargoal = {
+				type = topple_government
+				target = GER
+			}
 		}
 		ai_chance = {
 			base = 15
@@ -2654,14 +2686,14 @@ country_event = {
 			modifier = embargo
 		}
 		ai_chance = {
-			factor = 65
+			base = 65
 		}
 	}
 	option = {
 		name = ww1_ottoman.58.c
 		add_war_support = -0.1
 		ai_chance = {
-			factor = 25
+			base = 25
 		}
 	}
 }
@@ -19147,5 +19179,205 @@ country_event = {
 		name = ww1_ottoman.165.a
 		set_global_flag = TUR_abdulhamid_ii_dead
 		retire_character = TUR_abdulhamid_ii
+	}
+}
+# Berlin-Baghdad: France/Russia Answers to Britain
+country_event = {
+	id = ww1_ottoman.166
+	title = ww1_ottoman.166.t
+	desc = ww1_ottoman.166.d
+	is_triggered_only = yes
+	picture = GFX_report_event_generic_sign_treaty2
+	option = {
+		name = ww1_ottoman.166.a
+		set_country_flag = berlin_baghdad_dispute_guaranteed
+		FROM = {
+			country_event = {
+				id = ww1_ottoman.167
+				hours = 3
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+	}
+	option = {
+		name = ww1_ottoman.166.b
+		effect_tooltip = {
+			FROM = {
+				add_opinion_modifier = {
+					target = ROOT
+					modifier = HOI4TGW_Opinion_alliance_malus
+				}
+			}
+		}
+		FROM = {
+			country_event = {
+				id = ww1_ottoman.168
+				hours = 3
+			}
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				add = 50
+				has_opinion = {
+					target = FROM
+					value < 0
+				}
+			}
+			modifier = {
+				add = 50
+				has_opinion = {
+					target = GER
+					value > 30
+				}
+			}
+			modifier = {
+				add = 100
+				has_opinion = {
+					target = GER
+					value > 50
+				}
+			}
+			modifier = {
+				add = 100
+				has_war_support < 0.3
+			}
+		}
+	}
+}
+
+# Berlin-Baghdad: France/Russia Says Yes To War
+country_event = {
+	id = ww1_ottoman.167
+	title = ww1_ottoman.167.t
+	desc = ww1_ottoman.167.d
+	is_triggered_only = yes
+	picture = GFX_report_event_generic_sign_treaty2
+	option = {
+		name = ww1_ottoman.167.a
+		set_country_flag = berlin_baghdad_dispute_guaranteed
+	}
+}
+
+# Berlin-Baghdad: France/Russia Says No To War
+country_event = {
+	id = ww1_ottoman.168
+	title = ww1_ottoman.168.t
+	desc = ww1_ottoman.168.d
+	is_triggered_only = yes
+	picture = GFX_report_event_generic_sign_treaty2
+	option = {
+		name = ww1_ottoman.168.a
+		add_opinion_modifier = {
+			target = FROM
+			modifier = HOI4TGW_Opinion_alliance_malus
+		}
+	}
+}
+
+# Berlin-Baghdad: British Decides To War
+country_event = {
+	id = ww1_ottoman.169
+	title = ww1_ottoman.169.t
+	desc = ww1_ottoman.169.d
+	picture = GFX_report_event_british_inspect_troops
+	fire_only_once = yes
+	trigger = {
+		has_country_flag = berlin_baghdad_dispute_guaranteed
+		tag = ENG
+		is_subject = no
+		has_capitulated = no
+		NOT = {
+			has_global_flag = great_war
+			has_country_flag = great_war_loser
+			has_war_with = GER
+		}
+		country_exists = GER
+	}
+	mean_time_to_happen = {
+		days = 30
+	}
+	option = {
+		name = ww1_ottoman.169.a
+		GER = {
+			country_event = {
+				id = ww1_ottoman.170
+				hours = 3
+			}
+		}
+		custom_effect_tooltip = disagree_effect_tooltip
+		effect_tooltip = {
+			declare_war_on = {
+				target = GER
+				type = topple_government
+			}
+		}
+	}
+}
+
+# Berlin-Baghdad: German Final Answer
+country_event = {
+	id = ww1_ottoman.170
+	title = ww1_ottoman.170.t
+	desc = ww1_ottoman.170.d
+	is_triggered_only = yes
+	picture = GFX_report_event_german_inspect_troops
+	trigger = {
+		NOT = {
+			has_global_flag = great_war
+			has_war_with = ENG
+		}
+	}
+	option = {
+		name = ww1_ottoman.56.a		#change route
+		ENG = {
+			country_event = {
+				id = ww1_ottoman.57
+				hours = 15
+			}
+		}
+		add_political_power = -75
+		set_global_flag = berlin_baghdad_dispute_ended
+		676 = {
+			set_state_flag = TUR_berlin_baghdad_railway_state_blocked
+		}
+		291 = {
+			set_state_flag = TUR_berlin_baghdad_railway_state_blocked
+		}
+		ai_chance = {
+			factor = 10
+		}
+	}
+	option = {
+		name = ww1_ottoman.170.a		#war
+		FROM = {
+			declare_war_on = {
+				target = ROOT
+				type = topple_government
+			}
+			every_other_country = {
+				limit = {
+					has_country_flag = berlin_baghdad_dispute_guaranteed
+				}
+				add_to_war = {
+					targeted_alliance = PREV
+					enemy = ROOT
+					hostility_reason = berlin_baghdad_dispute_guaranteed
+				}
+			}
+		}
+		add_named_threat = {
+			threat = 5
+			name = ww1_ottoman.58.t
+		}
+		ai_chance = {
+			factor = 2
+			modifier = {
+				factor = 0
+				is_historical_focus_on = yes
+			}
+		}
 	}
 }
