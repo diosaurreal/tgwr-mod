@@ -16,136 +16,74 @@ country_event = { #ottoman revolt
 		}
 		if = {
 			limit = {
-				var:global.occupied_state = { is_core_of = YEM }
-				OR = {
-					NOT = { country_exists = YEM }
-					AND = {
-						country_exists = YEM
-						YEM = { NOT = { has_war_with = global.occupier_country } }
-					}
-				}
-			}
-			country_event = { id = ottoman.186 }
-			country_event = { id = ottoman.110 hours = 16 }
-		}
-		if = {
-			limit = {
-				var:global.occupied_state = { is_core_of = ASR }
-				OR = {
-					NOT = { country_exists = ASR }
-					AND = {
-						country_exists = ASR
-						ASR = { NOT = { has_war_with = global.occupier_country } }
-					}
-				}
-			}
-			country_event = { id = ottoman.187 }
-		}
-		if = {
-			limit = {
-				var:global.occupied_state = { is_core_of = HJZ }
-				OR = {
-					NOT = { country_exists = HJZ }
-					AND = {
-						country_exists = HJZ
-						HJZ = { NOT = { has_war_with = global.occupier_country } }
-					}
-				}
-			}
-			country_event = { id = ottoman.188 }
-		}
-		if = {
-			limit = {
 				var:global.occupied_state = {
 					has_dynamic_modifier = { modifier = TUR_albanian_minority }
 					is_core_of = ALB
 				}
-				NOT = { country_exists = ALB }
 			}
-			ALB = {
-				transfer_state = var:global.occupied_state
-				set_temp_variable = { global.occupied_country = THIS }
-				set_temp_variable = { global.new_occupied_country = THIS }
-			}
-			country_event = { id = ottoman.185 }
-		}
-		else_if = {
-			limit = {
-				var:global.occupied_state = {
-					has_dynamic_modifier = { modifier = TUR_albanian_minority }
-					is_core_of = ALB
-				}
-				country_exists = ALB
-				ALB = { NOT = { has_war_with = global.occupier_country } }
-			}
-			create_dynamic_country = {
-				original_tag = ALB
-				copy_tag = ALB
-				transfer_state = var:global.occupied_state
-				set_temp_variable = { global.occupied_country = THIS }
-				set_temp_variable = { global.new_occupied_country = THIS }
-				set_temp_variable = { allowed_party_neutrality = 1 }
-				set_temp_variable = { allowed_party_democratic = 1 }
-				set_temp_variable = { allowed_party_fascism = 1 }
-				set_temp_variable = { allowed_party_communism = 1 }
-				# do not change ideology of occupier country
-				var:global.occupier_country = {
-					remove_from_allowed_party = yes
-				}
-				if = {
-					# if occupied country exists and different than new country
-					# it is white peaced & subject of occupier. ignore its ideology as well
-					limit = { NOT = { check_variable = { global.new_occupied_country = global.occupied_country } } }
-					var:global.occupied_country = {
-						remove_from_allowed_party = yes
-					}
-				}
-				# change government if necesarry
-				random_list = {
-					allowed_party_democratic = {
-						set_popularities = {
-							democratic = 100
-						}
-						set_politics = { ruling_party = democratic elections_allowed = yes }
-					}
-					allowed_party_fascism = {
-						set_popularities = {
-							fascism = 100
-						}
-						set_politics = { ruling_party = fascism elections_allowed = no }
-					}
-					allowed_party_communism = {
-						set_popularities = {
-							communism = 100
-						}
-						set_politics = { ruling_party = communism elections_allowed = no }
-					}
-					allowed_party_neutrality = {
-						set_popularities = {
-							neutrality = 100
-						}
-						set_politics = { ruling_party = neutrality elections_allowed = no }
-					}
+			if = {
+				limit = { NOT = { country_exists = ALB } }
+				ALB = {
+					transfer_state = var:global.occupied_state
+					set_temp_variable = { global.occupied_country = THIS }
+					set_temp_variable = { global.new_occupied_country = THIS }
+					global.occupier_country = { country_event = { id = ottoman.185 } }
 				}
 			}
-			country_event = { id = ottoman.185 }
-		}
-		else_if = {
-			limit = {
-				var:global.occupied_state = {
-					has_dynamic_modifier = { modifier = TUR_albanian_minority }
-					is_core_of = ALB
+			else_if = {
+				limit = {
+					country_exists = ALB
+					ALB = { NOT = { has_war_with = var:global.occupier_country } }
 				}
-				any_country_with_original_tag = {
+				create_dynamic_country = {
+					original_tag = ALB
+					copy_tag = ALB
+					transfer_state = var:global.occupied_state
+					set_temp_variable = { global.occupied_country = THIS }
+					set_temp_variable = { global.new_occupied_country = THIS }
+					set_temp_variable = { allowed_party_neutrality = 1 }
+					set_temp_variable = { allowed_party_democratic = 1 }
+					set_temp_variable = { allowed_party_fascism = 1 }
+					set_temp_variable = { allowed_party_communism = 1 }
+					var:global.occupier_country = { remove_from_allowed_party = yes }
+					if = {
+						limit = { NOT = { check_variable = { global.new_occupied_country = global.occupied_country } } }
+						var:global.occupied_country = { remove_from_allowed_party = yes }
+					}
+					random_list = {
+						allowed_party_democratic = {
+							set_popularities = { democratic = 100 }
+							set_politics = { ruling_party = democratic elections_allowed = yes }
+						}
+						allowed_party_fascism = {
+							set_popularities = { fascism = 100 }
+							set_politics = { ruling_party = fascism elections_allowed = no }
+						}
+						allowed_party_communism = {
+							set_popularities = { communism = 100 }
+							set_politics = { ruling_party = communism elections_allowed = no }
+						}
+						allowed_party_neutrality = {
+							set_popularities = { neutrality = 100 }
+							set_politics = { ruling_party = neutrality elections_allowed = no }
+						}
+					}
+					global.occupier_country = { country_event = { id = ottoman.185 } }
+				}
+			}
+			else_if = {
+				limit = {
+					any_country_with_original_tag = {
+						original_tag_to_check = ALB
+						has_war_with = var:global.occupier_country
+					}
+				}
+				random_country_with_original_tag = {
 					original_tag_to_check = ALB
-					has_war_with = global.occupier_country
+					limit = { has_war_with = var:global.occupier_country }
+					transfer_state = var:global.occupied_state
+					set_temp_variable = { global.new_occupied_country = THIS }
 				}
-			}
-			random_country_with_original_tag = {
-				original_tag_to_check = ALB
-				limit = { has_war_with = global.occupier_country }
-				transfer_state = var:global.occupied_state
-				set_temp_variable = { global.new_occupied_country = THIS }
 			}
 		}
 		else_if = {
@@ -161,7 +99,7 @@ country_event = { #ottoman revolt
 				set_temp_variable = { global.occupied_country = THIS }
 				set_temp_variable = { global.new_occupied_country = THIS }
 				if = {
-					limit = { GRE = { has_war_with = global.occupier_country } }
+					limit = { GRE = { has_war_with = var:global.occupier_country } }
 					GRE = {
 						IKR = { get_current_government_type = yes }
 						set_autonomy = {
@@ -198,173 +136,67 @@ country_event = { #ottoman revolt
 						is_core_of = ALB
 					}
 				}
-				NOT = { country_exists = GRE }
 			}
-			GRE = {
-				transfer_state = var:global.occupied_state
-				set_temp_variable = { global.occupied_country = THIS }
-				set_temp_variable = { global.new_occupied_country = THIS }
+			if = {
+				limit = { NOT = { country_exists = GRE } }
+				GRE = {
+					transfer_state = var:global.occupied_state
+					set_temp_variable = { global.occupied_country = THIS }
+					set_temp_variable = { global.new_occupied_country = THIS }
+				}
 			}
-		}
-		else_if = {
-			limit = {
-				var:global.occupied_state = {
-					has_dynamic_modifier = { modifier = TUR_greek_minority }
-					is_core_of = GRE
-					NOT = {
-						is_core_of = SMS
-						is_core_of = IKR
-						is_core_of = ALB
-					}
+			else_if = {
+				limit = {
+					country_exists = GRE
+					GRE = { NOT = { has_war_with = var:global.occupier_country } }
 				}
-				country_exists = GRE
-				GRE = { NOT = { has_war_with = global.occupier_country } }
-			}
-			create_dynamic_country = {
-				original_tag = GRE
-				copy_tag = GRE
-				transfer_state = var:global.occupied_state
-				set_temp_variable = { global.occupied_country = THIS }
-				set_temp_variable = { global.new_occupied_country = THIS }
-				set_temp_variable = { allowed_party_neutrality = 1 }
-				set_temp_variable = { allowed_party_democratic = 1 }
-				set_temp_variable = { allowed_party_fascism = 1 }
-				set_temp_variable = { allowed_party_communism = 1 }
-				# do not change ideology of occupier country
-				var:global.occupier_country = {
-					remove_from_allowed_party = yes
-				}
-				if = {
-					# if occupied country exists and different than new country
-					# it is white peaced & subject of occupier. ignore its ideology as well
-					limit = { NOT = { check_variable = { global.new_occupied_country = global.occupied_country } } }
-					var:global.occupied_country = {
-						remove_from_allowed_party = yes
+				create_dynamic_country = {
+					original_tag = GRE
+					copy_tag = GRE
+					transfer_state = var:global.occupied_state
+					set_temp_variable = { global.occupied_country = THIS }
+					set_temp_variable = { global.new_occupied_country = THIS }
+					set_temp_variable = { allowed_party_neutrality = 1 }
+					set_temp_variable = { allowed_party_democratic = 1 }
+					set_temp_variable = { allowed_party_fascism = 1 }
+					set_temp_variable = { allowed_party_communism = 1 }
+					var:global.occupier_country = { remove_from_allowed_party = yes }
+					if = {
+						limit = { NOT = { check_variable = { global.new_occupied_country = global.occupied_country } } }
+						var:global.occupied_country = { remove_from_allowed_party = yes }
 					}
-				}
-				# change government if necesarry
-				random_list = {
-					allowed_party_democratic = {
-						set_popularities = {
-							democratic = 100
+					random_list = {
+						allowed_party_democratic = {
+							set_popularities = { democratic = 100 }
+							set_politics = { ruling_party = democratic elections_allowed = yes }
 						}
-						set_politics = { ruling_party = democratic elections_allowed = yes }
-					}
-					allowed_party_fascism = {
-						set_popularities = {
-							fascism = 100
+						allowed_party_fascism = {
+							set_popularities = { fascism = 100 }
+							set_politics = { ruling_party = fascism elections_allowed = no }
 						}
-						set_politics = { ruling_party = fascism elections_allowed = no }
-					}
-					allowed_party_communism = {
-						set_popularities = {
-							communism = 100
+						allowed_party_communism = {
+							set_popularities = { communism = 100 }
+							set_politics = { ruling_party = communism elections_allowed = no }
 						}
-						set_politics = { ruling_party = communism elections_allowed = no }
-					}
-					allowed_party_neutrality = {
-						set_popularities = {
-							neutrality = 100
+						allowed_party_neutrality = {
+							set_popularities = { neutrality = 100 }
+							set_politics = { ruling_party = neutrality elections_allowed = no }
 						}
-						set_politics = { ruling_party = neutrality elections_allowed = no }
 					}
 				}
 			}
-		}
-		else_if = {
-			limit = {
-				var:global.occupied_state = {
-					has_dynamic_modifier = { modifier = TUR_greek_minority }
-					is_core_of = GRE
-					NOT = {
-						is_core_of = SMS
-						is_core_of = IKR
-						is_core_of = ALB
+			else_if = {
+				limit = {
+					any_country_with_original_tag = {
+						original_tag_to_check = GRE
+						has_war_with = var:global.occupier_country
 					}
 				}
-				any_country_with_original_tag = {
+				random_country_with_original_tag = {
 					original_tag_to_check = GRE
-					has_war_with = global.occupier_country
-				}
-			}
-			random_country_with_original_tag = {
-				original_tag_to_check = GRE
-				limit = { has_war_with = global.occupier_country }
-				transfer_state = var:global.occupied_state
-				set_temp_variable = { global.new_occupied_country = THIS }
-			}
-		}
-		else_if = {
-			limit = {
-				var:global.occupied_state = {
-					has_dynamic_modifier = { modifier = TUR_south_slavic_minority }
-					is_core_of = BUL
-				}
-				NOT = { country_exists = BUL }
-			}
-			BUL = {
-				transfer_state = var:global.occupied_state
-				set_temp_variable = { global.occupied_country = THIS }
-				set_temp_variable = { global.new_occupied_country = THIS }
-			}
-		}
-		else_if = {
-			limit = {
-				var:global.occupied_state = {
-					has_dynamic_modifier = { modifier = TUR_south_slavic_minority }
-					is_core_of = BUL
-				}
-				country_exists = BUL
-				BUL = { NOT = { has_war_with = global.occupier_country } }
-			}
-			create_dynamic_country = {
-				original_tag = BUL
-				copy_tag = BUL
-				transfer_state = var:global.occupied_state
-				set_temp_variable = { global.occupied_country = THIS }
-				set_temp_variable = { global.new_occupied_country = THIS }
-				set_temp_variable = { allowed_party_neutrality = 1 }
-				set_temp_variable = { allowed_party_democratic = 1 }
-				set_temp_variable = { allowed_party_fascism = 1 }
-				set_temp_variable = { allowed_party_communism = 1 }
-				# do not change ideology of occupier country
-				var:global.occupier_country = {
-					remove_from_allowed_party = yes
-				}
-				if = {
-					# if occupied country exists and different than new country
-					# it is white peaced & subject of occupier. ignore its ideology as well
-					limit = { NOT = { check_variable = { global.new_occupied_country = global.occupied_country } } }
-					var:global.occupied_country = {
-						remove_from_allowed_party = yes
-					}
-				}
-				# change government if necesarry
-				random_list = {
-					allowed_party_democratic = {
-						set_popularities = {
-							democratic = 100
-						}
-						set_politics = { ruling_party = democratic elections_allowed = yes }
-					}
-					allowed_party_fascism = {
-						set_popularities = {
-							fascism = 100
-						}
-						set_politics = { ruling_party = fascism elections_allowed = no }
-					}
-					allowed_party_communism = {
-						set_popularities = {
-							communism = 100
-						}
-						set_politics = { ruling_party = communism elections_allowed = no }
-					}
-					allowed_party_neutrality = {
-						set_popularities = {
-							neutrality = 100
-						}
-						set_politics = { ruling_party = neutrality elections_allowed = no }
-					}
+					limit = { has_war_with = var:global.occupier_country }
+					transfer_state = var:global.occupied_state
+					set_temp_variable = { global.new_occupied_country = THIS }
 				}
 			}
 		}
@@ -374,91 +206,67 @@ country_event = { #ottoman revolt
 					has_dynamic_modifier = { modifier = TUR_south_slavic_minority }
 					is_core_of = BUL
 				}
-				any_country_with_original_tag = {
+			}
+			if = {
+				limit = { NOT = { country_exists = BUL } }
+				BUL = {
+					transfer_state = var:global.occupied_state
+					set_temp_variable = { global.occupied_country = THIS }
+					set_temp_variable = { global.new_occupied_country = THIS }
+				}
+			}
+			else_if = {
+				limit = {
+					country_exists = BUL
+					BUL = { NOT = { has_war_with = var:global.occupier_country } }
+				}
+				create_dynamic_country = {
+					original_tag = BUL
+					copy_tag = BUL
+					transfer_state = var:global.occupied_state
+					set_temp_variable = { global.occupied_country = THIS }
+					set_temp_variable = { global.new_occupied_country = THIS }
+					set_temp_variable = { allowed_party_neutrality = 1 }
+					set_temp_variable = { allowed_party_democratic = 1 }
+					set_temp_variable = { allowed_party_fascism = 1 }
+					set_temp_variable = { allowed_party_communism = 1 }
+					var:global.occupier_country = { remove_from_allowed_party = yes }
+					if = {
+						limit = { NOT = { check_variable = { global.new_occupied_country = global.occupied_country } } }
+						var:global.occupied_country = { remove_from_allowed_party = yes }
+					}
+					random_list = {
+						allowed_party_democratic = {
+							set_popularities = { democratic = 100 }
+							set_politics = { ruling_party = democratic elections_allowed = yes }
+						}
+						allowed_party_fascism = {
+							set_popularities = { fascism = 100 }
+							set_politics = { ruling_party = fascism elections_allowed = no }
+						}
+						allowed_party_communism = {
+							set_popularities = { communism = 100 }
+							set_politics = { ruling_party = communism elections_allowed = no }
+						}
+						allowed_party_neutrality = {
+							set_popularities = { neutrality = 100 }
+							set_politics = { ruling_party = neutrality elections_allowed = no }
+						}
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					any_country_with_original_tag = {
+						original_tag_to_check = BUL
+						has_war_with = var:global.occupier_country
+					}
+				}
+				random_country_with_original_tag = {
 					original_tag_to_check = BUL
-					has_war_with = global.occupier_country
-				}
-			}
-			random_country_with_original_tag = {
-				original_tag_to_check = BUL
-				limit = { has_war_with = global.occupier_country }
-				transfer_state = var:global.occupied_state
-				set_temp_variable = { global.new_occupied_country = THIS }
-			}
-		}
-		else_if = {
-			limit = {
-				var:global.occupied_state = {
-					has_dynamic_modifier = { modifier = TUR_south_slavic_minority }
-					is_core_of = SER
-					NOT = { is_core_of = ALB }
-				}
-				NOT = { country_exists = SER }
-			}
-			SER = {
-				transfer_state = var:global.occupied_state
-				set_temp_variable = { global.occupied_country = THIS }
-				set_temp_variable = { global.new_occupied_country = THIS }
-			}
-		}
-		else_if = {
-			limit = {
-				var:global.occupied_state = {
-					has_dynamic_modifier = { modifier = TUR_south_slavic_minority }
-					is_core_of = SER
-					NOT = { is_core_of = ALB }
-				}
-				country_exists = SER
-				SER = { NOT = { has_war_with = global.occupier_country } }
-			}
-			create_dynamic_country = {
-				original_tag = SER
-				copy_tag = SER
-				transfer_state = var:global.occupied_state
-				set_temp_variable = { global.occupied_country = THIS }
-				set_temp_variable = { global.new_occupied_country = THIS }
-				set_temp_variable = { allowed_party_neutrality = 1 }
-				set_temp_variable = { allowed_party_democratic = 1 }
-				set_temp_variable = { allowed_party_fascism = 1 }
-				set_temp_variable = { allowed_party_communism = 1 }
-				# do not change ideology of occupier country
-				var:global.occupier_country = {
-					remove_from_allowed_party = yes
-				}
-				if = {
-					# if occupied country exists and different than new country
-					# it is white peaced & subject of occupier. ignore its ideology as well
-					limit = { NOT = { check_variable = { global.new_occupied_country = global.occupied_country } } }
-					var:global.occupied_country = {
-						remove_from_allowed_party = yes
-					}
-				}
-				# change government if necesarry
-				random_list = {
-					allowed_party_democratic = {
-						set_popularities = {
-							democratic = 100
-						}
-						set_politics = { ruling_party = democratic elections_allowed = yes }
-					}
-					allowed_party_fascism = {
-						set_popularities = {
-							fascism = 100
-						}
-						set_politics = { ruling_party = fascism elections_allowed = no }
-					}
-					allowed_party_communism = {
-						set_popularities = {
-							communism = 100
-						}
-						set_politics = { ruling_party = communism elections_allowed = no }
-					}
-					allowed_party_neutrality = {
-						set_popularities = {
-							neutrality = 100
-						}
-						set_politics = { ruling_party = neutrality elections_allowed = no }
-					}
+					limit = { has_war_with = var:global.occupier_country }
+					transfer_state = var:global.occupied_state
+					set_temp_variable = { global.new_occupied_country = THIS }
 				}
 			}
 		}
@@ -469,91 +277,67 @@ country_event = { #ottoman revolt
 					is_core_of = SER
 					NOT = { is_core_of = ALB }
 				}
-				any_country_with_original_tag = {
+			}
+			if = {
+				limit = { NOT = { country_exists = SER } }
+				SER = {
+					transfer_state = var:global.occupied_state
+					set_temp_variable = { global.occupied_country = THIS }
+					set_temp_variable = { global.new_occupied_country = THIS }
+				}
+			}
+			else_if = {
+				limit = {
+					country_exists = SER
+					SER = { NOT = { has_war_with = var:global.occupier_country } }
+				}
+				create_dynamic_country = {
+					original_tag = SER
+					copy_tag = SER
+					transfer_state = var:global.occupied_state
+					set_temp_variable = { global.occupied_country = THIS }
+					set_temp_variable = { global.new_occupied_country = THIS }
+					set_temp_variable = { allowed_party_neutrality = 1 }
+					set_temp_variable = { allowed_party_democratic = 1 }
+					set_temp_variable = { allowed_party_fascism = 1 }
+					set_temp_variable = { allowed_party_communism = 1 }
+					var:global.occupier_country = { remove_from_allowed_party = yes }
+					if = {
+						limit = { NOT = { check_variable = { global.new_occupied_country = global.occupied_country } } }
+						var:global.occupied_country = { remove_from_allowed_party = yes }
+					}
+					random_list = {
+						allowed_party_democratic = {
+							set_popularities = { democratic = 100 }
+							set_politics = { ruling_party = democratic elections_allowed = yes }
+						}
+						allowed_party_fascism = {
+							set_popularities = { fascism = 100 }
+							set_politics = { ruling_party = fascism elections_allowed = no }
+						}
+						allowed_party_communism = {
+							set_popularities = { communism = 100 }
+							set_politics = { ruling_party = communism elections_allowed = no }
+						}
+						allowed_party_neutrality = {
+							set_popularities = { neutrality = 100 }
+							set_politics = { ruling_party = neutrality elections_allowed = no }
+						}
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					any_country_with_original_tag = {
+						original_tag_to_check = SER
+						has_war_with = var:global.occupier_country
+					}
+				}
+				random_country_with_original_tag = {
 					original_tag_to_check = SER
-					has_war_with = global.occupier_country
-				}
-			}
-			random_country_with_original_tag = {
-				original_tag_to_check = SER
-				limit = { has_war_with = global.occupier_country }
-				transfer_state = var:global.occupied_state
-				set_temp_variable = { global.new_occupied_country = THIS }
-			}
-		}
-		else_if = {
-			limit = {
-				var:global.occupied_state = {
-					has_dynamic_modifier = { modifier = TUR_south_slavic_minority }
-					is_core_of = MNT
-					NOT = { is_core_of = ALB }
-				}
-				NOT = { country_exists = MNT }
-			}
-			MNT = {
-				transfer_state = var:global.occupied_state
-				set_temp_variable = { global.occupied_country = THIS }
-				set_temp_variable = { global.new_occupied_country = THIS }
-			}
-		}
-		else_if = {
-			limit = {
-				var:global.occupied_state = {
-					has_dynamic_modifier = { modifier = TUR_south_slavic_minority }
-					is_core_of = MNT
-					NOT = { is_core_of = ALB }
-				}
-				country_exists = MNT
-				MNT = { NOT = { has_war_with = global.occupier_country } }
-			}
-			create_dynamic_country = {
-				original_tag = MNT
-				copy_tag = MNT
-				transfer_state = var:global.occupied_state
-				set_temp_variable = { global.occupied_country = THIS }
-				set_temp_variable = { global.new_occupied_country = THIS }
-				set_temp_variable = { allowed_party_neutrality = 1 }
-				set_temp_variable = { allowed_party_democratic = 1 }
-				set_temp_variable = { allowed_party_fascism = 1 }
-				set_temp_variable = { allowed_party_communism = 1 }
-				# do not change ideology of occupier country
-				var:global.occupier_country = {
-					remove_from_allowed_party = yes
-				}
-				if = {
-					# if occupied country exists and different than new country
-					# it is white peaced & subject of occupier. ignore its ideology as well
-					limit = { NOT = { check_variable = { global.new_occupied_country = global.occupied_country } } }
-					var:global.occupied_country = {
-						remove_from_allowed_party = yes
-					}
-				}
-				# change government if necesarry
-				random_list = {
-					allowed_party_democratic = {
-						set_popularities = {
-							democratic = 100
-						}
-						set_politics = { ruling_party = democratic elections_allowed = yes }
-					}
-					allowed_party_fascism = {
-						set_popularities = {
-							fascism = 100
-						}
-						set_politics = { ruling_party = fascism elections_allowed = no }
-					}
-					allowed_party_communism = {
-						set_popularities = {
-							communism = 100
-						}
-						set_politics = { ruling_party = communism elections_allowed = no }
-					}
-					allowed_party_neutrality = {
-						set_popularities = {
-							neutrality = 100
-						}
-						set_politics = { ruling_party = neutrality elections_allowed = no }
-					}
+					limit = { has_war_with = var:global.occupier_country }
+					transfer_state = var:global.occupied_state
+					set_temp_variable = { global.new_occupied_country = THIS }
 				}
 			}
 		}
@@ -564,181 +348,137 @@ country_event = { #ottoman revolt
 					is_core_of = MNT
 					NOT = { is_core_of = ALB }
 				}
-				any_country_with_original_tag = {
+			}
+			if = {
+				limit = { NOT = { country_exists = MNT } }
+				MNT = {
+					transfer_state = var:global.occupied_state
+					set_temp_variable = { global.occupied_country = THIS }
+					set_temp_variable = { global.new_occupied_country = THIS }
+				}
+			}
+			else_if = {
+				limit = {
+					country_exists = MNT
+					MNT = { NOT = { has_war_with = var:global.occupier_country } }
+				}
+				create_dynamic_country = {
+					original_tag = MNT
+					copy_tag = MNT
+					transfer_state = var:global.occupied_state
+					set_temp_variable = { global.occupied_country = THIS }
+					set_temp_variable = { global.new_occupied_country = THIS }
+					set_temp_variable = { allowed_party_neutrality = 1 }
+					set_temp_variable = { allowed_party_democratic = 1 }
+					set_temp_variable = { allowed_party_fascism = 1 }
+					set_temp_variable = { allowed_party_communism = 1 }
+					var:global.occupier_country = { remove_from_allowed_party = yes }
+					if = {
+						limit = { NOT = { check_variable = { global.new_occupied_country = global.occupied_country } } }
+						var:global.occupied_country = { remove_from_allowed_party = yes }
+					}
+					random_list = {
+						allowed_party_democratic = {
+							set_popularities = { democratic = 100 }
+							set_politics = { ruling_party = democratic elections_allowed = yes }
+						}
+						allowed_party_fascism = {
+							set_popularities = { fascism = 100 }
+							set_politics = { ruling_party = fascism elections_allowed = no }
+						}
+						allowed_party_communism = {
+							set_popularities = { communism = 100 }
+							set_politics = { ruling_party = communism elections_allowed = no }
+						}
+						allowed_party_neutrality = {
+							set_popularities = { neutrality = 100 }
+							set_politics = { ruling_party = neutrality elections_allowed = no }
+						}
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					any_country_with_original_tag = {
+						original_tag_to_check = MNT
+						has_war_with = var:global.occupier_country
+					}
+				}
+				random_country_with_original_tag = {
 					original_tag_to_check = MNT
-					has_war_with = global.occupier_country
+					limit = { has_war_with = var:global.occupier_country }
+					transfer_state = var:global.occupied_state
+					set_temp_variable = { global.new_occupied_country = THIS }
 				}
 			}
-			random_country_with_original_tag = {
-				original_tag_to_check = MNT
-				limit = { has_war_with = global.occupier_country }
-				transfer_state = var:global.occupied_state
-				set_temp_variable = { global.new_occupied_country = THIS }
-			}
 		}
-		else_if = {
+		if = {
 			limit = {
 				var:global.occupied_state = {
 					has_dynamic_modifier = { modifier = TUR_armenian_minority }
 					is_core_of = ARM
 				}
-				NOT = { country_exists = ARM }
 			}
-			ARM = {
-				transfer_state = var:global.occupied_state
-				set_temp_variable = { global.occupied_country = THIS }
-				set_temp_variable = { global.new_occupied_country = THIS }
+			if = {
+				limit = { NOT = { country_exists = ARM } }
+				ARM = {
+					transfer_state = var:global.occupied_state
+					set_temp_variable = { global.occupied_country = THIS }
+					set_temp_variable = { global.new_occupied_country = THIS }
+				}
 			}
-		}
-		else_if = {
-			limit = {
-				var:global.occupied_state = {
-					has_dynamic_modifier = { modifier = TUR_armenian_minority }
-					is_core_of = ARM
+			else_if = {
+				limit = {
+					country_exists = ARM
+					ARM = { NOT = { has_war_with = var:global.occupier_country } }
 				}
-				country_exists = ARM
-				ARM = { NOT = { has_war_with = global.occupier_country } }
-			}
-			create_dynamic_country = {
-				original_tag = ARM
-				copy_tag = ARM
-				transfer_state = var:global.occupied_state
-				set_temp_variable = { global.occupied_country = THIS }
-				set_temp_variable = { global.new_occupied_country = THIS }
-				set_temp_variable = { allowed_party_neutrality = 1 }
-				set_temp_variable = { allowed_party_democratic = 1 }
-				set_temp_variable = { allowed_party_fascism = 1 }
-				set_temp_variable = { allowed_party_communism = 1 }
-				# do not change ideology of occupier country
-				var:global.occupier_country = {
-					remove_from_allowed_party = yes
-				}
-				if = {
-					# if occupied country exists and different than new country
-					# it is white peaced & subject of occupier. ignore its ideology as well
-					limit = { NOT = { check_variable = { global.new_occupied_country = global.occupied_country } } }
-					var:global.occupied_country = {
-						remove_from_allowed_party = yes
+				create_dynamic_country = {
+					original_tag = ARM
+					copy_tag = ARM
+					transfer_state = var:global.occupied_state
+					set_temp_variable = { global.occupied_country = THIS }
+					set_temp_variable = { global.new_occupied_country = THIS }
+					set_temp_variable = { allowed_party_neutrality = 1 }
+					set_temp_variable = { allowed_party_democratic = 1 }
+					set_temp_variable = { allowed_party_fascism = 1 }
+					set_temp_variable = { allowed_party_communism = 1 }
+					var:global.occupier_country = { remove_from_allowed_party = yes }
+					if = {
+						limit = { NOT = { check_variable = { global.new_occupied_country = global.occupied_country } } }
+						var:global.occupied_country = { remove_from_allowed_party = yes }
 					}
-				}
-				# change government if necesarry
-				random_list = {
-					allowed_party_democratic = {
-						set_popularities = {
-							democratic = 100
+					random_list = {
+						allowed_party_democratic = {
+							set_popularities = { democratic = 100 }
+							set_politics = { ruling_party = democratic elections_allowed = yes }
 						}
-						set_politics = { ruling_party = democratic elections_allowed = yes }
-					}
-					allowed_party_fascism = {
-						set_popularities = {
-							fascism = 100
+						allowed_party_fascism = {
+							set_popularities = { fascism = 100 }
+							set_politics = { ruling_party = fascism elections_allowed = no }
 						}
-						set_politics = { ruling_party = fascism elections_allowed = no }
-					}
-					allowed_party_communism = {
-						set_popularities = {
-							communism = 100
+						allowed_party_communism = {
+							set_popularities = { communism = 100 }
+							set_politics = { ruling_party = communism elections_allowed = no }
 						}
-						set_politics = { ruling_party = communism elections_allowed = no }
-					}
-					allowed_party_neutrality = {
-						set_popularities = {
-							neutrality = 100
+						allowed_party_neutrality = {
+							set_popularities = { neutrality = 100 }
+							set_politics = { ruling_party = neutrality elections_allowed = no }
 						}
-						set_politics = { ruling_party = neutrality elections_allowed = no }
 					}
 				}
 			}
-		}
-		else_if = {
-			limit = {
-				var:global.occupied_state = {
-					has_dynamic_modifier = { modifier = TUR_armenian_minority }
-					is_core_of = ARM
+			else_if = {
+				limit = {
+					any_country_with_original_tag = {
+						original_tag_to_check = ARM
+						has_war_with = var:global.occupier_country
+					}
 				}
-				any_country_with_original_tag = {
+				random_country_with_original_tag = {
 					original_tag_to_check = ARM
-					has_war_with = global.occupier_country
-				}
-			}
-			random_country_with_original_tag = {
-				original_tag_to_check = ARM
-				limit = { has_war_with = global.occupier_country }
-				transfer_state = var:global.occupied_state
-				set_temp_variable = { global.new_occupied_country = THIS }
-			}
-		}
-		else_if = {
-			limit = {
-				var:global.occupied_state = {
-					has_dynamic_modifier = { modifier = TUR_assyrian_minority }
-					is_core_of = ASY
-				}
-				NOT = { country_exists = ASY }
-			}
-			ASY = {
-				transfer_state = var:global.occupied_state
-				set_temp_variable = { global.occupied_country = THIS }
-				set_temp_variable = { global.new_occupied_country = THIS }
-			}
-		}
-		else_if = {
-			limit = {
-				var:global.occupied_state = {
-					has_dynamic_modifier = { modifier = TUR_assyrian_minority }
-					is_core_of = ASY
-				}
-				country_exists = ASY
-				ASY = { NOT = { has_war_with = global.occupier_country } }
-			}
-			create_dynamic_country = {
-				original_tag = ASY
-				copy_tag = ASY
-				transfer_state = var:global.occupied_state
-				set_temp_variable = { global.occupied_country = THIS }
-				set_temp_variable = { global.new_occupied_country = THIS }
-				set_temp_variable = { allowed_party_neutrality = 1 }
-				set_temp_variable = { allowed_party_democratic = 1 }
-				set_temp_variable = { allowed_party_fascism = 1 }
-				set_temp_variable = { allowed_party_communism = 1 }
-				# do not change ideology of occupier country
-				var:global.occupier_country = {
-					remove_from_allowed_party = yes
-				}
-				if = {
-					# if occupied country exists and different than new country
-					# it is white peaced & subject of occupier. ignore its ideology as well
-					limit = { NOT = { check_variable = { global.new_occupied_country = global.occupied_country } } }
-					var:global.occupied_country = {
-						remove_from_allowed_party = yes
-					}
-				}
-				# change government if necesarry
-				random_list = {
-					allowed_party_democratic = {
-						set_popularities = {
-							democratic = 100
-						}
-						set_politics = { ruling_party = democratic elections_allowed = yes }
-					}
-					allowed_party_fascism = {
-						set_popularities = {
-							fascism = 100
-						}
-						set_politics = { ruling_party = fascism elections_allowed = no }
-					}
-					allowed_party_communism = {
-						set_popularities = {
-							communism = 100
-						}
-						set_politics = { ruling_party = communism elections_allowed = no }
-					}
-					allowed_party_neutrality = {
-						set_popularities = {
-							neutrality = 100
-						}
-						set_politics = { ruling_party = neutrality elections_allowed = no }
-					}
+					limit = { has_war_with = var:global.occupier_country }
+					transfer_state = var:global.occupied_state
+					set_temp_variable = { global.new_occupied_country = THIS }
 				}
 			}
 		}
@@ -748,14 +488,66 @@ country_event = { #ottoman revolt
 					has_dynamic_modifier = { modifier = TUR_assyrian_minority }
 					is_core_of = ASY
 				}
+			}
+			if = {
+				limit = { NOT = { country_exists = ASY } }
+				ASY = {
+					transfer_state = var:global.occupied_state
+					set_temp_variable = { global.occupied_country = THIS }
+					set_temp_variable = { global.new_occupied_country = THIS }
+				}
+			}
+			else_if = {
+				limit = {
+					country_exists = ASY
+					ASY = { NOT = { has_war_with = var:global.occupier_country } }
+				}
+				create_dynamic_country = {
+					original_tag = ASY
+					copy_tag = ASY
+					transfer_state = var:global.occupied_state
+					set_temp_variable = { global.occupied_country = THIS }
+					set_temp_variable = { global.new_occupied_country = THIS }
+					set_temp_variable = { allowed_party_neutrality = 1 }
+					set_temp_variable = { allowed_party_democratic = 1 }
+					set_temp_variable = { allowed_party_fascism = 1 }
+					set_temp_variable = { allowed_party_communism = 1 }
+					var:global.occupier_country = { remove_from_allowed_party = yes }
+					if = {
+						limit = { NOT = { check_variable = { global.new_occupied_country = global.occupied_country } } }
+						var:global.occupied_country = { remove_from_allowed_party = yes }
+					}
+					random_list = {
+						allowed_party_democratic = {
+							set_popularities = { democratic = 100 }
+							set_politics = { ruling_party = democratic elections_allowed = yes }
+						}
+						allowed_party_fascism = {
+							set_popularities = { fascism = 100 }
+							set_politics = { ruling_party = fascism elections_allowed = no }
+						}
+						allowed_party_communism = {
+							set_popularities = { communism = 100 }
+							set_politics = { ruling_party = communism elections_allowed = no }
+						}
+						allowed_party_neutrality = {
+							set_popularities = { neutrality = 100 }
+							set_politics = { ruling_party = neutrality elections_allowed = no }
+						}
+					}
+				}
+			}
+		}
+		else_if = {
+			limit = {
 				any_country_with_original_tag = {
 					original_tag_to_check = ASY
-					has_war_with = global.occupier_country
+					has_war_with = var:global.occupier_country
 				}
 			}
 			random_country_with_original_tag = {
 				original_tag_to_check = ASY
-				limit = { has_war_with = global.occupier_country }
+				limit = { has_war_with = var:global.occupier_country }
 				transfer_state = var:global.occupied_state
 				set_temp_variable = { global.new_occupied_country = THIS }
 			}
@@ -766,163 +558,67 @@ country_event = { #ottoman revolt
 					has_dynamic_modifier = { modifier = TUR_kurdish_minority }
 					is_core_of = KUR
 				}
-				NOT = { country_exists = KUR }
 			}
-			KUR = {
-				transfer_state = var:global.occupied_state
-				set_temp_variable = { global.occupied_country = THIS }
-				set_temp_variable = { global.new_occupied_country = THIS }
+			if = {
+				limit = { NOT = { country_exists = KUR } }
+				KUR = {
+					transfer_state = var:global.occupied_state
+					set_temp_variable = { global.occupied_country = THIS }
+					set_temp_variable = { global.new_occupied_country = THIS }
+				}
 			}
-		}
-		else_if = {
-			limit = {
-				var:global.occupied_state = {
-					has_dynamic_modifier = { modifier = TUR_kurdish_minority }
-					is_core_of = KUR
+			else_if = {
+				limit = {
+					country_exists = KUR
+					KUR = { NOT = { has_war_with = var:global.occupier_country } }
 				}
-				country_exists = KUR
-				KUR = { NOT = { has_war_with = global.occupier_country } }
-			}
-			create_dynamic_country = {
-				original_tag = KUR
-				copy_tag = KUR
-				transfer_state = var:global.occupied_state
-				set_temp_variable = { global.occupied_country = THIS }
-				set_temp_variable = { global.new_occupied_country = THIS }
-				set_temp_variable = { allowed_party_neutrality = 1 }
-				set_temp_variable = { allowed_party_democratic = 1 }
-				set_temp_variable = { allowed_party_fascism = 1 }
-				set_temp_variable = { allowed_party_communism = 1 }
-				# do not change ideology of occupier country
-				var:global.occupier_country = {
-					remove_from_allowed_party = yes
-				}
-				if = {
-					# if occupied country exists and different than new country
-					# it is white peaced & subject of occupier. ignore its ideology as well
-					limit = { NOT = { check_variable = { global.new_occupied_country = global.occupied_country } } }
-					var:global.occupied_country = {
-						remove_from_allowed_party = yes
+				create_dynamic_country = {
+					original_tag = KUR
+					copy_tag = KUR
+					transfer_state = var:global.occupied_state
+					set_temp_variable = { global.occupied_country = THIS }
+					set_temp_variable = { global.new_occupied_country = THIS }
+					set_temp_variable = { allowed_party_neutrality = 1 }
+					set_temp_variable = { allowed_party_democratic = 1 }
+					set_temp_variable = { allowed_party_fascism = 1 }
+					set_temp_variable = { allowed_party_communism = 1 }
+					var:global.occupier_country = { remove_from_allowed_party = yes }
+					if = {
+						limit = { NOT = { check_variable = { global.new_occupied_country = global.occupied_country } } }
+						var:global.occupied_country = { remove_from_allowed_party = yes }
 					}
-				}
-				# change government if necesarry
-				random_list = {
-					allowed_party_democratic = {
-						set_popularities = {
-							democratic = 100
+					random_list = {
+						allowed_party_democratic = {
+							set_popularities = { democratic = 100 }
+							set_politics = { ruling_party = democratic elections_allowed = yes }
 						}
-						set_politics = { ruling_party = democratic elections_allowed = yes }
-					}
-					allowed_party_fascism = {
-						set_popularities = {
-							fascism = 100
+						allowed_party_fascism = {
+							set_popularities = { fascism = 100 }
+							set_politics = { ruling_party = fascism elections_allowed = no }
 						}
-						set_politics = { ruling_party = fascism elections_allowed = no }
-					}
-					allowed_party_communism = {
-						set_popularities = {
-							communism = 100
+						allowed_party_communism = {
+							set_popularities = { communism = 100 }
+							set_politics = { ruling_party = communism elections_allowed = no }
 						}
-						set_politics = { ruling_party = communism elections_allowed = no }
-					}
-					allowed_party_neutrality = {
-						set_popularities = {
-							neutrality = 100
+						allowed_party_neutrality = {
+							set_popularities = { neutrality = 100 }
+							set_politics = { ruling_party = neutrality elections_allowed = no }
 						}
-						set_politics = { ruling_party = neutrality elections_allowed = no }
 					}
 				}
 			}
-		}
-		else_if = {
-			limit = {
-				var:global.occupied_state = {
-					has_dynamic_modifier = { modifier = TUR_kurdish_minority }
-					is_core_of = KUR
+			else_if = {
+				limit = {
+					any_country_with_original_tag = {
+						original_tag_to_check = KUR
+						has_war_with = var:global.occupier_country
+					}
 				}
-				any_country_with_original_tag = {
+				random_country_with_original_tag = {
 					original_tag_to_check = KUR
-					has_war_with = global.occupier_country
-				}
-			}
-			random_country_with_original_tag = {
-				original_tag_to_check = KUR
-				limit = { has_war_with = global.occupier_country }
-				transfer_state = var:global.occupied_state
-				set_temp_variable = { global.new_occupied_country = THIS }
-			}
-		}
-		else_if = {
-			limit = {
-				var:global.occupied_state = {
-					has_dynamic_modifier = { modifier = TUR_georgian_minority }
-					is_core_of = GEO
-				}
-				NOT = { country_exists = GEO }
-			}
-			GEO = {
-				transfer_state = var:global.occupied_state
-				set_temp_variable = { global.occupied_country = THIS }
-				set_temp_variable = { global.new_occupied_country = THIS }
-			}
-		}
-		else_if = {
-			limit = {
-				var:global.occupied_state = {
-					has_dynamic_modifier = { modifier = TUR_georgian_minority }
-					is_core_of = GEO
-				}
-				country_exists = GEO
-				GEO = { NOT = { has_war_with = global.occupier_country } }
-			}
-			create_dynamic_country = {
-				original_tag = GEO
-				copy_tag = GEO
-				transfer_state = var:global.occupied_state
-				set_temp_variable = { global.occupied_country = THIS }
-				set_temp_variable = { global.new_occupied_country = THIS }
-				set_temp_variable = { allowed_party_neutrality = 1 }
-				set_temp_variable = { allowed_party_democratic = 1 }
-				set_temp_variable = { allowed_party_fascism = 1 }
-				set_temp_variable = { allowed_party_communism = 1 }
-				# do not change ideology of occupier country
-				var:global.occupier_country = {
-					remove_from_allowed_party = yes
-				}
-				if = {
-					# if occupied country exists and different than new country
-					# it is white peaced & subject of occupier. ignore its ideology as well
-					limit = { NOT = { check_variable = { global.new_occupied_country = global.occupied_country } } }
-					var:global.occupied_country = {
-						remove_from_allowed_party = yes
-					}
-				}
-				# change government if necesarry
-				random_list = {
-					allowed_party_democratic = {
-						set_popularities = {
-							democratic = 100
-						}
-						set_politics = { ruling_party = democratic elections_allowed = yes }
-					}
-					allowed_party_fascism = {
-						set_popularities = {
-							fascism = 100
-						}
-						set_politics = { ruling_party = fascism elections_allowed = no }
-					}
-					allowed_party_communism = {
-						set_popularities = {
-							communism = 100
-						}
-						set_politics = { ruling_party = communism elections_allowed = no }
-					}
-					allowed_party_neutrality = {
-						set_popularities = {
-							neutrality = 100
-						}
-						set_politics = { ruling_party = neutrality elections_allowed = no }
-					}
+					limit = { has_war_with = var:global.occupier_country }
+					transfer_state = var:global.occupied_state
+					set_temp_variable = { global.new_occupied_country = THIS }
 				}
 			}
 		}
@@ -932,40 +628,171 @@ country_event = { #ottoman revolt
 					has_dynamic_modifier = { modifier = TUR_georgian_minority }
 					is_core_of = GEO
 				}
-				any_country_with_original_tag = {
+			}
+			if = {
+				limit = { NOT = { country_exists = GEO } }
+				GEO = {
+					transfer_state = var:global.occupied_state
+					set_temp_variable = { global.occupied_country = THIS }
+					set_temp_variable = { global.new_occupied_country = THIS }
+				}
+			}
+			else_if = {
+				limit = {
+					country_exists = GEO
+					GEO = { NOT = { has_war_with = var:global.occupier_country } }
+				}
+				create_dynamic_country = {
+					original_tag = GEO
+					copy_tag = GEO
+					transfer_state = var:global.occupied_state
+					set_temp_variable = { global.occupied_country = THIS }
+					set_temp_variable = { global.new_occupied_country = THIS }
+					set_temp_variable = { allowed_party_neutrality = 1 }
+					set_temp_variable = { allowed_party_democratic = 1 }
+					set_temp_variable = { allowed_party_fascism = 1 }
+					set_temp_variable = { allowed_party_communism = 1 }
+										var:global.occupier_country = { remove_from_allowed_party = yes }
+					if = {
+						limit = { NOT = { check_variable = { global.new_occupied_country = global.occupied_country } } }
+						var:global.occupied_country = { remove_from_allowed_party = yes }
+					}
+					random_list = {
+						allowed_party_democratic = {
+							set_popularities = { democratic = 100 }
+							set_politics = { ruling_party = democratic elections_allowed = yes }
+						}
+						allowed_party_fascism = {
+							set_popularities = { fascism = 100 }
+							set_politics = { ruling_party = fascism elections_allowed = no }
+						}
+						allowed_party_communism = {
+							set_popularities = { communism = 100 }
+							set_politics = { ruling_party = communism elections_allowed = no }
+						}
+						allowed_party_neutrality = {
+							set_popularities = { neutrality = 100 }
+							set_politics = { ruling_party = neutrality elections_allowed = no }
+						}
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					any_country_with_original_tag = {
+						original_tag_to_check = GEO
+						has_war_with = var:global.occupier_country
+					}
+				}
+				random_country_with_original_tag = {
 					original_tag_to_check = GEO
-					has_war_with = global.occupier_country
+					limit = { has_war_with = var:global.occupier_country }
+					transfer_state = var:global.occupied_state
+					set_temp_variable = { global.new_occupied_country = THIS }
 				}
 			}
-			random_country_with_original_tag = {
-				original_tag_to_check = GEO
-				limit = { has_war_with = global.occupier_country }
-				transfer_state = var:global.occupied_state
-				set_temp_variable = { global.new_occupied_country = THIS }
-			}
 		}
-		else = {
+		else_if = {
+			limit = { var:global.occupied_state = { TUR_state_has_minority_modifier = yes } }
 			every_possible_country = {
 				random_select_amount = 1
-				limit = { var:global.occupied_state = { is_core_of = PREV } }
+				limit = {
+					var:global.occupied_state = { is_core_of = PREV }
+					NOT = { original_tag = var:global.occupier_country }
+				}
 				set_temp_variable = { global.occupied_country = THIS }
 			}
-		}
-		if = {
-			limit = { NOT = { country_exists = var:global.occupied_country } }
-			var:global.occupied_country = {
-				transfer_state = var:global.occupied_state
-				set_temp_variable = { global.new_occupied_country = THIS }
+			if = {
+				limit = { var:global.occupied_country = { exists = no } }
+				var:global.occupied_country = {
+					transfer_state = var:global.occupied_state
+					set_temp_variable = { global.new_occupied_country = THIS }
+					if = {
+						limit = { var:global.occupied_country = { original_tag = YEM } }
+						global.occupier_country = {
+							country_event = { id = ottoman.186 }
+							country_event = { id = ottoman.110 hours = 16 }
+						}
+					}
+					if = {
+						limit = { var:global.occupied_country = { original_tag = ASR } }
+						global.occupier_country = { country_event = { id = ottoman.187 } }
+					}
+					if = {
+						limit = { var:global.occupied_country = { original_tag = HJZ } }
+						global.occupier_country = { country_event = { id = ottoman.188 } }
+					}
+				}
 			}
-		}
-		else_if = {
-			limit = {
-				country_exists = var:global.occupied_country
-				var:global.occupied_country = { has_war_with = var:global.occupier_country }
+			else_if = {
+				limit = {
+					var:global.occupied_country = {
+						exists = yes
+						NOT = { has_war_with = var:global.occupier_country }
+					}
+				}
+				create_dynamic_country = {
+					original_tag = var:global.occupied_country
+					copy_tag = var:global.occupied_country
+					transfer_state = var:global.occupied_state
+					set_temp_variable = { global.new_occupied_country = THIS }
+					set_temp_variable = { allowed_party_neutrality = 1 }
+					set_temp_variable = { allowed_party_democratic = 1 }
+					set_temp_variable = { allowed_party_fascism = 1 }
+					set_temp_variable = { allowed_party_communism = 1 }
+					var:global.occupier_country = { remove_from_allowed_party = yes }
+					if = {
+						limit = { NOT = { check_variable = { global.new_occupied_country = global.occupied_country } } }
+						var:global.occupied_country = { remove_from_allowed_party = yes }
+					}
+					random_list = {
+						allowed_party_democratic = {
+							set_popularities = { democratic = 100 }
+							set_politics = { ruling_party = democratic elections_allowed = yes }
+						}
+						allowed_party_fascism = {
+							set_popularities = { fascism = 100 }
+							set_politics = { ruling_party = fascism elections_allowed = no }
+						}
+						allowed_party_communism = {
+							set_popularities = { communism = 100 }
+							set_politics = { ruling_party = communism elections_allowed = no }
+						}
+						allowed_party_neutrality = {
+							set_popularities = { neutrality = 100 }
+							set_politics = { ruling_party = neutrality elections_allowed = no }
+						}
+					}
+					if = {
+						limit = { var:global.occupied_country = { original_tag = YEM } }
+						global.occupier_country = {
+							country_event = { id = ottoman.186 }
+							country_event = { id = ottoman.110 hours = 16 }
+						}
+					}
+					if = {
+						limit = { var:global.occupied_country = { original_tag = ASR } }
+						global.occupier_country = { country_event = { id = ottoman.187 } }
+					}
+					if = {
+						limit = { var:global.occupied_country = { original_tag = HJZ } }
+						global.occupier_country = { country_event = { id = ottoman.188 } }
+					}
+				}
 			}
-			var:global.occupied_country = {
-				transfer_state = var:global.occupied_state
-				set_temp_variable = { global.new_occupied_country = THIS }
+			else_if = {
+				limit = {
+					any_country_with_original_tag = {
+						original_tag_to_check = var:global.occupied_country
+						has_war_with = var:global.occupier_country
+					}
+				}
+				random_country_with_original_tag = {
+					original_tag_to_check = var:global.occupied_country
+					limit = { has_war_with = var:global.occupier_country }
+					transfer_state = var:global.occupied_state
+					set_temp_variable = { var:global.new_occupied_country = THIS }
+				}
 			}
 		}
 		var:global.occupied_country = {
@@ -995,8 +822,8 @@ country_event = { #ottoman revolt
 				teleport_armies = {
 					limit = {
 						OR = {
-							is_ally_with = global.occupier_country
-							has_military_access_to = global.occupier_country
+							is_ally_with = var:global.occupier_country
+							has_military_access_to = var:global.occupier_country
 						}
 					}
 					to_state_array = owned_controlled_states
@@ -1046,8 +873,8 @@ country_event = { #ottoman revolt
 			}
 			# create war if necesarry
 			if = {
-				limit = { NOT = { has_war_with = global.occupier_country } }
-				declare_war_on = { target = global.occupier_country type = annex_everything }
+				limit = { NOT = { has_war_with = var:global.occupier_country } }
+				declare_war_on = { target = var:global.occupier_country type = annex_everything }
 				set_country_flag = TUR_revolting_country
 			}
 			if = {
@@ -1057,7 +884,7 @@ country_event = { #ottoman revolt
 						original_tag = ALB
 					}
 					has_completed_focus = TUR_elections_of_clubs
-					has_war_with = global.occupier_country
+					has_war_with = var:global.occupier_country
 				}
 				var:global.occupier_country = { country_event = { id = ottoman.7 days = 3 } }
 			}
@@ -12212,7 +12039,7 @@ news_event = { #ottomans occupy egypt
 	}
 }
 
-country_event = { #change tag to yemen
+country_event = { #change tag to yemen independence
 	id = ottoman.183
 	title = ottoman.183.t
 	desc = ottoman.183.d
@@ -12224,12 +12051,12 @@ country_event = { #change tag to yemen
 	}
 	option = {
 		name = ottoman.183.b
-		YEM = { change_tag_from = ROOT }
+		FROM = { change_tag_from = ROOT }
 		ai_chance = { base = 0 }
 	}
 }
 
-country_event = { #change tag to asir
+country_event = { #change tag to asir independence
 	id = ottoman.184
 	title = ottoman.184.t
 	desc = ottoman.184.d
@@ -12241,7 +12068,7 @@ country_event = { #change tag to asir
 	}
 	option = {
 		name = ottoman.184.b
-		ASR = { change_tag_from = ROOT }
+		FROM = { change_tag_from = ROOT }
 		ai_chance = { base = 0 }
 	}
 }
@@ -12258,7 +12085,7 @@ country_event = { #change tag to albania revolt
 	}
 	option = {
 		name = ottoman.185.b
-		ALB = { change_tag_from = ROOT }
+		FROM = { change_tag_from = ROOT }
 		ai_chance = { base = 0 }
 	}
 }
@@ -12275,7 +12102,7 @@ country_event = { #change tag to yemen revolt
 	}
 	option = {
 		name = ottoman.186.b
-		YEM = { change_tag_from = ROOT }
+		FROM = { change_tag_from = ROOT }
 		ai_chance = { base = 0 }
 	}
 }
@@ -12292,7 +12119,7 @@ country_event = { #change tag to asir revolt
 	}
 	option = {
 		name = ottoman.187.b
-		ASR = { change_tag_from = ROOT }
+		FROM = { change_tag_from = ROOT }
 		ai_chance = { base = 0 }
 	}
 }
@@ -12309,7 +12136,7 @@ country_event = { #change tag to hejaz revolt
 	}
 	option = {
 		name = ottoman.188.b
-		HJZ = { change_tag_from = ROOT }
+		FROM = { change_tag_from = ROOT }
 		ai_chance = { base = 0 }
 	}
 }
