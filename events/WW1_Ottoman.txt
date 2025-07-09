@@ -944,25 +944,31 @@ country_event = { #ottoman revolt
 				set_temp_variable = { global.new_occupied_country = THIS }
 			}
 		}
-		every_possible_country = {
-			random_select_amount = 1
-			limit = { var:global.occupied_state = { is_core_of = PREV } }
-			set_temp_variable = { global.occupied_country = THIS }
-			if = {
-				limit = { NOT = { country_exists = var:global.occupied_country } }
-				transfer_state = var:global.occupied_state
-				set_temp_variable = { global.new_occupied_country = THIS }
+		else = {
+			every_possible_country = {
+				random_select_amount = 1
+				limit = { var:global.occupied_state = { is_core_of = PREV } }
+				set_temp_variable = { global.occupied_country = THIS }
 			}
-			else_if = {
-				limit = {
-					country_exists = var:global.occupied_country
-					var:global.occupied_country = { has_war_with = var:global.occupier_country }
-				}
+		}
+		if = {
+			limit = { NOT = { country_exists = var:global.occupied_country } }
+			var:global.occupied_country = {
 				transfer_state = var:global.occupied_state
 				set_temp_variable = { global.new_occupied_country = THIS }
 			}
 		}
-		var:global.new_occupied_country = {
+		else_if = {
+			limit = {
+				country_exists = var:global.occupied_country
+				var:global.occupied_country = { has_war_with = var:global.occupier_country }
+			}
+			var:global.occupied_country = {
+				transfer_state = var:global.occupied_state
+				set_temp_variable = { global.new_occupied_country = THIS }
+			}
+		}
+		var:global.occupied_country = {
 			add_timed_idea = {
 				idea = standing_alone
 				days = 270
@@ -971,15 +977,11 @@ country_event = { #ottoman revolt
 				limit = { NOT = { has_country_flag = created_civil_war_template } }
 				set_country_flag = created_civil_war_template
 				division_template = {
-					name = "Resistance"
+					name = "Rebels"
 					is_locked = yes
 					regiments = {
 						irregular_infantry = { x = 0 y = 0 }
 						irregular_infantry = { x = 0 y = 1 }
-						irregular_infantry = { x = 1 y = 0 }
-						irregular_infantry = { x = 1 y = 1 }
-						irregular_infantry = { x = 2 y = 0 }
-						irregular_infantry = { x = 2 y = 1 }
 					}
 				}
 			}
@@ -1021,12 +1023,13 @@ country_event = { #ottoman revolt
 					limit = { state_population > 500000 }
 					add_to_temp_variable = { num_units_to_create = 1 } 
 				}
+				clamp_temp_variable = { var = num_units_to_create min = 1 max = 6 }
 				if = {
 					limit = { var:global.occupier_country = { has_completed_focus = TUR_iron_fist_of_the_empire } }
 					for_loop_effect = {
 						end = num_units_to_create
 						create_unit = {
-							division = "division_template = \"Resistance\" start_experience_factor = 0.4 start_equipment_factor = 0.4"
+							division = "division_template = \"Rebels\" start_experience_factor = 0.4 start_equipment_factor = 0.4"
 							owner = var:global.new_occupied_country
 						}
 					}
@@ -1035,32 +1038,9 @@ country_event = { #ottoman revolt
 					for_loop_effect = {
 						end = num_units_to_create
 						create_unit = {
-							division = "division_template = \"Resistance\" start_experience_factor = 0.6 start_equipment_factor = 0.6"
+							division = "division_template = \"Rebels\" start_experience_factor = 0.6 start_equipment_factor = 0.6"
 							owner = var:global.new_occupied_country
 						}
-					}
-				}
-				clamp_temp_variable = { var = num_units_to_create min = 1 max = 6 }
-				# move our armies so they are not surrounded/create pockets
-				every_neighbor_state = {
-					limit = {
-						is_owned_and_controlled_by = global.occupied_country
-						is_core_of = global.occupied_country
-						not = { is_in_array = { checked_neighbours = THIS } }
-					}
-					add_to_temp_array = { checked_neighbours = THIS }
-					teleport_armies = {
-						limit = {
-							OR = {
-								is_ally_with = global.occupier_country
-								has_military_access_to = global.occupier_country
-							}
-						}
-						to_state_array = owned_controlled_states
-					}
-					set_state_province_controller = {
-						controller = global.occupied_country
-						limit = { is_ally_with = global.occupier_country }
 					}
 				}
 			}
@@ -1076,6 +1056,7 @@ country_event = { #ottoman revolt
 						original_tag = MAC
 						original_tag = ALB
 					}
+					has_completed_focus = TUR_elections_of_clubs
 					has_war_with = global.occupier_country
 				}
 				var:global.occupier_country = { country_event = { id = ottoman.7 days = 3 } }
