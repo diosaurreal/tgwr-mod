@@ -913,6 +913,10 @@ country_event = { #Ibrahim Hakki resigns
 	picture = GFX_report_event_ibrahim_hakki_pasha
 	fire_only_once = yes
 	is_triggered_only = yes
+	trigger = {
+		has_country_leader_with_trait = TUR_unshaken_dignity
+		check_variable = { TUR_government_stability_var < 50 }
+	}
 	option = {
 		name = ottoman.1.a
 		remove_country_leader_role = {
@@ -932,46 +936,6 @@ country_event = { #Ibrahim Hakki resigns
 			popularity = -0.05
 		}
 	}
-#	option = {
-#		name = ottoman.1.a
-#		add_country_leader_role = {
-#			character = TUR_mehmed_said
-#			promote_leader = yes
-#			country_leader = {
-#				ideology = authoritarian_democracy
-#				traits = { TUR_kucuk grand_vizier }
-#			}
-#		}
-#		add_to_variable = {
-#			tooltip = TUR_government_stability_add_20
-#			TUR_government_stability_var = 20
-#		}
-#		TUR_government_stability_calculate = yes
-#		TUR_government_popularity_calculate = yes
-#		ai_chance = { factor = 100 }
-#	}
-#	option = {
-#		name = ottoman.1.b
-#		remove_country_leader_role = {
-#			character = TUR_ibrahim_hakki
-#			ideology = authoritarian_democracy
-#		}
-#		add_country_leader_role = {
-#			character = TUR_haci_adil_bey
-#			promote_leader = yes
-#			country_leader = {
-#				ideology = authoritarian_democracy
-#				traits = { TUR_peacetime_bureaucrat grand_vizier }
-#			}
-#		}
-#		TUR_haci_adil_bey = { set_character_name = TUR_haci_adil_pasha }
-#		add_to_variable = {
-#			tooltip = TUR_government_stability_add_20
-#			TUR_government_stability_var = 20
-#		}
-#		TUR_government_stability_calculate = yes
-#		TUR_government_popularity_calculate = yes
-#	}
 }
 
 country_event = { #Hürriyet ve İtilaf formed 1911
@@ -995,9 +959,38 @@ country_event = { #Hürriyet ve İtilaf formed 1911
 			long_name = TUR_democratic_party_long
 		}
 		promote_character = TUR_mehmed_kamil
-		add_timed_idea = {
-			idea = TUR_growing_liberal_opposition
-			days = 365
+		if = {
+			limit = { has_idea = TUR_growing_liberal_opposition }
+			modify_timed_idea = {
+				idea = TUR_growing_liberal_opposition
+				days = 365
+			}
+		}
+		else_if = {
+			limit = { has_idea = TUR_growing_liberal_opposition_2 }
+			modify_timed_idea = {
+				idea = TUR_growing_liberal_opposition_2
+				days = 365
+			}
+		}
+		else_if = {
+			limit = { has_completed_focus = TUR_united_media_support }
+			add_timed_idea = {
+				idea = TUR_growing_liberal_opposition_2
+				days = 365
+			}
+		}
+		else = {
+			add_timed_idea = {
+				idea = TUR_growing_liberal_opposition
+				days = 365
+			}
+		}
+		if = {
+			limit = { NOT = { has_global_flag = TUR_start_liberal_opposition } }
+			set_country_flag = { flag = TUR_growing_liberal_opposition_time_2 days = 545 }
+			set_country_flag = { flag = TUR_growing_liberal_opposition_time_3 days = 910 }
+			set_global_flag = TUR_start_liberal_opposition
 		}
 		add_to_variable = {
 			tooltip = TUR_government_stability_reduce_20
@@ -7842,11 +7835,10 @@ country_event = { #albanian tax collection resistance
 	option = {
 		name = ottoman.106.a
 		every_state = {
-			limit = { has_state_flag = TUR_albanian_tax_resistance }
+			limit = { has_dynamic_modifier = { modifier = TUR_albanian_minority } }
 			custom_effect_tooltip = ottoman.106.tt
-			add_to_variable = { TUR_ottoman_resistance_target_albanian = 0.15 }
+			add_to_variable = { TUR_ottoman_resistance_target_albanian = 0.3 }
 		}
-		set_country_flag = TUR_albanian_tax_resistance
 		ai_chance = { factor = 100 }
 	}
 }
@@ -8871,7 +8863,6 @@ country_event = { #central government retake ittihadist autonomy
 				meta_effect = {
 					text = { set_variable = { global.TUR_gfs_time = [gfs_time] } }
 					gfs_time = "[?FROM.TUR_great_famine_of_syria_time:days_left]"
-					debug = no
 				}
 			}
 		}
@@ -11660,7 +11651,7 @@ country_event = { #hasan riza pasha dies before receiving promotion
 	}
 }
 
-country_event = { #ittihadist elections 1914
+country_event = { #Elections 1914
 	id = ottoman.173
 	title = ottoman.173.t
 	desc = ottoman.173.d
@@ -11670,32 +11661,70 @@ country_event = { #ittihadist elections 1914
 	option = {
 		name = ottoman.173.a
 		add_political_power = 30
-		add_popularity = {
-			ideology = fascism
-			popularity = 0.15
+		if = {
+			limit = { has_government = neutrality }
+			add_popularity = {
+				ideology = neutrality
+				popularity = 0.1
+			}
+			add_popularity = {
+				ideology = fascism
+				popularity = 0.03
+			}
+			add_popularity = {
+				ideology = democratic
+				popularity = -0.1
+			}
 		}
-		add_popularity = {
-			ideology = democratic
-			popularity = -0.1
+		if = {
+			limit = { has_government = democratic }
+			add_popularity = {
+				ideology = democratic
+				popularity = 0.05
+			}
+			add_popularity = {
+				ideology = fascism
+				popularity = -0.1
+			}
+		}
+		if = {
+			limit = { has_government = neutrality }
+			add_popularity = {
+				ideology = fascism
+				popularity = 0.15
+			}
+			add_popularity = {
+				ideology = democratic
+				popularity = -0.1
+			}
+		}
+		if = {
+			limit = { has_government = communism }
+			add_popularity = {
+				ideology = communism
+				popularity = 0.15
+			}
+			add_popularity = {
+				ideology = neutrality
+				popularity = -0.15
+			}
+			add_popularity = {
+				ideology = fascism
+				popularity = -0.05
+			}
 		}
 		new_term_elections = yes
-		if = {
-			limit = { NOT = { has_completed_focus = TUR_elections_of_1912 } }
-			complete_national_focus = TUR_elections_of_1912
-			set_country_flag = TUR_ittihat_ve_terakki_victory_elections
-		}
 		add_to_variable = {
 			tooltip = TUR_government_stability_add_20
 			TUR_government_stability_var = 20
 		}
 		TUR_government_stability_calculate = yes
 		TUR_government_popularity_calculate = yes
-		clr_country_flag = skip_elections
 		ai_chance = { base = 100 }
 	}
 }
 
-country_event = { #itilafist elections 1914
+country_event = { #empty event replace
 	id = ottoman.174
 	title = ottoman.174.t
 	desc = ottoman.174.d
@@ -11714,23 +11743,17 @@ country_event = { #itilafist elections 1914
 			popularity = -0.1
 		}
 		new_term_elections = yes
-		if = {
-			limit = { NOT = { has_completed_focus = TUR_elections_of_1912 } }
-			complete_national_focus = TUR_elections_of_1912
-			set_country_flag = TUR_hurriyet_ve_itilaf_victory_elections
-		}
 		add_to_variable = {
 			tooltip = TUR_government_stability_add_20
 			TUR_government_stability_var = 20
 		}
 		TUR_government_stability_calculate = yes
 		TUR_government_popularity_calculate = yes
-		clr_country_flag = skip_elections
 		ai_chance = { base = 100 }
 	}
 }
 
-country_event = { #sevket elections 1914
+country_event = { #empty event replace
 	id = ottoman.175
 	title = ottoman.175.t
 	desc = ottoman.175.d
@@ -11753,23 +11776,17 @@ country_event = { #sevket elections 1914
 			popularity = -0.1
 		}
 		new_term_elections = yes
-		if = {
-			limit = { NOT = { has_completed_focus = TUR_elections_of_1912 } }
-			complete_national_focus = TUR_elections_of_1912
-			set_country_flag = TUR_ittihat_ve_terakki_victory_elections
-		}
 		add_to_variable = {
 			tooltip = TUR_government_stability_add_20
 			TUR_government_stability_var = 20
 		}
 		TUR_government_stability_calculate = yes
 		TUR_government_popularity_calculate = yes
-		clr_country_flag = skip_elections
 		ai_chance = { base = 100 }
 	}
 }
 
-country_event = { #socialist elections 1914
+country_event = { #empty event replace
 	id = ottoman.176
 	title = ottoman.176.t
 	desc = ottoman.176.d
@@ -11792,18 +11809,12 @@ country_event = { #socialist elections 1914
 			popularity = -0.05
 		}
 		new_term_elections = yes
-		if = {
-			limit = { NOT = { has_completed_focus = TUR_elections_of_1912 } }
-			complete_national_focus = TUR_elections_of_1912
-			set_country_flag = TUR_hurriyet_ve_itilaf_victory_elections
-		}
 		add_to_variable = {
 			tooltip = TUR_government_stability_add_20
 			TUR_government_stability_var = 20
 		}
 		TUR_government_stability_calculate = yes
 		TUR_government_popularity_calculate = yes
-		clr_country_flag = skip_elections
 		ai_chance = { base = 100 }
 	}
 }
@@ -13415,7 +13426,7 @@ country_event = { #russia forces armenian reforms, russia doesnt invade
 	desc = ottoman.212.d
 	is_triggered_only = yes
 	picture = GFX_report_event_armenian_reforms
-	option = { #
+	option = {
 		name = ottoman.212.a
 		ai_chance = { factor = 100 }
 	}
@@ -14141,5 +14152,74 @@ news_event = { #jihad proclamation
 				}
 			}
 		}
+	}
+}
+
+country_event = { #14 demands proposed to the albanian rebels
+	id = ottoman.233
+	title = ottoman.233.t
+	desc = ottoman.233.d
+	picture = GFX_report_event_albanian_independence
+	fire_only_once = yes
+	is_triggered_only = yes
+	option = {
+		name = ottoman.233.a
+		effect_tooltip = {
+			FROM = { annex_country = { target = ROOT } }
+			every_state = {
+				limit = { check_variable = { TUR_albanian_state_level > 0 } }
+				custom_effect_tooltip = ottoman.233.tt.1
+				add_to_variable = { TUR_ottoman_resistance_target_albanian = -0.7 }
+				add_resistance = -35
+				add_compliance = 25
+			}
+			FROM = { activate_mission = TUR_comply_with_the_14_points }
+		}
+		custom_effect_tooltip = GAME_OVER_TT
+		hidden_effect = { FROM = { country_event = { id = ottoman.234 hours = 8 } } }
+		ai_chance = { factor = 100 }
+	}
+	option = {
+		name = ottoman.233.b
+		hidden_effect = { FROM = { country_event = { id = ottoman.235 hours = 8 } } }
+		ai_chance = { factor = 100 }
+	}
+}
+
+country_event = { #14 demands accepted
+	id = ottoman.234
+	title = ottoman.234.t
+	desc = ottoman.234.d
+	picture = GFX_report_event_albanian_independence
+	fire_only_once = yes
+	is_triggered_only = yes
+	option = {
+		name = ottoman.234.a
+		annex_country = { target = FROM }
+		every_state = {
+			limit = { check_variable = { TUR_albanian_state_level > 0 } }
+			custom_effect_tooltip = ottoman.233.tt.1
+			add_to_variable = { TUR_ottoman_resistance_target_albanian = -0.7 }
+			add_resistance = -35
+			add_compliance = 25
+		}
+		activate_mission = TUR_comply_with_the_14_points
+		set_country_flag = TUR_14_demands_accepted
+		ai_chance = { factor = 100 }
+	}
+}
+
+country_event = { #14 demands refused
+	id = ottoman.235
+	title = ottoman.235.t
+	desc = ottoman.235.d
+	picture = GFX_report_event_albanian_independence
+	fire_only_once = yes
+	is_triggered_only = yes
+	option = {
+		name = ottoman.235.a
+		add_political_power = -35
+		add_war_support = 0.03
+		ai_chance = { factor = 100 }
 	}
 }
