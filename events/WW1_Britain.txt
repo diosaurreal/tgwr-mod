@@ -930,16 +930,46 @@ country_event = {
 	}
 }
 
-# Siamese Expeditionary Army
+# Imperial Federation Accepted
 country_event = {
 	id = ww1_england.18
 	title = ww1_england.18.t
 	desc = ww1_england.18.d
-	picture = GFX_report_event_military_planning
+	picture = GFX_report_event_generic_peaceful_annexation
 	is_triggered_only = yes
 	option = {
 		name = ww1_england.18.a
-		add_manpower = 1284
+		FROM = {
+			every_unit_leader = {
+				limit = {
+					OR = {
+						ROOT = {
+							NOT = {
+								original_tag = SAF
+								original_tag = ORA
+							}
+						}
+						has_trait = trait_royalist
+					}
+				}
+				add_unit_leader_trait = trait_royalist
+				set_nationality = ROOT
+			}
+			transfer_navy = {
+				target = ROOT
+			}
+		}
+		annex_country = {
+			target = FROM
+			transfer_troops = yes
+		}
+		if = {
+			limit = {
+				is_ai = yes
+				FROM = { is_ai = no }
+			}
+			change_tag_from = ROOT
+		}
 	}
 }
 
@@ -1133,27 +1163,27 @@ news_event = {
 	}
 }
 
-# Communist Take Power
-#____________________________________________________________
+# Imperial Federation rejected
 country_event = {
 	id = ww1_england.20
-	title = ww1_england.20.t
+	title = ww1_england.18.t
 	desc = ww1_england.20.d
 	picture = GFX_report_event_gathering_protest
-	fire_only_once = yes
 	is_triggered_only = yes
-	mean_time_to_happen = {
-		days = 1
-	}
 	option = {
-		name = political.3.a
-		set_politics = {
-			ruling_party = communism
-			elections_allowed = no
-		}
-		add_timed_idea = {
-			idea = reign_of_terror
-			days = 730
+		name = ww1_england.20.a
+		add_political_power = -25
+		effect_tooltip = {
+			FROM = {
+				add_opinion_modifier = {
+					target = ROOT
+					modifier = ENG_veto_imperial_federation
+				}
+			}
+			add_opinion_modifier = {
+				target = FROM
+				modifier = ENG_veto_imperial_federation
+			}
 		}
 	}
 }
@@ -1528,35 +1558,27 @@ country_event = {
 				}	
 			}
 		}
-		every_unit_leader = {
-			limit = {
-				OR = {
-					ROOT = {
-						NOT = {
-							original_tag = SAF
-							original_tag = ORA
-						}
-					}
-					has_trait = trait_royalist
-				}				
-			}	
-			set_nationality = FROM	
-			add_unit_leader_trait = trait_royalist
-		}
-		FROM = {
-			annex_country = {
-				target = ROOT
-				transfer_troops = yes
-			}
-			if = {
-				limit = { ROOT = { is_ai = no } }
+		effect_tooltip = {
+			FROM = {
+				annex_country = {
+					target = ROOT
+					transfer_troops = yes
+				}
 				if = {
-					limit = { is_ai = yes }
-					change_tag_from = ROOT
+					limit = { ROOT = { is_ai = no } }
+					if = {
+						limit = { is_ai = yes }
+						change_tag_from = ROOT
+					}
+					else = {
+						ROOT = { custom_effect_tooltip = GAME_OVER_TT }
+					}
 				}
-				else = {
-					ROOT = { custom_effect_tooltip = GAME_OVER_TT }
-				}
+			}
+		}
+		hidden_effect = {
+			FROM = {
+				country_event = ww1_england.18
 			}
 		}
 	}
@@ -1592,6 +1614,7 @@ country_event = {
 					target = ROOT
 					modifier = ENG_veto_imperial_federation
 				}
+				country_event = ww1_england.20
 			}
 		}
 	}
@@ -8831,6 +8854,7 @@ country_event = {
 		add_state_claim = 32
 		add_state_claim = 21
 		add_state_claim = 735
+		add_state_claim = 1210
 		add_state_claim = 834
 		add_state_claim = 1
 		add_state_claim = 172
