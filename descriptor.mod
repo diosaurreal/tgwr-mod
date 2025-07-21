@@ -61,6 +61,7 @@ replace_path="scenario_tests/effects"
 replace_path="scenario_tests/tests"
 replace_path="scenario_tests/triggers"
 replace_path="common/focus_inlay_windows"
+replace_path="common/units/equipment"
 tags={
 	"Historical"
 	"Gameplay"
@@ -68,7 +69,7 @@ tags={
 	"Events"
 	"Technologies"
 }
-name="The Great War Redux - 1.15.*"
-version="0.13.20"
-supported_version="1.15.*"
+name="The Great War Redux - 1.16.*"
+version="0.14.01"
+supported_version="1.16.*"
 remote_file_id="3365515312"

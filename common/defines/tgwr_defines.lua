@@ -102,7 +102,8 @@ NDefines.NAI.SEND_VOLUNTEER_AIDESIRE_SAME_IDEOLOGY_CIVIL_WAR = 0		-- Added to AI
 NDefines.NMilitary.UNIT_DIGIN_SPEED = 0.5
 
 NDefines.NAI.MAX_DISTANCE_NAVAL_INVASION = 150.0
-NDefines.NDiplomacy.IDEOLOGY_JOIN_FACTION_MIN_LEVEL = 0
+NDefines.NAI.CALL_ALLY_PUPPET_INVITE_OVERLORD = 100    -- Desire for a puppet to call its overlord into the war -- Vanilla is -1000
+NDefines.NDiplomacy.IDEOLOGY_JOIN_FACTION_MIN_LEVEL = -1
 NDefines.NDiplomacy.MARKET_ACCESS_ACCEPTANCE_SAME_IDEOLOGY = 0				 -- Acceptance value added if same ideology (Vanilla is 15)
 NDefines.NDiplomacy.MARKET_ACCESS_ACCEPTANCE_TRADE_INFLUENCE = 0.2 			 -- Acceptance factor for trade influence (Vanilla is 0.70)
 
@@ -118,7 +119,12 @@ NDefines_Graphics.NGraphics.POLITICAL_GRID_SMALL_BOX_LIMIT = 18              	--
 
 NDefines.NSupply.NAVAL_DISTANCE_FACTOR_FOR_REINFORCEMENT_SPEED = 0.12
 NDefines.NSupply.NAVAL_BASE_INITIAL_SUPPLY_FLOW = 5
-NDefines.NSupply.CAPITAL_SUPPLY_DOCKYARDS = 0.6
+NDefines.NSupply.CAPITAL_SUPPLY_BASE = 1.0
+NDefines.NSupply.CAPITAL_SUPPLY_CIVILIAN_FACTORIES = 0.6
+NDefines.NSupply.CAPITAL_SUPPLY_MILITARY_FACTORIES = 0.5
+NDefines.NSupply.CAPITAL_SUPPLY_DOCKYARDS = 0.3
+NDefines.NSupply.CAPITAL_INITIAL_SUPPLY_FLOW = 3.2
+NDefines.NSupply.NODE_INITIAL_SUPPLY_FLOW = 3.2
 
 NDefines.NCountry.MAX_BOMBING_WAR_SUPPORT_IMPACT = -0.1 -- Vanilla is -0.3, it is not ww2
 NDefines.NCountry.MAX_CONVOYS_BEING_RAIDED_WAR_SUPPORT_IMPACT = -0.3 -- Vanilla is -0.5, it is not ww2
@@ -126,7 +132,7 @@ NDefines.NCountry.MAX_CONVOYS_BEING_RAIDED_WAR_SUPPORT_IMPACT = -0.3 -- Vanilla 
 -- Production AI
 NDefines.NAI.DESIRE_USE_XP_TO_UPGRADE_AIR_EQUIPMENT = 1.5					-- Vanilla is 1 - AI more eagerly upgrades its planes, they are much more important than doctrines
 
-NDefines.NDiplomacy.EMBARGO_COST = 50 -- Vanilla is 100
+NDefines.NDiplomacy.EMBARGO_COST = 10 -- Vanilla is 100
 NDefines.NDiplomacy.EMBARGO_THREAT_THRESHOLD = -1 -- Vanilla is 30
 NDefines.NAI.EMBARGO_WORLD_TENSION_THREAT_DIVISOR = 0 -- Vanilla is 2.5
 
