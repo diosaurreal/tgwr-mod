@@ -14067,6 +14067,64 @@ GER_bundesrat_category = {
 		}
 	}
 
+	GER_democratization_reforms_act_bund = {
+		name = GER_democratization_reforms_act
+		icon = eng_trade_unions_support
+		cost = 10
+		visible = {
+			tag = GER
+			OR = {
+				AND = {
+					is_debug = yes
+					has_country_flag = GER_show_debug_decisions
+				}
+				has_country_flag = GER_democratization_reforms_act_passed_in_reichstag
+			}
+		}
+		available = {
+			NOT = {
+				has_country_flag = GER_vote_in_bundesrat
+			}
+		}
+		complete_effect = {
+			set_country_flag = GER_vote_in_bundesrat
+			GER_calculate_bundesrat_votes = yes
+		}
+		days_remove = 30
+        ai_will_do = {
+			factor = 100
+		}
+		remove_effect = {
+			if = {
+				limit = { has_majority_in_bundesrat = yes }
+				clr_country_flag = GER_democratization_reforms_act_passed_in_reichstag
+				custom_effect_tooltip = GER_likely_to_pass
+				custom_effect_tooltip = GER_if_law_passes_bund
+				GER_democratization_reforms_effect = yes
+				set_country_flag = GER_democratization_reforms_act_passed
+				custom_effect_tooltip = GER_if_law_fails_bund
+				effect_tooltip = {
+					add_stability = -0.02
+					add_political_power = -20
+				}
+				#hidden_effect = { country_event = ww1_german_reichstag.6 } has a unique event
+				else = {
+					clr_country_flag = GER_democratization_reforms_act_passed_in_reichstag
+					custom_effect_tooltip = GER_likely_to_be_rejected
+					custom_effect_tooltip = GER_if_law_passes_bund
+					effect_tooltip = {
+						GER_democratization_reforms_effect = yes
+					}
+					custom_effect_tooltip = GER_if_law_fails_bund
+					add_stability = -0.02
+					add_political_power = -20
+					#hidden_effect = { country_event = ww1_german_reichstag.7 }
+				}
+			}
+			GER_vote_ends = yes
+		}
+	}
+
 	GER_law_on_the_reich_and_nationality_right_bund = {
 		icon = eng_trade_unions_support
 		cost = 10
@@ -16432,6 +16490,78 @@ GER_reichstag_category = {
 						GER_auxiliary_services_act_effect = yes
 					}
 					hidden_effect = { country_event = ww1_german_reichstag.5 }
+				}
+			}
+			hidden_effect = {
+				GER_reset_sway_reichstag = yes
+			}
+		}
+		ai_will_do = {
+			factor = 5000 #oh yeah
+		}
+	}
+	GER_democratization_reforms_act_reich = {
+		name = GER_democratization_reforms_act
+		icon = eng_trade_unions_demand
+		allowed = {
+			original_tag = GER
+		}
+		cost = 10
+		visible = {
+			NOT = {
+				has_country_flag = GER_democratization_reforms_act_passed
+			}
+			OR = {
+				AND = {
+					is_debug = yes
+					has_country_flag = GER_show_debug_decisions
+				}
+				AND = {
+					has_completed_focus = GER_forced_democratization_reforms
+					has_war = yes
+				}
+			}
+		}
+		available = {
+			NOT = {
+				has_country_flag = GER_reichstag_vote_in_progress
+			}
+		}
+		days_remove = 21
+
+		complete_effect = {
+			set_country_flag = wartime_vote_in_progress
+			set_country_flag = GER_reichstag_vote_in_progress
+		}
+
+		remove_effect = {
+			wartime_vote_temp_var_setter = yes
+			if = {
+				limit = {
+					has_majority_in_reichstag = yes
+				}
+
+				set_country_flag = GER_democratization_reforms_act_passed_in_reichstag
+				
+				custom_effect_tooltip = GER_law_pass
+				custom_effect_tooltip = GER_if_law_passes_reich
+				custom_effect_tooltip = GER_allows_law_to_be_passed
+				custom_effect_tooltip = GER_if_law_passes_bund
+				effect_tooltip = {
+					GER_democratization_reforms_effect = yes
+				}
+
+				set_country_flag = GER_democratization_reforms_act_passed
+				#hidden_effect = { country_event = ww1_german_reichstag.4 }
+				else = {
+					custom_effect_tooltip = GER_law_dont_pass
+					custom_effect_tooltip = GER_if_law_passes_reich
+					custom_effect_tooltip = GER_allows_law_to_be_passed
+					custom_effect_tooltip = GER_if_law_passes_bund
+					effect_tooltip = {
+						GER_democratization_reforms_effect = yes
+					}
+					#hidden_effect = { country_event = ww1_german_reichstag.5 }
 				}
 			}
 			hidden_effect = {
