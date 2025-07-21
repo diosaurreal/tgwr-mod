@@ -72,7 +72,7 @@ GER_parliament_gui_initial = {
 
 	# GER_parliament_seat_array stores the list of seat numbers for each party
     set_variable = {
-        var = SB #Spartakusbund
+        var = KPD #Kommunistische Partei Deutschlands
         value = 0
     }
 	set_variable = {
@@ -124,7 +124,7 @@ GER_parliament_gui_initial = {
         value = 6
     }
 
-	add_to_array = { GER_parliament_seat_array = SB } 
+	add_to_array = { GER_parliament_seat_array = KPD } 
 	add_to_array = { GER_parliament_seat_array = USPD } 
 	add_to_array = { GER_parliament_seat_array = SPD } 
 	add_to_array = { GER_parliament_seat_array = FVP } 
@@ -167,7 +167,7 @@ GER_parliament_gui_initial = {
 GER_recalculate_faction_seats = {
 	set_variable = {
         var = GER_left_faction
-        value = SB
+        value = KPD
     }
 	add_to_variable = {
         var = GER_left_faction
@@ -224,7 +224,7 @@ GER_recalculate_faction_seats = {
 
 GER_setup_initial_predictions = {
 	set_variable = {
-        SB_upcoming = 0
+        KPD_upcoming = 0
     }
 	set_variable = {
         USPD_upcoming = 0
@@ -580,7 +580,7 @@ GER_1912_predicted_seats_calculations = {
 GER_recalculate_faction_prediction_seats = {
 	set_variable = {
         var = GER_left_faction_prediction
-        value = SB_upcoming
+        value = KPD_upcoming
     }
 	add_to_variable = {
         var = GER_left_faction_prediction
@@ -637,8 +637,8 @@ GER_recalculate_faction_prediction_seats = {
 
 GER_apply_predictions = {
 	set_variable = {
-        var = SB
-        value = SB_upcoming
+        var = KPD
+        value = KPD_upcoming
     }
 	set_variable = {
         var = USPD
@@ -1006,6 +1006,141 @@ right_vote_temp_var_setter = {
         else = {
              custom_effect_tooltip = GER_vote_right_law
         }
+    }
+    # bonus seats from swaying
+    #center
+    set_temp_variable = {
+        center_vote = GER_center_faction
+    }
+    multiply_temp_variable = {
+        var = center_vote
+        value = center_ratio_sway_ratio
+    }
+    round_temp_variable = center_vote
+    add_to_temp_variable = {
+        var = merged_vote_strengh
+        value = center_vote
+    }
+    if = {
+        limit = {
+            has_country_flag = GER_center_sway_20_percent
+        }
+        custom_effect_tooltip = GER_sway_center_will_vote_20_percent
+    }
+    #neutral
+    set_temp_variable = {
+        neutral_vote = GER_neutral_faction
+    }
+    multiply_temp_variable = {
+        var = neutral_vote
+        value = neutral_ratio_sway_ratio
+    }
+    round_temp_variable = neutral_vote
+    add_to_temp_variable = {
+        var = merged_vote_strengh
+        value = neutral_vote
+    }
+    if = {
+        limit = {
+            has_country_flag = GER_neutral_sway_20_percent
+        }
+        custom_effect_tooltip = GER_sway_neutral_will_vote_20_percent
+    }
+    #united coalition vote
+    if = {
+        limit = {
+            has_country_flag = GER_war_coalition_active
+        }
+        coalition_united_vote_strengh = yes
+    }
+    ## end of bonus seats
+    get_vote_strengh_in_percent = yes #setting up the percent for tooltips
+    custom_effect_tooltip = GER_vote_strengh_tt
+}
+
+wartime_vote_temp_var_setter = {
+    clr_country_flag = GER_reichstag_vote_in_progress
+    set_temp_variable = {
+        right_vote = GER_right_faction
+    }
+    multiply_temp_variable = {
+        var = right_vote
+        value = 0.9
+    }
+    round_temp_variable = right_vote
+    set_temp_variable = {
+        neutral_vote = GER_neutral_faction
+    }
+    multiply_temp_variable = {
+        var = neutral_vote
+        value = 0.7
+    }
+    round_temp_variable = neutral_vote
+    set_temp_variable = {
+        center_vote = GER_center_faction
+    }
+    multiply_temp_variable = {
+        var = center_vote
+        value = 0.7
+    }
+    round_variable = center_vote
+
+    set_temp_variable = {
+        center_vote = GER_left_faction
+    }
+    multiply_temp_variable = {
+        var = left_vote
+        value = 0.3
+    }
+    round_variable = left_vote
+
+    set_temp_variable = {
+        var = merged_vote_strengh
+        value = right_vote
+    }
+    add_to_temp_variable = {
+        var = merged_vote_strengh
+        value = neutral_vote
+    }
+    add_to_temp_variable = {
+        var = merged_vote_strengh
+        value = center_vote
+    }
+    add_to_temp_variable = {
+        var = merged_vote_strengh
+        value = left_vote
+    }
+    if = {
+        limit = {
+            has_country_flag = GER_war_coalition_active
+            NOT = {
+                has_global_flag = great_war_ends
+            }
+        }
+        custom_effect_tooltip = GER_vote_coalition_law
+        else = {
+             custom_effect_tooltip = GER_vote_wartime_law
+        }
+    }
+    # this is the bonus seats from swaying : 
+    #left
+    set_temp_variable = {
+        left_vote = GER_left_faction
+    }
+    multiply_temp_variable = {
+        var = left_vote
+        value = left_ratio_sway_ratio
+    }
+    round_temp_variable = left_vote
+    add_to_temp_variable = {
+        var = merged_vote_strengh
+        value = left_vote
+    }
+    if = {
+        limit = {
+            has_country_flag = GER_left_sway_20_percent
+        }
+        custom_effect_tooltip = GER_sway_left_will_vote_20_percent
     }
     # bonus seats from swaying
     #center
@@ -2131,206 +2266,206 @@ GER_sway_all_states = {
     #GER_update_bundesrat_gui = yes
 }
 
-GER_assign_cooldowns = {
-    clr_country_flag = GER_called_in_prussia
-	if = {
-		limit = {
-			has_country_flag = GER_called_in_baden
-		}
-		clr_country_flag = GER_called_in_baden
-		set_country_flag = GER_baden_cooldown
-		custom_effect_tooltip = GER_baden_cooldown_tt
-	}
-	else_if = {
-		limit = {
-			has_country_flag = GER_baden_cooldown
-		}
-		clr_country_flag = GER_baden_cooldown
-		custom_effect_tooltip = GER_baden_cooldown_ends_tt
-	}
-	if = {
-		limit = {
-			has_country_flag = GER_called_in_hesse
-		}
-		clr_country_flag = GER_called_in_hesse
-		set_country_flag = GER_hesse_cooldown
-		custom_effect_tooltip = GER_hesse_cooldown_tt
-	}
-	else_if = {
-		limit = {
-			has_country_flag = GER_hesse_cooldown
-		}
-		clr_country_flag = GER_hesse_cooldown
-		custom_effect_tooltip = GER_hesse_cooldown_ends_tt
-	}
-	if = {
-		limit = {
-			has_country_flag = GER_called_in_bavaria
-		}
-		clr_country_flag = GER_called_in_bavaria
-		set_country_flag = GER_bavaria_cooldown
-		custom_effect_tooltip = GER_bavaria_cooldown_tt
-	}
-	else_if = {
-		limit = {
-			has_country_flag = GER_bavaria_cooldown
-		}
-		clr_country_flag = GER_bavaria_cooldown
-		custom_effect_tooltip = GER_bavaria_cooldown_ends_tt
-	}
-	if = {
-		limit = {
-			has_country_flag = GER_called_in_free_cities
-		}
-		clr_country_flag = GER_called_in_free_cities
-		set_country_flag = GER_free_cities_cooldown
-		custom_effect_tooltip = GER_free_cities_cooldown_tt
-	}
-	else_if = {
-		limit = {
-			has_country_flag = GER_free_cities_cooldown
-		}
-		clr_country_flag = GER_free_cities_cooldown
-		custom_effect_tooltip = GER_free_cities_cooldown_ends_tt
-	}
-	if = {
-		limit = {
-			has_country_flag = GER_called_in_mecklenburg
-		}
-		clr_country_flag = GER_called_in_mecklenburg
-		set_country_flag = GER_mecklenburg_cooldown
-		custom_effect_tooltip = GER_mecklenburg_cooldown_tt
-	}
-	else_if = {
-		limit = {
-			has_country_flag = GER_mecklenburg_cooldown
-		}
-		clr_country_flag = GER_mecklenburg_cooldown
-		custom_effect_tooltip = GER_mecklenburg_cooldown_ends_tt
-	}
-	if = {
-		limit = {
-			has_country_flag = GER_called_in_saxony
-		}
-		clr_country_flag = GER_called_in_saxony
-		set_country_flag = GER_saxony_cooldown
-		custom_effect_tooltip = GER_saxony_cooldown_tt
-	}
-	else_if = {
-		limit = {
-			has_country_flag = GER_saxony_cooldown
-		}
-		clr_country_flag = GER_saxony_cooldown
-		custom_effect_tooltip = GER_saxony_cooldown_ends_tt
-	}
-	if = {
-		limit = {
-			has_country_flag = GER_called_in_brunswick
-		}
-		clr_country_flag = GER_called_in_brunswick
-		set_country_flag = GER_brunswick_cooldown
-		custom_effect_tooltip = GER_brunswick_cooldown_tt
-	}
-	else_if = {
-		limit = {
-			has_country_flag = GER_brunswick_cooldown
-		}
-		clr_country_flag = GER_brunswick_cooldown
-		custom_effect_tooltip = GER_brunswick_cooldown_ends_tt
-	}
-	if = {
-		limit = {
-			has_country_flag = GER_called_in_wurttemberg
-		}
-		clr_country_flag = GER_called_in_wurttemberg
-		set_country_flag = GER_wurttemberg_cooldown
-		custom_effect_tooltip = GER_wurttemberg_cooldown_tt
-	}
-	else_if = {
-		limit = {
-			has_country_flag = GER_wurttemberg_cooldown
-		}
-		clr_country_flag = GER_wurttemberg_cooldown
-		custom_effect_tooltip = GER_wurttemberg_cooldown_ends_tt
-	}
-	if = {
-		limit = {
-			has_country_flag = GER_called_in_minor_states
-		}
-		clr_country_flag = GER_called_in_minor_states
-		set_country_flag = GER_minor_states_cooldown
-		custom_effect_tooltip = GER_minor_states_cooldown_tt
-	}
-	else_if = {
-		limit = {
-			has_country_flag = GER_minor_states_cooldown
-		}
-		clr_country_flag = GER_minor_states_cooldown
-		custom_effect_tooltip = GER_minor_states_cooldown_ends_tt
-	}
-	if = {
-		limit = {
-			has_country_flag = GER_called_in_thuringia
-		}
-		clr_country_flag = GER_called_in_thuringia
-		set_country_flag = GER_thuringia_cooldown
-		custom_effect_tooltip = GER_thuringia_cooldown_tt
-	}
-	else_if = {
-		limit = {
-			has_country_flag = GER_thuringia_cooldown
-		}
-		clr_country_flag = GER_thuringia_cooldown
-		custom_effect_tooltip = GER_thuringia_cooldown_ends_tt
-	}
-	if = {
-		limit = {
-			has_country_flag = GER_called_in_alsace_lorraine
-		}
-		clr_country_flag = GER_called_in_alsace_lorraine
-		set_country_flag = GER_alsace_lorraine_cooldown
-		custom_effect_tooltip = GER_alsace_lorraine_cooldown_tt
-	}
-	else_if = {
-		limit = {
-			has_country_flag = GER_alsace_lorraine_cooldown
-		}
-		clr_country_flag = GER_alsace_lorraine_cooldown
-		custom_effect_tooltip = GER_alsace_lorraine_cooldown_ends_tt
-	}
-    if = {
-		limit = {
-			has_country_flag = GER_called_in_austria
-		}
-		clr_country_flag = GER_called_in_austria
-		set_country_flag = GER_austria_cooldown
-		custom_effect_tooltip = GER_austria_cooldown_tt
-	}
-	else_if = {
-		limit = {
-			has_country_flag = GER_austria_cooldown
-		}
-		clr_country_flag = GER_austria_cooldown
-		custom_effect_tooltip = GER_austria_cooldown_ends_tt
-	}
-    if = {
-		limit = {
-			has_country_flag = GER_called_in_luxembourg
-		}
-		clr_country_flag = GER_called_in_luxembourg
-		set_country_flag = GER_luxembourg_cooldown
-		custom_effect_tooltip = GER_luxembourg_cooldown_tt
-	}
-	else_if = {
-		limit = {
-			has_country_flag = GER_luxembourg_cooldown
-		}
-		clr_country_flag = GER_luxembourg_cooldown
-		custom_effect_tooltip = GER_luxembourg_cooldown_ends_tt
-	}
-}
+# GER_assign_cooldowns = {
+#     clr_country_flag = GER_called_in_prussia
+# 	if = {
+# 		limit = {
+# 			has_country_flag = GER_called_in_baden
+# 		}
+# 		clr_country_flag = GER_called_in_baden
+# 		set_country_flag = GER_baden_cooldown
+# 		custom_effect_tooltip = GER_baden_cooldown_tt
+# 	}
+# 	else_if = {
+# 		limit = {
+# 			has_country_flag = GER_baden_cooldown
+# 		}
+# 		clr_country_flag = GER_baden_cooldown
+# 		custom_effect_tooltip = GER_baden_cooldown_ends_tt
+# 	}
+# 	if = {
+# 		limit = {
+# 			has_country_flag = GER_called_in_hesse
+# 		}
+# 		clr_country_flag = GER_called_in_hesse
+# 		set_country_flag = GER_hesse_cooldown
+# 		custom_effect_tooltip = GER_hesse_cooldown_tt
+# 	}
+# 	else_if = {
+# 		limit = {
+# 			has_country_flag = GER_hesse_cooldown
+# 		}
+# 		clr_country_flag = GER_hesse_cooldown
+# 		custom_effect_tooltip = GER_hesse_cooldown_ends_tt
+# 	}
+# 	if = {
+# 		limit = {
+# 			has_country_flag = GER_called_in_bavaria
+# 		}
+# 		clr_country_flag = GER_called_in_bavaria
+# 		set_country_flag = GER_bavaria_cooldown
+# 		custom_effect_tooltip = GER_bavaria_cooldown_tt
+# 	}
+# 	else_if = {
+# 		limit = {
+# 			has_country_flag = GER_bavaria_cooldown
+# 		}
+# 		clr_country_flag = GER_bavaria_cooldown
+# 		custom_effect_tooltip = GER_bavaria_cooldown_ends_tt
+# 	}
+# 	if = {
+# 		limit = {
+# 			has_country_flag = GER_called_in_free_cities
+# 		}
+# 		clr_country_flag = GER_called_in_free_cities
+# 		set_country_flag = GER_free_cities_cooldown
+# 		custom_effect_tooltip = GER_free_cities_cooldown_tt
+# 	}
+# 	else_if = {
+# 		limit = {
+# 			has_country_flag = GER_free_cities_cooldown
+# 		}
+# 		clr_country_flag = GER_free_cities_cooldown
+# 		custom_effect_tooltip = GER_free_cities_cooldown_ends_tt
+# 	}
+# 	if = {
+# 		limit = {
+# 			has_country_flag = GER_called_in_mecklenburg
+# 		}
+# 		clr_country_flag = GER_called_in_mecklenburg
+# 		set_country_flag = GER_mecklenburg_cooldown
+# 		custom_effect_tooltip = GER_mecklenburg_cooldown_tt
+# 	}
+# 	else_if = {
+# 		limit = {
+# 			has_country_flag = GER_mecklenburg_cooldown
+# 		}
+# 		clr_country_flag = GER_mecklenburg_cooldown
+# 		custom_effect_tooltip = GER_mecklenburg_cooldown_ends_tt
+# 	}
+# 	if = {
+# 		limit = {
+# 			has_country_flag = GER_called_in_saxony
+# 		}
+# 		clr_country_flag = GER_called_in_saxony
+# 		set_country_flag = GER_saxony_cooldown
+# 		custom_effect_tooltip = GER_saxony_cooldown_tt
+# 	}
+# 	else_if = {
+# 		limit = {
+# 			has_country_flag = GER_saxony_cooldown
+# 		}
+# 		clr_country_flag = GER_saxony_cooldown
+# 		custom_effect_tooltip = GER_saxony_cooldown_ends_tt
+# 	}
+# 	if = {
+# 		limit = {
+# 			has_country_flag = GER_called_in_brunswick
+# 		}
+# 		clr_country_flag = GER_called_in_brunswick
+# 		set_country_flag = GER_brunswick_cooldown
+# 		custom_effect_tooltip = GER_brunswick_cooldown_tt
+# 	}
+# 	else_if = {
+# 		limit = {
+# 			has_country_flag = GER_brunswick_cooldown
+# 		}
+# 		clr_country_flag = GER_brunswick_cooldown
+# 		custom_effect_tooltip = GER_brunswick_cooldown_ends_tt
+# 	}
+# 	if = {
+# 		limit = {
+# 			has_country_flag = GER_called_in_wurttemberg
+# 		}
+# 		clr_country_flag = GER_called_in_wurttemberg
+# 		set_country_flag = GER_wurttemberg_cooldown
+# 		custom_effect_tooltip = GER_wurttemberg_cooldown_tt
+# 	}
+# 	else_if = {
+# 		limit = {
+# 			has_country_flag = GER_wurttemberg_cooldown
+# 		}
+# 		clr_country_flag = GER_wurttemberg_cooldown
+# 		custom_effect_tooltip = GER_wurttemberg_cooldown_ends_tt
+# 	}
+# 	if = {
+# 		limit = {
+# 			has_country_flag = GER_called_in_minor_states
+# 		}
+# 		clr_country_flag = GER_called_in_minor_states
+# 		set_country_flag = GER_minor_states_cooldown
+# 		custom_effect_tooltip = GER_minor_states_cooldown_tt
+# 	}
+# 	else_if = {
+# 		limit = {
+# 			has_country_flag = GER_minor_states_cooldown
+# 		}
+# 		clr_country_flag = GER_minor_states_cooldown
+# 		custom_effect_tooltip = GER_minor_states_cooldown_ends_tt
+# 	}
+# 	if = {
+# 		limit = {
+# 			has_country_flag = GER_called_in_thuringia
+# 		}
+# 		clr_country_flag = GER_called_in_thuringia
+# 		set_country_flag = GER_thuringia_cooldown
+# 		custom_effect_tooltip = GER_thuringia_cooldown_tt
+# 	}
+# 	else_if = {
+# 		limit = {
+# 			has_country_flag = GER_thuringia_cooldown
+# 		}
+# 		clr_country_flag = GER_thuringia_cooldown
+# 		custom_effect_tooltip = GER_thuringia_cooldown_ends_tt
+# 	}
+# 	if = {
+# 		limit = {
+# 			has_country_flag = GER_called_in_alsace_lorraine
+# 		}
+# 		clr_country_flag = GER_called_in_alsace_lorraine
+# 		set_country_flag = GER_alsace_lorraine_cooldown
+# 		custom_effect_tooltip = GER_alsace_lorraine_cooldown_tt
+# 	}
+# 	else_if = {
+# 		limit = {
+# 			has_country_flag = GER_alsace_lorraine_cooldown
+# 		}
+# 		clr_country_flag = GER_alsace_lorraine_cooldown
+# 		custom_effect_tooltip = GER_alsace_lorraine_cooldown_ends_tt
+# 	}
+#     if = {
+# 		limit = {
+# 			has_country_flag = GER_called_in_austria
+# 		}
+# 		clr_country_flag = GER_called_in_austria
+# 		set_country_flag = GER_austria_cooldown
+# 		custom_effect_tooltip = GER_austria_cooldown_tt
+# 	}
+# 	else_if = {
+# 		limit = {
+# 			has_country_flag = GER_austria_cooldown
+# 		}
+# 		clr_country_flag = GER_austria_cooldown
+# 		custom_effect_tooltip = GER_austria_cooldown_ends_tt
+# 	}
+#     if = {
+# 		limit = {
+# 			has_country_flag = GER_called_in_luxembourg
+# 		}
+# 		clr_country_flag = GER_called_in_luxembourg
+# 		set_country_flag = GER_luxembourg_cooldown
+# 		custom_effect_tooltip = GER_luxembourg_cooldown_tt
+# 	}
+# 	else_if = {
+# 		limit = {
+# 			has_country_flag = GER_luxembourg_cooldown
+# 		}
+# 		clr_country_flag = GER_luxembourg_cooldown
+# 		custom_effect_tooltip = GER_luxembourg_cooldown_ends_tt
+# 	}
+# }
 GER_vote_ends = {
-    custom_effect_tooltip = GER_vote_ends_tt
+    # custom_effect_tooltip = GER_vote_ends_tt
     clr_country_flag = GER_vote_in_bundesrat
 
     clr_country_flag = GER_called_in_prussia
@@ -2508,6 +2643,7 @@ GER_prussian_electoral_reform_effect = {
 			tooltip_side = GER_balance_civilian
 		}
     }
+    custom_effect_tooltip = GER_prussian_electoral_reform_effect_tt
 }
 
 GER_nationality_discriminatory_law = {
@@ -2795,8 +2931,102 @@ GER_auxiliary_services_act_effect = {
     }
 }
 
+GER_democratization_reforms_effect = {
+    country_event = {
+        id = ww1_germanrework.150
+        days = 3
+    }
+    add_popularity = {
+        ideology = democratic
+        popularity = 0.1
+    }
+    if = {
+        limit = {
+            is_hollweg_chancellor = yes
+        }
+        hidden_effect = {
+            if = {
+                limit = {
+                    GER_theobald_von_bethmann_hollweg = {
+                        is_country_leader = yes
+                        has_ideology = authoritarian_democracy
+                    }
+                }
+                remove_country_leader_role = {
+                    character = GER_theobald_von_bethmann_hollweg
+                    ideology = authoritarian_democracy
+                }
+                promote_character = GER_wilhelm_ii
+                set_party_name = {
+                    ideology = neutrality
+                    long_name = GER_neutrality_party
+                    name = GER_neutrality_party
+                }				
+            }
+        }		
+        GER_theobald_von_bethmann_hollweg = {
+            if = {
+                limit = {
+                    has_ideology = classical_liberalism
+                }
+                promote_character = classical_liberalism
+            }
+            else = {
+                add_country_leader_role = {
+                    promote_leader = yes
+                    country_leader = {
+                        ideology = classical_liberalism
+                        traits = { GER_hamlet }
+                    }
+                }
+            }
+        }
+        if = {
+            limit = {
+                has_active_mission = GER_viability_of_the_coalition
+            }
+            add_days_mission_timeout = {
+                mission = GER_viability_of_the_coalition
+                days = 360
+            }
+        }
+    }
+    else_if = {
+        limit = {
+            GER_maximilian_von_baden = {
+                is_hired_as_advisor = yes
+            }			
+        }
+        GER_maximilian_von_baden = {
+            if = {
+                limit = {
+                    has_ideology = classical_liberalism
+                }
+                promote_character = classical_liberalism
+            }
+            else = {
+                add_country_leader_role = {
+                    promote_leader = yes
+                    country_leader = {
+                        ideology = classical_liberalism
+                        traits = { GER_liberal_prince }
+                    }
+                }
+            }
+        }
+    }
+    clr_country_flag = spd_m_party
+    set_politics = {
+        ruling_party = democratic
+        long_name = GER_state_secretaries_party
+        name = GER_state_secretaries_party
+        elections_allowed = yes
+    }
+    add_ideas = GER_wilhelm_ii_postwar
+}
+
 GER_parliament_reassign_seats = {
-	set_variable = { GER_parliament_seat_array^0 = SB }
+	set_variable = { GER_parliament_seat_array^0 = KPD }
 	set_variable = { GER_parliament_seat_array^1 = USPD }
 	set_variable = { GER_parliament_seat_array^2 = SPD }
 	set_variable = { GER_parliament_seat_array^3 = FVP }
@@ -3015,8 +3245,17 @@ GER_spd_slpit = {
                 clr_country_flag = spd_r_party
             }
         } 
+        GER_spd_split_seats = yes
     }
-
+}
+GER_spd_split_seats = {
+    set_temp_variable = { var = SPD_temp value = SPD }
+    divide_temp_variable = { var = SPD_temp value = 4.2 }
+    round_temp_variable = SPD_temp
+    add_to_variable = { var = USPD value = SPD_temp }
+    subtract_from_variable = { var = SPD value = SPD_temp }
+    GER_parliament_reassign_seats = yes
+    GER_reload_parliament_gui = yes
 }
 GER_1918_revolution_effect = {
     set_global_flag = GER_1918_revolution
