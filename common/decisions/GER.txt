@@ -494,49 +494,40 @@ GER_great_war = {
 		}
 		
 	}
-	#Kaiserschlacht
-	GER_kaiserschlacht_offensive = {
+	# OFFENSIVES
+	###########################
+	#first and second offensive
+	GER_ypres_offensive = {
 		icon = GFX_decision_hol_draw_up_staff_plans
 		days_remove = 120
 		is_good = no
 		fire_only_once = yes
 		target_trigger = {
 			FROM = {
-				tag = FRA
+				tag = BEL
 			}
 		}
 		target_root_trigger = {
-			has_completed_focus = GER_organise_fresh_offensives
+			has_completed_focus = GER_organise_fresh_offensives			
 		}
 		allowed = {
 			tag = GER
 		}
 		visible = {
 			has_completed_focus = GER_organise_fresh_offensives
+			NOT = { has_global_flag = great_war_ends }
 		}
 		available = {
-			has_war_with = FRA
-			OR = {
-				29 = {
-					NOT = {
-						is_fully_controlled_by = FRA
-					}
-				}
-				785 = {
-					NOT = {
-						is_fully_controlled_by = FRA
-					}
-				}
+			AND = {
+				has_war_with = FRA
+				has_war_with = BEL
 			}
-			OR = {
+			NOT = {
+				controls_province = 6548
+			}
+			6 = {
 				NOT = {
-					controls_province = 11420
-				}
-				NOT = {
-					controls_province = 6585
-				}
-				NOT = {
-					controls_province = 9561
+					is_fully_controlled_by = BEL
 				}
 			}
 			NOT = {
@@ -546,38 +537,30 @@ GER_great_war = {
 		
 		highlight_states = {
 			highlight_provinces = {
-				11420
-				6585
-				9561
+				6548
 			}
 			highlight_color_while_active = 1
 		}
 		remove_effect = {
 			hidden_effect = {
-				remove_ideas = GER_focus_on_french_front
+				remove_ideas = GER_focus_on_belgian_front
 			}
 			country_event = {
-				id = ww1_germanrework.77
+				id = ww1_germanrework.78
 				days = 2
 			}
 			clr_country_flag = GER_on_offensive
-			hidden_effect = {
-				set_global_flag = ludendorff_offensive_failed
-				if = {
-					limit = {
-						NOT = { has_idea = idea_mass_desertion }
-					}
-					add_timed_idea = {
-						idea = idea_mass_desertion
-						days = 90
-					}
-				}
-			}
 		}
-		cancel_trigger = {
-			controls_province = 9561
-			controls_province = 6585
-			controls_province = 11420
+		cancel_trigger = {		
+			OR = {
+				controls_province = 6548
+				hidden_trigger = {
+					OR = {
+						NOT = { has_war_with = FROM }
+						has_global_flag = great_war_ends
+					}			
+				}			
+			}
 		}
 		cancel_effect = {
 			add_war_support = 0.05
@@ -586,27 +569,19 @@ GER_great_war = {
 		complete_effect = {
 			set_country_flag = GER_on_offensive
 			add_timed_idea = {
-				idea = GER_focus_on_french_front
+				idea = GER_focus_on_belgian_front
 				days = 120
 			}
-			custom_effect_tooltip = GER_capture_compiene_beauvais_amiens
-			hidden_effect = {
-				set_global_flag = ludendorff_offensive
-				news_event = {
-					id = ww1_germanrework.193
-					hours = 3
-				}
-			}
+			custom_effect_tooltip = GER_capture_ypres
 		}
 		ai_will_do = {
 			factor = 100
 			modifier = {
-				date < 1918.3.20
+				date < 1915.2.2
 				factor = 0
 			}
 		}
 	}
-
 	#attack russian poland
 	GER_gorlice_tarnow = {
 		icon = GFX_decision_hol_draw_up_staff_plans
@@ -620,12 +595,16 @@ GER_great_war = {
 		}
 		target_root_trigger = {
 			has_completed_focus = GER_organise_fresh_offensives
+			NOT = { has_global_flag = great_war_ends }
 		}
 		allowed = {
 			tag = GER
 		}
 		visible = {
 			has_completed_focus = GER_organise_fresh_offensives
+			FROM = {
+				has_capitulated = no 
+			}
 		}
 		available = {
 			has_war_with = RUS
@@ -655,12 +634,27 @@ GER_great_war = {
 			clr_country_flag = GER_on_offensive
 		}
 		cancel_trigger = {
-			controls_province = 3544
-			controls_province = 9508
-			controls_province = 3458
-			controls_province = 3559
-			controls_province = 3392
-			controls_province = 11301
+			OR = {
+				AND = {
+					controls_province = 3544
+					controls_province = 9508
+					controls_province = 3458
+					controls_province = 3559
+					controls_province = 3392
+					controls_province = 11301
+				}
+				custom_trigger_tooltip = {
+					tooltip = GER_controls_polish_states_tt
+					are_polish_criteria_states_controlled_by_ROOT_or_ally = yes
+				}
+				hidden_trigger = {
+					OR = {
+						NOT = { has_war_with = FROM }
+						FROM = { has_capitulated = yes }
+						has_global_flag = great_war_ends
+					}
+				}			
+			}
 		}
 		cancel_effect = {
 			add_war_support = 0.05
@@ -682,6 +676,87 @@ GER_great_war = {
 			}
 		}
 	}
+	GER_verdun_offensive = {
+		icon = GFX_decision_hol_draw_up_staff_plans
+		days_remove = 210
+		is_good = no
+		fire_only_once = yes
+		target_trigger = {
+			FROM = {
+				tag = FRA
+			}
+		}
+		target_root_trigger = {
+			has_completed_focus = GER_organise_fresh_offensives		
+		}
+		allowed = {
+			tag = GER
+		}
+		visible = {
+			has_completed_focus = GER_organise_fresh_offensives
+			NOT = { has_global_flag = great_war_ends }
+			FROM = {
+				has_capitulated = no 
+			}
+		}
+		available = {
+			has_war_with = FRA
+			NOT = {
+				controls_province = 5291
+			}
+			NOT = {
+				has_country_flag = GER_on_offensive
+			}
+		}
+		
+		highlight_states = {
+			highlight_provinces = {
+				5291
+			}
+			highlight_color_while_active = 1
+		}
+		remove_effect = {
+			hidden_effect = {
+				remove_ideas = GER_focus_on_french_front
+			}
+			country_event = {
+				id = ww1_germanrework.76
+				days = 2
+			}
+			clr_country_flag = GER_on_offensive
+		}
+		cancel_trigger = {
+			OR = {
+				controls_province = 5291
+				hidden_trigger = {
+					OR = {
+						NOT = { has_war_with = FROM }
+						FROM = { has_capitulated = yes }
+						has_global_flag = great_war_ends
+					}		
+				}			
+			}
+		}
+		cancel_effect = {
+			add_war_support = 0.05
+			clr_country_flag = GER_on_offensive
+		}
+		complete_effect = {
+			set_country_flag = GER_on_offensive
+			add_timed_idea = {
+				idea = GER_focus_on_french_front
+				days = 210
+			}
+			custom_effect_tooltip = GER_capture_verdun
+		}
+		ai_will_do = {
+			factor = 100
+			modifier = {
+				date < 1916.2.20
+				factor = 0
+			}
+		}
+	}
 	#attack riga in 1917
 	GER_baltics_offensive = {
 		icon = GFX_decision_hol_draw_up_staff_plans
@@ -694,16 +769,24 @@ GER_great_war = {
 			}
 		}
 		target_root_trigger = {
-			has_completed_focus = GER_organise_fresh_offensives
+			has_completed_focus = GER_organise_fresh_offensives			
 		}
 		allowed = {
 			tag = GER
 		}
 		visible = {
 			has_completed_focus = GER_organise_fresh_offensives
+			NOT = { has_global_flag = great_war_ends }
+			FROM = {
+				has_capitulated = no 
+			}
 		}
 		available = {
 			has_war_with = RUS
+			custom_trigger_tooltip = {
+				tooltip = GER_controls_polish_states_tt
+				are_polish_criteria_states_controlled_by_ROOT_or_ally = yes
+			}
 			NOT = {
 				controls_province = 9340
 			}
@@ -740,13 +823,25 @@ GER_great_war = {
 					controls_province = 3320
 				}
 				12 = {
-					OWNER = {
+					controller = {
 						OR = {
 							is_subject_of = GER
 							has_war_together_with = GER
 						}
 					}
 				}
+				hidden_trigger = {
+					OR = {
+						NOT = {
+							has_war_with = FROM
+						}
+						FROM = {
+							has_capitulated = yes 
+						}
+						has_global_flag = great_war_ends
+					}				
+				}
+				
 			}
 		}
 		cancel_effect = {
@@ -769,7 +864,6 @@ GER_great_war = {
 			}
 		}
 	}
-
 	#attack italy with help of austria
 	GER_karfreit_offensive = {
 		icon = GFX_decision_hol_draw_up_staff_plans
@@ -789,6 +883,7 @@ GER_great_war = {
 		}
 		visible = {
 			has_completed_focus = GER_organise_fresh_offensives
+			NOT = { has_global_flag = great_war_ends }
 		}
 		available = {
 			has_war_with = ITA
@@ -827,9 +922,20 @@ GER_great_war = {
 			}
 			clr_country_flag = GER_on_offensive
 		}
-		cancel_trigger = {
-			controls_province = 628
-			controls_province = 13074
+		cancel_trigger = {		
+			OR = {
+				AND = {
+					controls_province = 628
+					controls_province = 13074
+				}
+				hidden_trigger = {
+					OR = {
+						NOT = { has_war_with = FROM }
+						FROM = { has_capitulated = yes }
+						has_global_flag = great_war_ends
+					}
+				}			
+			}
 		}
 		cancel_effect = {
 			add_war_support = 0.05
@@ -858,76 +964,148 @@ GER_great_war = {
 			}
 		}
 	}
-
-	GER_verdun_offensive = {
+	#Kaiserschlacht
+	GER_ludendorff_offensive = {
 		icon = GFX_decision_hol_draw_up_staff_plans
-		days_remove = 210
-		is_good = no
+		available = {
+			has_war_with = FRA
+			NOT = {
+				AND = {
+					29 = {
+						is_fully_controlled_by = FRA
+					}
+					785 = {
+						is_fully_controlled_by = FRA
+					}
+				}				
+			}
+			NOT = {
+				has_country_flag = GER_on_offensive
+				has_global_flag = great_war_ends
+				has_war_with = RUS
+			}
+			# shouldn't able to launch this early
+			OR = {
+				has_war_with = USA
+				has_idea =  GER_famine
+				has_war_support < 0.5
+				has_stability < 0.5
+				surrender_progress > 0.05
+			}
+		}	
+		visible = {
+			has_global_flag = great_war
+			FROM = {
+				has_capitulated = no 
+			}
+			NOT = {
+				has_global_flag = great_war_ends
+				controls_province = 11506
+				controls_province = 11420
+				controls_province = 6585
+				controls_province = 9561
+			}	
+			has_completed_focus = GER_organise_fresh_offensives
+			has_character = GER_erich_ludendorff
+		}
 		fire_only_once = yes
+		allowed = {
+			original_tag = GER
+		}
+		days_remove = 120
+		is_good = no
 		target_trigger = {
 			FROM = {
 				tag = FRA
 			}
 		}
-		target_root_trigger = {
-			has_completed_focus = GER_organise_fresh_offensives
-		}
-		allowed = {
-			tag = GER
-		}
-		visible = {
-			has_completed_focus = GER_organise_fresh_offensives
-		}
-		available = {
-			has_war_with = FRA
-			NOT = {
-				controls_province = 5291
-			}
-			NOT = {
-				has_country_flag = GER_on_offensive
-			}
-		}
-		
 		highlight_states = {
 			highlight_provinces = {
-				5291
+				11420
+				6585
+				9561
 			}
 			highlight_color_while_active = 1
 		}
-		remove_effect = {
-			hidden_effect = {
-				remove_ideas = GER_focus_on_french_front
+		target_root_trigger = {
+			has_completed_focus = GER_organise_fresh_offensives
+		}
+		cancel_trigger = {
+			OR = {
+				AND = {
+					controls_province = 9561
+					controls_province = 6585
+					controls_province = 11420
+				}
+				hidden_trigger = {
+					OR = {
+						NOT = { has_war_with = FROM }
+						FROM = { has_capitulated = yes }
+						has_global_flag = great_war_ends
+					}			
+				}		
 			}
+		}
+		complete_effect = {
+			custom_effect_tooltip = GER_ludendorff_offensive_tt
+			add_timed_idea = {
+				idea = GER_idea_ludendorff_offensive
+				days = 120
+			}
+			custom_effect_tooltip = GER_capture_compiene_beauvais_amiens
+			hidden_effect = {
+				set_global_flag = ludendorff_offensive
+				news_event = {
+					id = ww1_germanrework.193
+					hours = 3
+				}
+			}
+		}
+		remove_effect = {
 			country_event = {
-				id = ww1_germanrework.76
+				id = ww1_germanrework.77
 				days = 2
 			}
 			clr_country_flag = GER_on_offensive
-		}
-		cancel_trigger = {
-			controls_province = 5291
+			hidden_effect = {
+				remove_ideas = GER_idea_ludendorff_offensive
+				set_global_flag = ludendorff_offensive_failed
+				# if = {
+				# 	limit = {
+				# 		NOT = { has_idea = idea_mass_desertion }
+				# 	}
+				# 	add_timed_idea = {
+				# 		idea = idea_mass_desertion
+				# 		days = 90
+				# 	}
+				# }
+			}
 		}
 		cancel_effect = {
 			add_war_support = 0.05
 			clr_country_flag = GER_on_offensive
-		}
-		complete_effect = {
-			set_country_flag = GER_on_offensive
-			add_timed_idea = {
-				idea = GER_focus_on_french_front
-				days = 210
+			hidden_effect = {
+				remove_ideas = GER_idea_ludendorff_offensive
 			}
-			custom_effect_tooltip = GER_capture_verdun
 		}
 		ai_will_do = {
-			factor = 100
+			base = 0
 			modifier = {
-				date < 1916.2.20
-				factor = 0
+				add = 1000
+				has_war_with = USA
+				OR = {
+					has_country_leader = {
+						character = GER_erich_ludendorff
+						ruling_only = yes
+					}
+					GER_erich_ludendorff = {
+						is_hired_as_advisor = yes
+					}
+				}
+				date > 1918.3.21
 			}
 		}
 	}
-
 	#ahistorical assault to make France surrender
 	GER_hindenburg_offensive = {
 		icon = GFX_decision_hol_draw_up_staff_plans
@@ -947,6 +1125,8 @@ GER_great_war = {
 		}
 		visible = {
 			has_completed_focus = GER_organise_fresh_offensives
+			NOT = { has_global_flag = great_war_ends }
+			controls_province = 11506
 		}
 		available = {
 			has_war_with = FRA
@@ -977,12 +1157,10 @@ GER_great_war = {
 			clr_country_flag = GER_on_offensive
 		}
 		cancel_trigger = {
-			FRA = {
-				OR = {
-					has_capitulated = yes
-					has_war = no
-					has_country_flag = great_war_loser
-				}
+			OR = {
+				NOT = { has_war_with = FROM }
+				FROM = { has_capitulated = yes }
+				has_global_flag = great_war_ends	
 			}
 		}
 		cancel_effect = {
@@ -1001,84 +1179,6 @@ GER_great_war = {
 			factor = 100
 			modifier = {
 				date < 1916.2.20
-				factor = 0
-			}
-		}
-	}
-
-	#first and second offensive
-	GER_ypres_offensive = {
-		icon = GFX_decision_hol_draw_up_staff_plans
-		days_remove = 120
-		is_good = no
-		fire_only_once = yes
-		target_trigger = {
-			FROM = {
-				tag = BEL
-			}
-		}
-		target_root_trigger = {
-			has_completed_focus = GER_organise_fresh_offensives
-		}
-		allowed = {
-			tag = GER
-		}
-		visible = {
-			has_completed_focus = GER_organise_fresh_offensives
-		}
-		available = {
-			AND = {
-				has_war_with = FRA
-				has_war_with = BEL
-			}
-			NOT = {
-				controls_province = 6548
-			}
-			6 = {
-				NOT = {
-					is_fully_controlled_by = BEL
-				}
-			}
-			NOT = {
-				has_country_flag = GER_on_offensive
-			}
-		}
-		
-		highlight_states = {
-			highlight_provinces = {
-				6548
-			}
-			highlight_color_while_active = 1
-		}
-		remove_effect = {
-			hidden_effect = {
-				remove_ideas = GER_focus_on_belgian_front
-			}
-			country_event = {
-				id = ww1_germanrework.78
-				days = 2
-			}
-			clr_country_flag = GER_on_offensive
-		}
-		cancel_trigger = {
-			controls_province = 6548
-		}
-		cancel_effect = {
-			add_war_support = 0.05
-			clr_country_flag = GER_on_offensive
-		}
-		complete_effect = {
-			set_country_flag = GER_on_offensive
-			add_timed_idea = {
-				idea = GER_focus_on_belgian_front
-				days = 120
-			}
-			custom_effect_tooltip = GER_capture_ypres
-		}
-		ai_will_do = {
-			factor = 100
-			modifier = {
-				date < 1915.2.2
 				factor = 0
 			}
 		}
@@ -1681,129 +1781,6 @@ GER_great_war = {
 		}
 		ai_will_do = {
 			factor = 10000
-		}
-	}
-	# LUDENDORFF OFFENSIVE
-	###########################
-	GER_ludendorff_offensive = { # This should be turned into an event - Shall
-		icon = GFX_decision_hol_draw_up_staff_plans
-		available = {
-			has_war_with = FRA
-			NOT = {
-				FRA = {
-					has_capitulated = yes 
-				}
-				has_global_flag = great_war_ends
-				has_country_flag = great_war_winner
-				has_global_flag = GER_capitulation
-				has_global_flag = FRA_capitulation
-				has_war_with = RUS
-			}
-			# shouldn't able to launch this early
-			OR = {
-				has_idea =  GER_famine
-				has_war_support < 0.5
-				has_stability < 0.5
-				surrender_progress > 0.05
-			}
-		}	
-		visible = {
-			always = no
-			tag = GER
-			has_global_flag = great_war
-			NOT = {
-				has_active_mission = before_the_leaves_fall
-				has_global_flag = great_war_ends
-			}	
-			# has_completed_focus = GER_oberster_kriegsherr
-			has_completed_focus = GER_organise_fresh_offensives
-			# You can't launch Ludendorff Offensive without him
-			has_character = GER_erich_ludendorff
-		}
-		fire_only_once = yes
-		allowed = {
-			original_tag = GER
-		}
-		days_remove = 120
-		target_trigger = {
-			FROM = {
-				tag = FRA
-			}
-		}
-		target_root_trigger = {
-			has_completed_focus = GER_organise_fresh_offensives
-		}
-		cancel_trigger = {
-			OR = {
-				NOT = {
-					has_war_with = FRA
-				}
-				FRA = {
-					has_capitulated = yes 
-				}
-				has_global_flag = great_war_ends
-				has_country_flag = great_war_winner
-				has_global_flag = GER_capitulation
-				has_global_flag = FRA_capitulation
-				controls_state = 16
-				16 = { is_controlled_by = PREV }
-			}
-		}
-		complete_effect = {
-			custom_effect_tooltip = GER_ludendorff_offensive_tt
-			add_ideas = GER_idea_ludendorff_offensive
-			hidden_effect = {
-				set_global_flag = ludendorff_offensive
-				news_event = {
-					id = ww1_germanrework.193
-					hours = 3
-				}
-			}
-		}
-		remove_effect = {
-			# It would be critical for the German Empire
-			add_war_support = -0.10
-			add_stability = -0.10
-			hidden_effect = {
-				remove_ideas = GER_idea_ludendorff_offensive
-				set_global_flag = ludendorff_offensive_failed
-				if = {
-					limit = {
-						NOT = { has_idea = idea_mass_desertion }
-					}
-					add_timed_idea = {
-						idea = idea_mass_desertion
-						days = 90
-					}
-				}
-			}
-		}
-		cancel_effect = {
-			hidden_effect = {
-				remove_ideas = GER_idea_ludendorff_offensive
-			}
-		}
-		ai_will_do = {
-			base = 0
-			modifier = {
-				add = 1000
-				OR = {
-					has_country_leader = {
-						character = GER_erich_ludendorff
-						ruling_only = yes
-					}
-					GER_erich_ludendorff = {
-						is_hired_as_advisor = yes
-					}
-				}
-				OR = {
-					has_war_with = USA
-					date > 1918.3.21
-					# Near Paris
-					controls_province = 9561
-					controls_province = 11518
-				}
-			}
 		}
 	}
 	# FAMINE TIMER
