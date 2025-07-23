@@ -72,7 +72,7 @@ GER_parliament_gui_initial = {
 
 	# GER_parliament_seat_array stores the list of seat numbers for each party
     set_variable = {
-        var = SB #Spartakusbund
+        var = KPD #Kommunistische Partei Deutschlands
         value = 0
     }
 	set_variable = {
@@ -124,7 +124,7 @@ GER_parliament_gui_initial = {
         value = 6
     }
 
-	add_to_array = { GER_parliament_seat_array = SB } 
+	add_to_array = { GER_parliament_seat_array = KPD } 
 	add_to_array = { GER_parliament_seat_array = USPD } 
 	add_to_array = { GER_parliament_seat_array = SPD } 
 	add_to_array = { GER_parliament_seat_array = FVP } 
@@ -167,7 +167,7 @@ GER_parliament_gui_initial = {
 GER_recalculate_faction_seats = {
 	set_variable = {
         var = GER_left_faction
-        value = SB
+        value = KPD
     }
 	add_to_variable = {
         var = GER_left_faction
@@ -224,7 +224,7 @@ GER_recalculate_faction_seats = {
 
 GER_setup_initial_predictions = {
 	set_variable = {
-        SB_upcoming = 0
+        KPD_upcoming = 0
     }
 	set_variable = {
         USPD_upcoming = 0
@@ -580,7 +580,7 @@ GER_1912_predicted_seats_calculations = {
 GER_recalculate_faction_prediction_seats = {
 	set_variable = {
         var = GER_left_faction_prediction
-        value = SB_upcoming
+        value = KPD_upcoming
     }
 	add_to_variable = {
         var = GER_left_faction_prediction
@@ -637,8 +637,8 @@ GER_recalculate_faction_prediction_seats = {
 
 GER_apply_predictions = {
 	set_variable = {
-        var = SB
-        value = SB_upcoming
+        var = KPD
+        value = KPD_upcoming
     }
 	set_variable = {
         var = USPD
@@ -2763,8 +2763,8 @@ GER_five_year_army_law_effect = {
     army_experience = 25
     add_doctrine_cost_reduction = {
         name = GER_five_year_army_law
-        cost_reduction = 1
-        uses = 1
+        cost_reduction = 0.5
+        uses = 2
         category = land_doctrine
     }
     if = {
@@ -2931,8 +2931,102 @@ GER_auxiliary_services_act_effect = {
     }
 }
 
+GER_democratization_reforms_effect = {
+    country_event = {
+        id = ww1_germanrework.150
+        days = 3
+    }
+    add_popularity = {
+        ideology = democratic
+        popularity = 0.1
+    }
+    if = {
+        limit = {
+            is_hollweg_chancellor = yes
+        }
+        hidden_effect = {
+            if = {
+                limit = {
+                    GER_theobald_von_bethmann_hollweg = {
+                        is_country_leader = yes
+                        has_ideology = authoritarian_democracy
+                    }
+                }
+                remove_country_leader_role = {
+                    character = GER_theobald_von_bethmann_hollweg
+                    ideology = authoritarian_democracy
+                }
+                promote_character = GER_wilhelm_ii
+                set_party_name = {
+                    ideology = neutrality
+                    long_name = GER_neutrality_party
+                    name = GER_neutrality_party
+                }				
+            }
+        }		
+        GER_theobald_von_bethmann_hollweg = {
+            if = {
+                limit = {
+                    has_ideology = classical_liberalism
+                }
+                promote_character = classical_liberalism
+            }
+            else = {
+                add_country_leader_role = {
+                    promote_leader = yes
+                    country_leader = {
+                        ideology = classical_liberalism
+                        traits = { GER_hamlet }
+                    }
+                }
+            }
+        }
+        if = {
+            limit = {
+                has_active_mission = GER_viability_of_the_coalition
+            }
+            add_days_mission_timeout = {
+                mission = GER_viability_of_the_coalition
+                days = 360
+            }
+        }
+    }
+    else_if = {
+        limit = {
+            GER_maximilian_von_baden = {
+                is_hired_as_advisor = yes
+            }			
+        }
+        GER_maximilian_von_baden = {
+            if = {
+                limit = {
+                    has_ideology = classical_liberalism
+                }
+                promote_character = classical_liberalism
+            }
+            else = {
+                add_country_leader_role = {
+                    promote_leader = yes
+                    country_leader = {
+                        ideology = classical_liberalism
+                        traits = { GER_liberal_prince }
+                    }
+                }
+            }
+        }
+    }
+    clr_country_flag = spd_m_party
+    set_politics = {
+        ruling_party = democratic
+        long_name = GER_state_secretaries_party
+        name = GER_state_secretaries_party
+        elections_allowed = yes
+    }
+    add_ideas = GER_wilhelm_ii_postwar
+}
+
 GER_parliament_reassign_seats = {
-	set_variable = { GER_parliament_seat_array^0 = SB }
+	set_variable = { GER_parliament_seat_array^0 = KPD }
 	set_variable = { GER_parliament_seat_array^1 = USPD }
 	set_variable = { GER_parliament_seat_array^2 = SPD }
 	set_variable = { GER_parliament_seat_array^3 = FVP }
@@ -3151,8 +3245,17 @@ GER_spd_slpit = {
                 clr_country_flag = spd_r_party
             }
         } 
+        GER_spd_split_seats = yes
     }
-
+}
+GER_spd_split_seats = {
+    set_temp_variable = { var = SPD_temp value = SPD }
+    divide_temp_variable = { var = SPD_temp value = 4.2 }
+    round_temp_variable = SPD_temp
+    add_to_variable = { var = USPD value = SPD_temp }
+    subtract_from_variable = { var = SPD value = SPD_temp }
+    GER_parliament_reassign_seats = yes
+    GER_reload_parliament_gui = yes
 }
 GER_1918_revolution_effect = {
     set_global_flag = GER_1918_revolution
@@ -3407,7 +3510,7 @@ GER_1918_revolution_effect = {
         }
         mio:GER_kaiserliche_werft_wilhelmshaven_organization = {
             set_mio_name_key = reichsmarinewerft_wilhelmshaven
-            set_mio_icon = GFX_idea_generic_naval_manufacturer_3
+            set_mio_icon = GFX_idea_GER_kriegsmarinewerft_wilhelmshaven
         }
     }
 }
