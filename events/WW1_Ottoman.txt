@@ -14949,3 +14949,288 @@ news_event = { #Treaty of Batum
 		}
 	}
 }
+
+# Jerusalem has been lost
+country_event = {
+	id = ottoman.239
+	hidden = yes
+	trigger = {
+		tag = TUR
+		has_war = yes
+		454 = { is_owned_or_subject_trigger = yes }
+		856 = { is_owned_or_subject_trigger = yes }
+		has_global_flag = great_war
+		any_enemy_country = { controls_state = 454 }
+		any_enemy_country = { controls_state = 856 }
+		NOT = {
+			has_global_flag = great_war_ends
+			has_subject = EGY
+			owns_state = 446
+		}
+	}
+	fire_only_once = yes
+	mean_time_to_happen = { days = 0 }
+	immediate = { set_country_flag = ottomans_lost_jerusalem }
+}
+
+country_event = { #International Suez
+	id = ottoman.240
+	title = ottoman.240.t
+	desc = ottoman.240.d
+	picture = GFX_report_event_tur_politician_march
+	trigger = {
+		tag = TUR
+		has_war = no
+		OR = {
+			has_active_mission = versallies_conference
+			has_active_mission = frankfurt_conference
+		}
+		owns_state = 454
+		owns_state = 856
+		has_country_flag = great_war_winner
+		has_country_flag = ottomans_lost_jerusalem
+		447 = {
+			owner = {
+				OR = {
+					tag = ROOT
+					is_subject_of = ROOT
+					AND = {
+						original_tag = EGY
+						NOT = { has_country_flag = great_war_winner }
+					}
+					has_country_flag = great_war_loser
+				}
+			}
+		}
+		NOT = {
+			has_country_flag = ottomans_hold_cairo_and_alexandria
+			has_subject = EGY
+			country_exists = PAL
+			owns_state = 446
+			has_border_war_with = EGY
+		}
+		OR = {
+			NOT = { country_exists = ISR }
+			has_military_access_to = ISR
+			ISR = { has_country_flag = great_war_loser }
+			has_subject = ISR
+		}
+	}
+	fire_only_once = yes
+	mean_time_to_happen = { days = 25 }
+	option = {
+		name = ottoman.240.a
+		hidden_effect = {
+			if = {
+				limit = { country_exists = ISR }
+				PAL = {
+					annex_country = {
+						target = ISR
+						transfer_troops = yes
+					}
+					if = {
+						limit = { ISR = { is_ai = no } }
+						change_tag_from = ISR
+					}
+				}
+			}
+			PAL = {
+				set_cosmetic_tag = PAL_international
+				add_ideas = PAL_moj
+				add_ideas = PAL_sectarian_divide
+				set_politics = {
+					ruling_party = neutrality
+					elections_allowed = no
+				}
+				set_popularities = {
+					fascism = 0
+					communism = 0
+					democratic = 40
+					neutrality = 60
+				}
+			}
+			every_other_country = {
+				limit = {
+					OR = {
+						has_country_flag = great_war_loser
+						AND = {
+							original_tag = EGY
+							is_subject = no
+						}
+						is_subject_of = PREV
+					}
+					OR = {
+						owns_state = 447
+						owns_state = 453
+						owns_state = 1207
+						owns_state = 454
+						owns_state = 856
+						owns_state = 858
+					}
+				}
+				country_event = {
+					id = ottoman.241
+					hours = 3
+				}
+			}
+		}
+		every_state = {
+			limit = {
+				OR = {
+					state = 447
+					state = 453
+					state = 1207
+					state = 454
+					state = 856
+					state = 858
+				}
+			}
+			add_core_of = PAL
+			remove_claim_by = ROOT
+			if = {
+				limit = { is_owned_or_subject_trigger = yes }
+				transfer_state_to = PAL
+			}
+		}
+		PAL = { set_country_flag = protectorate }
+		set_autonomy = {
+			target = PAL
+			autonomy_state = autonomy_tgwr_protectorate
+		}
+		hidden_effect = {
+			every_country = {
+				limit = {
+					is_major = yes
+					NOT = {
+						has_war_with = PAL
+						has_war_with = TUR
+						has_war_with = GER
+						has_war_with = FRA
+					}
+					if = {
+						limit = {
+							NOT = { ROOT = { has_government = communism } }
+						}
+						NOT = { has_government = communism }
+					}
+				}
+				set_truce = {
+					target = PAL
+					days = 365
+				}
+				PAL = { give_military_access = PREV }
+			}
+			PAL = {
+				set_capital = { state = 454 }
+				set_politics = {
+					ruling_party = neutrality
+					elections_allowed = no
+				}
+				set_popularities = {
+					democratic = 35
+					neutrality = 65
+				}
+				country_lock_all_division_template = yes
+				division_template = {
+					name = "International Gendarmerie"
+					override_model = GRE_infantry_3_entity
+					is_locked = yes
+					template_counter = 7
+					regiments = {
+						infantry = { x = 0 y = 0 }
+						infantry = { x = 0 y = 1 }
+						infantry = { x = 0 y = 2 }
+						infantry = { x = 0 y = 3 }
+					}
+				}
+				447 = {
+					create_unit = {
+						division = "name = \"Port Said Garrison\" division_template = \"International Gendarmerie\" start_experience_factor = 1.0 start_equipment_factor = 1.0"
+						owner = PREV
+						allow_spawning_on_enemy_provs = yes
+						prioritize_location = 12049
+					}
+					create_unit = {
+						division = "name = \"Suez Garrison\" division_template = \"International Gendarmerie\" start_experience_factor = 1.0 start_equipment_factor = 1.0"
+						owner = PREV
+						allow_spawning_on_enemy_provs = yes
+						prioritize_location = 4073
+					}
+				}
+				454 = {
+					create_unit = {
+						division = "name = \"Jerusalem Garrison\" division_template = \"International Gendarmerie\" start_experience_factor = 1.0 start_equipment_factor = 1.0"
+						owner = PREV
+						allow_spawning_on_enemy_provs = yes
+						prioritize_location = 1086
+					}
+				}
+				every_owned_state = { set_demilitarized_zone = yes }
+			}
+		}
+	}
+}
+
+country_event = { #International Palestine and Suez
+	id = ottoman.241
+	title = ottoman.240.t
+	desc = ottoman.240.d
+	picture = GFX_report_event_tur_politician_march
+	is_triggered_only = yes
+	option = {
+		name = ottoman.241.a
+		every_owned_state = {
+			limit = { is_core_of = PAL }
+			if = {
+				limit = {
+					NOT = {
+						is_claimed_by = PREV
+						is_core_of = PREV
+					}
+				}
+				add_claim_by = PREV
+			}
+			transfer_state_to = PAL
+			hidden_effect = { set_demilitarized_zone = yes }
+		}
+	}
+}
+
+news_event = { #International Palestine and Suez news
+	id = ottoman.242
+	title = ottoman.242.t
+	desc = ottoman.242.desc
+	picture = GFX_news_event_ottomans_germany
+	is_triggered_only = yes
+	major = yes
+	option = {
+		name = ottoman.242.a
+		trigger = {
+			has_country_flag = great_war_winner
+			NOT = { has_subject = PAL }
+		}
+	}
+	option = {
+		name = ottoman.242.b
+		trigger = {
+			has_country_flag = great_war_loser
+			NOT = { has_subject = PAL }
+		}
+	}
+	option = {
+		name = ottoman.242.c
+		trigger = {
+			has_subject = PAL
+		}
+	}
+	option = {
+		name = ottoman.242.d
+		trigger = {
+			NOT = {
+				has_country_flag = great_war_winner
+				has_country_flag = great_war_loser
+				has_subject = PAL
+			}
+		}
+	}
+}
