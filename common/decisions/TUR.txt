@@ -95,7 +95,7 @@ debug_decisions = {
 }
 
 GER_great_war = {
-	TUR_surrender_to_entente = {
+	TUR_offer_surrender_terms = {
 		allowed = { tag = TUR }
 		icon = GFX_decision_eng_trade_unions_support
 		fire_only_once = yes
@@ -173,6 +173,210 @@ GER_great_war = {
 		fire_only_once = no
 		days_mission_timeout = 30
 		timeout_effect = { TUR_armistice_of_mudros_effect = yes }
+	}
+	TUR_retreat_from_occupied_areas_caucasus = {
+		allowed = { tag = TUR }
+		icon = GFX_decision_eng_trade_unions_support
+		fire_only_once = yes
+		activation = { always = yes }
+		selectable_mission = yes
+		cancel_trigger = { NOT = { has_country_flag = great_war_loser } }
+		is_good = no
+		days_mission_timeout = 70
+		complete_effect = {
+			create_dynamic_country = {
+				original_tag = TUR
+				set_country_flag = kars_republic
+				hidden_effect = {
+					set_cosmetic_tag = kars_republic
+					set_stability = 0.85
+					set_war_support = 0.78
+				}
+				hidden_effect = {
+					every_state = { remove_core_of = KRS }
+					every_state = {
+						limit = {
+							has_state_flag = TUR_treaty_of_batum_state
+							NOT = { state = 939 }
+						}
+						add_core_of = KRS
+					}
+				}
+				every_state = {
+					limit = {
+						owner = {
+							OR = {
+								tag = TUR
+								is_subject_of = TUR
+							}
+						}
+						has_state_flag = TUR_treaty_of_batum_state
+						NOT = { state = 939 }
+					}
+					custom_effect_tooltip = TUR_create_kars_republic
+					hidden_effect = { transfer_state_to = KRS }
+				}
+				hidden_effect = {
+					set_politics = {
+						ruling_party = neutrality
+						elections_allowed = yes
+						election_frequency = 48
+					}
+					set_popularities = {
+						neutrality = 38
+						fascism = 28
+						communism = 10
+						democratic = 24
+					}
+					set_party_name = {
+						ideology = democratic
+						name = KRS_party
+						long_name = KRS_party
+					}
+					set_party_name = {
+						ideology = neutrality
+						name = KRS_party
+						long_name = KRS_party
+					}
+					set_party_name = {
+						ideology = fascism
+						name = KRS_party
+						long_name = KRS_party
+					}
+					set_party_name = {
+						ideology = communism
+						name = KRS_party
+						long_name = KRS_party
+					}
+					load_focus_tree = empty_focus
+					set_research_slots = 2
+					set_capital = {
+						state = 806
+						remember_old_capital = no
+					}
+				}
+				give_military_access = PREV
+				every_other_country = {
+					limit = {
+						OR = {
+							is_neighbor_of = PREV
+							has_war_with = PREV.PREV
+							is_in_faction_with = PREV.PREV
+						}
+					}
+					set_truce = {
+						target = PREV
+						days = 365
+					}
+				}
+			}
+			give_guarantee = KRS
+			give_market_access = KRS
+			create_dynamic_country = {
+				original_tag = AZR
+				set_country_flag = aras_republic
+				hidden_effect = {
+					set_cosmetic_tag = aras_republic
+					set_stability = 0.85
+					set_war_support = 0.78
+				}
+				hidden_effect = {
+					every_state = { remove_core_of = ARS }
+					every_state = {
+						limit = { state = 939 }
+						add_core_of = ARS
+					}
+				}
+				every_state = {
+					limit = {
+						owner = {
+							OR = {
+								tag = TUR
+								is_subject_of = TUR
+							}
+						}
+						state = 939
+					}
+					custom_effect_tooltip = TUR_create_aras_republic
+					hidden_effect = { transfer_state_to = ARS }
+				}
+				hidden_effect = {
+					set_politics = {
+						ruling_party = neutrality
+						elections_allowed = yes
+						election_frequency = 48
+					}
+					set_popularities = {
+						neutrality = 39
+						fascism = 32
+						communism = 5
+						democratic = 24
+					}
+					set_party_name = {
+						ideology = democratic
+						name = ARS_party
+						long_name = ARS_party
+					}
+					set_party_name = {
+						ideology = neutrality
+						name = ARS_party
+						long_name = ARS_party
+					}
+					set_party_name = {
+						ideology = fascism
+						name = ARS_party
+						long_name = ARS_party
+					}
+					set_party_name = {
+						ideology = communism
+						name = ARS_party
+						long_name = ARS_party
+					}
+					load_focus_tree = empty_focus
+					set_research_slots = 2
+					set_capital = {
+						state = 939
+						remember_old_capital = no
+					}
+				}
+				give_military_access = PREV
+				every_other_country = {
+					limit = {
+						OR = {
+							is_neighbor_of = PREV
+							has_war_with = PREV.PREV
+							is_in_faction_with = PREV.PREV
+						}
+					}
+					set_truce = {
+						target = PREV
+						days = 365
+					}
+				}
+				KRS = { puppet = ARS }
+			}
+			give_guarantee = ARS
+			give_market_access = ARS
+		}
+		timeout_effect = {
+			every_country = {
+				limit = {
+					has_country_flag = defeated_TUR_in_great_war
+					is_major = yes
+				}
+				declare_war_on = {
+					target = ROOT
+					type = topple_government
+				}
+			}
+		}
+		ai_will_do = {
+			base = 1000
+			modifier = {
+				factor = 0
+				has_country_flag = TUR_retreat_from_occupied_areas_caucasus_2_month_timer
+			}
+		}
 	}
 	TUR_declare_jihad = {
 		icon = GFX_decision_generic_nationalism
@@ -12082,9 +12286,143 @@ peace_deals = {
 		complete_effect = {
 			set_global_flag = TUR_surrender_1st_balkan_war
 			set_country_flag = BW1_loser
-			add_war_support = -0.05
 			BLL = { country_event = { id = ww1_firstbalkan.4 hours = 8 } }
 			hidden_effect = { news_event = { id = ww1_firstbalkan.5 hours = 6 } }
+			if = {
+				limit = { war_length_with = { tag = FROM months < 1 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_30
+					TUR_government_stability_var = -30
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 2 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_28
+					TUR_government_stability_var = -28
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 3 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_26
+					TUR_government_stability_var = -26
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 4 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_24
+					TUR_government_stability_var = -24
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 5 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_22
+					TUR_government_stability_var = -22
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 6 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_20
+					TUR_government_stability_var = -20
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 7 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_18
+					TUR_government_stability_var = -18
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 8 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_16
+					TUR_government_stability_var = -16
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 9 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_14
+					TUR_government_stability_var = -14
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 10 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_12
+					TUR_government_stability_var = -12
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 11 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_10
+					TUR_government_stability_var = -10
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 12 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_8
+					TUR_government_stability_var = -8
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 13 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_6
+					TUR_government_stability_var = -6
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 14 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_4
+					TUR_government_stability_var = -4
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 15 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_2
+					TUR_government_stability_var = -2
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
 		}
 		ai_will_do = {
 			base = 500
@@ -12300,7 +12638,6 @@ peace_deals = {
 			}
 		}
 		complete_effect = {
-			add_war_support = -0.10
 			white_peace = FROM
 			every_owned_state = {
 				limit = {
@@ -12322,6 +12659,141 @@ peace_deals = {
 				set_demilitarized_zone = yes
 			}
 			set_global_flag = lone_liberator_victorious
+			if = {
+				limit = { war_length_with = { tag = FROM months < 1 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_30
+					TUR_government_stability_var = -30
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 2 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_28
+					TUR_government_stability_var = -28
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 3 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_26
+					TUR_government_stability_var = -26
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 4 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_24
+					TUR_government_stability_var = -24
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 5 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_22
+					TUR_government_stability_var = -22
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 6 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_20
+					TUR_government_stability_var = -20
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 7 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_18
+					TUR_government_stability_var = -18
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 8 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_16
+					TUR_government_stability_var = -16
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 9 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_14
+					TUR_government_stability_var = -14
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 10 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_12
+					TUR_government_stability_var = -12
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 11 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_10
+					TUR_government_stability_var = -10
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 12 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_8
+					TUR_government_stability_var = -8
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 13 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_6
+					TUR_government_stability_var = -6
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 14 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_4
+					TUR_government_stability_var = -4
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 15 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_2
+					TUR_government_stability_var = -2
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
 			hidden_effect = {
 				if = {
 					limit = {
@@ -12435,6 +12907,141 @@ peace_deals = {
 				RUS = { country_event = { id = ottoman.151 days = 3 } }
 			}
 			BUL = { country_event = { id = ottoman.151 days = 3 } }
+			if = {
+				limit = { war_length_with = { tag = FROM months < 1 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_30
+					TUR_government_stability_var = -30
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 2 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_28
+					TUR_government_stability_var = -28
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 3 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_26
+					TUR_government_stability_var = -26
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 4 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_24
+					TUR_government_stability_var = -24
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 5 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_22
+					TUR_government_stability_var = -22
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 6 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_20
+					TUR_government_stability_var = -20
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 7 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_18
+					TUR_government_stability_var = -18
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 8 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_16
+					TUR_government_stability_var = -16
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 9 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_14
+					TUR_government_stability_var = -14
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 10 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_12
+					TUR_government_stability_var = -12
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 11 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_10
+					TUR_government_stability_var = -10
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 12 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_8
+					TUR_government_stability_var = -8
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 13 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_6
+					TUR_government_stability_var = -6
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 14 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_4
+					TUR_government_stability_var = -4
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
+			else_if = {
+				limit = { war_length_with = { tag = FROM months < 15 } }
+				add_to_variable = {
+					tooltip = TUR_government_stability_reduce_2
+					TUR_government_stability_var = -2
+				}
+				TUR_government_stability_calculate = yes
+				custom_effect_tooltip = TUR_dont_surrender_too_early_tt
+			}
 		}
 		ai_will_do = {
 			base = 500
@@ -13205,7 +13812,7 @@ TUR_government_stability_decision_category = {
 					}
 				}
 			}
-			activate_mission = TUR_surrender_to_entente
+			activate_mission = TUR_offer_surrender_terms
 			hidden_effect = { country_event = { id = ottoman.76 days = 30 } }
 			set_country_flag = TUR_yakub_cemils_coup_succeess
 		}
