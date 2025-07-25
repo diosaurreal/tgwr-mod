@@ -125,6 +125,17 @@ focus_tree = {
 				idea = SWE_supporting_SAF
 				days = 120
 			}
+			custom_effect_tooltip = adjust_swe_political_tt
+			add_to_variable = {
+				tooltip = political_power_cost_tt
+				var = SWE_pol_political_power_cost
+				value = 0.05
+			}
+			add_to_variable = {
+				tooltip = drift_defence_factor_tt
+				var = SWE_pol_drift_defence_factor
+				value = 0.02
+			}
 		}
 	}
 	focus = {	# Allow conservative papers to write about how dumb the strike was (historical)
@@ -362,13 +373,27 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_HISTORICAL FOCUS_FILTER_POLITICAL }
 		
 		completion_reward = {
-			add_popularity = {
-				ideology = democratic
-				popularity = 0.02
+			if = {
+				limit = { has_country_flag = swe_socialstyrelsen }
+				add_popularity = {
+					ideology = democratic
+					popularity = 0.02
+				}
+				add_popularity = {
+					ideology = communism
+					popularity = 0.02
+				}
 			}
-			add_popularity = {
-				ideology = communism
-				popularity = 0.02
+			else = {
+				custom_effect_tooltip = establish_socialstyerlsen_tt
+				add_popularity = {
+					ideology = democratic
+					popularity = 0.01
+				}
+				add_popularity = {
+					ideology = communism
+					popularity = 0.01
+				}
 			}
 			custom_effect_tooltip = adjust_swe_political_tt
 			add_to_variable = {
@@ -541,15 +566,25 @@ focus_tree = {
 		}
 		
 		completion_reward = {
-			custom_effect_tooltip = immediate_effect_upon_focus_start_tt
 			if = {
 				limit = { has_active_mission = SWE_f_baten_question }
+				custom_effect_tooltip = immediate_effect_upon_focus_start_tt
 				add_days_mission_timeout = {
 					mission = SWE_f_baten_question
 					days = 70
 				}
 			}
-			custom_effect_tooltip = SOV_focus_complete_effect_tt
+			if = {
+				limit = {
+					OR = {
+						has_active_mission = SWE_f_baten_question
+						has_power_balance = {
+							id = SWE_staaf_approval
+						}
+					}
+				}
+				custom_effect_tooltip = SOV_focus_complete_effect_tt
+			}
 			if = {
 				limit = {
 					has_power_balance = {
@@ -739,9 +774,10 @@ focus_tree = {
 		id = SWE_funds_to_industrial_growth
 		icon = GFX_focus_generic_economic_profit
 		prerequisite = { focus = SWE_forsvarsvasendet }
+		mutually_exclusive = { focus = SWE_invest_more_heavily_in_social_reforms }
 		relative_position_id = SWE_forsvarsvasendet
 		cost = 10.00
-		x = 0
+		x = -1
 		y = 1
 		
 		available = {
@@ -787,6 +823,44 @@ focus_tree = {
 					level = 1
 					instant_build = yes
 				}
+			}
+		}
+	}
+	focus = {
+		id = SWE_invest_more_heavily_in_social_reforms
+		icon = GFX_focus_generic_economic_profit
+		prerequisite = { focus = SWE_forsvarsvasendet }
+		mutually_exclusive = { focus = SWE_funds_to_industrial_growth }
+		relative_position_id = SWE_forsvarsvasendet
+		cost = 10.00
+		x = 1
+		y = 1
+		
+		available = {
+			has_country_leader = {
+				character = SWE_karl_staaff
+				ruling_only = yes
+			}
+			has_idea = SWE_forsvarsvasendet
+		}
+		
+		available_if_capitulated = no
+		
+		search_filters = { FOCUS_FILTER_STABILITY FOCUS_FILTER_POLITICAL FOCUS_FILTER_MANPOWER }
+		
+		completion_reward = {
+			add_stability = 0.05
+			custom_effect_tooltip = adjust_swe_political_tt
+			add_to_variable = {
+				tooltip = political_power_factor_tt
+				var = SWE_pol_political_power_factor
+				value = 0.05
+			}
+			custom_effect_tooltip = adjust_emigration_problem_tt
+			add_to_variable = {
+				tooltip = monthly_population_tt
+				var = SWE_emigration_monthly_population
+				value = 0.05
 			}
 		}
 	}
@@ -1572,6 +1646,22 @@ focus_tree = {
 		
 		completion_reward = {
 			add_ideas = SWE_resource_market
+			if = {
+				limit = {
+					NOT = {
+						check_variable = {
+							var = SWE_pol_min_export
+							value = -0.01
+						}
+					}
+				}
+				custom_effect_tooltip = adjust_swe_political_tt
+				add_to_variable = {
+					tooltip = min_export_tt
+					var = SWE_pol_min_export
+					value = 0.02
+				}
+			}
 		}
 	}
 	focus = {
@@ -1588,14 +1678,6 @@ focus_tree = {
 		x = 2
 		y = 1
 		
-		available = {
-			OR = {
-				threat > 0.15
-				has_global_flag = great_war
-			}
-		}
-		bypass = { is_in_faction = yes }
-		
 		search_filters = { FOCUS_FILTER_HISTORICAL FOCUS_FILTER_STABILITY }
 		
 		completion_reward = {
@@ -1610,6 +1692,11 @@ focus_tree = {
 				tooltip = war_support_factor_tt
 				var = SWE_pol_war_support_factor
 				value = -0.05
+			}
+			add_to_variable = {
+				tooltip = neutrality_drift_tt
+				var = SWE_pol_neutrality_drift
+				value = -0.01
 			}
 		}
 	}
@@ -2102,7 +2189,12 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_POLITICAL FOCUS_FILTER_WAR_SUPPORT }
 		
 		completion_reward = {
-			add_war_support = 0.05
+			custom_effect_tooltip = adjust_swe_political_tt
+			add_to_variable = {
+				tooltip = war_support_factor_tt
+				var = SWE_pol_war_support_factor
+				value = 0.05
+			}
 			add_ideas = SWE_kings_policy
 		}
 	}
@@ -2118,6 +2210,12 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_POLITICAL }
 		
 		completion_reward = {
+			custom_effect_tooltip = adjust_swe_political_tt
+			add_to_variable = {
+				tooltip = political_advisor_cost_factor_tt
+				var = SWE_pol_political_advisor_cost_factor
+				value = -0.05
+			}
 			custom_effect_tooltip = available_political_advisor
 			show_ideas_tooltip = SWE_rudof_kjellen
 			show_ideas_tooltip = SWE_axel_hultkrantz
@@ -2655,6 +2753,12 @@ focus_tree = {
 		
 		completion_reward = {
 			add_political_power = 50
+			custom_effect_tooltip = adjust_swe_political_tt
+			add_to_variable = {
+				tooltip = political_power_cost_tt
+				var = SWE_pol_political_power_cost
+				value = -0.05
+			}
 			remove_ideas = SWE_effects_of_coup
 		}
 	}
@@ -2926,12 +3030,17 @@ focus_tree = {
 			add_to_variable = {
 				tooltip = political_power_factor_tt
 				var = SWE_pol_political_power_factor
-				value = 0.05
+				value = 0.10
 			}
 			add_to_variable = {
 				tooltip = war_support_factor_tt
 				var = SWE_pol_war_support_factor
 				value = 0.05
+			}
+			add_to_variable = {
+				tooltip = democratic_drift_tt
+				var = SWE_pol_democratic_drift
+				value = -0.01
 			}
 			if = {
 				limit = { has_idea = SWE_temporary_state_of_ermegency }
