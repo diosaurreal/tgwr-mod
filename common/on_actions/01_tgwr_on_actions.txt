@@ -812,7 +812,31 @@
 					}
 				}
 				leave_faction = yes
+				OVERLORD = {
+					diplomatic_relation = {
+						country = PREV
+						relation = military_access
+						active = yes
+					}
+				}
 				country_event = { id = ww1_political.7 hours = 1 } #needed if the faction leader is at war, don't ask
+			}
+			if = {
+				limit = {
+					tag = SER
+					has_completed_focus = SER_war_preparations
+				}
+				SER = {
+					set_capital = { state = 107 }
+					set_victory_points = {
+						province = 11887
+						value = 2
+					}
+					set_victory_points = {
+						province = 11586
+						value = 10
+					}
+				}
 			}
 			if = {
 				limit = {
@@ -2995,6 +3019,13 @@
 					}
 				}
 				leave_faction = yes	
+				OVERLORD = {
+					diplomatic_relation = {
+						country = PREV
+						relation = military_access
+						active = yes
+					}
+				}
 			}
 		}
 	}
@@ -5301,7 +5332,14 @@
 						has_autonomy_state = autonomy_tgwr_concession
 					}
 				}
-				leave_faction = yes
+				leave_faction = yes			
+				OVERLORD = {
+					diplomatic_relation = {
+						country = PREV
+						relation = military_access
+						active = yes
+					}
+				}
 			}
 		}
 	}
@@ -6072,10 +6110,10 @@
 					}
 					PREV = {
 						JAP_mutsuhito = {
-							promote_character = stratocracy
+							promote_character = reactionism
 						}
 						JAP_yoshihito = {
-							promote_character = stratocracy
+							promote_character = reactionism
 						}
 						JAP_hirohito = {
 							promote_character = fascism_ideology
@@ -7232,6 +7270,23 @@
 					}
 				}
 					
+			}
+			if = {
+				limit = {
+					tag = SER
+					has_completed_focus = SER_war_preparations
+				}
+				SER = {
+					set_capital = { state = 107 }
+					set_victory_points = {
+						province = 11887
+						value = 2
+					}
+					set_victory_points = {
+						province = 11586
+						value = 10
+					}
+				}
 			}	
 		}
 	}
@@ -7386,6 +7441,7 @@
 				limit = {
 					original_tag = CRI
 				}
+				set_capital = { state = 137 }
 				FROM = {
 					every_character = {
 						set_nationality = ROOT
@@ -7412,6 +7468,29 @@
 						}
 						remove_claim_by = PREV
 						remove_core_of = PREV
+					}
+				}
+				if = {
+					limit = { has_cosmetic_tag = CRI_taurida }
+					137 = { set_state_name = TAVRIDA_STATE }
+					else = {
+						137 = { reset_state_name = yes }
+					}
+				}
+				if = {
+					limit = { 
+						has_government = democratic
+						NOT = { has_cosmetic_tag = CRI_GER }
+					}
+					set_victory_points = {
+						province = 3169
+						value = 5
+					}
+					else = {
+						set_victory_points = {
+							province = 3169
+							value = 1
+						}
 					}
 				}
 			}
@@ -7634,6 +7713,10 @@
 					FROM = { tag = GBR }
 				}
 				FROM = {
+					if = {
+						limit = { has_war_with = SCO }
+						white_peace = SCO
+					}
 					every_other_country = {
 						limit = {
 							OR = {
@@ -9549,6 +9632,13 @@
 					}					
 				}
 				leave_faction = yes
+				OVERLORD = {
+					diplomatic_relation = {
+						country = PREV
+						relation = military_access
+						active = yes
+					}
+				}
 			}
 		}
 	}
@@ -9777,6 +9867,13 @@
 					}
 				}
 				leave_faction = yes
+				OVERLORD = {
+					diplomatic_relation = {
+						country = PREV
+						relation = military_access
+						active = yes
+					}
+				}
 				country_event = { id = ww1_political.7 hours = 1 } #needed if the faction leader is at war, don't ask
 			}
 		}
@@ -9988,6 +10085,10 @@
 				ROOT = {
 					news_event = kis_news.1
 				}
+				GER = {
+					country_event = ww1_germanrework.40
+					country_event = { id = ww1_germanrework.49 days = 7 }
+				}
 			}
 		}
 		effect = {
@@ -10120,6 +10221,91 @@
 	}	
 	on_declare_war = {
 		effect = {
+			#Germany has started a war - allies should try to contain Germany
+			if = {
+				limit = {
+					ROOT = {
+						TAG = GER
+					}
+					NOT = {
+						has_global_flag = GER_has_started_war
+					}
+				}
+				set_global_flag = GER_has_started_war
+			}
+			#if France and UK are not in faction but just in defensive pact, France can just join anyway to fuck germans
+			if = {
+				limit = {
+					ROOT = {
+						tag = ENG
+						is_guaranteed_by = FRA
+					}
+					FROM = {
+						tag = GER
+					}
+					FRA = {
+						has_war_with_major = no
+					}
+				}
+				FRA = {
+					country_event = {
+						id = ww1_france.625
+						days = 7
+					}
+				}
+			}
+			#same if Russia attack germany : UK can join despite just being in defensive pact
+			if = {
+				limit = {
+					ROOT = {
+						tag = RUS
+						OR = {
+							is_guaranteed_by = ENG
+							any_allied_country = {
+								is_guaranteed_by = ENG
+							}
+						}
+					}
+					FROM = {
+						tag = GER
+					}
+					ENG = {
+						has_war_with_major = no
+					}
+				}
+				ENG = {
+					country_event = {
+						id = ww1_england.276
+						days = 14
+					}
+				}
+			}
+			#finaly if France attack germany and is not in faction with UK
+			if = {
+				limit = {
+					ROOT = {
+						tag = FRA
+						OR = {
+							is_guaranteed_by = ENG
+							any_allied_country = {
+								is_guaranteed_by = ENG
+							}
+						}
+					}
+					FROM = {
+						tag = GER
+					}
+					ENG = {
+						has_war_with_major = no
+					}
+				}
+				ENG = {
+					country_event = {
+						id = ww1_england.278
+						days = 14
+					}
+				}
+			}
 			if = {
 				limit = {
 					ROOT = {
@@ -10213,7 +10399,13 @@
 							has_autonomy_state = autonomy_tgwr_concession
 						}
 					}
-					leave_faction = yes
+					OVERLORD = {
+						diplomatic_relation = {
+							country = PREV
+							relation = military_access
+							active = yes
+						}
+					}
 					country_event = { id = ww1_political.7 hours = 1 } #needed if the faction leader is at war, don't ask
 				}
 			}		
@@ -10280,6 +10472,7 @@
 						}
 						FROM = {
 							original_tag = TUR
+							owns_state = 345
 						}
 						OR = {
 							BUL = {
@@ -10692,6 +10885,13 @@
 					}
 				}
 				leave_faction = yes
+				OVERLORD = {
+					diplomatic_relation = {
+						country = PREV
+						relation = military_access
+						active = yes
+					}
+				}
 			}
 			else_if = {
 				limit = {
@@ -10721,6 +10921,13 @@
 					}
 				}
 				leave_faction = yes
+				OVERLORD = {
+					diplomatic_relation = {
+						country = PREV
+						relation = military_access
+						active = yes
+					}
+				}
 				country_event = { id = ww1_political.7 hours = 1 } #needed if the faction leader is at war, don't ask
 			}
 			FROM = {
@@ -10735,6 +10942,13 @@
 						}
 					}
 					leave_faction = yes
+					OVERLORD = {
+						diplomatic_relation = {
+							country = PREV
+							relation = military_access
+							active = yes
+						}
+					}
 					country_event = { id = ww1_political.7 hours = 1 } #needed if the faction leader is at war, don't ask
 				}
 			}
