@@ -4976,6 +4976,19 @@ country_event = {
 				add = 200
 				has_global_flag = before_the_leaves_fall_flag
 			}
+			modifier = {
+				factor = 0
+				#don't take nanzig when ardennes is irrelevant
+				907 = {
+					owner = {
+						NOT = {
+							tag = ROOT
+							has_country_flag = great_war_loser
+							is_subject_of = ROOT
+						}
+					}
+				}
+			}
 		}
 	}
 	option = {
@@ -5436,7 +5449,40 @@ country_event = {
 	desc = ww1_germany.133.d
 	picture = GFX_report_event_generic_conference
 	is_triggered_only = yes
+	trigger = {
+		# check there's french flanders to transfer
+		OR = {
+			29 = {
+				owner = {
+					has_country_flag = great_war_loser
+				}
+			}
+			33 = {
+				owner = {
+					has_country_flag = great_war_loser
+				}
+			}
+			865 = {
+				owner = {
+					has_country_flag = great_war_loser
+				}
+			}
+		}
+	}
 	option = {
+		trigger = {
+			# check flandern frontline valid
+			6 = {
+				owner = {
+					OR = {
+						tag = ROOT #failsafe somehow
+						is_in_faction_with = ROOT
+						is_subject_of = ROOT
+						has_country_flag = great_war_winner
+					}
+				}
+			}
+		}
 		# Take Calais only
 		name = ww1_germany.133.a
 		29 = {
@@ -5450,22 +5496,39 @@ country_event = {
 				set_demilitarized_zone = no
 			}
 		}
-		add_state_claim = 865
-		transfer_state = 865
-		hidden_effect = {
-			865 = { set_demilitarized_zone = no }
-			if = {
-				limit = {
-					34 = {
-						owner = {
+		33 = { set_demilitarized_zone = no }
+		865 = { set_demilitarized_zone = no }
+		6 = {
+			owner = {
+				if = {
+					limit = {
+						OR = {
+							tag = ROOT
 							is_subject_of = ROOT
+							is_in_faction_with = ROOT
+							has_country_flag = great_war_winner
 						}
 					}
+					transfer_state = 33
+					transfer_state = 865
 				}
-				country_event = {
-					id = ww1_germany.134
-					hours = 3
+			}
+		}
+		hidden_effect = {
+			every_state = {
+				limit = {
+					OR = {
+						state = 29
+						state = 33
+						state = 865
+					}
+					is_claimed_by = ROOT
 				}
+				remove_claim_by = ROOT
+			}
+			country_event = {
+				id = ww1_germany.134
+				hours = 3
 			}
 		}
 		ai_chance = {
@@ -5477,27 +5540,56 @@ country_event = {
 		}
 	}
 	option = {
-		# Take Calais and Arras
-		name = ww1_germany.133.b
-		add_state_claim = 29
-		transfer_state = 29
-		add_state_claim = 865
-		transfer_state = 865
-		hidden_effect = {
-			29 = { set_demilitarized_zone = no }
-			865 = { set_demilitarized_zone = no }
-			if = {
-				limit = {
-					34 = {
-						owner = {
-							is_subject_of = ROOT
-						}
+		trigger = {
+			# check flandern frontline valid
+			6 = {
+				owner = {
+					OR = {
+						tag = ROOT #failsafe somehow
+						is_in_faction_with = ROOT
+						is_subject_of = ROOT
+						has_country_flag = great_war_winner
 					}
 				}
-				country_event = {
-					id = ww1_germany.134
-					hours = 3
+			}
+		}
+		# Take Calais and Arras
+		name = ww1_germany.133.b
+		29 = { set_demilitarized_zone = no }
+		33 = { set_demilitarized_zone = no }
+		865 = { set_demilitarized_zone = no }
+		6 = {
+			owner = {
+				if = {
+					limit = {
+						OR = {
+							tag = ROOT
+							is_subject_of = ROOT
+							is_in_faction_with = ROOT
+							has_country_flag = great_war_winner
+						}
+					}
+					transfer_state = 29
+					transfer_state = 33
+					transfer_state = 865
 				}
+			}
+		}
+		hidden_effect = {
+			every_state = {
+				limit = {
+					OR = {
+						state = 29
+						state = 33
+						state = 865
+					}
+					is_claimed_by = ROOT
+				}
+				remove_claim_by = ROOT
+			}
+			country_event = {
+				id = ww1_germany.134
+				hours = 3
 			}
 		}
 		ai_chance = {
@@ -5515,10 +5607,22 @@ country_event = {
 	option = {	
 		# We are not taking any
 		name = ww1_germany.133.c
+		trigger = {
+			#you must reward your non-subject ally
+			NOT = {
+				6 = {
+					owner = {
+						is_subject = no
+						has_country_flag = great_war_winner
+					}
+				}
+			}
+		}
 		every_state = {
 			limit = {
 				OR = {
 					state = 29
+					state = 33
 					state = 865
 				}
 			}
@@ -5533,18 +5637,20 @@ country_event = {
 			}
 		}
 		hidden_effect = {
-			if = {
+			every_state = {
 				limit = {
-					34 = {
-						owner = {
-							is_subject_of = ROOT
-						}
+					OR = {
+						state = 29
+						state = 33
+						state = 865
 					}
+					is_claimed_by = ROOT
 				}
-				country_event = {
-					id = ww1_germany.134
-					hours = 3
-				}
+				remove_claim_by = ROOT
+			}
+			country_event = {
+				id = ww1_germany.134
+				hours = 3
 			}
 		}
 		ai_chance = {
@@ -5561,49 +5667,47 @@ country_event = {
 	desc = ww1_germany.134.d
 	picture = GFX_report_event_military_planning
 	is_triggered_only = yes
+	trigger = {
+		907 = {
+			owner = {
+				OR = {
+					tag = ROOT
+					is_subject_of = ROOT
+					has_country_flag = great_war_loser
+				}
+			}
+		}
+	}
 	option = {
+		# Take Arelerland
 		name = ww1_germany.134.a
 		trigger = {
-			OR = {
-				owns_state = 29
-				owns_state = 865
-			}
-		}
-		# Take Arelerland
-		every_owned_state = {
-			limit = {
-				OR = {
-					state = 29
-					state = 865
-				}
-			}
-			remove_claim_by = ROOT
-			34 = {
+			906 = {
 				owner = {
-					transfer_state = PREV.PREV
-				}
-			}
-		}
-		907 = {
-			if = {
-				limit = { is_claimed_by = ROOT }
-				remove_claim_by = ROOT
-			}
-			if = {
-				limit = { is_owned_by = ROOT }
-				34 = {
-					owner = {
-						transfer_state = PREV.PREV
+					OR = {
+						tag = ROOT
+						is_subject_of = ROOT
+						has_country_flag = great_war_loser
 					}
 				}
 			}
 		}
 		add_state_claim = 906
 		transfer_state = 906
+		remove_state_claim = 907
+		if = {
+			limit = {
+				owns_state = 907
+			}
+			34 = {
+				owner = {
+					transfer_state = 907
+				}
+			}
+		}
 		hidden_effect = {
-			BEL = {
-				if = {
-					limit = { is_subject_of = ROOT }
+			6 = {
+				owner = {
 					every_owned_state = {
 						limit = {
 							is_demilitarized_zone = yes
@@ -5624,28 +5728,33 @@ country_event = {
 	option = {
 		name = ww1_germany.134.b
 		# Annex Ardennes
-		every_owned_state = {
-			limit = {
-				OR = {
-					state = 29
-					state = 865
+		trigger = {
+			906 = {
+				owner = {
+					OR = {
+						tag = ROOT
+						is_subject_of = ROOT
+						has_country_flag = great_war_loser
+					}
 				}
 			}
-			remove_claim_by = ROOT
-			34 = {
+			907 = {
 				owner = {
-					transfer_state = PREV.PREV
+					OR = {
+						tag = ROOT
+						is_subject_of = ROOT
+						has_country_flag = great_war_loser
+					}
 				}
 			}
 		}
 		add_state_claim = 906
-		add_state_claim = 907
 		transfer_state = 906
+		add_state_claim = 907
 		transfer_state = 907
 		hidden_effect = {
-			BEL = {
-				if = {
-					limit = { is_subject_of = ROOT }
+			6 = {
+				owner = {
 					every_owned_state = {
 						limit = {
 							is_demilitarized_zone = yes
@@ -5666,17 +5775,17 @@ country_event = {
 	option = {
 		name = ww1_germany.134.c
 		# Annex nothing
-		every_owned_state = {
-			limit = {
-				OR = {
-					state = 29
-					state = 865
-				}
+		906 = {
+			if = {
+				limit = { is_claimed_by = ROOT }
+				remove_claim_by = ROOT
 			}
-			remove_claim_by = ROOT
-			34 = {
-				owner = {
-					transfer_state = PREV.PREV
+			if = {
+				limit = { is_owned_by = ROOT }
+				34 = {
+					owner = {
+						transfer_state = PREV.PREV
+					}
 				}
 			}
 		}
@@ -5694,24 +5803,9 @@ country_event = {
 				}
 			}
 		}
-		906 = {
-			if = {
-				limit = { is_claimed_by = ROOT }
-				remove_claim_by = ROOT
-			}
-			if = {
-				limit = { is_owned_by = ROOT }
-				34 = {
-					owner = {
-						transfer_state = PREV.PREV
-					}
-				}
-			}
-		}
 		hidden_effect = {
-			BEL = {
-				if = {
-					limit = { is_subject_of = ROOT }
+			6 = {
+				owner = {
 					every_owned_state = {
 						limit = {
 							is_demilitarized_zone = yes
@@ -7811,6 +7905,20 @@ country_event = {
 		}
 		ai_chance = {
 			base =  30
+			modifier = {
+				factor = 0
+				# don't take nanzig when ardennes is irrelevant
+				907 = {
+					owner = {
+						NOT = {
+							is_in_faction_with = ROOT
+							has_war_with = ROOT
+							is_subject_of = ROOT
+							tag = ROOT
+						}
+					}
+				}
+			}
 		}
 	}
 	option = {
@@ -7856,10 +7964,16 @@ country_event = {
 	}
 	option = {
 		name = ww1_germany.174.a
+		#prevent to take flanders without flandern front
 		trigger = {
-			OR = {
-				has_subject = BEL
-				has_war_with = BEL
+			6 = {
+				owner = {
+					OR = {
+						has_war_with = ROOT
+						is_in_faction_with = ROOT
+						is_subject_of = ROOT
+					}
+				}
 			}
 			FRA = { owns_state = 865 }
 		}
@@ -7890,27 +8004,58 @@ country_event = {
 		}
 		add_state_claim = 863
 		add_state_claim = 864
-		add_state_claim = 865
-		add_state_claim = 33
 		transfer_state = 863
 		transfer_state = 864
-		transfer_state = 865
-		transfer_state = 33
+		6 = {
+			owner = {
+				if = {
+					limit = {
+						OR = {
+							is_subject_of = ROOT
+							is_in_faction_with = ROOT
+						}
+					}
+					transfer_state = 865
+					transfer_state = 33
+				}
+				#for defeated belgium
+				else_if = {
+					limit = {
+						OR = {
+							has_war_with = ROOT
+						}
+					}
+					set_state_owner = 33
+					set_state_owner = 865
+					if = {
+						limit = {
+							has_capitulated = yes
+						}
+						ROOT = {
+							set_state_controller = 33
+							set_state_controller = 865
+						}
+					}
+					else = {
+						set_state_controller = 33
+						set_state_controller = 865
+					}
+				}
+				#failsafe
+				else = {
+					29 = {
+						owner = {
+							transfer_state = 33
+							transfer_state = 865
+						}
+					}
+				}
+			}
+		}
 		hidden_effect = {
 			ALS = {
 				add_state_claim = 863
 				add_state_claim = 864
-			}
-			BEL = {
-				transfer_state = 865
-				transfer_state = 33
-			}
-			if = {
-				limit = {
-					NOT = { has_subject = BEL }
-				}
-				set_state_controller = 33
-				set_state_controller = 865
 			}
 		}
 		ai_chance = {
@@ -11997,9 +12142,9 @@ country_event = {
 		}
 		OR = {
 			has_idea = GER_famine
-			has_idea = GER_famine_early
+			has_idea = GER_food_shortages
 			has_active_mission = GER_mission_famine_timer
-			has_active_mission = GER_mission_famine_timer_early
+			has_active_mission = GER_mission_food_shortages_timer
 		}
 	}
 	option = {
@@ -12010,7 +12155,7 @@ country_event = {
 			}
 			swap_ideas = {
 				remove_idea = GER_famine
-				add_idea = GER_famine_early
+				add_idea = GER_food_shortages
 			}
 		}
 		else_if = {
@@ -12024,10 +12169,10 @@ country_event = {
 		}
 		else_if = {
 			limit = {
-				has_active_mission = GER_mission_famine_timer_early
+				has_active_mission = GER_mission_food_shortages_timer
 			}
 			add_days_mission_timeout = {
-				mission = GER_mission_famine_timer_early
+				mission = GER_mission_food_shortages_timer
 				days = 180
 			}
 		}
@@ -12053,9 +12198,9 @@ country_event = {
 		enemies_naval_strength_ratio < 1.1
 		OR = {
 			has_idea = GER_famine
-			has_idea = GER_famine_early
+			has_idea = GER_food_shortages
 			has_active_mission = GER_mission_famine_timer
-			has_active_mission = GER_mission_famine_timer_early
+			has_active_mission = GER_mission_food_shortages_timer
 		}
 	}
 	option = {
@@ -12063,7 +12208,7 @@ country_event = {
 		custom_effect_tooltip = GER_blockade_broken_tt
 		hidden_effect = {
 			remove_ideas = GER_famine
-			remove_ideas = GER_famine_early
+			remove_ideas = GER_food_shortages
 		}
 		add_stability = 0.05
 		add_war_support = 0.05
@@ -14305,9 +14450,9 @@ country_event = {
 		}
 		#historical: two million tons of romanian grain
 		if = {
-			limit = { has_active_mission = GER_mission_famine_timer_early }
+			limit = { has_active_mission = GER_mission_food_shortages_timer }
 			add_days_mission_timeout = {
-				mission = GER_mission_famine_timer_early
+				mission = GER_mission_food_shortages_timer
 				days = 30
 			}
 		}
@@ -14391,7 +14536,7 @@ country_event = {
 		name = ww1_germanrework.192.a
 		if = {
 			limit = {
-				has_idea = GER_famine_early
+				has_idea = GER_food_shortages
 			}
 			add_political_power = -100
 			else = {
