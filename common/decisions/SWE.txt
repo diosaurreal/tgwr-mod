@@ -109,6 +109,7 @@ crisis = {
 		
 		complete_effect = {
 			custom_effect_tooltip = a_leftwing_government_takes_charge
+			set_country_flag = sweden_anti_demo_successful
 			# SocDem government
 				# If socialist support is above 40% other event from communists
 		}
@@ -474,7 +475,7 @@ SWE_staaff_emergency = {
 				}
 			}
 			modifier = {
-				fator = 100
+				factor = 100
 				power_balance_value = {
 					id = SWE_staaf_approval
 					value < 0.5
@@ -490,7 +491,7 @@ SWE_staaff_emergency = {
 	SWE_meet_nationalists = {
 		icon = GFX_decision_generic_political_discourse
 		allowed = {
-			original_tag = SWE
+			always = no	# No longer used
 		}
 		fire_only_once = yes
 		available = {
@@ -781,47 +782,43 @@ SWE_staaff_emergency = {
 }
 
 SWE_riksdagens_decisions = {
-	# Missions
-	SWE_untraverket_construction = {
-		allowed = {
-			always = no
-		}
-		available = {
-			NOT = { controls_state = 141 }
-		}
+	SWE_debug_toggle_off = {
+		allowed = { tag = SWE }
 		visible = {
-			original_tag = SWE
+			has_country_flag = swe_debug_dec
 		}
-		
-		fire_only_once = yes
-		
-		is_good = yes
-		
-		days_mission_timeout = 2494
-		
 		complete_effect = {
-			add_stability = -0.05	# Nooo stockholm :c
+			clr_country_flag = swe_debug_dec
 		}
-		timeout_effect = {
-			#effect_tooltip = { add_political_power = 15 }
-			country_event = { id = ww_sverige_general.3802 }
-			141 = {
-				add_building_construction = {
-					type = dam
-					level = 1
-					instant_build = yes
-					province = {
-						id = 3182
-					}
-				}
-			}
-			custom_effect_tooltip = {
-				localization_key = building_state_modifier|dam
-				INDENT = "    "
-			}
-			custom_effect_tooltip = generic_skip_one_line_tt
-		}
+		ai_will_do = { factor = 0 }
 	}
+	SWE_debug_toggle_on = {
+		allowed = { tag = SWE }
+		visible = {
+			NOT = { has_country_flag = swe_debug_dec }
+		}
+		complete_effect = {
+			set_country_flag = swe_debug_dec
+		}
+		ai_will_do = { factor = 0 }
+	}
+	SWE_debug_first_chamber = {
+		allowed = { tag = SWE }
+		visible = {
+			has_country_flag = swe_debug_dec
+		}
+		complete_effect = { SWE_recalculate_first_chamber = yes }
+		ai_will_do = { factor = 0 }
+	}
+	SWE_debug_second_chamber = {
+		allowed = { tag = SWE }
+		visible = {
+			has_country_flag = swe_debug_dec
+		}
+		complete_effect = { SWE_recalculate_second_chamber = yes }
+		ai_will_do = { factor = 0 }
+	}
+	# Missions
 	SWE_retain_support_of_majority_of_riksdagen = {
 		allowed = {
 			always = no
@@ -880,7 +877,7 @@ SWE_riksdagens_decisions = {
 				}
 				add_power_balance_value = {
 					id = SWE_staaf_approval
-					value = 0.05
+					value = 0.02
 				}
 			}
 			add_stability = 0.05
@@ -1242,16 +1239,7 @@ SWE_riksdagens_decisions = {
 				has_government = democratic
 				has_government = communism
 			}
-			OR = {
-				AND = {
-					has_stability > 0.9
-					neutrality < 0.1
-				}
-				AND = {
-					neutrality < 0.08
-					fascism < 0.08
-				}
-			}
+			
 			custom_trigger_tooltip = {
 				tooltip = conservatives_wont_support_this_unless_forced
 				OR = {
@@ -1280,10 +1268,20 @@ SWE_riksdagens_decisions = {
 						}
 					}
 					AND = {
-						has_government = communism
-						communism > 0.4
+						set_temp_variable = { leftwing_a_temp = liberal_a_riksdag }
+						add_to_temp_variable = { leftwing_a_temp = socialist_a_riksdag }
+						check_variable = {
+							var = leftwing_f_temp
+							value = 116
+						}
+						set_temp_variable = { leftwing_f_temp = liberal_f_riksdag }
+						add_to_temp_variable = { leftwing_f_temp = socialist_f_riksdag }
+						check_variable = {
+							var = leftwing_a_temp
+							value = 76
+						}
+						communism > 0.35	 # to make it less likely early on
 					}
-					communism > 0.5
 				}
 			}
 			NOT = { has_idea = SWE_temporary_state_of_ermegency }
@@ -1374,6 +1372,7 @@ SWE_riksdagens_decisions = {
 				has_country_leader_ideology = social_democracy
 				has_government = communism
 			}
+			# Support from non-conservatives (can maybe bring over Agrarian parties?)
 		}
 		fire_only_once = yes
 		
@@ -1440,6 +1439,7 @@ SWE_riksdagens_decisions = {
 				has_war_support > 0.15
 				threat > 0.1
 			}
+			# Nothing for now, fix later
 		}
 		fire_only_once = yes
 		
@@ -2315,7 +2315,7 @@ SWE_riksdagens_decisions = {
 			has_government = democratic
 			OR = {
 				has_idea = SWE_albert_ehrensvard
-				threat > 0.25
+				threat > 0.15
 			}
 			focus_progress = {
 				focus = SWE_pro_entente_stance
@@ -2489,6 +2489,22 @@ SWE_riksdagens_decisions = {
 				}
 				has_completed_focus = SWE_ban_dangerous_socialist_organisations
 			}
+			custom_trigger_tooltip = {
+				tooltip = majority_con_riksdag_f_tt
+				set_temp_variable = { riksdag_f_temp = conservative_f_riksdag }
+				check_variable = {
+					var = riksdag_f_temp
+					value = 76
+				}
+			}
+			custom_trigger_tooltip = {
+				tooltip = majority_con_riksdag_a_tt
+				set_temp_variable = { riksdag_a_temp = conservative_a_riksdag }
+				check_variable = {
+					var = riksdag_a_temp
+					value = 116
+				}
+			}
 			has_stability > 0.8
 			has_completed_focus = SWE_courtyard_speech
 			NOT = { has_idea = SWE_temporary_state_of_ermegency }
@@ -2574,7 +2590,7 @@ SWE_riksdagens_decisions = {
 			add_to_variable = {
 				tooltip = monthly_population_tt
 				var = SWE_emigration_monthly_population
-				value = -0.02
+				value = 0.02
 			}
 		}
 		ai_will_do = {
@@ -2641,7 +2657,7 @@ SWE_riksdagens_decisions = {
 		days_remove = 210
 		
 		modifier = {
-			stabililty_weekly = -0.005
+			stability_weekly = -0.005
 		}
 		
 		cost = 150
@@ -2707,10 +2723,10 @@ SWE_riksdagens_decisions = {
 				is_controlled_by = ROOT
 				arms_factory > 0
 			}
+			# Add check
 			OR = {
 				has_war_support > 0.15
-				communism < 0.1
-				threat > 0.05
+				threat > 0.1
 			}
 		}
 		
@@ -3779,6 +3795,48 @@ operations = {
 		}
 	}
 }
+economy_decisions = {
+	SWE_untraverket_construction = {
+		allowed = {
+			always = no
+		}
+		available = {
+			NOT = { controls_state = 141 }
+		}
+		visible = {
+			original_tag = SWE
+		}
+		
+		fire_only_once = yes
+		
+		is_good = yes
+		
+		days_mission_timeout = 2494
+		
+		complete_effect = {
+			add_stability = -0.05	# Nooo stockholm :c
+		}
+		timeout_effect = {
+			#effect_tooltip = { add_political_power = 15 }
+			country_event = { id = ww_sverige_general.3802 }
+			141 = {
+				add_building_construction = {
+					type = dam
+					level = 1
+					instant_build = yes
+					province = {
+						id = 3182
+					}
+				}
+			}
+			custom_effect_tooltip = {
+				localization_key = building_state_modifier|dam
+				INDENT = "    "
+			}
+			custom_effect_tooltip = generic_skip_one_line_tt
+		}
+	}
+}
 SWE_varnplikten_decisions = {
 	SWE_reogranise_the_military_for_future = {
 		allowed = {
@@ -4513,7 +4571,7 @@ SWE_varnplikten_decisions = {
 			modifier = {
 				factor = 0
 				date < 1915.1.1
-				surrender_progess < 0.15
+				surrender_progress < 0.15
 			}
 		}
 	}
