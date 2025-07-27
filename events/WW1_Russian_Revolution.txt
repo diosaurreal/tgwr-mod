@@ -1656,6 +1656,7 @@ country_event = {
 	trigger = {
 		tag = UKR
 		has_civil_war = yes
+		has_war_with = SOV
 		any_country = {
 			original_tag = UKR
 			owns_state = 226
@@ -1668,8 +1669,10 @@ country_event = {
 	immediate = {
 		hidden_effect = {
 			VLN = {
+				delete_obsolete_russian_templates = yes
 				add_state_core = 226
-				transfer_state = 226
+				set_state_owner = 226
+				set_province_controller = 3449
 				load_oob = "VLN_1918"
 				every_state = {
 					limit = {
@@ -1677,13 +1680,50 @@ country_event = {
 					}
 					add_claim_by = PREV
 				}
-				declare_war_on = {
-					target = UKR
-					type = take_claimed_state
+				add_to_war = {
+					targeted_alliance = SOV
+					enemy = ROOT
 				}
-				declare_war_on = {
-					target = SRA
-					type = take_claimed_state
+				if = {
+					limit = {
+						SRA = { has_war_with = SOV }
+					}
+					add_to_war = {
+						targeted_alliance = SOV
+						enemy = SRA
+					}
+				}
+				if = {
+					limit = {
+						DON = { has_war_with = SOV }
+					}
+					add_to_war = {
+						targeted_alliance = SOV
+						enemy = DON
+					}
+				}
+				every_other_country = {
+					limit = {
+						original_tag = UKR
+						has_war_with = GER
+					}
+					PREV = {
+						add_to_war = {
+							targeted_alliance = PREV
+							enemy = GER
+						}
+					}
+					every_enemy_country = {
+						limit = {
+							is_in_faction_with = GER
+						}
+						PREV.PREV = {
+							add_to_war = {
+								targeted_alliance = PREV.PREV
+								enemy = PREV
+							}
+						}
+					}
 				}
 			}
 		}
@@ -1694,7 +1734,7 @@ country_event = {
 	option = {
 		name = rusrevolt.15.b
 		VLN = { change_tag_from = PREV }
-		ai_chance = { factor = 0 }
+		trigger = { is_ai = no }
 	}
 }
 
