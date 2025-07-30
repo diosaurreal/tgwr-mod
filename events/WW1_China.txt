@@ -2199,7 +2199,10 @@ country_event = {
 				unlock_national_focus = CHI_unite_opposition #cause they are already there
 				mark_focus_tree_layout_dirty = yes
 				add_ideas = CHI_idea_three_principles
-				add_ideas = CHI_idea_unprepared_civil_war
+				add_timed_idea = {
+					idea = CHI_idea_unprepared_civil_war
+					days = 365
+				}
 				if = {
 					limit = {
 						PREV = {
@@ -2483,6 +2486,9 @@ country_event = {
 			set_global_flag = manchu_restoration
 			CHI_duan_qirui = {
 				promote_character = authoritarian_democracy
+			}
+			CHI_li_yuanhong = {
+				remove_unit_leader_role = yes
 			}
 			swap_ideas = {
 				remove_idea = CHI_idea_feng_guozhang_vice_president
@@ -7560,25 +7566,39 @@ country_event = {
 				}
 				news_event = ww1_china.56
 			}
-		}
-		ANC = {
-			set_truce = {
-				target = ZHC
-				days = 965
+			if = {
+				limit = {
+					GXC = {
+						exists = yes
+						is_ai = no
+					}
+				}
+				GXC = {
+					country_event = {
+						id = ww1_china.251
+						hours = 10
+					}
+				}
 			}
-			set_truce = {
-				target = HNC
-				days = 965
+			ANC = {
+				set_truce = {
+					target = ZHC
+					days = 965
+				}
+				set_truce = {
+					target = HNC
+					days = 965
+				}
 			}
-		}
-		ZHC = {
-			set_truce = {
-				target = FNG
-				days = 965
-			}
-			set_truce = {
-				target = HNC
-				days = 965
+			ZHC = {
+				set_truce = {
+					target = FNG
+					days = 965
+				}
+				set_truce = {
+					target = HNC
+					days = 965
+				}
 			}
 		}
 	}
@@ -7587,7 +7607,7 @@ country_event = {
 		ANC = {
 			hidden_effect = {
 				country_event = {
-					id = ww1_china.248
+					id = ww1_china.249
 					hours = 10
 				}
 			}
@@ -7605,7 +7625,7 @@ country_event = {
 		ZHC = {
 			hidden_effect = {
 				country_event = {
-					id = ww1_china.249
+					id = ww1_china.248
 					hours = 10
 				}
 			}
@@ -7634,6 +7654,10 @@ country_event = {
 		name = ww1_china.41.d
 		trigger = {
 			is_ai = no
+			GXC = {
+				exists = yes
+				is_ai = yes
+			}
 		}
 		GXC = {
 			hidden_effect = {
@@ -8077,6 +8101,40 @@ country_event = {
 	}
 	option = {
 		name = ww1_china.43.a
+	}
+	option = {
+		name = ww1_china.43.b
+		trigger = {
+			is_ai = no
+			ZHC = {
+				exists = yes
+				is_ai = yes
+			}
+		}
+		ZHC = {
+			country_event = {
+				id = ww1_china.248
+				hours = 10
+			}
+			change_tag_from = ROOT
+		}
+	}
+	option = {
+		name = ww1_china.43.c
+		trigger = {
+			is_ai = no
+			FNG = {
+				exists = yes
+				is_ai = yes
+			}
+		}
+		FNG = {
+			country_event = {
+				id = ww1_china.250
+				hours = 10
+			}
+			change_tag_from = ROOT
+		}
 	}
 }
 
@@ -11385,20 +11443,26 @@ country_event = {
 				country_exists = ZHC
 				country_exists = ANC
 			}
+			NOT = {
+				has_idea = CHI_idea_feng_guozhang_president
+			}
 		}
 	}
 	desc = {
 		text = ww1_china.68.d2
 		trigger = {
-			NOT = { country_exists = CHI }
+			NOT = {
+				country_exists = CHI
+				country_exists = ZHC
+				country_exists = ANC
+				has_idea = CHI_idea_feng_guozhang_president
+			}
 		}
 	}
 	desc = {
 		text = ww1_china.68.d3
 		trigger = {
-			any_country = {
-				has_idea = CHI_idea_feng_guozhang_president
-			}
+			has_idea = CHI_idea_feng_guozhang_president
 		}
 	}
 	picture = GFX_report_event_generic_funeral
@@ -11417,29 +11481,26 @@ country_event = {
 						has_global_flag = feng_guozhang_dead
 					}
 				}
-				every_possible_country = {
-					limit = {
-						has_character = CHI_feng_guozhang
-					}
-					retire_character = CHI_feng_guozhang
-				}
 				set_country_flag = feng_guozhang_dead
 				set_global_flag = feng_guozhang_dead
-				every_possible_country = {
-					limit = {
-						has_character = ZHC_liu_xun
-					}
-					ZHC_liu_xun = { set_nationality = ANC }
-				}
 			}
 		}
 	}
 	option = {
 		name = ww1_china.68.a
-		effect_tooltip = {
-			retire_character = CHI_feng_guozhang
+		retire_character = CHI_feng_guozhang
+		add_political_power = -40
+		
+		hidden_effect = {
+			every_possible_country = {
+				limit = {
+					has_character = ZHC_liu_xun
+				}
+				ZHC_liu_xun = { set_nationality = ANC }
+			}
 		}
-		add_political_power = -75
+
+		# Feng Guozhang was president
 		if = {
 			limit = {
 				has_idea = CHI_idea_feng_guozhang_president
@@ -11467,7 +11528,7 @@ country_event = {
 								ruling_party = neutrality
 								last_election = "[CURRENT_DATE]"
 								election_frequency = 60
-								elections_allowed = no
+								elections_allowed = yes
 							}
 						}
 						CURRENT_DATE = "[?global.date.GetDateStringNoHour]"
@@ -11475,9 +11536,6 @@ country_event = {
 					# Duan is president, no need to add ideas
 				}
 			}
-		}
-		ai_chance = {
-			factor = 100
 		}
 	}
 }
@@ -16818,7 +16876,7 @@ country_event = {
 							ruling_party = neutrality
 							last_election = "[CURRENT_DATE]"
 							election_frequency = 60
-							elections_allowed = no
+							elections_allowed = yes
 						}
 					}
 					CURRENT_DATE = "[?global.date.GetDateStringNoHour]"
