@@ -1299,6 +1299,7 @@ CHI_warlord_era = {
 					surrender_progress > 0.05
 					NOT = { controls_state = 609 }
 					NOT = { controls_state = 611 }
+					has_war_with = JLN
 				}
 			}
 		}
@@ -1641,7 +1642,7 @@ CHI_warlord_era = {
 					limit = {
 						region = 164
 						NOT = {
-							state = 606
+							# state = 606
 							state = 608
 						}
 					}
@@ -1683,6 +1684,21 @@ CHI_warlord_era = {
 					}
 				}
 			}
+			if = {
+				limit = {
+					has_subject = MON
+				}
+				MON = {
+					get_current_government_type = yes
+					FROM = {
+						set_autonomy = {
+							target = PREV
+							autonomy_state = autonomy_tgwr_integrated_protectorate
+						}
+					}
+					restore_previous_government_type = yes
+				}
+			}
 		}
 	}
 	ZHC_sue_for_peace_FNG_second = {
@@ -1699,8 +1715,13 @@ CHI_warlord_era = {
 				}
 			}
 			has_global_flag = first_zhili_fengtian_war_end
-			surrender_progress > 0.15
-			has_global_flag = beijing_coup
+			OR = {
+				surrender_progress > 0.15
+				AND = {
+					has_global_flag = beijing_coup
+					NOT = { controls_state = 608 }
+				}
+			}
 		}
 		visible = {
 			OR = {
@@ -2041,7 +2062,7 @@ CHI_warlord_era = {
 					limit = {
 						state = 621
 					}
-					transfer_state_to = ZHC
+					transfer_state_to = SHX
 				}
 			}
 			every_owned_state = {
@@ -2061,12 +2082,23 @@ CHI_warlord_era = {
 				}
 				white_peace = ROOT
 			}
-			# every_other_country = {
-			# 	limit = {
-			# 		is_subject_of = ROOT
-			# 	}
-			# 	ROOT = { end_puppet = PREV }
-			# }
+			if = {
+				limit = {
+					has_subject = MON
+				}
+				MON = {
+					get_current_government_type = yes
+				}
+				FNG = {
+					set_autonomy = {
+						target = MON
+						autonomy_state = autonomy_tgwr_integrated_protectorate
+					}
+				}
+				MON = {
+					restore_previous_government_type = yes
+				}
+			}
 			set_global_flag = zhili_fengtian_fengyushang_war
 			set_global_flag = zhili_fengtian_fengyushang_war_end
 		}
@@ -3027,46 +3059,47 @@ CHI_chinese_warlords = {
 			factor = 1000
 		}
 	}
-	CHI_SHX_take_suiyuan = {
-		icon = GFX_decision_infiltrate_state
-		allowed = {
-			original_tag = SHX
-		}
-		target_trigger = {
-			FROM = {
-				tag = GMJ
-				is_china_or_warlord_no_tt = yes
-				owns_state = 621
-			}
-		}
-		visible = {
-			is_subject = no
-			has_war = no
-		}
-		available = {
-			FROM = {
-				OR = {
-					has_war_with = FNG
-					has_war_with = ZHC
-				}
-			}
-		}
-		cost = 75
-		days_remove = 10
-		fire_only_once = yes
-		remove_effect = {
-			declare_war_on = {
-				target = GMJ
-				type = take_state
-				generator = {
-					621
-				}
-			}
-		}
-		ai_will_do = {
-			factor = 1000
-		}
-	}
+	# CHI_SHX_take_suiyuan = {
+	# 	icon = GFX_decision_infiltrate_state
+	# 	allowed = {
+	# 		original_tag = SHX
+	# 	}
+	# 	target_trigger = {
+	# 		FROM = {
+	# 			tag = GMJ
+	# 			is_china_or_warlord_no_tt = yes
+	# 			owns_state = 621
+	# 		}
+	# 	}
+	# 	visible = {
+	# 		is_subject = no
+	# 		has_war = no
+	# 		has_global_flag = second_zhili_fengtian_war_end
+	# 	}
+	# 	available = {
+	# 		FROM = {
+	# 			OR = {
+	# 				has_war_with = FNG
+	# 				has_war_with = ZHC
+	# 			}
+	# 		}
+	# 	}
+	# 	cost = 75
+	# 	days_remove = 10
+	# 	fire_only_once = yes
+	# 	remove_effect = {
+	# 		declare_war_on = {
+	# 			target = GMJ
+	# 			type = take_state
+	# 			generator = {
+	# 				621
+	# 			}
+	# 		}
+	# 	}
+	# 	ai_will_do = {
+	# 		factor = 1000
+	# 	}
+	# }
 	CHI_ZHE_attack_FNG = {
 		icon = generic_prepare_civil_war
 		allowed = {
@@ -5895,7 +5928,7 @@ CHI_chinese_warlords = {
 			base = 0
 			modifier = {
 				add = 1000
-				surrender_progress > 0.60
+				surrender_progress > 0.25
 			}
 		}
 	}
@@ -7126,8 +7159,8 @@ operations = {
 					QZC = {
 						add_state_claim = 594
 						add_to_war = {
-							targeted_alliance = FROM
-							enemy = ROOT
+							targeted_alliance = ROOT
+							enemy = FROM
 						}
 					}
 				}
