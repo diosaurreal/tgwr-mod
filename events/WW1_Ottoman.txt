@@ -50,12 +50,159 @@ country_event = { #ottoman revolt
 				}
 			}
 			if = {
-				limit = { NOT = { country_exists = ALB } }
+				limit = {
+					OR = {
+						ALB = {
+							has_idea = ALB_decentralized_independence_movement
+							has_capitulated = yes
+							all_owned_state = { NOT = { is_controlled_by = PREV } }
+						}
+						NOT = { country_exists = ALB }
+					}
+				}
 				ALB = {
 					transfer_state = var:global.occupied_state
 					set_temp_variable = { global.occupied_country = THIS }
 					set_temp_variable = { global.new_occupied_country = THIS }
-					var:global.occupier_country = { country_event = { id = ottoman.185 } }
+					#var:global.occupier_country = { country_event = { id = ottoman.185 } }
+					set_capital = { state = var:global.occupied_state }
+					if = {
+						limit = {
+							has_idea = ALB_decentralized_independence_movement
+							OR = {
+								AND = {
+									capital_scope = { ALB_is_northern_state = yes }
+									any_owned_state = { ALB_is_northern_state = no }
+								}
+								AND = {
+									capital_scope = { ALB_is_central_state = yes }
+									any_owned_state = { ALB_is_central_state = no }
+								}
+								AND = {
+									capital_scope = { ALB_is_southern_state = yes }
+									any_owned_state = { ALB_is_southern_state = no }
+								}
+							}
+						}
+						if = {
+							limit = {
+								capital_scope = { ALB_is_northern_state = yes }
+								any_owned_state = { ALB_is_northern_state = no }
+							}
+							every_owned_state = {
+								limit = { ALB_is_northern_state = no }
+								set_temp_variable = { global.old_albanian_state = THIS }
+							}
+						}
+						if = {
+							limit = {
+								capital_scope = { ALB_is_central_state = yes }
+								any_owned_state = { ALB_is_central_state = no }
+							}
+							every_owned_state = {
+								limit = { ALB_is_central_state = no }
+								set_temp_variable = { global.old_albanian_state = THIS }
+							}
+						}
+						if = {
+							limit = {
+								capital_scope = { ALB_is_southern_state = yes }
+								any_owned_state = { ALB_is_southern_state = no }
+							}
+							every_owned_state = {
+								limit = { ALB_is_southern_state = no }
+								set_temp_variable = { global.old_albanian_state = THIS }
+							}
+						}
+						create_dynamic_country = {
+							original_tag = ALB
+							copy_tag = ALB
+							reserve_dynamic_country = yes
+							set_state_owner = var:global.old_albanian_state
+							set_temp_variable = { global.occupied_country = THIS }
+							set_temp_variable = { global.new_occupied_country = THIS }
+							set_temp_variable = { allowed_party_neutrality = 1 }
+							set_temp_variable = { allowed_party_democratic = 1 }
+							set_temp_variable = { allowed_party_fascism = 1 }
+							set_temp_variable = { allowed_party_communism = 1 }
+							var:global.occupier_country = { remove_from_allowed_party = yes }
+							if = {
+								limit = { NOT = { check_variable = { global.new_occupied_country = global.occupied_country } } }
+								var:global.occupied_country = { remove_from_allowed_party = yes }
+							}
+							random_list = {
+								allowed_party_democratic = {
+									set_popularities = { democratic = 100 }
+									set_politics = { ruling_party = democratic elections_allowed = yes }
+								}
+								allowed_party_fascism = {
+									set_popularities = { fascism = 100 }
+									set_politics = { ruling_party = fascism elections_allowed = no }
+								}
+								allowed_party_communism = {
+									set_popularities = { communism = 100 }
+									set_politics = { ruling_party = communism elections_allowed = no }
+								}
+								allowed_party_neutrality = {
+									set_popularities = { neutrality = 100 }
+									set_politics = { ruling_party = neutrality elections_allowed = no }
+								}
+							}
+							set_capital = { state = var:global.old_albanian_state }
+						}
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					any_country_with_original_tag = {
+						original_tag_to_check = ALB
+						has_war_with = var:global.occupier_country
+						OR = {
+							NOT = { has_idea = ALB_decentralized_independence_movement }
+							AND = {
+								has_idea = ALB_decentralized_independence_movement
+								OR = {
+									AND = {
+										capital_scope = { ALB_is_northern_state = yes }
+										var:global.occupied_state = { ALB_is_northern_state = yes }
+									}
+									AND = {
+										capital_scope = { ALB_is_central_state = yes }
+										var:global.occupied_state = { ALB_is_central_state = yes }
+									}
+									AND = {
+										capital_scope = { ALB_is_southern_state = yes }
+										var:global.occupied_state = { ALB_is_southern_state = yes }
+									}
+								}
+							}
+						}
+					}
+				}
+				random_country_with_original_tag = {
+					original_tag_to_check = ALB
+					limit = { has_war_with = var:global.occupier_country }
+					if = {
+						limit = {
+							OR = {
+								AND = {
+									capital_scope = { ALB_is_northern_state = yes }
+									var:global.occupied_state = { ALB_is_northern_state = yes }
+								}
+								AND = {
+									capital_scope = { ALB_is_central_state = yes }
+									var:global.occupied_state = { ALB_is_central_state = yes }
+								}
+								AND = {
+									capital_scope = { ALB_is_southern_state = yes }
+									var:global.occupied_state = { ALB_is_southern_state = yes }
+								}
+							}
+						}
+						transfer_state = var:global.occupied_state
+					}
+					set_temp_variable = { global.new_occupied_country = THIS }
 				}
 			}
 			else_if = {
@@ -64,13 +211,30 @@ country_event = { #ottoman revolt
 					ALB = {
 						OR = {
 							NOT = { has_war_with = var:global.occupier_country }
-							NOT = { has_idea = ALB_decentralized_independence_movement }
+							AND = {
+								has_idea = ALB_decentralized_independence_movement
+								OR = {
+									AND = {
+										capital_scope = { ALB_is_northern_state = yes }
+										NOT = { var:global.occupied_state = { ALB_is_northern_state = yes } }
+									}
+									AND = {
+										capital_scope = { ALB_is_central_state = yes }
+										NOT = { var:global.occupied_state = { ALB_is_central_state = yes } }
+									}
+									AND = {
+										capital_scope = { ALB_is_southern_state = yes }
+										NOT = { var:global.occupied_state = { ALB_is_southern_state = yes } }
+									}
+								}
+							}
 						}
 					}
 				}
 				create_dynamic_country = {
 					original_tag = ALB
 					copy_tag = ALB
+					reserve_dynamic_country = yes
 					transfer_state = var:global.occupied_state
 					set_temp_variable = { global.occupied_country = THIS }
 					set_temp_variable = { global.new_occupied_country = THIS }
@@ -101,23 +265,19 @@ country_event = { #ottoman revolt
 							set_politics = { ruling_party = neutrality elections_allowed = no }
 						}
 					}
-					var:global.occupier_country = { country_event = { id = ottoman.185 } }
+					#var:global.occupier_country = { country_event = { id = ottoman.185 } }
+					set_capital = { state = var:global.occupied_state }
 				}
 			}
-			else_if = {
+			if = {
 				limit = {
 					any_country_with_original_tag = {
 						original_tag_to_check = ALB
-						has_war_with = var:global.occupier_country
+						has_idea = ALB_decentralized_independence_movement
 					}
-					NOT = { has_idea = ALB_decentralized_independence_movement }
+					var:global.new_occupied_country = { NOT = { has_idea = ALB_decentralized_independence_movement } }
 				}
-				random_country_with_original_tag = {
-					original_tag_to_check = ALB
-					limit = { has_war_with = var:global.occupier_country }
-					transfer_state = var:global.occupied_state
-					set_temp_variable = { global.new_occupied_country = THIS }
-				}
+				var:global.new_occupied_country = { add_ideas = ALB_decentralized_independence_movement }
 			}
 		}
 		else_if = {
