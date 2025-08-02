@@ -763,6 +763,7 @@
 	}	
 	on_peace = {
 		effect = {
+			log = "[GetDateText]: [Root.GetName]: on_peace"
 			if = {
 				limit = {
 					tag = RUS
@@ -874,6 +875,47 @@
 				}
 				add_ideas = partial_economic_mobilisation
 			}
+			#Demobilization check for the AI
+			if = {
+				limit = {
+					is_ai = yes
+					NOT = { has_country_flag = has_demobilization_check }
+				}
+				set_country_flag = { flag = has_demobilization_check days = 6 value = 1 }
+				country_event = { id = ww1_political.5 days = 6 }
+			}
+
+			#Reduce units check for the AI
+			if = {
+				limit = {
+					is_ai = yes
+					NOT = { has_country_flag = has_reduce_units_check }
+					OR = {
+						has_global_flag = tgwr_show_division_limiter
+						has_active_mission = RUS_demobilizing_army_timer
+					}
+				}
+				set_country_flag = has_reduce_units_check
+				country_event = { id = ww1_political.6 days = 7 random = 72 }
+			}
+			if = {
+				limit = {
+					has_character = SWE_harald_hjalmarson
+				}
+				if = {
+					limit = {
+						FIN = { has_civil_war = yes }
+					}
+					SWE_harald_hjalmarson = {
+						set_nationality = FIN
+					}
+				}
+				else = {
+					SWE_harald_hjalmarson = {
+						set_nationality = SWE
+					}
+				}
+			}
 		}
 	}
 	
@@ -967,6 +1009,7 @@
 				}
 				FROM = { leave_the_league_of_nations = yes }
 			}
+			log = "[GetDateText]: [ROOT.GetName] annexed [FROM.GetName]"
 		}
 	}
 	on_new_term_election = {
@@ -1128,7 +1171,8 @@
 					tag = HUN
 				}
 				country_event = ww1_hungary_auh.1
-			}		
+			}
+			log = "[GetDateText]: [ROOT.GetName] has a new term election"
 		}
 		# USA EVENTS	
 		random_events = {
@@ -1285,6 +1329,7 @@
 				clr_country_flag = protectorate
 			}
 			abandon_puppet_tag = yes
+			log = "[GetDateText]: [ROOT.GetName] has been released as a free country"
 		}
 	}
 	on_release_as_free = {
@@ -1354,6 +1399,7 @@
 				FIN_set_finnish_state_names = yes
 			}
 			abandon_puppet_tag = yes
+			log = "[GetDateText]: [ROOT.GetName] has been released as a free country"
 		}
 	}
 	#*evil laugh*
@@ -3044,6 +3090,7 @@
 					}
 				}
 			}
+			log = "[GetDateText]: [ROOT.GetName] has been puppeted by [FROM.GetName]"
 		}
 	}
 	on_release_as_puppet = {
@@ -4585,6 +4632,7 @@
 				}
 				join_the_league_of_nations = yes
 			}
+			log = "[GetDateText]: [ROOT.GetName] has been released as puppet by [FROM.GetName]"
 		}
 	}
 	on_startup = {
@@ -7303,6 +7351,7 @@
 					}
 				}
 			}
+			log = "[GetDateText]: [ROOT.GetName] has capitulated by [FROM.GetName]"
 		}
 	}
 	on_civil_war_end = {
@@ -7716,6 +7765,7 @@
 				}
 				remove_ideas = standing_alone
 			}
+			log = "[GetDateText]: [ROOT.GetName] has ended the civil war against [FROM.GetName]"
 		}
 	}
 	#ROOT is winner, FROM gets annexed. It will also fire on_annex and on_civil_war_end.
@@ -9803,6 +9853,7 @@
 					}
 				}
 			}
+			log = "[GetDateText]: [ROOT.GetName] has changed ruling party from [ROOT.old_ideology_token] to [ROOT.GetRulingIdeologyName]"
 		}
 	}
 	on_join_faction = {
@@ -10039,6 +10090,7 @@
 				}
 				country_event = { id = ww1_political.7 hours = 1 } #needed if the faction leader is at war, don't ask
 			}
+			log = "[GetDateText]: [ROOT.GetName] has joined [FROM.GetFactionName] which leader is [FROM.GetName]"
 		}
 	}
 	on_leave_faction = {
@@ -10087,6 +10139,7 @@
 				}
 				drop_cosmetic_tag = yes
 			}
+			log = "[GetDateText]: [ROOT.GetName] has left [FROM.GetFactionName] which leader is [FROM.GetName]"
 		}
 	}
 	on_war = {
@@ -10253,8 +10306,6 @@
 					country_event = { id = ww1_germanrework.49 days = 7 }
 				}
 			}
-		}
-		effect = {
 			# Check for puppets at war with their overlord
 			if = {
 				limit = {
@@ -10270,8 +10321,6 @@
 					}
 				}
 			}
-		}
-		effect = {
 			if = {
 				limit = {
 					OR = {
@@ -10347,8 +10396,6 @@
 				}
 				ROM = { set_country_flag = ROM_has_had_war_with_GRE }
 			}
-		}	
-		effect = {	
 			if = {
 				limit = {
 					FROM = {
@@ -10380,6 +10427,7 @@
 				}
 					
 			}
+			log = "[GetDateText]: [ROOT.GetName] has entered a state of war with [FROM.GetName]"
 		}
 	}	
 	on_declare_war = {
@@ -10589,7 +10637,8 @@
 					news_event = { id = kis_news.113 hours = 1 }
 				}			
 			}
-		}	
+			log = "[GetDateText]: [ROOT.GetName] has been offered to join [FROM.GetFactionName] which leader is [FROM.GetName]"
+		}
 	}	
 	
 	#ROOT is new controller #FROM is old controller #FROM.FROM is state ID
@@ -10949,53 +10998,6 @@
 		}
 	}
 
-	on_peace = {
-		effect = {
-			log = "[GetDateText]: [Root.GetName]: on_peace"
-			#Demobilization check for the AI
-			if = {
-				limit = {
-					is_ai = yes
-					NOT = { has_country_flag = has_demobilization_check }
-				}
-				set_country_flag = { flag = has_demobilization_check days = 6 value = 1 }
-				country_event = { id = ww1_political.5 days = 6 }
-			}
-
-			#Reduce units check for the AI
-			if = {
-				limit = {
-					is_ai = yes
-					NOT = { has_country_flag = has_reduce_units_check }
-					OR = {
-						has_global_flag = tgwr_show_division_limiter
-						has_active_mission = RUS_demobilizing_army_timer
-					}
-				}
-				set_country_flag = has_reduce_units_check
-				country_event = { id = ww1_political.6 days = 7 random = 72 }
-			}
-			if = {
-				limit = {
-					has_character = SWE_harald_hjalmarson
-				}
-				if = {
-					limit = {
-						FIN = { has_civil_war = yes }
-					}
-					SWE_harald_hjalmarson = {
-						set_nationality = FIN
-					}
-				}
-				else = {
-					SWE_harald_hjalmarson = {
-						set_nationality = SWE
-					}
-				}
-			}
-		}
-	}
-
 	on_peaceconference_started = {
 		effect = {
 			if = {
@@ -11115,6 +11117,42 @@
 					country_event = { id = ww1_political.7 hours = 1 } #needed if the faction leader is at war, don't ask
 				}
 			}
+		}
+	}
+	#ROOT is the government in exile, FROM is the country that is hosting the government in exile.
+	on_government_exiled = {
+		effect = {
+			log = "[GetDateText]: [ROOT.GetName] has been exiled to [FROM.GetName]"
+		}
+	}
+	#ROOT is sender, FROM is receiver.
+	on_send_volunteers = {
+		effect = {
+			log = "[GetDateText]: [ROOT.GetName] has sent volunteers to [FROM.GetName]"
+		}
+	}
+	#ROOT is the country that sent, FROM is the country that accepted.
+	on_send_expeditionary_force = {
+		effect = {
+			log = "[GetDateText]: [ROOT.GetName] has sent an expeditionary force to [FROM.GetName]"
+		}
+	}
+	#ROOT is the country that is lending, FROM is the country that is receiving.
+	on_lend_lease = {
+		effect = {
+			log = "[GetDateText]: [ROOT.GetName] has lent equipment to [FROM.GetName]"
+		}
+	}
+	#ROOT is the country which guarantees, FROM is the country that is guaranteed.
+	on_guarantee = {
+		effect = {
+			log = "[GetDateText]: [ROOT.GetName] has guaranteed [FROM.GetName]"
+		}
+	}
+	#ROOT is the wargoal owner, FROM is the wargoal target
+	on_generate_wargoal = {
+		effect = {
+			log = "[GetDateText]: [ROOT.GetName] has generated a wargoal against [FROM.GetName]"
 		}
 	}
 }
