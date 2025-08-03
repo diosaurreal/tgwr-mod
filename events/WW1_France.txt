@@ -7384,64 +7384,102 @@ country_event = {
 	title = ww1_france.22.t
 	desc = ww1_france.22.d
 	fire_only_once = yes
+	picture = GFX_report_event_generic_peaceful_annexation
 	mean_time_to_happen = {
 		days = 20
 	}
 	trigger = {
-		has_global_flag = great_war_ends
-		tag = ITA
+		is_italian_nation = yes
 		has_war = no
 		is_subject = no
+		owns_state = 158
 		NOT = {
 			has_country_flag = great_war_loser
-			owns_state = 735
-			owns_state = 1
-			is_in_faction_with = FRA
 		}
-		FRA = {
-			OR = {
-				has_civil_war = yes
-				any_country = {
-					has_country_flag = FRA_nationalist_france_flag
-					has_war_with = FRA
+		any_state = {
+			owner = {
+				original_tag = FRA
+				OR = {
+					has_civil_war = yes
+					any_enemy_country = {
+						original_tag = FRA
+					}
 				}
+				NOT = {
+					is_in_faction_with = ROOT
+				}
+			}
+			OR = {
+				state = 1
+				state = 735
+				state = 834
+				state = 1210
 			}
 		}
 	}
 	option = {
 		name = ww1_france.22.a
 		ai_chance = {
-			factor = 85
+			base = 85
 		}
-		every_owned_state = {
+		every_state = {
 			limit = {
+				owner = {
+					original_tag = FRA
+					OR = {
+						has_civil_war = yes
+						any_enemy_country = {
+							original_tag = FRA
+						}
+					}
+					NOT = {
+						is_in_faction_with = ROOT
+					}
+				}
 				OR = {
-					state = 735
-					state = 1210
-					state = 834
 					state = 1
-					is_core_of = TUN
+					state = 735
+					state = 834
+					state = 1210
 				}
 			}
-			transfer_state_to = ITA
+			hidden_effect = {
+				owner = {
+					country_event = {
+						id = ww1_france.23
+						hours = 3
+					}
+				}
+			}
+			transfer_state_to = ROOT
 		}
-		every_other_country = {
-			limit = {
-				has_country_flag = FRA_nationalist_france_flag
-			}
-			NFA = {
-				country_event = {
-					id = ww1_france.23
-					days = 1
+		hidden_effect = {
+			if = {
+				limit = {
+					MCO = {
+						is_neighbor_of = ROOT
+						NOT = {
+							has_war_with = ROOT
+							has_government = communism
+						}
+					}
 				}
+				give_market_access = MCO
 			}
 		}
 	}
 	option = {
 		name = ww1_france.22.b
 		ai_chance = {
-			factor = 15
+			base = 15
+			modifier = {
+				factor = 0
+				NOT = {
+					has_government = democratic
+				}
+			}
 		}
+		add_war_support = -0.02
 	}
 }
 
@@ -7451,7 +7489,6 @@ country_event = {
 	id = ww1_france.23
 	title = ww1_france.23.t
 	desc = ww1_france.23.d
-	fire_only_once = yes
 	is_triggered_only = yes
 	option = {
 		name = ww1_france.23.a
@@ -7529,24 +7566,10 @@ country_event = {
 	trigger = {
 		original_tag = FRA
 		has_country_flag = great_war_loser
-		OR = {
-			has_civil_war = yes
-			AND = {
-				any_other_country = {
-					original_tag = FRA
-					has_war_with = PREV
-				}
-				has_global_flag = french_civil_war
-			}
-		}
+		is_french_civil_war_ongoing = yes
 		any_owned_state = {
-			OR = {
-				is_on_continent = africa
-				is_on_continent = north_america
-				is_on_continent = south_america
-				is_on_continent = australia
-				is_on_continent = asia
-				is_on_continent = middle_east
+			NOT = {
+				is_on_continent = europe
 			}
 		}
 	}
@@ -7556,20 +7579,7 @@ country_event = {
 	fire_only_once = yes
 	option = {
 		name = ww1_france.25.a
-		every_owned_state = {
-			limit = {
-				OR = {
-					region = 83
-					region = 179
-				}
-			}
-			random_country = {
-				limit = {
-					owns_state = 737
-				}
-				transfer_state = PREV
-			}
-		}
+		# Return Moroccan Cores
 		every_owned_state = {
 			limit = {
 				is_core_of = MOR
@@ -7581,17 +7591,33 @@ country_event = {
 				transfer_state = PREV
 			}
 		}
-		if = {
-			limit = {
-				owns_state = 320
-			}
-			random_country = {
+		# Pondicherry
+		320 = {
+			if = {
 				limit = {
-					owns_state = 423
+					owner = {
+						original_tag = FRA
+					}
 				}
-				transfer_state = 320
+				if = {
+					limit = {
+						ENG = {
+							has_country_flag = great_war_loser
+						}
+					}
+					transfer_state_to = GER
+				}
+				else = {
+					random_country = {
+						limit = {
+							owns_state = 423 # Madurai, adjacent state
+						}
+						transfer_state = 320
+					}
+				}
 			}
 		}
+		# Ubari-Murzuk to Owner of Fezzan
 		if = {
 			limit = {
 				owns_state = 812
@@ -7603,31 +7629,7 @@ country_event = {
 				transfer_state = 812
 			}
 		}
-		every_owned_state = {
-			limit = {
-				is_on_continent = africa
-				NOT = {
-					state = 774
-					state = 969
-					state = 1059
-					region = 126
-					region = 127
-					region = 182
-					region = 225
-					region = 226
-					is_core_of = MLI
-					is_core_of = VOL
-					is_core_of = NGR
-					is_core_of = IVO
-				}
-			}
-			random_country = {
-				limit = {
-					owns_state = 539
-				}
-				transfer_state = PREV
-			}
-		}
+		# Every South American State to Owner of Jamaica (Britain?)
 		every_owned_state = {
 			limit = {
 				is_on_continent = south_america
@@ -7639,6 +7641,7 @@ country_event = {
 				transfer_state = PREV
 			}
 		}
+		# Every North American State to Canada
 		every_owned_state = {
 			limit = {
 				is_on_continent = north_america
@@ -9649,7 +9652,7 @@ country_event = {
 		NOT = {
 			has_government = communism
 		}
-		has_global_flag = great_war_winner
+		has_country_flag = great_war_winner
 		NOT = {
 			has_country_flag = june_1919_riots
 			has_country_flag = FRA_police_security_enforcement_act
@@ -10531,11 +10534,10 @@ country_event = {
 	trigger = {
 		has_war_with = GER
 		tag = FRA
-		has_global_flag = great_war
+		is_great_war_ongoing = yes
 		NOT = {
 			has_country_flag = caillaux_anti_war_propaganda
 			has_country_flag = FRA_surrender_alone
-			has_global_flag = great_war_ends
 		}
 		has_character = FRA_joseph_caillaux
 		date > 1917.2.2
@@ -10607,20 +10609,6 @@ country_event = {
 		clr_country_flag = ask_for_peace
 		add_ideas = FRA_interim_government
 		drop_cosmetic_tag = yes
-		# What is the purpose of this? These are still French puppet and they lose their blue colours.
-		# every_other_country = {
-		# 	limit = {
-		# 		is_subject_of = ROOT
-		# 		OR = {
-		# 			tag = MOR
-		# 			tag = ALG
-		# 			tag = TUN
-		# 			tag = IND
-		# 			tag = MLI
-		# 		}
-		# 	}
-		# 	drop_cosmetic_tag = yes
-		# }
 		if = {
 			limit = {
 				OR = {	#petain shouldnt be able to stay if losed ww1, so stick authoritarian caillaux to monarchy ONLY
@@ -10696,6 +10684,10 @@ country_event = {
 					}
 				}
 				set_cosmetic_tag = FRA_alt_blue
+			}
+			add_opinion_modifier = {
+				target = GER
+				modifier = great_war_enemy
 			}
 		}
 		hidden_effect = {
@@ -22525,18 +22517,112 @@ country_event = {
 	}
 }
 
-#petain lead the way
+#France see British attack germany and can join anyway
 country_event = {
-	id = ww1_france.624
-	title = ww1_france.624.t
-	desc = ww1_france.624.d
-	picture = GFX_paris_1910
+	id = ww1_france.625
+	title = ww1_france.625.t
+	desc = ww1_france.625.d
+	picture = GFX_GER_zeppelin
 	is_triggered_only = yes
+	fire_only_once = yes
 	option = {
-		name = ww1_france.624.a
-		add_stability = 0.02
-		FRA_philippe_petain = {
-			promote_character = yes
+		name = ww1_france.625.a
+		add_war_support = 0.02
+		FRA = {
+			add_to_war = {
+				targeted_alliance = ENG
+				enemy = GER
+			}
+		}
+		hidden_effect = {
+			news_event = ww1_france.626
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0.1
+				has_government = communism
+			}
+			modifier = {
+				factor = 0.1
+				has_idea = neutrality_idea
+			}
+			modifier = {
+				factor = 0.8
+				GER = {
+					OR = {
+						is_guaranteed_by = ITA
+						is_in_faction_with = ITA
+					}
+				}
+			}
+			modifier = {
+				factor = 0.8
+				GER = {
+					OR = {
+						is_guaranteed_by = AUS
+						is_in_faction_with = AUS
+					}
+				}
+			}
+			modifier = {
+				factor = 0.8
+				GER = {
+					OR = {
+						is_guaranteed_by = SPR
+						is_in_faction_with = SPR
+					}
+				}
+			}
+			modifier = {
+				factor = 0.5
+				GER = {
+					OR = {
+						is_guaranteed_by = USA
+						is_in_faction_with = USA
+					}
+				}
+			}
+		}
+	}
+	option = {
+		name = ww1_france.625.b
+		ai_chance = {
+			base = 2
+			modifier = {
+				has_war = yes #war against minor
+				factor = 2
+			}
+		}
+	}
+}
+
+news_event = {
+	title = ww1_france.626.t
+	desc = ww1_france.626.d
+	id = ww1_france.626
+	picture = GFX_news_event_french_parade
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_france.626.a
+		trigger = {
+			NOT = {
+				has_war_with = ENG
+				has_war_with = GER
+			}
+		}
+	}
+	option = {
+		name = ww1_france.626.b
+		trigger = {
+			has_war_with = ENG
+		}
+	}
+	option = {
+		name = ww1_france.626.c
+		trigger = {
+			has_war_with = GER
 		}
 	}
 }
