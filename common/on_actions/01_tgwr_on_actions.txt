@@ -171,6 +171,8 @@
 						transfer_units_fraction = {
 							target = CHI
 							size = 1
+							target_organization = 1
+							source_organization = 1
 							stockpile_ratio = 1
 							army_ratio = 1
 							navy_ratio = 1
@@ -194,11 +196,6 @@
 									is_character = QIN_shouxun
 									is_character = QIN_zaixun
 									is_character = QIN_li_shenghe
-									is_character = QIN_baoding_aviation_academy
-									is_character = QIN_baoding_military_academy
-									is_character = QIN_yunnan_aviation_academy
-									is_character = QIN_yunnan_military_academy
-									is_character = QIN_nanking_naval_academy
 								}
 							}
 							set_nationality = CHI
@@ -659,6 +656,8 @@
 				SER = {
 					remove_state_core = 106
 					remove_state_core = 203
+					remove_state_core = 1140
+					remove_state_core = 1213
 					set_country_flag = BW1_loser
 				}
 			}
@@ -1072,7 +1071,10 @@
 			}
 			### China ###
 			if = {
-				limit = { tag = CHI }
+				limit = {
+					tag = CHI
+					has_focus_tree = china_focus
+				}
 				if = {
 					limit = {
 						has_global_flag = warlord_era
@@ -1094,6 +1096,10 @@
 				}
 				else_if = {
 					limit = {
+						OR = {
+							has_completed_focus = CHI_ruling_of_yuan_shikai
+							has_completed_focus = CHI_focus_democratic_presidential_election
+						}
 						NOT = { has_government = fascism }
 					}
 					country_event = ww1_china.123
@@ -6157,6 +6163,8 @@
 					transfer_units_fraction = {
 						target = PREV
 						size = 1.0
+						target_organization = 1
+						source_organization = 1
 						keep_unit_leaders_trigger = {
 							always = no
 						}
@@ -6259,95 +6267,122 @@
 					}
 				}
 			}
+			# empire of china victorious
 			if = {
 				limit = {
-					OR = {
-						original_tag = CHI
-						original_tag = YUN
-					}
+					tag = YUN
+					FROM = { tag = CHI }
 					has_country_flag = CHI_national_protection_flag
-					any_other_country = {
-						original_tag = CHI
-						NOT = { has_country_flag = CHI_national_protection_flag }
-						has_war_with = PREV
+					has_global_flag = national_protection_war
+					NOT = {
+						has_global_flag = hongxian_failed
 					}
 				}
-				# beiyang npa
 				if = {
 					limit = {
-						has_character = CHI_duan_qirui
+						has_global_flag = hongxian_failed
 					}
-					random_other_country = {
+					every_core_state = {
 						limit = {
-							original_tag = CHI
-							NOT = { has_country_flag = CHI_national_protection_flag }
+							NOT = { state = 325 }
 						}
-						PREV = {
-							transfer_navy = {
-								target = PREV
-							}
-							transfer_units_fraction = {
-								target = PREV
-								size = 0.50
-								stockpile_ratio = 0.8
-								army_ratio = 0.50
-								navy_ratio = 1
-								air_ratio = 1
-								keep_unit_leaders_trigger = {
-									always = yes
-								}
-							}
-							if = {
-								limit = { has_character = CHI_li_yuanhong }
-								CHI_li_yuanhong = {
-									set_nationality = PREV
-								}
-							}
-							every_state = {
-								limit = {
-									OR = {
-										is_core_of = PREV
-										is_claimed_by = PREV
-									}
-								}
-								remove_core_of = PREV
-								remove_claim_by = PREV
-							}
-							every_owned_state = {
-								transfer_state_to = PREV.PREV
-							}
-						}
+						remove_core_of = PREV
 					}
 				}
-				# historical npa
-				else = {
-					CHI = {
-						if = {
-							limit = {
-								has_cosmetic_tag = CHI_hongxian_empire
-							}
-							country_event = ww1_china.155
-						}
-						else = {
-							set_global_flag = hongxian_failed
-							country_event = ww1_china.38
-							unlock_national_focus = CHI_beiyang_meditator
-						}
+				else_if = {
+					limit = {
+						has_cosmetic_tag = CHI_hongxian_empire
 					}
+					set_global_flag = CHI_empire_won_npw
+					country_event = ww1_china.155
+				}
+				else = {
+					set_global_flag = hongxian_failed
+					country_event = ww1_china.38
+					unlock_national_focus = CHI_beiyang_meditator
 				}
 			}
+			# national protection army victorious
 			if = {
 				limit = {
-					original_tag = CHI
-					NOT = { has_country_flag = CHI_national_protection_flag }
-					any_other_country = {
+					tag = CHI
+					FROM = {
 						has_country_flag = CHI_national_protection_flag
-						has_war_with = PREV
 					}
 				}
-				NPA = {
-					country_event = ww1_china.154
-					change_tag_from = PREV
+				FROM = {
+					if = {
+						limit = {
+							tag = YUN
+						}
+						if = {
+							limit = {
+								is_ai = no
+								PREV = { is_ai = yes }
+							}
+							PREV = {
+								country_event = ww1_china.154
+								change_tag_from = PREV
+							}
+						}
+					}
+					#beiyang npa
+					else = {
+						every_state = {
+							limit = {
+								OR = {
+									is_core_of = PREV
+									is_claimed_by = PREV
+								}
+							}
+							remove_core_of = PREV
+							remove_claim_by = PREV
+						}
+						every_owned_state = {
+							transfer_state_to = ROOT
+						}
+						every_character = {
+							set_nationality = ROOT
+						}
+						transfer_navy = {
+							target = PREV
+						}
+						transfer_units_fraction = {
+							target = PREV
+							size = 1
+							target_organization = 1
+							source_organization = 1
+						}
+						set_politics = {
+							ruling_party = neutrality
+							elections_allowed = yes
+						}
+						set_popularities = {
+							fascism = 23
+							neutrality = 67
+							democratic = 10
+						}
+						if = {
+							limit = { has_character = CHI_li_yuanhong }
+							CHI_duan_qirui = {
+								promote_character = stratocracy
+								promote_character = authoritarian_democracy
+							}
+						}
+						if = {
+							limit = { has_character = CHI_li_yuanhong }
+							CHI_li_yuanhong = {
+								promote_character = authoritarian_democrac
+							}
+						}
+						if = {
+							limit = { has_character = CHI_yuan_shikai }
+							CHI_yuan_shikai = {
+								promote_character = authoritarian_democrac
+								promote_character = stratocracy
+							}
+						}
+					}
 				}
 			}
 			if = {
