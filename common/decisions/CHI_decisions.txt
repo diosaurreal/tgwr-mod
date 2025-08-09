@@ -1,12 +1,14 @@
 CHI_xinhai_revolution = {
 	CHI_xinhai_revolution_mission = {
 		icon = revolt
-		days_mission_timeout = 140
+		days_mission_timeout = 1000
 		activation = {
-			original_tag = QIN
-			has_global_flag = guangzhou_uprising
+			has_start_date < 1914.1.1
+			has_idea = QIN_idea_tongmenghui
+			has_civil_war = no
 			NOT = {
 				has_global_flag = xinhai_revolution
+				has_government = democratic
 			}
 		}
 		allowed = {
@@ -16,26 +18,15 @@ CHI_xinhai_revolution = {
 			OR = {
 				has_civil_war = yes
 				has_global_flag = xinhai_revolution
-				NOT = {
-					has_government = neutrality
-				}
-			}
-		}
-		visible = {
-			original_tag = QIN
-			has_global_flag = guangzhou_uprising
-			NOT = {
-				has_global_flag = xinhai_revolution
+				has_government = democratic
 			}
 		}
 		fire_only_once = yes
 		is_good = no
 		timeout_effect = {
 			set_global_flag = xinhai_revolution
-			QIN = {
-				country_event = {
-					id = ww1_xinhai.2
-				}
+			country_event = {
+				id = ww1_xinhai.2
 			}
 		}
 	}
@@ -2154,48 +2145,6 @@ CHI_warlord_era = {
 				transfer_state_to = KMT
 			}
 			# news_event = ww1_china.61
-		}
-	}
-	CHI_KMT_leadership = {
-		icon = GFX_decision_generic_political_discourse
-		days_mission_timeout = 120
-		activation = {
-			has_country_flag = CHI_kuomintang_flag
-			is_subject = no
-			has_country_leader = {
-				character = CHI_hu_hanmin
-				ruling_only = yes
-			}
-		}
-		allowed = {
-			original_tag = GDC
-		}
-		available = {
-			OR = {
-				is_subject = yes
-				has_country_leader = {
-					character = CHI_chiang_kaishek
-					ruling_only = yes
-				}
-				has_country_leader = {
-					character = CHI_wang_jingwei
-					ruling_only = yes
-				}
-				NOT = { has_country_flag = CHI_kuomintang_flag }
-			}
-		}
-		visible = {
-			has_country_flag = CHI_kuomintang_flag
-			is_subject = no
-			has_country_leader = {
-				character = CHI_hu_hanmin
-				ruling_only = yes
-			}
-		}
-		fire_only_once = yes
-		is_good = no
-		timeout_effect = {
-			country_event = ww1_china.72
 		}
 	}
 	CHI_JAP_assassinate_zhang_zuolin = {
@@ -7072,49 +7021,57 @@ operations = {
 		allowed = {
 			original_tag = GDC
 		}
-		visible = {
+		target_trigger = {
+			FROM = {
+				original_tag = GDC
+				has_country_flag = CHI_kuomintang_flag
+			}
+		}
+		war_with_target_on_remove = yes
+		target_root_trigger = {
 			has_country_flag = CHI_zhigongdang_flag
 		}
-		available = {
+		visible = {
 			has_country_flag = CHI_zhigongdang_flag
-			any_other_country = {
-				has_country_flag = CHI_kuomintang_flag
-				NOT = {
-					has_country_flag = CHI_zhigongdang_flag
-				}
+			FROM = {
 				exists = yes
 				NOT = {
+					has_country_flag = CHI_zhigongdang_flag
 					has_war_with = ROOT
 					is_subject_of = ROOT
 					is_in_faction_with = ROOT
 				}
 				is_neighbor_of = ROOT
 			}
-			is_subject = no
-			has_war = no
 			NOT = {
 				has_country_flag = CHI_ZGP_finish_KMT
 			}
+		}
+		available = {
+			is_subject = no
+			has_war = no
 			OR = {
 				strength_ratio = {
 					tag = FROM
 					ratio > 0.5
 				}
+				has_global_flag = guangzhou_merchant_uprising
 				has_global_flag = sun_yatsen_dead
 			}
 		}
 		cancel_if_not_visible = yes
 		cancel_trigger = {
 			OR = {
+				has_war = yes
 				NOT = { country_exists = FROM }
-				has_war_with = FROM
+
 				is_subject = yes
 				has_subject = FROM
 				is_in_faction_with = FROM
 				has_country_flag = CHI_ZGP_finish_KMT
 			}
 		}
-		days_remove = 120
+		days_remove = 45
 		remove_effect = {
 			declare_war_on = {
 				target = FROM
@@ -7143,15 +7100,6 @@ operations = {
 					}
 				}
 			}
-		}
-		war_with_target_on_remove = yes
-		target_trigger = {
-			FROM = {
-				tag = KMT
-			}
-		}
-		target_root_trigger = {
-			has_country_flag = CHI_zhigongdang_flag
 		}
 		ai_will_do = {
 			factor = 1000
