@@ -10004,10 +10004,31 @@ country_event = {
 				idea = CHI_idea_communist_movement
 				days = 365
 			}
-			set_party_name = {
-				ideology = communism
-				long_name = CHI_communist_party_long
-				name = CHI_communist_party
+			if = {
+				limit = {
+					any_other_country = {
+						is_major = yes
+						is_china_or_warlord = no
+						has_capitulated = no
+						is_subject = no
+						OR = {
+							has_country_leader_ideology = syndicalism
+							has_country_leader_ideology = anarcho_syndicalism
+						}
+					}
+				}
+				set_party_name = {
+					ideology = communism
+					long_name = CHI_syndicalist_party_long
+					name = CHI_syndicalist_party
+				}
+			}
+			else = {
+				set_party_name = {
+					ideology = communism
+					long_name = CHI_communist_party_long
+					name = CHI_communist_party
+				}
 			}
 			every_possible_country = {
 				limit = {
@@ -10016,20 +10037,62 @@ country_event = {
 					}
 					is_china_or_warlord_no_tt = yes
 				}
-				set_party_name = {
-					ideology = communism
-					long_name = CHI_communist_party_long
-					name = CHI_communist_party
-				}
 				if = {
-					limit = { exists = yes }
-					country_event = ww1_china.255
+					limit = {
+						any_other_country = {
+							is_major = yes
+							is_china_or_warlord = no
+							has_capitulated = no
+							is_subject = no
+							OR = {
+								has_country_leader_ideology = syndicalism
+								has_country_leader_ideology = anarcho_syndicalism
+							}
+						}
+					}
+					set_party_name = {
+						ideology = communism
+						long_name = CHI_syndicalist_party_long
+						name = CHI_syndicalist_party
+					}
 				}
 				else = {
 					set_party_name = {
 						ideology = communism
 						long_name = CHI_communist_party_long
 						name = CHI_communist_party
+					}
+				}
+				if = {
+					limit = { exists = yes }
+					country_event = ww1_china.255
+				}
+				else = {
+					if = {
+						limit = {
+							any_other_country = {
+								is_major = yes
+								is_china_or_warlord = no
+								has_capitulated = no
+								is_subject = no
+								OR = {
+									has_country_leader_ideology = syndicalism
+									has_country_leader_ideology = anarcho_syndicalism
+								}
+							}
+						}
+						set_party_name = {
+							ideology = communism
+							long_name = CHI_syndicalist_party_long
+							name = CHI_syndicalist_party
+						}
+					}
+					else = {
+						set_party_name = {
+							ideology = communism
+							long_name = CHI_communist_party_long
+							name = CHI_communist_party
+						}
 					}
 					if = {
 						limit = {
@@ -11819,6 +11882,7 @@ country_event = {
 	desc = ww1_china.72.d
 	picture = GFX_report_event_chi_tongmenghui
 	is_triggered_only = yes
+	fire_only_once = yes
 	option = {
 		name = ww1_china.72.a
 		if = {
@@ -11862,32 +11926,54 @@ country_event = {
 					promote_leader = yes
 					country_leader = {
 						ideology = tridemism
-						
 					}
 				}
 			}
 		}
-		CHI_chiang_kaishek = {
-			promote_leader = yes
+		if = {
+			limit = {
+				has_global_flag = chinese_united_front
+				has_country_flag = chinese_united_front
+			}
+			add_country_leader_trait = tridemism_is_socialism
+		}
+		new_term_elections = yes
+		hidden_effect = {
+			CHI_chiang_kaishek = {
+				promote_leader = yes
+				if = {
+					limit = { has_ideology = civilian_dictatorship }
+					promote_character = civilian_dictatorship
+				}
+				else = {
+					add_country_leader_role = {
+						promote_leader = yes
+						country_leader = {
+							ideology = civilian_dictatorship
+							traits = { generallissimo }
+							desc = CHI_chiang_kaishek_desc
+						}
+					}
+				}
+			}
+			set_party_name = {
+				ideology = neutrality
+				long_name = CHI_revolutionary_army_long
+				name = CHI_revolutionary_army
+			}
 			if = {
-				limit = { has_ideology = civilian_dictatorship }
-				promote_character = civilian_dictatorship
-			}
-			else = {
-				add_country_leader_role = {
-					promote_leader = yes
-					country_leader = {
-						ideology = civilian_dictatorship
-						traits = { anti_communist generallissimo }
-						desc = CHI_chiang_kaishek_desc
-					}
+				limit = {
+					NOT = { has_global_flag = liao_zhongkai_dead }
+				}
+				country_event = {
+					id = ww1_china.99
+					days = 45
 				}
 			}
-		}
-		set_party_name = {
-			ideology = neutrality
-			long_name = CHI_revolutionary_army_long
-			name = CHI_revolutionary_army
+			country_event = {
+				id = ww1_china.73
+				days = 240
+			}
 		}
 	}
 }
@@ -11902,10 +11988,9 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_china.73.a
-		add_stability = -0.1
 		add_popularity = {
 			ideology = communism
-			popularity = -0.07
+			popularity = -0.10
 		}
 		CHI_wang_jingwei = {
 			remove_country_leader_role = {
@@ -11914,6 +11999,7 @@ country_event = {
 			remove_country_leader_role = {
 				ideology = reformist_socialism
 			}
+			set_character_flag = exiled
 		}
 		CHI_chiang_kaishek = {
 			promote_leader = yes
@@ -11953,7 +12039,6 @@ country_event = {
 			ideology = neutrality
 			popularity = 0.10
 		}
-		
 		custom_effect_tooltip = available_political_advisor
 		show_ideas_tooltip = CHI_hu_hanmin
 		hidden_effect = {
@@ -13244,16 +13329,9 @@ country_event = {
 	title = ww1_china.99.t
 	desc = ww1_china.99.d
 	picture = GFX_report_event_china_politicians_captured
+	is_triggered_only = yes
 	trigger = {
-		has_country_flag = CHI_kuomintang_flag
-		has_country_leader = {
-			character = CHI_wang_jingwei
-			ruling_only = yes
-		}
 		NOT = { has_global_flag = liao_zhongkai_dead }
-	}
-	mean_time_to_happen = {
-		days = 20
 	}
 	fire_only_once = yes
 	immediate = {
@@ -13270,21 +13348,34 @@ country_event = {
 		effect_tooltip = {
 			retire_character = CHI_liao_zhongkai
 		}
-		add_political_power = 75
 		add_popularity = {
 			ideology = communism
-			popularity = 0.10
+			popularity = 0.05
 		}
 		effect_tooltip = {
-			deactivate_advisor = CHI_hu_hanmin
+			if = {
+				limit = {
+					has_idea = CHI_hu_hanmin
+				}
+				deactivate_advisor = CHI_hu_hanmin
+			}
+			if = {
+				limit = {
+					has_idea = GDC_xu_chongzhi
+				}
+				deactivate_advisor = GDC_xu_chongzhi
+			}
 		}
 		hidden_effect = {
 			CHI_hu_hanmin = {
 				set_character_flag = exiled
 			}
+			GDC_xu_chongzhi = {
+				set_character_flag = exiled
+			}
 			country_event = {
 				id = ww1_china.100
-				days = 20
+				days = 90
 			}
 		}
 	}
@@ -13300,9 +13391,10 @@ country_event = {
 	option = {
 		name = ww1_china.100.a
 		add_popularity = {
-			ideology = communism
+			ideology = democratic
 			popularity = 0.05
 		}
+		add_political_power = -100
 	}
 }
 
@@ -13327,6 +13419,7 @@ country_event = {
 			is_subject = no
 			has_war = no
 		}
+		has_start_date < 1914.1.1
 	}
 	fire_only_once = yes
 	mean_time_to_happen = { days = 365 }
@@ -15725,23 +15818,6 @@ country_event = {
 				communism > 0.7
 			}
 		}
-		if = {
-			limit = {
-				has_global_flag = chinese_communist_party
-			}
-			set_party_name = {
-				ideology = communism
-				long_name = CHI_communist_party_long
-				name = CHI_communist_party
-			}
-		}
-		else = {
-			set_party_name = {
-				ideology = communism
-				long_name = CHI_communism_party_long
-				name = CHI_communism_party
-			}
-		}
 
 		hidden_effect = {
 			add_ideas = standing_alone
@@ -15756,7 +15832,7 @@ country_event = {
 								is_character = PRC_liberated_zone
 							}
 						}
-						set_character_flag = chinese_communist
+						set_character_flag = communist_chinese_allegiance
 						set_nationality = ROOT
 					}
 				}
@@ -22951,10 +23027,31 @@ country_event = {
 	}
 	option = {
 		name = ww1_china.255.a
-		set_party_name = {
-			ideology = communism
-			long_name = CHI_communist_party_long
-			name = CHI_communist_party
+		if = {
+			limit = {
+				any_other_country = {
+					is_major = yes
+					is_china_or_warlord = no
+					has_capitulated = no
+					is_subject = no
+					OR = {
+						has_country_leader_ideology = syndicalism
+						has_country_leader_ideology = anarcho_syndicalism
+					}
+				}
+			}
+			set_party_name = {
+				ideology = communism
+				long_name = CHI_syndicalist_party_long
+				name = CHI_syndicalist_party
+			}
+		}
+		else = {
+			set_party_name = {
+				ideology = communism
+				long_name = CHI_communist_party_long
+				name = CHI_communist_party
+			}
 		}
 		add_popularity = {
 			ideology = communism
@@ -23320,7 +23417,7 @@ country_event = {
 		effect_tooltip = {
 			add_opinion_modifier = {
 				target = FROM
-				modifier = GDC_helped_merchant_militias
+				modifier = helped_canton_merchant_militia
 			}
 		}
 	}
@@ -23418,5 +23515,228 @@ country_event = {
 	option = {
 		name = ww1_china.266.a
 		unlock_decision_tooltip = CHI_ZGP_finish_KMT
+	}
+}
+
+# Align with International
+country_event = {
+	id = ww1_china.267
+	title = ww1_china.267.t
+	desc = ww1_china.267.d
+	picture = GFX_report_event_china_soviet_volunteers
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_china.267.a
+		if = {
+			limit = {
+				SOV = {
+					exists = yes
+					is_subject = no
+					has_capitulated = no
+					surrender_progress < 0.5
+					has_government = communism
+					NOT = {
+						any_enemy_country = {
+							is_china_or_warlord = no
+						}
+					}
+				}
+			}
+			SOV = {
+				country_event = {
+					id = ww1_china.268
+					hours = 10
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				FRA = {
+					exists = yes
+					is_subject = no
+					has_capitulated = no
+					surrender_progress < 0.5
+					has_government = communism
+					NOT = {
+						any_enemy_country = {
+							is_china_or_warlord = no
+						}
+					}
+				}
+			}
+			FRA = {
+				country_event = {
+					id = ww1_china.268
+					hours = 10
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				ENG = {
+					exists = yes
+					is_subject = no
+					has_capitulated = no
+					surrender_progress < 0.5
+					has_government = communism
+					NOT = {
+						any_enemy_country = {
+							is_china_or_warlord = no
+						}
+					}
+				}
+			}
+			ENG = {
+				country_event = {
+					id = ww1_china.268
+					hours = 10
+				}
+			}
+		}
+	}
+}
+
+# KMT Allies Communists
+country_event = {
+	id = ww1_china.268
+	title = ww1_china.268.t
+	desc = ww1_china.268.d
+	picture = GFX_report_event_generic_handshake
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_china.268.a
+		set_global_flag = chinese_united_front
+		set_country_flag = chinese_united_front_ally
+		give_market_access = FROM
+		diplomatic_relation = {
+			country = FROM
+			relation = non_aggression_pact
+			active = yes
+		}
+		add_opinion_modifier = {
+			target = FROM
+			modifier = chinese_united_front
+		}
+		add_political_power = 50
+		hidden_effect = {
+			FROM = {
+				set_country_flag = chinese_united_front
+				add_opinion_modifier = {
+					target = FROM
+					modifier = chinese_united_front
+				}
+				add_political_power = 200
+			}
+			every_other_country = {
+				limit = {
+					is_china_or_warlord = yes
+					NOT = { tag = FROM }
+				}
+				country_event = {
+					id = ww1_china.269
+					hours = 10
+				}
+			}
+		}
+	}
+}
+
+# KMT Allies Communists - notice
+country_event = {
+	id = ww1_china.269
+	title = ww1_china.269.t
+	desc = ww1_china.269.d
+	picture = GFX_report_event_china_soviet_volunteers
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_china.269.a
+		add_popularity = {
+			ideology = communism
+			popularity = 0.05
+		}
+	}
+}
+
+# The Communists Join the KMT
+country_event = {
+	id = ww1_china.270
+	title = ww1_china.270.t
+	desc = ww1_china.270.d
+	picture = GFX_report_event_generic_handshake
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_china.270.a
+		add_popularity = {
+			ideology = communism
+			popularity = 0.10
+		}
+		add_ideas = CHI_idea_united_front
+		PRC = {
+			every_character = {
+				limit = {
+					has_character_flag = communist_chinese_allegiance
+				}
+				set_nationality = ROOT
+			}
+		}
+	}
+}
+
+# The KMT Reformation
+country_event = {
+	id = ww1_china.271
+	title = ww1_china.271.t
+	desc = ww1_china.271.d
+	picture = GFX_report_event_chi_tongmenghui
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_china.271.a
+		add_popularity = {
+			ideology = communism
+			popularity = 0.10
+		}
+	}
+}
+
+# The National Revolution Army
+country_event = {
+	id = ww1_china.272
+	title = ww1_china.272.t
+	desc = ww1_china.272.d
+	picture = GFX_report_event_chinese_army_training
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_china.272.a
+		add_ideas = CHI_national_revolution_army
+		hidden_effect = {
+			CHI_chiang_kaishek = {
+				promote_leader = yes
+				if = {
+					limit = { has_ideology = civilian_dictatorship }
+					promote_character = civilian_dictatorship
+				}
+				else = {
+					add_country_leader_role = {
+						promote_leader = yes
+						country_leader = {
+							ideology = civilian_dictatorship
+							traits = { generallissimo }
+							desc = CHI_chiang_kaishek_desc
+						}
+					}
+				}
+			}
+			set_party_name = {
+				ideology = neutrality
+				long_name = CHI_revolutionary_army_long
+				name = CHI_revolutionary_army
+			}
+		}
 	}
 }
