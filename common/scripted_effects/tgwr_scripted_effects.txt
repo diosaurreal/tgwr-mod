@@ -183,211 +183,128 @@ ITA_industrialisation_level_up = {
 	}
 }
 ##BREST-LITOVSK
+
+# Warning: this will make Poland a German Puppet in any case
 GER_release_POL = {
-	if = {
-		limit = {
-			NOT = {
-				country_exists = POL
-			}
-		}
-		every_state = {
-			limit = {
-				OR = {
-					is_owned_by = RUS
-					is_owned_by = SOV
-					AND = {
-						is_owned_by = GER
-						NOT = {
-							is_core_of = GER
-						}
-					}
-				}
-				OR = {
-					state = 10
-					state = 87
-					state = 90
-					state = 92
-					state = 98
-					state = 766
-					AND = {
-						is_core_of = POL
-						NOT = {
-							is_core_of = UKR
-							is_core_of = WUK
-							is_core_of = BLR
-							state = 97
-							state = 1015
-							state = 1017
-						}
-					}
-				}
-			}
-			transfer_state_to = POL
-		}
-		puppet = POL
-		hidden_effect = {
-			POL = {
-				set_country_flag = released_by_germany
-				drop_cosmetic_tag = yes
-				inherit_technology = GER
-				#load_oob = "POL_divisions"
-				if = {
-					limit = {
-						GER = {
-							OR = {
-								has_government = neutrality
-								has_idea = GER_idea_wilhelm_ii
-							}
-						}
-					}
-					set_politics = {
-						ruling_party = neutrality
-						elections_allowed = no
-					}
-					set_popularities = {
-						democratic = 45
-						fascism = 0
-						communism = 35
-						neutrality = 20
-					}
-					promote_character = POL_regency_council
-					#promote_character = POL_gabriel_narutowicz
-				}		
-			}
-		}		
-	}
-	else_if = {
-		limit = {
-			POL = {
-				is_subject_of = RUS
-			}
-		}	
-		every_state = {
-			limit = {
-				OR = {
-					is_owned_by = RUS
-					is_owned_by = SOV
-				}
-				OR = {
-					state = 10
-					state = 87
-					state = 90
-					state = 92
-					state = 98
-					state = 766
-					AND = {
-						is_core_of = POL
-						NOT = {
-							is_core_of = UKR
-							is_core_of = WUK
-							is_core_of = BLR
-							state = 97
-							state = 1015
-							state = 1017
-						}
-					}
-				}
-			}
-			transfer_state_to = POL
-		}
-		every_state = {
-			limit = {
-				is_owned_by = POL
-				OR = {
-					is_core_of = GER
-					is_claimed_by = GER
-				}
-			}
-			transfer_state_to = GER
-		}
-		puppet = POL
-		hidden_effect = {
-			POL = {
-				drop_cosmetic_tag = yes
-				if = {
-					limit = {
-						GER = {
-							OR = {
-								has_government = neutrality
-								has_idea = GER_idea_wilhelm_ii
-							}
-						}
-					}	
-					set_politics = {
-						ruling_party = neutrality
-						elections_allowed = no
-					}
-					set_popularities = {
-						democratic = 45
-						fascism = 0
-						communism = 35
-						neutrality = 20
-					}
-				}		
-				if = {
-					limit = {
-						has_country_leader = {
-							character = POL_roman_dmowski
-							ruling_only = yes
-						}
-					}
-					promote_character = POL_regency_council
-					promote_character = POL_gabriel_narutowicz
-				}
-			}		
-		}	
-	}
-	else = {
-		every_state = {
-			limit = {
-				NOT = {
-					is_core_of = GER
-					is_claimed_by = GER
-				}
-				OR = {
-					is_owned_by = RUS
-					is_owned_by = SOV
-				}			
-				OR = {
-					state = 10
-					state = 87
-					state = 90
-					state = 92
-					state = 98
-					state = 766
-					AND = {
-						is_core_of = POL
-						NOT = {
-							is_core_of = UKR
-							is_core_of = WUK
-							is_core_of = BLR
-							state = 97
-							state = 1015
-							state = 1017
-						}
-					}
-				}
-			}
-			transfer_state_to = POL
-		}
-	}
+	custom_effect_tooltip = GER_establish_poland_tt
 	hidden_effect = {
-		if = {
-			limit = {
-				GER = { has_idea = RUS_idea_armistice_cp }
-			}
-			POL = { add_ideas = RUS_idea_armistice_cp }
-		}
-		set_global_flag = poland_released
+		# Step 1: Transfer eligible RUS/SOV states to POL
+		# Excludes states where Germany has a core or claim.
 		every_state = {
 			limit = {
-				is_core_of = POL
+				OWNER = {
+					OR = {
+						is_russian_tag = yes
+						AND = {
+							original_tag = UKR
+							OR = {
+								is_subject_of = PREV.PREV
+								is_subject_of = RUS
+							}
+						}
+					}			
+				}
+				is_polish_criteria_state = yes
+				NOT = {
+					is_core_of = PREV
+					is_claimed_by = PREV
+				}
 			}
-			remove_russian_cores = yes
+			if = {
+				limit = { 
+					NOT = { 
+						is_owned_by = POL 
+					} 
+				} 
+				transfer_state_to = POL # This will create Poland if it doesn't exist already
+			}
 		}
-		country_event = ww1_poland.12
-	}	
+
+		# Step 2: Transfer Polish criteria states with GER cores/claims to GER
+		every_state = {
+			limit = {
+				OWNER = {
+					is_russian_tag = yes
+				}
+				is_polish_criteria_state = yes
+				OR = {
+					is_core_of = PREV
+					is_claimed_by = PREV
+				}
+			}
+			transfer_state_to = PREV 
+		}	
+
+		# Step 3: Puppet Poland
+		if = {
+			limit = { 
+				country_exists = POL 
+			}	
+
+			puppet = POL
+
+			hidden_effect = {
+				POL = {
+					set_country_flag = released_by_germany
+					drop_cosmetic_tag = yes
+					inherit_technology = ROOT
+					# load_oob = "POL_divisions"	
+
+					# If either Kaiser or OHL in charge, setup Polands Politics
+					if = {
+						limit = { 
+							ROOT = { 
+								is_GER_a_monarchy = yes
+							} 
+						}
+						set_politics = { 
+							ruling_party = neutrality
+							elections_allowed = no
+						}
+						set_popularities = { 
+							democratic = 45
+							fascism = 0
+							communism = 35
+							neutrality = 20
+						}
+						promote_character = POL_regency_council
+						# Original effect promoted POL_gabriel_narutowicz if Poland was a Russian puppet before, but I don't really understand why
+						# (Would also unnecessarily complicate logic)
+					}
+				}
+			}
+
+			# Transfer armistice idea if GER has it
+			if = {
+				limit = {
+					ROOT = { 
+						has_idea = RUS_idea_armistice_cp 
+					} 
+				}
+				POL = { 
+					add_ideas = RUS_idea_armistice_cp 
+				}
+			}
+			set_global_flag = poland_released
+
+			# Remove Russian cores from final POL cores
+			every_state = {
+				limit = {
+					is_polish_criteria_state = yes
+					OR = {
+						is_owned_by = ROOT
+						is_owned_by = POL
+					}
+				}
+				remove_russian_cores = yes	
+			}
+
+			# Poland Established Follow Up event
+			country_event = ww1_poland.12
+		}
+	}
 }
+
 GER_release_LIT = {
 	if = {
 		limit = {
@@ -431,10 +348,7 @@ GER_release_LIT = {
 				if = {
 					limit = {
 						GER = {
-							OR = {
-								has_government = neutrality
-								has_idea = GER_idea_wilhelm_ii
-							}
+							is_GER_a_monarchy = yes
 						}
 					}	
 					if = {
@@ -541,10 +455,7 @@ GER_release_LIT = {
 				if = {
 					limit = {
 						GER = {
-							OR = {
-								has_government = neutrality
-								has_idea = GER_idea_wilhelm_ii
-							}
+							is_GER_a_monarchy = yes
 						}
 					}	
 					if = {
@@ -709,10 +620,7 @@ GER_release_UBD = {
 			if = {
 				limit = {
 					GER = {
-						OR = {
-							has_government = neutrality
-							has_idea = GER_idea_wilhelm_ii
-						}
+						is_GER_a_monarchy = yes
 					}
 				}	
 				set_politics = {
@@ -772,10 +680,7 @@ GER_release_COU = {
 			if = {
 				limit = {
 					GER = {
-						OR = {
-							has_government = neutrality
-							has_idea = GER_idea_wilhelm_ii
-						}
+						is_GER_a_monarchy = yes
 					}
 				}	
 				set_politics = {
@@ -1910,386 +1815,6 @@ new_term_elections = {
 		}
 		CURRENT_DATE = "[?global.date.GetDateStringNoHour]"
 	}
-}
-
-british_royals_refuge = {
-	if = {
-		limit = {
-			has_global_flag = ENG_windsor
-		}
-		set_party_name = {
-			ideology = neutrality
-			long_name = ENG_windsor_long
-			name = ENG_windsor
-		}
-		else_if = {
-			limit = { has_global_flag = ENG_tudor }
-			set_party_name = {
-				ideology = neutrality
-				long_name = ENG_tudor_long
-				name = ENG_tudor
-			}
-			else_if = {
-				limit = { has_global_flag = ENG_plantagenet }
-				set_party_name = {
-					ideology = neutrality
-					long_name = ENG_plantagenet_long
-					name = ENG_plantagenet
-				}
-			}
-			else = {
-				set_party_name = {
-					ideology = neutrality
-					long_name = ENG_neutrality_party_long
-					name = ENG_neutrality_party
-				}
-			}
-		}
-	}
-	if = {
-		limit = {
-			has_global_flag = king_edward_viii	
-		}
-		ENG = {
-			ENG_edward_viii = {
-				set_nationality = ROOT
-				if = {
-					limit = {
-						has_ideology = semi_constitutional_monarchy
-					}
-					add_country_leader_trait = revolution_trauma
-				}
-				else = {
-					add_country_leader_role = {
-						country_leader = {
-							ideology = semi_constitutional_monarchy
-							traits = { revolution_trauma }
-						}
-					}
-				}
-				promote_character = semi_constitutional_monarchy
-			}
-		}	
-	}
-	else_if = {
-		limit = {
-			has_global_flag = king_charles_iii
-		}
-		GER = {
-			GER_carl_eduard_von_sachsen_coburg_und_gotha = {
-				set_nationality = ROOT
-				add_country_leader_role = {
-					country_leader = {
-						ideology = semi_constitutional_monarchy
-						traits = { autocratic_imperialist german_agent }
-					}
-				}
-				promote_character = semi_constitutional_monarchy
-			}	
-		}
-	}
-	else = {
-		ENG = {
-			ENG_george_v = {
-				set_nationality = ROOT
-				add_country_leader_role = {
-					promote_leader = yes
-					country_leader = {
-						ideology = semi_constitutional_monarchy
-					}
-				}
-				promote_character = semi_constitutional_monarchy
-			}
-		}	
-		add_ideas = george_v
-	}
-	if = {
-		limit = {
-			is_subject = yes
-		}
-		OVERLORD = { end_puppet = ROOT }
-	}
-	if = {
-		limit = {
-			JAM = {
-				exists = yes
-				has_cosmetic_tag = JAM_federation
-				NOT = {
-					is_subject_of = ROOT
-				}
-			}
-		}
-		set_autonomy = {
-			target = JAM
-			autonomous_state = autonomy_colony
-			freedom_level = 0.5
-		}
-		hidden_effect = {
-			JAM = {
-				set_politics = {
-					ruling_party = neutrality
-					elections_allowed = no
-				}
-				set_popularities = {
-					democratic = 39
-					fascism = 2
-					communism = 1
-					neutrality = 58
-				}
-			}
-		}			
-	}
-	# if = {
-	# 	limit = {
-	# 		AST = {
-	# 			is_subject = no
-	# 			has_government = democratic
-	# 		}
-	# 	}
-	# 	if = {
-	# 		limit = {
-	# 			has_dlc = "Together for Victory"
-	# 		}
-	# 		set_autonomy = {
-	# 			target = AST
-	# 			autonomous_state = autonomy_dominion
-	# 			freedom_level = 0.5
-	# 		}
-	# 		else = {
-	# 			puppet = AST
-	# 		}	
-	# 	}
-	# 	hidden_effect = {
-	# 		AST = {
-	# 			set_politics = {
-	# 				ruling_party = democratic
-	# 				elections_allowed = yes
-	# 			}
-	# 			set_popularities = {
-	# 				fascism = 0
-	# 				communism = 0
-	# 				democratic = 83
-	# 				neutrality = 17
-	# 			}
-	# 		}
-	# 	}
-	# }
-	# if = {
-	# 	limit = {
-	# 		NZL = {
-	# 			is_subject = no
-	# 			has_government = democratic
-	# 		}
-	# 	}
-	# 	if = {
-	# 		limit = {
-	# 			has_dlc = "Together for Victory"
-	# 		}
-	# 		set_autonomy = {
-	# 			target = NZL
-	# 			autonomous_state = autonomy_dominion
-	# 			freedom_level = 0.5
-	# 		}
-	# 		else = {
-	# 			puppet = NZL
-	# 		}	
-	# 	}
-	# 	hidden_effect = {
-	# 		NZL = {
-	# 			set_politics = {
-	# 				ruling_party = democratic
-	# 				elections_allowed = yes
-	# 			}
-	# 			set_popularities = {
-	# 				democratic = 90
-	# 				fascism = 0
-	# 				communism = 1
-	# 				neutrality = 9
-	# 			}
-	# 		}
-	# 	}			
-	# }
-	# if = {
-	# 	limit = {
-	# 		SAF = {
-	# 			is_subject = no
-	# 			has_government = democratic
-	# 			has_war = no
-	# 		}
-	# 	}
-	# 	if = {
-	# 		limit = {
-	# 			has_dlc = "Together for Victory"
-	# 		}
-	# 		set_autonomy = {
-	# 			target = SAF
-	# 			autonomous_state = autonomy_colony
-	# 			freedom_level = 0.5
-	# 		}
-	# 		else = {
-	# 			puppet = SAF
-	# 		}	
-	# 	}
-	# 	hidden_effect = {
-	# 		SAF = {
-	# 			set_politics = {
-	# 				ruling_party = democratic
-	# 				elections_allowed = yes
-	# 			}
-	# 			set_popularities = {
-	# 				democratic = 62
-	# 				fascism = 10
-	# 				communism = 2
-	# 				neutrality = 26
-	# 			}
-	# 		}
-	# 	}			
-	# }
-	if = {
-		limit = {
-			HKG = {
-				is_subject = no
-				has_government = neutrality
-			}
-		}
-		set_autonomy = {
-			target = HKG
-			autonomous_state = autonomy_colony
-			freedom_level = 0.1
-		}
-		hidden_effect = {
-			HKG = {
-				set_politics = {
-					ruling_party = neutrality
-					elections_allowed = no
-				}
-				set_popularities = {
-					neutrality = 100
-				}
-			}
-		}			
-	}
-	set_popularities = {
-		neutrality = 41
-		democratic = 23
-		fascism = 26
-		communism = 10
-	}
-	set_politics = {
-		ruling_party = neutrality
-		elections_allowed = no
-	}
-	add_ideas = ENG_Staff
-	add_ideas = ENG_imperial_refuge
-	set_cosmetic_tag = CAN_britain
-	add_stability = -0.07
-	hidden_effect = {
-		random_owned_controlled_state = {
-			limit = { is_capital = yes }
-			add_building_construction = {
-				type = air_base
-				level = 1
-				instant_build = yes
-			}
-		}
-		random_owned_controlled_state = {
-			limit = {
-				impassable = no
-				is_core_of = PREV
-			}
-			add_extra_state_shared_building_slots = 1
-			add_building_construction = {
-				type = industrial_complex
-				level = 1
-				instant_build = yes
-			}
-		}
-		random_owned_controlled_state = {
-			limit = {
-				impassable = no
-				is_core_of = PREV
-			}
-			add_extra_state_shared_building_slots = 1
-			add_building_construction = {
-				type = industrial_complex
-				level = 1
-				instant_build = yes
-			}
-		}
-		random_owned_controlled_state = {
-			limit = {
-				impassable = no
-				is_core_of = PREV
-			}
-			add_extra_state_shared_building_slots = 1
-			add_building_construction = {
-				type = industrial_complex
-				level = 1
-				instant_build = yes
-			}
-		}
-		UOB = {
-			every_unit_leader = {
-				limit = {
-					has_trait = trait_royalist
-				}
-				set_nationality = ROOT
-			}
-			transfer_units_fraction = {
-				target = ROOT
-				size = 0
-				navy_ratio = 0.5
-			}
-			random_owned_state = {
-				limit = {
-					industrial_complex > 1
-				}
-				remove_building = {
-					type = industrial_complex
-					level = -1
-				}
-			}
-			random_owned_state = {
-				limit = {
-					industrial_complex > 1
-				}
-				remove_building = {
-					type = industrial_complex
-					level = -1
-				}
-			}
-			random_owned_state = {
-				limit = {
-					industrial_complex > 1
-				}
-				remove_building = {
-					type = industrial_complex
-					level = -1
-				}
-			}
-		}
-		BRE = {
-			every_unit_leader = {
-				set_nationality = ROOT
-			}
-			transfer_units_fraction = {
-				target = ROOT
-				size = 1
-				stockpile_ratio = 0.75
-				army_ratio = 0.7
-				navy_ratio = 0.9
-				air_ratio = 0.9
-			}
-		}
-	}
-	set_country_flag = has_british_monarchy
-	every_state = {
-		limit = {
-			is_core_of = ENG
-		}
-		add_claim_by = ROOT
-	}
-	change_tag_from = BRE
 }
 
 remove_russian_claims = {
@@ -3491,15 +3016,19 @@ delete_obsolete_russian_templates = {
 		disband = yes
 	}
 	delete_unit_template_and_units = {
-		division_template = "Sibirskaya Strelkovaya Diviziya"
+		division_template = "Gvardeyskaya Pekhotnaya Diviziya"
 		disband = yes
 	}
 	delete_unit_template_and_units = {
-		division_template = "Pekhotnaya Brigada"
+		division_template = "Grenaderskaya Diviziya"
 		disband = yes
 	}
 	delete_unit_template_and_units = {
-		division_template = "Gvardeyskaya Kavaleriyskaya Diviziya"
+		division_template = "Strelkovaya Diviziya"
+		disband = yes
+	}
+	delete_unit_template_and_units = {
+		division_template = "Strelkovaya Brigada"
 		disband = yes
 	}
 	delete_unit_template_and_units = {
@@ -3507,7 +3036,15 @@ delete_obsolete_russian_templates = {
 		disband = yes
 	}
 	delete_unit_template_and_units = {
+		division_template = "Gvardeyskaya Kavaleriyskaya Diviziya"
+		disband = yes
+	}
+	delete_unit_template_and_units = {
 		division_template = "Kavaleriyskaya Brigada"
+		disband = yes
+	}
+	delete_unit_template_and_units = {
+		division_template = "Morskoy Batal'on"
 		disband = yes
 	}
 }
@@ -3576,14 +3113,14 @@ GEO_withdraw_from_persia = {
 		# }
 		every_owned_state = {
 			limit = {
-				is_core_of = PER
-				NOT = { region = 155 }
+				region = 116
 			}
 			if = {
 				limit = {
 					OR = {
 						state = 419
 						state = 877
+						state = 1212
 					}
 				}
 				if = {
@@ -3946,5 +3483,115 @@ create_AEF = {
 			}
 		}
 		set_state_controller_to = AEF
+	}
+}
+#Makes sure locked advisors like prime ministers would not be fired
+fire_random_advisor_if_no_slots = {	
+	if = {
+		limit = { 
+			amount_taken_ideas = {
+				amount > 2
+				slots = {
+					political_advisor
+				}
+			}
+		}
+		custom_effect_tooltip = fire_random_advisor_tt
+		hidden_effect = {
+			random_character = {
+				limit = {
+					is_political_advisor = yes
+					advisor_can_be_fired = {
+						slot = political_advisor
+					}
+				}
+				set_nationality = XXA #couldn't find another way
+				set_nationality = PREV
+			}
+		}
+	}
+}
+
+join_great_war_against_GER = {
+	if = {
+		limit = {
+			FRA = {
+				is_faction_leader = yes
+				has_war_with = GER
+				NOT = { has_war_with = ROOT }
+			}
+		}
+		add_to_war = {
+			targeted_alliance = FRA
+			enemy = GER
+		}	
+	}
+	else_if = {
+		limit = {
+			ENG = {
+				is_faction_leader = yes
+				has_war_with = GER
+				NOT = { has_war_with = ROOT }
+			}	
+		}
+		add_to_war = {
+			targeted_alliance = ENG
+				enemy = GER
+		}	
+	}
+	else_if = {
+		limit = {
+			RUS = {
+				is_faction_leader = yes
+				has_war_with = GER
+				NOT = { has_war_with = ROOT }
+			}												
+		}
+		add_to_war = {
+			targeted_alliance = RUS
+			enemy = GER
+		}
+	}
+	else_if = {
+		limit = {
+			USA = {
+				has_war_with = GER
+				NOT = { has_war_with = ROOT }
+			}												
+		}
+		add_to_war = {
+			targeted_alliance = USA
+			enemy = GER
+		}
+	}
+	else_if = {
+		limit = {
+			any_other_country = {
+				is_actual_major = yes
+				has_war_with = GER
+				NOT = { has_war_with = ROOT }
+			}
+		}	
+		random_other_country = {
+			limit = {
+				is_actual_major = yes
+				has_war_with = GER
+				NOT = {
+					has_war_with = ROOT
+				}
+			}
+			ROOT = {
+				add_to_war = {
+					targeted_alliance = PREV
+					enemy = GER
+				}
+			}					
+		}
+	}
+	else = {
+		declare_war_on = {
+			target = GER
+			type = topple_government
+		}
 	}
 }
