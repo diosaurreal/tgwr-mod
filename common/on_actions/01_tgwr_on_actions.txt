@@ -17,7 +17,7 @@
 					}
 				}
 				set_global_flag = great_war_ends
-				set_global_flag = versallies_treaty
+				set_global_flag = versailles_treaty
 				set_global_flag = GER_capitulation
 				FROM = {
 					GER_change_wilhelm_ii_portrait = yes
@@ -6065,27 +6065,6 @@
 			}
 			if = {
 				limit = {
-					original_tag = ENG
-					has_country_flag = ENG_socialist_britain_flag
-					FROM = {
-						original_tag = ENG
-						has_country_flag = ENG_nationalist_britain_flag
-					}
-				}
-				every_character = {
-					set_nationality = FROM
-				}
-				transfer_navy = {
-					target = FROM
-				}
-				FROM = {
-					annex_country = {
-						target = ROOT
-					}
-				}
-			}
-			if = {
-				limit = {
 					tag = RUS
 					is_in_faction = yes
 					is_faction_leader = no
@@ -7366,6 +7345,157 @@
 					news_event = {
 						id = ww1_china.254
 						hours = 3
+					}
+				}
+			}
+			if = {
+				limit = {
+					has_global_flag = northern_expedition
+					is_china_or_warlord_no_tt = yes
+					any_enemy_country = {
+						has_country_flag = CHI_kuomintang_flag
+					}
+					NOT = {
+						has_global_flag = northern_expedition_end
+					}
+				}
+				transfer_navy = {
+					target = KMT
+				}
+				transfer_units_fraction = {
+					target = KMT
+					size = 0.5
+					keep_unit_leaders_trigger = {
+						always = yes
+					}
+				}
+				every_character = {
+					limit = {
+						has_character_flag = kmt_allegiance
+					}
+					set_nationality = KMT
+				}
+				every_core_state = {
+					remove_core_of = ROOT
+					add_core_of = KMT
+				}
+				every_state = {
+					limit = {
+						is_claimed_by = ROOT
+					}
+					remove_claim_by = ROOT
+					add_claim_by = KMT
+				}
+				every_owned_state = {
+					if = {
+						limit = {
+							controller = {
+								OR = {
+									tag = KMT
+									is_subject_of = KMT
+									is_in_faction_with = KMT
+								}
+							}
+						}
+						transfer_state_to = KMT
+					}
+					else = {
+						set_state_owner_to = KMT
+					}
+				}
+				KMT = {
+					annex_country = {
+						target = ROOT
+						transfer_troops = no
+					}
+				}
+			}
+			if = {
+				limit = {
+					has_country_flag = CHI_left_kuomintang_flag
+					any_enemy_country = {
+						has_country_flag = CHI_kuomintang_flag
+					}
+				}
+				transfer_navy = {
+					target = ROOT
+				}
+				KMT = {
+					annex_country = {
+						target = ROOT
+					}
+					if = {
+						limit = {
+							is_in_faction_with = GMJ
+						}
+						every_owned_state = {
+							limit = {
+								OR = {
+									state = 607
+									state = 690
+									state = 891
+								}
+							}
+							transfer_state_to = GMJ
+						}
+					}
+				}
+			}
+			# Entente leader transfer
+			if = {
+				limit = {
+					has_country_flag = entente_leader
+					is_great_war_ongoing = yes
+				}
+				clr_country_flag = entente_leader
+				if = {
+					limit = {
+						any_allied_country = {
+							has_war_with = GER
+							is_major = yes
+						}
+					}
+					random_other_country = {
+						limit = {
+							is_in_faction_with = ROOT
+							has_war_with = GER
+							is_major = yes
+						}
+						set_country_flag = entente_leader
+						set_faction_leader = yes
+					}
+				}
+				#why the hell italy keep stripped of from major
+				else_if = {
+					limit = {
+						any_allied_country = {
+							has_war_with = GER
+							capital_scope = {
+								is_on_continent = europe
+							}
+						}
+					}
+					random_other_country = {
+						limit = {
+							is_in_faction_with = ROOT
+							has_war_with = GER
+							capital_scope = {
+								is_on_continent = europe
+							}
+						}
+						set_country_flag = entente_leader
+						set_faction_leader = yes
+					}
+				}
+				#unlikly but failsafe
+				else = {
+					random_other_country = {
+						limit = {
+							is_in_faction_with = ROOT
+							has_war_with = GER
+						}
+						set_country_flag = entente_leader
+						set_faction_leader = yes
 					}
 				}
 			}
@@ -10137,6 +10267,16 @@
 				}
 				drop_cosmetic_tag = yes
 			}
+			if = {
+				limit = {
+					has_country_flag = entente_leader
+					is_great_war_ongoing = yes
+				}
+				clr_country_flag = entente_leader
+				FROM = {
+					set_country_flag = entente_leader
+				}
+			}
 			log = "[GetDateText]: [ROOT.GetName] has left [FROM.GetFactionName] which leader is [FROM.GetName]"
 		}
 	}
@@ -11151,6 +11291,23 @@
 	on_generate_wargoal = {
 		effect = {
 			log = "[GetDateText]: [ROOT.GetName] has generated a wargoal against [FROM.GetName]"
+		}
+	}
+	#ROOT is the new faction leader FROM is the old faction leader
+	on_assume_faction_leadership = {
+		effect = {
+			# Entente leader transfer
+			if = {
+				limit = {
+					FROM = { has_country_flag = entente_leader }
+					is_great_war_ongoing = yes
+				}
+				FROM = {
+					clr_country_flag = entente_leader
+				}
+				set_country_flag = entente_leader
+			}
+			log = "[GetDateText]: [ROOT.GetName] has assumed the leadership of [ROOT.GetFactionName] from [FROM.GetName]"
 		}
 	}
 }
