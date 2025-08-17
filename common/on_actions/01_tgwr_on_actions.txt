@@ -4641,6 +4641,7 @@
 	}
 	on_startup = {
 		effect = {
+		#	ITA = { add_dynamic_modifier = { modifier = ITA_active_labor_unions_dm } }
 			every_possible_country = {
 				#Unit Limits Setup
 				update_mobilisation_bonus = yes
@@ -7449,6 +7450,21 @@
 								transfer_state_to = GMJ
 							}
 						}
+						if = {
+							limit = {
+								is_in_faction_with = GXC
+							}
+							every_owned_state = {
+								limit = {
+									OR = {
+										state = 602
+										state = 620
+										state = 893
+									}
+								}
+								transfer_state_to = GXC
+							}
+						}
 					}
 				}
 				if = {
@@ -7713,6 +7729,105 @@
 					set_country_flag = CHI_zhigongdang_flag
 					clr_country_flag = CHI_kuomintang_flag
 				}
+			}
+			if = {
+				limit = {
+					original_tag = GXC
+					has_global_flag = first_chiang_gui_war
+					has_country_flag = first_chiang_gui_war
+					any_enemy_country = {
+						is_china_or_warlord_no_tt = yes
+						has_country_flag = CHI_kuomintang_flag
+					}
+				}
+				every_owned_state = {
+					limit = {
+						NOT = { state = 599 }
+					}
+					remove_claim_by = PREV
+					remove_core_of = PREV
+					transfer_state_to = KMT
+				}
+				every_character = {
+					limit = {
+						OR = {
+							is_character = GXC_li_zongren
+							is_character = GXC_bai_chongxi
+						}
+					}
+					set_character_flag = exiled
+				}
+				white_peace = KMT
+				if = {
+					limit = {
+						has_subject = GZC
+					}
+					GZC = {
+						get_current_government_type = yes
+					}
+					KMT = {
+						set_autonomy = {
+							target = GZC
+							autonomy_state = autonomy_tgwr_regional_government
+						}
+					}
+					GZC = {
+						restore_previous_government_type = yes
+						set_cosmetic_tag = GZC_KMT
+					}
+				}
+				clr_country_flag = first_chiang_gui_war
+			}
+			if = {
+				limit = {
+					original_tag = GXC
+					has_global_flag = second_chiang_gui_war
+					has_country_flag = second_chiang_gui_war
+					any_enemy_country = {
+						is_china_or_warlord_no_tt = yes
+						has_country_flag = CHI_kuomintang_flag
+					}
+				}
+				every_owned_state = {
+					limit = {
+						NOT = { state = 599 }
+					}
+					remove_claim_by = PREV
+					remove_core_of = PREV
+					transfer_state_to = KMT
+				}
+				CHI_zhang_fakui = {
+					set_character_flag = exiled
+					remove_country_leader_role = {
+						ideology = warlordism
+					}
+					remove_country_leader_role = {
+						ideology = stratocracy
+					}
+					remove_country_leader_role = {
+						ideology = conservatism
+					}
+				}
+				white_peace = KMT
+				if = {
+					limit = {
+						has_subject = GZC
+					}
+					GZC = {
+						get_current_government_type = yes
+					}
+					KMT = {
+						set_autonomy = {
+							target = GZC
+							autonomy_state = autonomy_tgwr_regional_government
+						}
+					}
+					GZC = {
+						restore_previous_government_type = yes
+						set_cosmetic_tag = GZC_KMT
+					}
+				}
+				clr_country_flag = second_chiang_gui_war
 			}
 			if = {
 				limit = {
@@ -8690,6 +8805,16 @@
 				else_if = {
 					limit = {
 						original_tag = ITA
+						has_idea = ITA_active_labor_unions
+					}
+					swap_ideas = {
+						remove_idea = ITA_active_labor_unions
+						add_idea = ITA_catholic_opposition
+					}
+				}
+				if = {
+					limit = {
+						original_tag = ITA
 						NOT = {
 							has_cosmetic_tag = ITA_socialism
 							has_cosmetic_tag = SRI
@@ -9391,6 +9516,16 @@
 				# 		has_government = communism
 				# 	}
 				# }
+				if = {
+					limit = {
+						original_tag = ITA
+						has_idea = ITA_catholic_opposition
+					}
+					swap_ideas = {
+						remove_idea = ITA_catholic_opposition
+						add_idea = ITA_active_labor_unions
+					}
+				}
 				if = {
 					limit = {
 						OR = {
@@ -11122,15 +11257,14 @@
 		effect = {
 			if = {
 				limit = {
-					FROM.FROM = { state = 2 }					
+					FROM.FROM = { state = 2 }
 				}
 				if = {
 					limit = {
-						ROOT = {			
+						ROOT = {
 							original_tag = ITA
 							NOT = {
 								has_idea = ITA_roman_question
-								has_country_flag = pope_killed 
 							}
 						}
 					}	
@@ -11138,7 +11272,7 @@
 				}
 				if = {
 					limit = {
-						FROM = {				
+						FROM = {
 							original_tag = ITA
 							has_idea = ITA_roman_question
 						}
@@ -11223,7 +11357,7 @@
 				if = {
 					limit = {
 						ROOT = {
-							original_tag = CHI
+							is_china_or_warlord_no_tt = yes
 							598 = {
 								is_owned_by = PREV
 							}
@@ -11413,6 +11547,31 @@
 							modifier = xinan_modifier
 						}
 					}
+				}
+			}
+			# Nanjing Incident of 1927
+			if = {
+				limit = {
+					ROOT = {
+						is_china_or_warlord_no_tt = yes
+						has_country_flag = CHI_kuomintang_flag
+						has_global_flag = northern_expedition
+						OR = {
+							has_idea = CHI_idea_united_front
+							has_government = communism
+						}
+						NOT = {
+							has_global_flag = northern_expedition_end
+							has_global_flag = shanghai_massacre
+							has_global_flag = nanjing_incident
+						}
+					}
+					FROM.FROM = {
+						state = 598
+					}
+				}
+				ROOT = {
+					country_event = ww1_china.303
 				}
 			}
 		}
