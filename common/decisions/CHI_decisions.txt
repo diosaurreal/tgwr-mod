@@ -738,7 +738,14 @@ CHI_warlord_era = {
 					surrender_progress > 0.05
 					NOT = { controls_state = 609 }
 					NOT = { controls_state = 611 }
-					has_war_with = JLN
+				}
+			}
+			modifier = {
+				add = 1000
+				has_war_with = JLN
+				war_length_with = {
+					tag = FROM
+					months > 1
 				}
 			}
 		}
@@ -1318,6 +1325,71 @@ CHI_warlord_era = {
 			set_global_flag = zhili_fengtian_fengyushang_war_end
 		}
 	}
+	CHI_GMJ_sue_for_peace_KMT = {
+		name = sue_for_peace_FROM
+		icon = GFX_decision_eng_trade_unions_support
+		allowed = {
+			original_tag = GMJ
+		}
+		available = {
+			has_war_with = FROM
+			surrender_progress > 0.1
+			is_in_faction = no
+		}
+		visible = {
+			has_global_flag = first_chiang_feng_war
+			has_war_with = FROM
+		}
+		target_trigger = {
+			FROM = {
+				is_china_or_warlord_no_tt = yes
+				has_country_flag = CHI_kuomintang_flag
+			}
+		}
+		target_root_trigger = {
+			has_country_flag = first_chiang_feng_war
+		}
+		fire_only_once = yes
+		ai_will_do = {
+			base = 0
+			modifier = {
+				add = 1000
+				surrender_progress > 0.5
+			}
+			modifier = {
+				add = 1000
+				NOT = {
+					890 = { is_fully_controlled_by = ROOT }
+				}
+			}
+		}
+		complete_effect = {
+			every_owned_state = {
+				limit = {
+					NOT = {
+						state = 622
+						state = 890
+					}
+				}
+				remove_claim_by = ROOT
+				remove_core_of = ROOT
+				transfer_state_to = FROM
+			}
+			GMJ_shi_yousan = {
+				set_nationality = FROM
+			}
+			white_peace = FROM
+			clr_country_flag = first_chiang_feng_war
+			hidden_effect = {
+				FROM = {
+					country_event = {
+						id = ww1_china.63
+						days = 100
+					}
+				}
+			}
+		}
+	}
 	CHI_FNG_sue_for_peace_ZHE = {
 		name = sue_for_peace_FROM
 		icon = GFX_decision_eng_trade_unions_support
@@ -1438,88 +1510,10 @@ CHI_warlord_era = {
 				}
 				white_peace = ROOT
 			}
-		}
-	}
-	CHI_JAP_assassinate_zhang_zuolin = {
-		icon = GFX_decision_generic_ignite_civil_war
-		allowed = {
-			original_tag = JAP
-		}
-		target_trigger = {
-			FROM = { tag = FNG }
-		}
-		available = {
-			FROM = {
-				has_war = no
-			}
-			NOT = { has_country_flag = great_war_loser }
-			OR = {
-				has_idea = JAP_uncontrollable_military
-				has_global_flag = northern_expedition_end
-				fascism > 15
-			}
-		}
-		visible = {
-			has_capitulated = no
-			is_subject = no
-			FROM = {
-				is_subject = no
-				has_country_leader = {
-					character = FNG_zhang_zuolin
-					ruling_only = yes
-				}
-			}
-			OR = {
-				is_neighbor_of = FROM
-				any_other_country = {
-					OR = {
-						is_subject_of = ROOT
-						is_in_faction_with = ROOT
-					}
-					is_neighbor_of = FROM
-				}
-			}
-			NOT = {
-				any_enemy_country = {
-					is_china_or_warlord = yes
-				}
-			}
-		}
-		cost = 150
-		days_remove = 30
-		fire_only_once = no
-		cancel_if_not_visible = yes
-		cancel_trigger = {
-			OR = {
-				FROM = { has_war = yes }
-				has_country_flag = great_war_loser
-			}
-		}
-		ai_will_do = {
-			factor = 1000
-			modifier = {
-				factor = 0
-				has_war = yes
-			}
-			modifier = {
-				factor = 0
-				fascism < 20
-				NOT = { has_global_flag = northern_expedition }
-			}
-			modifier = {
-				factor = 0
-				FROM = { owns_state = 608 }
-			}
-		}
-		remove_effect = {
-			effect_tooltip = {
-				FROM = {
-					retire_character = FNG_zhang_zuolin
-				}
-			}
 			hidden_effect = {
-				FROM = {
-					country_event = ww1_china.62
+				country_event = {
+					id = ww1_china.62
+					days = 10
 				}
 			}
 		}
@@ -1557,6 +1551,68 @@ CHI_warlord_era = {
 			add_popularity = {
 				ideology = democratic
 				popularity = 0.01
+			}
+		}
+		ai_will_do = {
+			factor = 100
+		}
+	}
+	CHI_remove_socialist_influence = {
+		icon = GFX_decision_generic_fortification
+		allowed = {
+			is_china_or_warlord_no_tt = yes
+		}
+		visible = {
+			controls_state = FROM
+			has_war = no
+			NOT = {
+				has_government = communism
+			}
+		}
+		days_remove = 70
+		cost = 100
+		fire_only_once = no
+		cancel_if_not_visible = yes
+		days_re_enable = 120
+		custom_cost_trigger = {
+			command_power > 9.9
+		}
+		custom_cost_text = decision_cost_CP_10
+		state_target = yes
+		target_array = controlled_states
+		target_trigger = {
+			FROM = {
+				OR = {
+					has_dynamic_modifier = {
+						modifier = chinese_soviet_heavy_modifier
+					}
+					has_dynamic_modifier = {
+						modifier = chinese_soviet_normal_modifier
+					}
+					has_dynamic_modifier = {
+						modifier = chinese_soviet_low_modifier
+					}
+				}
+			}
+		}
+		on_map_mode = map_only
+		complete_effect = {
+			add_command_power = -10
+		}
+		remove_effect = {
+			FROM = {
+				chinese_soviet_modifier_downgrade = yes
+			}
+			hidden_effect = {
+				if = {
+					limit = {
+						FROM = { state = 1046 }
+					}
+					country_event = {
+						id = ww1_china.58
+						days = 10
+					}
+				}
 			}
 		}
 		ai_will_do = {
@@ -4912,6 +4968,18 @@ CHI_chinese_warlords = {
 					599 = { is_fully_controlled_by = ROOT }
 				}
 			}
+			modifier = {
+				add = 1000
+				NOT = {
+					controls_state = 593
+					controls_state = 592
+					controls_state = 892
+				}
+				war_length_with = {
+					tag = FROM
+					months > 10
+				}
+			}
 		}
 	}
 	CHI_ZGP_sue_for_peace_KMT = {
@@ -6376,6 +6444,92 @@ operations = {
 			}
 		}
 	}
+	CHI_TIB_border_war = {
+		icon = GFX_decision_generic_reorganize_irregulars
+		allowed = {
+			OR = {
+				is_china_or_warlord_no_tt = yes
+				original_tag = TIB
+			}
+		}
+		visible = {
+			OR = {
+				owns_state = 1065
+				owns_state = 1220
+			}
+			is_neighbor_of = FROM
+			NOT = {
+				is_subject_of = FROM
+				has_subject = FROM
+				is_in_faction_with = FROM
+			}
+		}
+		available = {
+			has_capitulated = no
+			NOT = { has_border_war_with = FROM }
+		}
+		target_trigger = {
+			FROM = {
+				owns_state = 1220
+			}
+		}
+		target_root_trigger = {
+			NOT = { owns_state = 1220 } 
+		}
+		fire_only_once = no
+		days_re_enable = 200
+		custom_cost_trigger = {
+			command_power > 9.9
+		}
+		custom_cost_text = decision_cost_CP_10
+		complete_effect = {
+			add_command_power = -10
+			if = {
+				limit = {
+					owns_state = 322
+				}
+				start_border_war = {
+					change_state_after_war = no
+					attacker = {
+						state = 322
+						num_provinces = 2
+						on_win = ww1_china.301
+						on_lose = ww1_china.302
+					}
+					defender = {
+						state = 1220
+						num_provinces = 3
+						on_win = ww1_china.301
+						on_lose = ww1_china.302
+					}
+				}
+			}
+			else = {
+				start_border_war = {
+					change_state_after_war = no
+					attacker = {
+						state = 1065
+						num_provinces = 2
+						on_win = ww1_china.301
+						on_lose = ww1_china.302
+					}
+					defender = {
+						state = 1220
+						num_provinces = 2
+						on_win = ww1_china.301
+						on_lose = ww1_china.302
+					}
+				}
+			}
+		}
+		ai_will_do = {
+			base = 1000
+			modifier = {
+				factor = 0
+				has_war = yes
+			}
+		}
+	}
 }
 
 CHI_occupation_actions = { 
@@ -7265,6 +7419,7 @@ CHI_national_revolution = {
 		}
 		visible = {
 			has_global_flag = anti_chiang_war
+			NOT = { has_global_flag = anti_chiang_war_end }
 			has_war_with = FROM
 			is_subject = no
 		}
@@ -7292,7 +7447,6 @@ CHI_national_revolution = {
 			}
 		}
 		complete_effect = {
-			set_global_flag = anti_chiang_war_end
 			FROM = {
 				country_event = ww1_china.64
 			}
