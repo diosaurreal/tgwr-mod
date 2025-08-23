@@ -3527,54 +3527,16 @@ fire_random_advisor_if_no_slots = {
 join_great_war_against_GER = {
 	if = {
 		limit = {
-			FRA = {
+			ENT = {
 				is_faction_leader = yes
 				has_war_with = GER
 				NOT = { has_war_with = ROOT }
 			}
 		}
 		add_to_war = {
-			targeted_alliance = FRA
+			targeted_alliance = ENT
 			enemy = GER
 		}	
-	}
-	else_if = {
-		limit = {
-			ENG = {
-				is_faction_leader = yes
-				has_war_with = GER
-				NOT = { has_war_with = ROOT }
-			}	
-		}
-		add_to_war = {
-			targeted_alliance = ENG
-				enemy = GER
-		}	
-	}
-	else_if = {
-		limit = {
-			RUS = {
-				is_faction_leader = yes
-				has_war_with = GER
-				NOT = { has_war_with = ROOT }
-			}												
-		}
-		add_to_war = {
-			targeted_alliance = RUS
-			enemy = GER
-		}
-	}
-	else_if = {
-		limit = {
-			USA = {
-				has_war_with = GER
-				NOT = { has_war_with = ROOT }
-			}												
-		}
-		add_to_war = {
-			targeted_alliance = USA
-			enemy = GER
-		}
 	}
 	else_if = {
 		limit = {
@@ -3605,5 +3567,170 @@ join_great_war_against_GER = {
 			target = GER
 			type = topple_government
 		}
+	}
+}
+
+relinguish_entente_leadership = {
+	if = {
+		limit = {
+			tag = ENT
+		}
+		every_country = {
+			limit = {
+				has_country_flag = entente_leader
+			}
+			clr_country_flag = entente_leader
+		}
+		if = {
+			limit = {
+				ENG = {
+					is_in_faction_with = ROOT
+					has_war_with = GER
+					is_subject = no
+					has_capitulated = no
+					NOT = {
+						has_country_flag = has_capitulated_with_france_early
+					}
+				}
+			}
+			ENG = {
+				set_country_flag = entente_leader
+				set_faction_leader = yes
+			}
+		}
+		else_if = {
+			limit = {
+				RUS = {
+					is_in_faction_with = ROOT
+					has_war_with = GER
+					is_subject = no
+					has_capitulated = no
+					tag = SOV
+					NOT = {
+						has_country_flag = has_capitulated_with_france_early
+						has_global_flag = russ_kapitulation
+						tag = SOV
+					}
+				}
+			}
+			RUS = {
+				set_country_flag = entente_leader
+				set_faction_leader = yes
+			}
+		}
+		else_if = {
+			limit = {
+				any_allied_country = {
+					has_war_with = GER
+					is_major = yes
+					is_subject = no
+					has_capitulated = no
+					capital_scope = {
+						is_on_continent = europe
+					}
+				}
+			}
+			random_other_country = {
+				limit = {
+					has_war_with = GER
+					is_major = yes
+					is_subject = no
+					has_capitulated = no
+					capital_scope = {
+						is_on_continent = europe
+					}
+				}
+				set_country_flag = entente_leader
+				set_faction_leader = yes
+			}
+		}
+		else_if = {
+			limit = {
+				any_allied_country = {
+					has_war_with = GER
+					is_major = yes
+					is_subject = no
+					has_capitulated = no
+				}
+			}
+			random_other_country = {
+				limit = {
+					has_war_with = GER
+					is_major = yes
+					is_subject = no
+					has_capitulated = no
+				}
+				set_country_flag = entente_leader
+				set_faction_leader = yes
+			}
+		}
+		else_if = {
+			limit = {
+				any_allied_country = {
+					has_war_with = GER
+					is_subject = no
+					has_capitulated = no
+					capital_scope = {
+						is_on_continent = europe
+					}
+				}
+			}
+			random_other_country = {
+				limit = {
+					is_in_faction_with = ROOT
+					has_war_with = GER
+					is_subject = no
+					has_capitulated = no
+					capital_scope = {
+						is_on_continent = europe
+					}
+				}
+				set_country_flag = entente_leader
+				set_faction_leader = yes
+			}
+		}
+		else = {
+			random_other_country = {
+				limit = {
+					is_in_faction_with = ROOT
+					is_subject = no
+					has_capitulated = no
+					has_war_with = GER
+				}
+				set_country_flag = entente_leader
+				set_faction_leader = yes
+			}
+		}
+	}		
+}
+
+# Transfers a state (PREV) to the current country (THIS).
+# A full transfer only occurs if the state's controller is friendly to EITHER the
+# original owner (ROOT) OR the new owner (THIS).
+#
+# USAGE: State = { Country = { safe_transfer_state_to = yes } }
+# SCOPE (THIS): The country receiving the state.
+# SCOPE (PREV): The state to be transferred.
+# SCOPE (ROOT): The country from which the state is being taken.
+safe_transfer_state_to = {
+	if = {
+		limit = {
+			PREV = {
+				CONTROLLER = {
+					OR = {
+						tag = ROOT
+						is_subject_of = ROOT
+						is_in_faction_with = ROOT
+						tag = PREV.PREV
+						is_in_faction_with = PREV.PREV
+						is_subject_of = PREV.PREV
+					}
+				}
+			}
+		}
+		transfer_state = PREV
+	}
+	else = {
+		set_state_owner = PREV
 	}
 }
