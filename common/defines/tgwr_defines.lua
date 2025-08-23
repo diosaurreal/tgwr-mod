@@ -34,7 +34,12 @@ NDefines.NDiplomacy.FRONT_IS_DANGEROUS = 0									-- Vanilla is -100
 
 -- Buildings
 
-
+-- Halfing infra bonuses to account 5 extra infrastructure levels
+NDefines.NBuildings.INFRASTRUCTURE_RESOURCE_BONUS = 0.1             -- multiplicative resource bonus for each level of (non damaged) infrastructure
+NDefines.NMilitary.INFRASTRUCTURE_MOVEMENT_SPEED_IMPACT = -0.025	-- speed penalty per infrastucture below maximum.
+NDefines.NMilitary.INFRA_ORG_IMPACT = 0.25				            -- scale factor of infra on org regain.
+NDefines.NSupply.INFRA_TO_SUPPLY = 0.15							-- each level of infra gives this many supply
+NDefines.NSupply.SUPPLY_FROM_DAMAGED_INFRA = 0.075				-- damaged infrastructure counts as this in supply calcs
 
 -- Peace Conferences
 NDefines.NAI.PEACE_AI_EVALUATE_OTHER_ALWAYS = true							-- Vanilla is false
