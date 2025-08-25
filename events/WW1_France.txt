@@ -360,13 +360,6 @@ country_event = {
 		# 	}
 		# }
 		hidden_effect = {
-			every_state = {
-				ROOT = {
-					delete_unit = {
-						state = PREV
-					}
-				}
-			}
 			every_owned_state = {
 				if = {
 					limit = {
@@ -422,11 +415,9 @@ country_event = {
 			add_ideas = FRA_land_army_restrictions
 			add_ideas = FRA_naval_army_restrictions
 			remove_ideas = idea_army_restrictions
-			country_lock_all_division_template = yes
 			mark_focus_tree_layout_dirty = yes
 			set_country_flag = dont_trigger_political_event
 		}
-		custom_effect_tooltip = FRA_disband_army
 		custom_effect_tooltip = FRA_disband_factories
 		custom_effect_tooltip = FRA_military_restrictions_event
 	}
@@ -542,22 +533,6 @@ country_event = {
 	}
 }
 
-# Workers' Armoury Raid
-country_event = {
-	title = ww1_france.55.t
-	desc = ww1_france.55.d
-	id = ww1_france.55
-	picture = GFX_report_event_gathering_protest
-	is_triggered_only = yes
-	option = {
-		name = ww1_france.55.a
-		add_days_mission_timeout = {
-			mission = communist_uprising
-			days = -30
-		}
-	}
-}
-
 # Les Patriotes to protect the Old Regime
 country_event = {
 	title = ww1_france.56.t
@@ -635,22 +610,6 @@ country_event = {
 				division = "division_template = \"Patriotes\" start_experience_factor = 0.1 start_equipment_factor = 0.75"
 				owner = ROOT
 			}
-		}
-	}
-}
-
-# General Strike
-country_event = {
-	title = ww1_france.59.t
-	desc = ww1_france.59.d
-	id = ww1_france.59
-	picture = GFX_report_event_gathering_protest
-	is_triggered_only = yes
-	option = {
-		name = ww1_france.59.a
-		add_days_mission_timeout = {
-			mission = communist_uprising
-			days = -140
 		}
 	}
 }
@@ -5318,6 +5277,7 @@ country_event = {
 			188 = {
 				remove_dynamic_modifier = { modifier = international_city }
 				remove_core_of = GER
+				remove_contested_owner = GER
 			}
 			946 = {
 				remove_core_of = GER
@@ -5365,7 +5325,10 @@ country_event = {
 	option = {
 		name = ww1_france.224.b
 		hidden_effect = {
-			188 = { remove_dynamic_modifier = { modifier = international_city } }
+			188 = {
+				remove_dynamic_modifier = { modifier = international_city }
+				remove_contested_owner = LIT
+			}
 		}
 		every_other_country = {
 			limit = {
@@ -6696,6 +6659,7 @@ country_event = {
 						state = 713
 						state = 730
 						state = 735
+						state = 1210
 						state = 834
 					}
 				}
@@ -7424,63 +7388,102 @@ country_event = {
 	title = ww1_france.22.t
 	desc = ww1_france.22.d
 	fire_only_once = yes
+	picture = GFX_report_event_generic_peaceful_annexation
 	mean_time_to_happen = {
 		days = 20
 	}
 	trigger = {
-		has_global_flag = great_war_ends
-		tag = ITA
+		is_italian_nation = yes
 		has_war = no
 		is_subject = no
+		owns_state = 158
 		NOT = {
 			has_country_flag = great_war_loser
-			owns_state = 735
-			owns_state = 1
-			is_in_faction_with = FRA
 		}
-		FRA = {
-			OR = {
-				has_civil_war = yes
-				any_country = {
-					has_country_flag = FRA_nationalist_france_flag
-					has_war_with = FRA
+		any_state = {
+			owner = {
+				original_tag = FRA
+				OR = {
+					has_civil_war = yes
+					any_enemy_country = {
+						original_tag = FRA
+					}
 				}
+				NOT = {
+					is_in_faction_with = ROOT
+				}
+			}
+			OR = {
+				state = 1
+				state = 735
+				state = 834
+				state = 1210
 			}
 		}
 	}
 	option = {
 		name = ww1_france.22.a
 		ai_chance = {
-			factor = 85
+			base = 85
 		}
-		every_owned_state = {
+		every_state = {
 			limit = {
+				owner = {
+					original_tag = FRA
+					OR = {
+						has_civil_war = yes
+						any_enemy_country = {
+							original_tag = FRA
+						}
+					}
+					NOT = {
+						is_in_faction_with = ROOT
+					}
+				}
 				OR = {
+					state = 1
 					state = 735
 					state = 834
-					state = 1
-					is_core_of = TUN
+					state = 1210
 				}
 			}
-			transfer_state_to = ITA
+			hidden_effect = {
+				owner = {
+					country_event = {
+						id = ww1_france.23
+						hours = 3
+					}
+				}
+			}
+			transfer_state_to = ROOT
 		}
-		every_other_country = {
-			limit = {
-				has_country_flag = FRA_nationalist_france_flag
-			}
-			NFA = {
-				country_event = {
-					id = ww1_france.23
-					days = 1
+		hidden_effect = {
+			if = {
+				limit = {
+					MCO = {
+						is_neighbor_of = ROOT
+						NOT = {
+							has_war_with = ROOT
+							has_government = communism
+						}
+					}
 				}
+				give_market_access = MCO
 			}
 		}
 	}
 	option = {
 		name = ww1_france.22.b
 		ai_chance = {
-			factor = 15
+			base = 15
+			modifier = {
+				factor = 0
+				NOT = {
+					has_government = democratic
+				}
+			}
 		}
+		add_war_support = -0.02
 	}
 }
 
@@ -7490,7 +7493,6 @@ country_event = {
 	id = ww1_france.23
 	title = ww1_france.23.t
 	desc = ww1_france.23.d
-	fire_only_once = yes
 	is_triggered_only = yes
 	option = {
 		name = ww1_france.23.a
@@ -7568,24 +7570,10 @@ country_event = {
 	trigger = {
 		original_tag = FRA
 		has_country_flag = great_war_loser
-		OR = {
-			has_civil_war = yes
-			AND = {
-				any_other_country = {
-					original_tag = FRA
-					has_war_with = PREV
-				}
-				has_global_flag = french_civil_war
-			}
-		}
+		is_french_civil_war_ongoing = yes
 		any_owned_state = {
-			OR = {
-				is_on_continent = africa
-				is_on_continent = north_america
-				is_on_continent = south_america
-				is_on_continent = australia
-				is_on_continent = asia
-				is_on_continent = middle_east
+			NOT = {
+				is_on_continent = europe
 			}
 		}
 	}
@@ -7595,20 +7583,7 @@ country_event = {
 	fire_only_once = yes
 	option = {
 		name = ww1_france.25.a
-		every_owned_state = {
-			limit = {
-				OR = {
-					region = 83
-					region = 179
-				}
-			}
-			random_country = {
-				limit = {
-					owns_state = 737
-				}
-				transfer_state = PREV
-			}
-		}
+		# Return Moroccan Cores
 		every_owned_state = {
 			limit = {
 				is_core_of = MOR
@@ -7620,17 +7595,33 @@ country_event = {
 				transfer_state = PREV
 			}
 		}
-		if = {
-			limit = {
-				owns_state = 320
-			}
-			random_country = {
+		# Pondicherry
+		320 = {
+			if = {
 				limit = {
-					owns_state = 423
+					owner = {
+						original_tag = FRA
+					}
 				}
-				transfer_state = 320
+				if = {
+					limit = {
+						ENG = {
+							has_country_flag = great_war_loser
+						}
+					}
+					transfer_state_to = GER
+				}
+				else = {
+					random_country = {
+						limit = {
+							owns_state = 423 # Madurai, adjacent state
+						}
+						transfer_state = 320
+					}
+				}
 			}
 		}
+		# Ubari-Murzuk to Owner of Fezzan
 		if = {
 			limit = {
 				owns_state = 812
@@ -7642,31 +7633,7 @@ country_event = {
 				transfer_state = 812
 			}
 		}
-		every_owned_state = {
-			limit = {
-				is_on_continent = africa
-				NOT = {
-					state = 774
-					state = 969
-					state = 1059
-					region = 126
-					region = 127
-					region = 182
-					region = 225
-					region = 226
-					is_core_of = MLI
-					is_core_of = VOL
-					is_core_of = NGR
-					is_core_of = IVO
-				}
-			}
-			random_country = {
-				limit = {
-					owns_state = 539
-				}
-				transfer_state = PREV
-			}
-		}
+		# Every South American State to Owner of Jamaica (Britain?)
 		every_owned_state = {
 			limit = {
 				is_on_continent = south_america
@@ -7678,6 +7645,7 @@ country_event = {
 				transfer_state = PREV
 			}
 		}
+		# Every North American State to Canada
 		every_owned_state = {
 			limit = {
 				is_on_continent = north_america
@@ -8375,7 +8343,7 @@ country_event = {
 		has_global_flag = great_war
 		NOT = {
 			has_global_flag = GER_capitulation
-			has_global_flag = FRA_capitulation
+			has_global_flag = ENT_capitulation
 			has_country_flag = FRA_czechoslovak_legion_flag
 		}
 		# Czechoslovakia is being oppressed
@@ -9688,7 +9656,7 @@ country_event = {
 		NOT = {
 			has_government = communism
 		}
-		has_global_flag = great_war_winner
+		has_country_flag = great_war_winner
 		NOT = {
 			has_country_flag = june_1919_riots
 			has_country_flag = FRA_police_security_enforcement_act
@@ -10506,7 +10474,6 @@ country_event = {
 		has_start_date < 1914.6.14
 		any_owned_state = {
 			OR = {
-				state = 550
 				state = 551
 				state = 549
 				state = 660
@@ -10570,11 +10537,10 @@ country_event = {
 	trigger = {
 		has_war_with = GER
 		tag = FRA
-		has_global_flag = great_war
+		is_great_war_ongoing = yes
 		NOT = {
 			has_country_flag = caillaux_anti_war_propaganda
 			has_country_flag = FRA_surrender_alone
-			has_global_flag = great_war_ends
 		}
 		has_character = FRA_joseph_caillaux
 		date > 1917.2.2
@@ -10641,25 +10607,10 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name =  ww1_france.307.a
-		clr_global_flag = germany_accepts_FRA_capitulation
-		clr_country_flag = entente_leader
+		clr_global_flag = GER_accepts_ENT_capitulation
 		clr_country_flag = ask_for_peace
 		add_ideas = FRA_interim_government
 		drop_cosmetic_tag = yes
-		# What is the purpose of this? These are still French puppet and they lose their blue colours.
-		# every_other_country = {
-		# 	limit = {
-		# 		is_subject_of = ROOT
-		# 		OR = {
-		# 			tag = MOR
-		# 			tag = ALG
-		# 			tag = TUN
-		# 			tag = IND
-		# 			tag = MLI
-		# 		}
-		# 	}
-		# 	drop_cosmetic_tag = yes
-		# }
 		if = {
 			limit = {
 				OR = {	#petain shouldnt be able to stay if losed ww1, so stick authoritarian caillaux to monarchy ONLY
@@ -10735,6 +10686,10 @@ country_event = {
 					}
 				}
 				set_cosmetic_tag = FRA_alt_blue
+			}
+			add_opinion_modifier = {
+				target = GER
+				modifier = great_war_enemy
 			}
 		}
 		hidden_effect = {
@@ -11144,6 +11099,11 @@ country_event = {
 	is_triggered_only = yes
 	immediate = {
 		hidden_effect = {
+			set_country_flag = {
+				flag = tgwr_no_unit_limits
+				days = 365
+				value = 1
+			}
 			division_template = {
 				name = "Partisans"
 				is_locked = yes
@@ -11169,7 +11129,6 @@ country_event = {
 						has_government = communism
 					}
 				}
-				
 				FRA_create_FRC = yes
 				FRC = {
 					FRA_jean_longuet = {
@@ -11197,26 +11156,58 @@ country_event = {
 						owner = FRC
 					}
 				}
-				
-				transfer_units_fraction = {
-					target = FRC
-					size = 0.30
-					target_organization = 1
-					source_organization = 1
-					stockpile_ratio = 0.50
-					keep_unit_leaders_trigger = {
-						NOT = {
-							is_character = FRA_maurice_sarrail
-							is_character = FRA_jacques_sadoul
-						}	
-						OR = {
-							is_character = FRA_philippe_petain
-							has_trait = old_guard
-							has_trait = old_guard_navy
-							has_trait = trait_royalist
-							has_trait = war_hero
+				if = {
+					limit = {
+						has_country_flag = NFA_coup_succeed
+					}
+					add_manpower = 250000
+					transfer_units_fraction = {
+						target = FRC
+						size = 0.45
+						target_organization = 1
+						source_organization = 1
+						stockpile_ratio = 0.55
+						keep_unit_leaders_trigger = {
+							NOT = {
+								is_character = FRA_maurice_sarrail
+								is_character = FRA_jacques_sadoul
+								is_character = FRA_charles_nollet
+							}	
+							OR = {
+								is_character = FRA_philippe_petain
+								has_trait = old_guard
+								has_trait = old_guard_navy
+								has_trait = trait_royalist
+								has_trait = war_hero
+							}
 						}
 					}
+					else = {
+						transfer_units_fraction = {
+							target = FRC
+							size = 0.30
+							target_organization = 1
+							source_organization = 1
+							stockpile_ratio = 0.50
+							keep_unit_leaders_trigger = {
+								NOT = {
+									is_character = FRA_maurice_sarrail
+									is_character = FRA_jacques_sadoul
+									is_character = FRA_charles_nollet
+								}	
+								OR = {
+									is_character = FRA_philippe_petain
+									has_trait = old_guard
+									has_trait = old_guard_navy
+									has_trait = trait_royalist
+									has_trait = war_hero
+								}
+							}
+						}
+					}
+				}
+				FRC = {
+					activate_advisor = FRA_maurice_sarrail
 				}
 			}
 			if = {
@@ -11293,7 +11284,7 @@ country_event = {
 				}
 				country_event = {
 					id = ww1_france.320
-					days = 7
+					days = 14
 				}
 			}
 		}
@@ -11500,6 +11491,22 @@ country_event = {
 				}
 			}
 			set_global_flag = FRA_three_side_civil_war
+			FRA = {
+				every_state = {
+					teleport_armies = {
+						limit = {
+							tag = FRA
+						}
+						to_state_array = core_states
+					}
+				}	
+				if = {
+					limit = {
+						has_global_flag = NFA_coup_succeed
+					}
+					load_focus_tree = france_nationalist_focus
+				}
+			}
 		}
 		
 		
@@ -12161,6 +12168,20 @@ country_event = {
 			long_name = FRA_junte_militaire
 			name = FRA_junte_militaire
 		}
+		add_ideas = FRA_disunited_french_front
+		if = {
+			limit = {
+				has_idea = FRA_disjointed_government2
+			}
+			remove_ideas = FRA_disjointed_government2
+		}
+		if = {
+			limit = {
+				has_idea = FRA_disjointed_government3
+			}
+			remove_ideas = FRA_disjointed_government3
+		}
+		add_ideas = FRA_disjointed_government
 		add_manpower = -1
 	}
 	option = {
@@ -12554,16 +12575,22 @@ country_event = {
 	id = ww1_france.341
 	picture = report_event_exodus
 	trigger = {
-		tag = FRA
+		original_tag = FRA
 		has_government = communism
-		has_country_flag = right_christian_protests
+		OR = {
+			AND = {
+				has_country_flag = right_christian_protests
+				OR = {
+					has_completed_focus = FRA_kick_moderates
+					has_completed_focus = FRA_enforce_state_atheism
+				}
+			}
+			tag = FRC
+		}
 		NOT = {
 			has_country_flag = scientists_exodus
 		}
-		OR = {
-			has_completed_focus = FRA_kick_moderates
-			has_completed_focus = FRA_enforce_state_atheism
-		}
+		
 	}
 	immediate = {
 		set_country_flag = scientists_exodus
@@ -14561,7 +14588,7 @@ country_event = {
 				amount = -750
 			}
 			add_equipment_to_stockpile = {
-				type = artillery_equipment
+				type = field_gun_equipment
 				producer = FRA
 				amount = -25
 			}
@@ -14580,7 +14607,7 @@ country_event = {
 						amount = -750
 					}
 					add_equipment_to_stockpile = {
-						type = artillery_equipment
+						type = field_gun_equipment
 						producer = FRA
 						amount = -25
 					}
@@ -15139,7 +15166,11 @@ country_event = {
 	picture = GFX_report_event_generic_factory
 	option = {
 		name = ww1_france.407.a
-		
+		effect_tooltip = {
+			FROM = {
+				leave_faction = yes
+			}
+		}	
 	}
 }
 
@@ -21332,7 +21363,7 @@ country_event = {
 				infantry = { x = 3 y = 1 }
 				infantry = { x = 3 y = 2 }
 				infantry = { x = 3 y = 3 }
-				artillery_brigade = { x = 0 y = 4 }
+				field_gun_brigade = { x = 0 y = 4 }
 				cavalry = { x = 4 y = 0 }
 			}
 			priority = 1
@@ -21400,7 +21431,7 @@ country_event = {
 					amount = -2500
 				}
 				add_equipment_to_stockpile = {
-					type = artillery_equipment
+					type = field_gun_equipment
 					amount = -250
 				}
 			}
@@ -21770,13 +21801,834 @@ news_event = {
 
 #French defeat, but after Russian revolution. 
 country_event = {
+	id = ww1_france.590
 	title = ww1_france.590.t
 	desc = ww1_france.590.d
-	id = ww1_france.590
 	picture = GFX_report_event_german_parade_paris
 	is_triggered_only = yes
 	option = {
 		name =  ww1_france.590.a	# we must collaborate with the germans - caillaux governement
 		FRA_french_surrender_effect = yes
+	}
+}
+
+
+#provisional socialist french government
+country_event = {
+	id = ww1_france.591
+	title = ww1_france.591.t
+	desc = ww1_france.591.d
+	picture = GFX_paris_1910
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.591.a
+	}
+}
+
+#lore about popular courts, this existed in commune of paris in 1871 but also in 1944-1945
+country_event = {
+	id = ww1_france.592
+	title = ww1_france.592.t
+	desc = ww1_france.592.d
+	picture = GFX_paris_1910
+	is_triggered_only = yes
+	option = {
+		#Stop this
+		name = ww1_france.592.a
+		remove_ideas = FRA_uncontrolled_popular_courts
+	}
+	option = {
+		#make them under government control
+		name = ww1_france.592.b
+		swap_ideas = {
+			remove_idea = FRA_uncontrolled_popular_courts
+			add_idea = FRA_state_controlled_popular_courts
+		}
+	}
+}
+
+#lore about guesdists, soralean and such getting crazy
+country_event = {
+	id = ww1_france.593
+	title = ww1_france.593.t
+	desc = ww1_france.593.d
+	picture = GFX_sfio_2
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.593.a
+		country_event = ww1_france.594
+	}
+}
+
+country_event = {
+	id = ww1_france.594
+	title = ww1_france.594.t
+	desc = ww1_france.594.d
+	picture = GFX_sfio_2
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.594.a
+	}
+}
+
+#France get info that commune has motivated separatist insurrections in FROM
+country_event = {
+	id = ww1_france.595
+	title = ww1_france.595.t
+	desc = ww1_france.595.d
+	picture = GFX_sfio_2
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.595.a
+	}
+}
+
+#corsica get free but... didnt join the commune!
+country_event = {
+	id = ww1_france.596
+	title = ww1_france.596.t
+	desc = ww1_france.596.d
+	picture = GFX_sfio_1
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.596.a
+	}
+}
+
+#Commune ask help FROM
+country_event = {
+	id = ww1_france.597
+	title = ww1_france.597.t
+	desc = ww1_france.597.d
+	picture = GFX_ruhr_occupation
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.597.a
+		#give some guns
+		send_equipment = {
+			target = FRC
+			type = infantry_equipment
+			amount = 2000
+		}
+		FROM = {
+			country_event = {
+				id = ww1_france.598
+				days = 3
+			}
+		}
+		trigger = {
+			has_equipment = {
+				infantry_equipment > 2000
+			}
+		}
+		ai_chance = {
+			factor = 10
+		}
+	}
+	option = {
+		name = ww1_france.597.b
+		#full support
+		FROM = {
+			country_event = {
+				id = ww1_france.599
+				days = 3
+			}
+		}
+		effect_tooltip = {
+			add_to_war = {
+				targeted_alliance = FRC
+				enemy = FRA
+			}
+		}
+		set_country_flag = FRC_civil_war_intervention
+		ai_chance = {
+			factor = 10
+		}
+	}
+	option = {
+		name = ww1_france.597.b
+		#nothing
+		FROM = {
+			country_event = {
+				id = ww1_france.600
+				days = 3
+			}
+		}
+		ai_chance = {
+			factor = 5
+		}
+	}
+}
+
+country_event = {
+	id = ww1_france.598
+	title = ww1_france.598.t
+	desc = ww1_france.598.d
+	picture = GFX_ruhr_occupation
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.598.a
+		#give some guns
+		effect_tooltip = {
+			FROM = {
+				send_equipment = {
+					target = FRC
+					type = infantry_equipment
+					amount = 2000
+				}
+			}
+		}
+	
+	}
+}
+
+country_event = {
+	id = ww1_france.599
+	title = ww1_france.599.t
+	desc = ww1_france.599.d
+	picture = GFX_ruhr_occupation
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.598.a
+		FROM = {
+			add_to_war = {
+				targeted_alliance = FRC
+				enemy = FRA
+			}
+		}
+	}
+}
+
+country_event = {
+	id = ww1_france.600
+	title = ww1_france.600.t
+	desc = ww1_france.600.d
+	picture = GFX_ruhr_occupation
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.600.a
+		add_political_power = 15
+	}
+}
+
+#player destroy parliament and replace it with either workers congress or revolutionary comittee
+country_event = {
+	id = ww1_france.601
+	title = ww1_france.601.t
+	desc = ww1_france.601.d
+	picture = GFX_ruhr_occupation
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.601.a
+		#boost the travaillistes, the syndicalists, CGT, Soreliens
+		add_stability = 0.05
+		add_political_power = 75
+	}
+	option = {
+		name = ww1_france.601.b
+		#boost blanquism, jacobins, bolchevicks, open door for soviet-type republic
+		add_war_support = 0.03
+		add_political_power = 150
+		set_country_flag = FRC_jacobin_favored
+	}
+}
+
+#jacobin governement
+country_event = {
+	id = ww1_france.602
+	title = ww1_france.602.t
+	desc = ww1_france.602.d
+	picture = GFX_ruhr_occupation
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.602.a
+		add_political_power = 25
+	}
+}
+
+##CGT syndicalist governement
+country_event = {
+	id = ww1_france.603
+	title = ww1_france.603.t
+	desc = ww1_france.603.d
+	picture = GFX_ruhr_occupation
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.603.a
+		add_stability = 0.02
+	}
+}
+
+##Jacobin gov eliminate anarchists
+country_event = {
+	id = ww1_france.604
+	title = ww1_france.604.t
+	desc = ww1_france.604.d
+	picture = GFX_ruhr_occupation
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.604.a
+		add_stability = -0.05
+		add_manpower = -1273
+	}
+}
+
+#some sorelians survived purges
+country_event = {
+	id = ww1_france.605
+	title = ww1_france.605.t
+	desc = ww1_france.605.d
+	picture = GFX_ruhr_occupation
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.605.a
+		add_political_power = -25
+		add_stability = -0.03
+		add_manpower = -473
+	}
+}
+
+country_event = {
+	id = ww1_france.606
+	title = ww1_france.606.t
+	desc = ww1_france.606.d
+	picture = GFX_ruhr_occupation
+	is_triggered_only = yes
+	option = {
+		#Parti révolutionnaire
+		name = ww1_france.606.a
+		set_party_name = {
+			ideology = communism
+			long_name = FRC_parti_revolutionnaire
+			name = FRC_parti_revolutionnaire
+		}
+	}
+	option = {
+		#Les jacobins
+		name = ww1_france.606.b
+		set_party_name = {
+			ideology = communism
+			long_name = FRC_jacobins
+			name = FRC_jacobins
+		}
+	}
+	option = {
+		#Avant-Garde Française du Peuple
+		name = ww1_france.606.c
+		set_party_name = {
+			ideology = communism
+			long_name = FRC_avant_garde
+			name = FRC_avant_garde
+		}
+	}
+	option = {
+		#Front Socialiste Unifié
+		name = ww1_france.606.e
+		set_party_name = {
+			ideology = communism
+			long_name = FRC_front_socialiste
+			name = FRC_front_socialiste
+		}
+	}
+}
+
+#first step toward propaganda with controlled education and socialist holidays
+country_event = {
+	id = ww1_france.607
+	title = ww1_france.607.t
+	desc = ww1_france.607.d
+	picture = GFX_ruhr_occupation
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.607.a
+		add_stability = 0.02
+		add_war_support = 0.02
+	}
+}
+
+#Quinquenal plan
+country_event = {
+	id = ww1_france.608
+	title = ww1_france.608.t
+	desc = ww1_france.608.d
+	picture = GFX_paris_1910
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.608.a
+		#moderate plan
+		#fernand loriot plan
+		set_country_flag = FRC_moderate_five_year_plan
+		show_ideas_tooltip = FRA_fernand_loriot
+		activate_mission = FRC_first_five_year_plan_mission
+	}
+}
+
+#Quinquenal plan canceled due to war
+country_event = {
+	id = ww1_france.609
+	title = ww1_france.609.t
+	desc = ww1_france.609.d
+	picture = GFX_paris_1910
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.609.a
+		add_stability = -0.01
+		add_war_support = 0.02
+	}
+}
+
+#Quinquenal plan failed
+country_event = {
+	id = ww1_france.610
+	title = ww1_france.610.t
+	desc = ww1_france.610.d
+	picture = GFX_paris_1910
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.610.a
+		add_stability = -0.1
+		add_popularity = {
+			ideology = ROOT
+			popularity = -0.15
+		}
+		deactivate_advisor = FRA_fernand_loriot
+		hidden_effect = {
+			FRA_fernand_loriot = {
+				remove_any_country_role_from_character = yes
+			}
+		}
+	}
+}
+
+#Quinquenal plan succeed
+country_event = {
+	id = ww1_france.611
+	title = ww1_france.611.t
+	desc = ww1_france.611.d
+	picture = GFX_paris_1910
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.611.a
+		add_stability = 0.05
+		add_popularity = {
+			ideology = communism
+			popularity = 0.05
+		}
+		add_popularity = {
+			ideology = democratic 
+			popularity = 0.03
+		}
+	}
+}
+
+#FRC socialist France can attack NFA France in north africa or not
+country_event = {
+	id = ww1_france.612
+	title = ww1_france.612.t
+	desc = ww1_france.612.d
+	picture = GFX_paris_1910
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.612.a
+		add_stability = 0.05
+		ai_chance = {
+			factor = 95
+		}
+	}
+	option = {
+		name = ww1_france.612.b
+		#stupid option
+		unlock_decision_tooltip = FRC_attack_nationalist_france
+		every_other_country = {
+			limit = {
+				original_tag = FRA
+				NOT = {
+					has_government = communism
+				}
+			}
+			country_event = {
+				id = ww1_france.613
+				days = 2
+			}
+		}
+		ai_chance = {
+			factor = 5
+		}
+	}
+}
+
+#nationalist France heard about socialist attack
+country_event = {
+	id = ww1_france.613
+	title = ww1_france.613.t
+	desc = ww1_france.613.d
+	picture = GFX_paris_1910
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.613.a
+		add_war_support = 0.15
+		FRC = {
+			set_country_flag = FRC_can_attack_FRA
+		}
+	}
+}
+
+#socialsit centralized command conflict after civil war
+country_event = {
+	id = ww1_france.614
+	title = ww1_france.614.t
+	desc = ww1_france.614.d
+	picture = GFX_paris_1910
+	trigger = {
+		tag = FRC
+		has_war = no 
+		has_idea = FRC_centralized_command
+		NOT = {
+			has_country_flag = FRC_defiant_army_centralized
+		}
+	}
+	mean_time_to_happen = {
+		days = 24
+	}
+	option = {
+		name = ww1_france.614.a
+		set_country_flag = FRC_defiant_army_centralized
+		swap_ideas = {
+			add_idea = FRC_centralized_command_bad
+			remove_idea = FRC_centralized_command
+		}
+	}
+}
+#bandit warfare become shit
+country_event = {
+	id = ww1_france.615
+	title = ww1_france.615.t
+	desc = ww1_france.615.d
+	picture = GFX_paris_1910
+	trigger = {
+		tag = FRC
+		has_war = no 
+		has_idea = FRC_bandit_warfare
+		NOT = {
+			has_country_flag = FRC_defiant_army_guerrila
+		}
+	}
+	mean_time_to_happen = {
+		days = 24
+	}
+	option = {
+		name = ww1_france.615.a
+		set_country_flag = FRC_defiant_army_guerrila
+		swap_ideas = {
+			add_idea = FRC_bandit_warfare_bad
+			remove_idea = FRC_bandit_warfare
+		}
+	}
+}
+
+#marine de libération budget question
+country_event = {
+	id = ww1_france.616
+	title = ww1_france.616.t
+	desc = ww1_france.616.d
+	picture = GFX_paris_1910
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.616.a
+		add_stability = 0.02
+		ai_chance = {
+			factor = 95
+		}
+	}
+	option = {
+		name = ww1_france.616.b
+		add_ideas = FRA_excessive_marine_nationale_budget
+		ai_chance = {
+			factor = 5
+		}
+	}
+}
+
+#will germany return arras
+country_event = {
+	id = ww1_france.617
+	title = ww1_france.617.t
+	desc = ww1_france.617.d
+	picture = GFX_paris_1910
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.617.a #return arras region
+		add_stability = 0.05
+		FRC = {
+			effect_tooltip = {
+				transfer_state = 29
+			}
+			diplomatic_relation = {
+				country = GER
+				relation = non_aggression_pact
+				active = yes
+			}
+			country_event = {
+				id = ww1_france.618
+				days = 3
+			}
+		}
+		if = {
+			limit = {
+				BEL = {
+					owns_state = 29
+				}
+			}
+			effect_tooltip = {
+				transfer_state = 907
+			}
+			country_event = {
+				id = ww1_france.619
+				days = 2
+			}
+		}
+		if = {
+			limit = {
+				29 = {
+					OWNER = {
+						NOT = {
+							tag = FRA
+							tag = FRC
+							tag = GER
+							tag = BEL
+						}
+					}
+				}
+			}
+			29 = {
+				OWNER = {
+					country_event = {
+						id = ww1_france.621
+						days = 3
+					}
+				}
+			}
+		}
+		ai_chance = {
+			factor = 95
+		}
+	}
+	option = {
+		name = ww1_france.617.b #keep Arras region
+		FRC = {
+			effect_tooltip = {
+				add_war_support = 0.2
+				add_ideas = FRA_idea_sour_loser
+				country_event = {
+					id = ww1_france.620
+					days = 4
+				}
+			}
+		}
+		ai_chance = {
+			factor = 5
+		}
+	}
+}
+
+#france get arras
+country_event = {
+	id = ww1_france.618
+	title = ww1_france.618.t
+	desc = ww1_france.618.d
+	picture = GFX_paris_1910
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.618.a
+		transfer_state = 29
+	}
+}
+
+#belgium get ardennes
+country_event = {
+	id = ww1_france.619
+	title = ww1_france.619.t
+	desc = ww1_france.619.d
+	picture = GFX_paris_1910
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.619.a
+		transfer_state = 907
+	}
+}
+
+#france get nothing lol
+country_event = {
+	id = ww1_france.620
+	title = ww1_france.620.t
+	desc = ww1_france.620.d
+	picture = GFX_paris_1910
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.620.a
+		add_war_support = 0.2
+		add_ideas = FRA_idea_sour_loser
+	}
+}
+
+
+#random country lose nord de France
+country_event = {
+	id = ww1_france.621
+	title = ww1_france.621.t
+	desc = ww1_france.621.d
+	picture = GFX_paris_1910
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.621.a
+		effect_tooltip = {
+			FRC = {
+				transfer_state = 29
+			}
+		}
+	}
+}
+
+
+#Petain dissolve the parliament
+country_event = {
+	id = ww1_france.622
+	title = ww1_france.622.t
+	desc = ww1_france.622.d
+	picture = GFX_paris_1910
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.622.a
+		add_stability = 0.02
+		add_popularity = {
+			ideology = neutrality
+			popularity = 0.05
+		}
+	}
+}
+
+#tri-personal junta dictatorship
+country_event = {
+	id = ww1_france.623
+	title = ww1_france.623.t
+	desc = ww1_france.623.d
+	picture = GFX_paris_1910
+	is_triggered_only = yes
+	option = {
+		name = ww1_france.623.a
+		add_popularity = {
+			ideology = democratic
+			popularity = -0.1
+		}
+	}
+}
+
+#France see British attack germany and can join anyway
+country_event = {
+	id = ww1_france.625
+	title = ww1_france.625.t
+	desc = ww1_france.625.d
+	picture = GFX_GER_zeppelin
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_france.625.a
+		add_war_support = 0.02
+		FRA = {
+			add_to_war = {
+				targeted_alliance = ENG
+				enemy = GER
+			}
+		}
+		hidden_effect = {
+			news_event = ww1_france.626
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0.1
+				has_government = communism
+			}
+			modifier = {
+				factor = 0.1
+				has_idea = neutrality_idea
+			}
+			modifier = {
+				factor = 0.8
+				GER = {
+					OR = {
+						is_guaranteed_by = ITA
+						is_in_faction_with = ITA
+					}
+				}
+			}
+			modifier = {
+				factor = 0.8
+				GER = {
+					OR = {
+						is_guaranteed_by = AUS
+						is_in_faction_with = AUS
+					}
+				}
+			}
+			modifier = {
+				factor = 0.8
+				GER = {
+					OR = {
+						is_guaranteed_by = SPR
+						is_in_faction_with = SPR
+					}
+				}
+			}
+			modifier = {
+				factor = 0.5
+				GER = {
+					OR = {
+						is_guaranteed_by = USA
+						is_in_faction_with = USA
+					}
+				}
+			}
+		}
+	}
+	option = {
+		name = ww1_france.625.b
+		ai_chance = {
+			base = 2
+			modifier = {
+				has_war = yes #war against minor
+				factor = 2
+			}
+		}
+	}
+}
+
+news_event = {
+	title = ww1_france.626.t
+	desc = ww1_france.626.d
+	id = ww1_france.626
+	picture = GFX_news_event_french_parade
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_france.626.a
+		trigger = {
+			NOT = {
+				has_war_with = ENG
+				has_war_with = GER
+			}
+		}
+	}
+	option = {
+		name = ww1_france.626.b
+		trigger = {
+			has_war_with = ENG
+		}
+	}
+	option = {
+		name = ww1_france.626.c
+		trigger = {
+			has_war_with = GER
+		}
 	}
 }

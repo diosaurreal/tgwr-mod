@@ -1071,7 +1071,7 @@ focus_tree = {
 
 	focus = {
 		id = FRA_ww1_munitionnettes
-		icon = GFX_goal_generic_construct_mil_factory
+		icon = GFX_focus_generic_munitions
 		relative_position_id = FRA_ww1_taylorist_rethoric
 		prerequisite = {
 			focus = FRA_ww1_rearmement_program
@@ -3241,6 +3241,7 @@ focus_tree = {
 		available = {
 			has_government = communism
 			has_war = no
+			has_country_flag = entente_leader
 			NOT = {
 				has_country_flag = great_war_loser
 			}
@@ -3253,20 +3254,15 @@ focus_tree = {
 			custom_effect_tooltip = FRA_cancel_all_alliances
 			
 			hidden_effect = {
-				every_country = {
+				every_other_country = {
 					limit = {
 						is_in_faction_with = FRA
-						NOT = {
-							tag = FRA
-						}
 					}
-					set_country_flag = was_part_of_entente
 					country_event = {
 						id = ww1_france.407
 						hours = 4
 					}
-				}
-				leave_faction = yes
+				}		
 				every_other_country = {
 					FRA = {
 						diplomatic_relation = {
@@ -3281,40 +3277,125 @@ focus_tree = {
 						}
 					}
 				}
+				every_country = {
+					limit = {
+						has_country_flag = entente_leader
+					}
+					clr_country_flag = entente_leader
+				}
 				if = {
 					limit = {
 						ENG = {
-							has_country_flag = was_part_of_entente
+							is_in_faction_with = ROOT
+							is_subject = no
+							has_capitulated = no
+							NOT = {
+								has_country_flag = has_capitulated_with_france_early
+							}
 						}
 					}
-					create_faction = entente
-					set_country_flag = entente_leader
 					ENG = {
-						every_country = {
-							limit = {
-								has_country_flag = was_part_of_entente
-							}
-							add_to_faction = PREV
-						}
-					}
-					else_if = {
-						limit = {
-							RUS = {
-								has_country_flag = was_part_of_entente
-							}
-						}
-						RUS = {
-							every_country = {
-								limit = {
-									has_country_flag = was_part_of_entente
-								}
-								add_to_faction = PREV
-							}
-						}
+						set_country_flag = entente_leader
+						set_faction_leader = yes
 					}
 				}
-			}
-			
+				else_if = {
+					limit = {
+						RUS = {
+							is_in_faction_with = ROOT
+							is_subject = no
+							has_capitulated = no
+							tag = SOV
+							NOT = {
+								has_country_flag = has_capitulated_with_france_early
+								has_global_flag = russ_kapitulation
+								tag = SOV
+							}
+						}
+					}
+					RUS = {
+						set_country_flag = entente_leader
+						set_faction_leader = yes
+					}
+				}
+				else_if = {
+					limit = {
+						any_allied_country = {
+							is_major = yes
+							is_subject = no
+							has_capitulated = no
+							capital_scope = {
+								is_on_continent = europe
+							}
+						}
+					}
+					random_other_country = {
+						limit = {
+							is_major = yes
+							is_subject = no
+							has_capitulated = no
+							capital_scope = {
+								is_on_continent = europe
+							}
+						}
+						set_country_flag = entente_leader
+						set_faction_leader = yes
+					}
+				}
+				else_if = {
+					limit = {
+						any_allied_country = {
+							is_major = yes
+							is_subject = no
+							has_capitulated = no
+						}
+					}
+					random_other_country = {
+						limit = {
+							is_major = yes
+							is_subject = no
+							has_capitulated = no
+						}
+						set_country_flag = entente_leader
+						set_faction_leader = yes
+					}
+				}
+				else_if = {
+					limit = {
+						any_allied_country = {
+							is_subject = no
+							has_capitulated = no
+							capital_scope = {
+								is_on_continent = europe
+							}
+						}
+					}
+					random_other_country = {
+						limit = {
+							is_in_faction_with = ROOT
+							is_subject = no
+							has_capitulated = no
+							capital_scope = {
+								is_on_continent = europe
+							}
+						}
+						set_country_flag = entente_leader
+						set_faction_leader = yes
+					}
+				}
+				else = {
+					random_other_country = {
+						limit = {
+							is_in_faction_with = ROOT
+							is_subject = no
+							has_capitulated = no
+						}
+						set_country_flag = entente_leader
+						set_faction_leader = yes
+					}
+				}
+				leave_faction = yes
+			}		
 		}
 
 		ai_will_do = {
@@ -4851,7 +4932,7 @@ focus_tree = {
 
 	focus = {
 		id = FRA_ww1_finish_the_west_african_railway
-		icon = GFX_focus_generic_railroad
+		icon = GFX_focus_generic_tropical_railway
 		relative_position_id = FRA_ww1_ecole_normale_william_ponty
 		prerequisite = {
 			focus = FRA_ww1_ecole_normale_william_ponty
@@ -4945,7 +5026,7 @@ focus_tree = {
 	}
 	focus = {
 		id = FRA_ww1_establish_france_equatoriale
-		icon = GFX_focus_por_luso_tropicalism
+		icon = GFX_focus_generic_african_goods
 		relative_position_id = FRA_ww1_ecole_normale_william_ponty
 		prerequisite = {
 			focus = FRA_ww1_ecole_normale_william_ponty
@@ -5114,7 +5195,7 @@ focus_tree = {
 						amount = -2500
 					}
 					add_equipment_to_stockpile = {
-						type = artillery_equipment
+						type = field_gun_equipment
 						amount = -250
 					}
 				}
@@ -6396,6 +6477,10 @@ focus_tree = {
 					cost_reduction = 0.25
 				}
 			}
+			add_breakthrough_progress = {
+				specialization = specialization_land
+				value = 0.5
+			}
 		}
 		ai_will_do = {
 			factor = 1
@@ -6437,7 +6522,11 @@ focus_tree = {
 			add_equipment_to_stockpile = {
 				type = infantry_equipment_0
 				producer = FRA
-				amount = 4000
+				amount = 12000
+			}
+			add_breakthrough_progress = {
+				specialization = specialization_land
+				value = 0.5
 			}
 		}
 		ai_will_do = {
@@ -6531,7 +6620,7 @@ focus_tree = {
 				uses = 2
 			}
 			add_equipment_to_stockpile = {
-				type = artillery_equipment_1
+				type = field_gun_equipment_1
 				producer = FRA
 				amount = 500
 			}
@@ -6580,8 +6669,7 @@ focus_tree = {
 			add_tech_bonus = {
 				name = FRA_ww1_howitzer_development
 				bonus = 1
-				technology = howitzer3
-				technology = howitzer2
+				category = cat_howitzer
 				uses = 1
 			}
 
@@ -6759,6 +6847,20 @@ focus_tree = {
 				idea = FRA_national_mobilization_focus
 				days = 480
 			}
+			add_breakthrough_progress = {
+				specialization = specialization_land
+				value = 1
+			}
+			if = {
+				limit = {
+					NOT = {
+						is_special_project_completed = sp:sp_land_tank_prototype
+					}
+				}
+				sp:sp_land_tank_prototype = {
+					add_project_progress_ratio = 0.5
+				}		
+			}
 		}
 		ai_will_do = {
 			factor = 1000
@@ -6859,10 +6961,7 @@ focus_tree = {
 			}
 			add_tech_bonus = {
 				name = FRA_ww1_anti_air_positions
-				technology = interwar_antiair
-				technology = antiair1
-				technology = antiair2
-				technology = antiair3
+				category = cat_anti_air
 				uses = 2
 				bonus = 1
 			}
@@ -6909,8 +7008,7 @@ focus_tree = {
 		completion_reward = {
 			add_tech_bonus = {
 				name = FRA_ww1_fund_apx
-				technology = interwar_antitank
-				technology = antitank2
+				category = cat_anti_tank
 				uses = 1
 				ahead_reduction = 1
 				bonus = 1
@@ -7778,7 +7876,7 @@ focus_tree = {
 			add_tech_bonus = {
 				name = FRA_ww1_motorization
 				bonus = 1
-				technology = motorised_infantry2
+				technology = motorised_infantry
 				uses = 1
 				ahead_reduction = 1
 			}
@@ -8424,7 +8522,7 @@ focus_tree = {
 		search_filters = {
 			FOCUS_FILTER_RESEARCH
 		}
-		cost = 10
+		cost = 5
 		x = 4
 		y = 2
 	}
@@ -8460,7 +8558,7 @@ focus_tree = {
 			FOCUS_FILTER_RESEARCH
 			FOCUS_FILTER_HISTORICAL
 		}
-		cost = 10
+		cost = 5
 		x = -2
 		y = 2
 	}
@@ -10190,7 +10288,7 @@ focus_tree = {
 		allow_branch = {
 		}
 		available = {
-			has_global_flag = versallies_treaty
+			has_global_flag = versailles_treaty
 			NOT = {
 				has_government = communism
 			}
@@ -11545,6 +11643,7 @@ focus_tree = {
 								state = 834
 								state = 998
 								state = 158
+								state = 1216
 							}
 						}
 						add_dynamic_modifier = {
@@ -14032,7 +14131,10 @@ focus_tree = {
 		}
 		available = {
 			has_government = communism
-			has_global_flag = versallies_treaty
+			OR = {
+				has_global_flag = versailles_treaty
+				has_country_flag = FRA_unlock_socialist_tree
+			}
 		}
 		relative_position_id = FRA_ww1_continental_affairs
 		completion_reward = {
@@ -14766,7 +14868,7 @@ joint_focus = {
 				set_technology = {
 					tech_support = 1
 					tech_engineers = 1
-					artillery1 = 1
+					improved_field_gun = 1
 				}
 				division_template = {
 					name = "Division Coloniale du Maroc"
@@ -14779,7 +14881,7 @@ joint_focus = {
 					}
 					support = {
 						engineer = { x = 0 y = 0 }
-						artillery = { x = 0 y = 1 }
+						field_gun = { x = 0 y = 1 }
 					}
 				}
 				461 = {
@@ -15418,6 +15520,42 @@ joint_focus = {
 				add_resistance = -10
 				add_compliance = 25
 			}
+		}
+	}
+}
+
+joint_focus = {
+	id = FRA_berber_dahir
+	icon = GFX_focus_generic_court
+	text_icon = joint_FRA_MOR_focus_style
+	available = {
+		OR = {
+			has_subject = MOR
+			is_subject_of = FRA
+		}
+	}
+	x = 0
+	y = 1
+	cost = 10
+	search_filters = {
+		FOCUS_FILTER_INTERNAL_AFFAIRS
+		FOCUS_FILTER_HISTORICAL
+	}
+	prerequisite = {
+		focus = FRA_support_habous
+	}
+	relative_position_id = FRA_support_habous
+
+	ai_will_do = {
+		factor = 100
+		modifier = {
+			tag = FRA
+			factor = 0.1
+		}
+	}
+	completion_reward_joint_originator = {
+		MOR = {
+			add_stability = 0.05
 		}
 	}
 }

@@ -668,12 +668,9 @@ country_event = {
 		name = ww1_soviet.15.b
 		custom_effect_tooltip = historical_tt
 		if = {
-			limit = {
-				has_idea = SOV_idea_influence_of_revolution
-			}
-			remove_ideas = { SOV_idea_influence_of_revolution }
+			limit = { is_in_faction_with = SOV }
+			leave_faction = yes
 		}
-		add_war_support = 0.25
 		every_state = {
 			limit = {
 				OR = {
@@ -692,87 +689,8 @@ country_event = {
 			type = take_claimed_state
 			generator = { 206 202 }
 		}
-		hidden_effect = { set_global_flag = polish_soviet_war }
-		add_ideas = idea_soviet_westward_offensive
-		SOV = { 
-			country_event = { id = ww1_soviet.16 } 
-		}
-		FRA = {
-			if = {
-				limit = {
-					has_country_flag = great_war_winner
-					NOT = {
-						has_government = communism
-					}
-				}
-				hidden_effect = {
-					set_rule = {
-						can_send_volunteers = yes
-					}
-					add_ai_strategy = {
-						id = PREV
-						type = send_volunteers_desire
-						value = 100
-					}
-				}
-			}
-		}
 		hidden_effect = {
-			news_event = { id = ww1_soviet.17 } 
-			RUS = {
-				remove_state_core = 97
-				remove_state_core = 1015
-			}
-			SOV = {
-				remove_state_core = 97
-				remove_state_core = 1015
-				if = {
-					limit = {
-						any_other_country = {
-							original_tag = BLR
-							is_subject_of = PREV
-						}
-					}
-					every_controlled_state = {
-						limit = {
-							is_core_of = BLR
-							NOT = {
-								is_owned_by = PREV
-							}
-						}
-						random_country = {
-							limit = {
-								original_tag = BLR
-								is_subject_of = PREV.PREV
-							}
-							set_state_controller = PREV
-						}
-					}
-				}
-				if = {
-					limit = {
-						any_other_country = {
-							original_tag = UKR
-							is_subject_of = PREV
-						}
-					}
-					every_controlled_state = {
-						limit = {
-							is_core_of = UKR
-							NOT = {
-								is_owned_by = PREV
-							}
-						}
-						random_country = {
-							limit = {
-								original_tag = UKR
-								is_subject_of = PREV.PREV
-							}
-							set_state_controller = PREV
-						}
-					}
-				}
-			}
+			polish_soviet_war_effect = yes
 		}
 		ai_chance = {
 			factor = 1
@@ -848,6 +766,7 @@ news_event = {
 	
 	major = yes
 	is_triggered_only = yes
+	fire_only_once = yes
 	
 	option = {
 		name = ww1_soviet.17.a
@@ -910,22 +829,29 @@ country_event = {
 			modifier = {
 				add = 70
 				GER = {
-					is_in_faction_with = ROOT
+					OR = {
+						is_in_faction_with = ROOT
+						has_government = communism
+					}
 					has_war_with = POL
 				}
 			}
 			# Russian civil war is over already
 			modifier = {
-				add = 40
+				add = 10
 				has_country_flag = russian_civil_war_winner
 			}
 			# Socialism is already spreading in Europe
 			modifier = {
-				add = 20
+				add = 40
 				any_other_country = {
+					is_major = yes
+					capital_scope = {
+						is_on_continent = europe
+					}
 					is_subject = no
+					has_capitulated = no
 					NOT = { is_in_faction_with = ROOT }
-					is_neighbor_of = POL
 					has_government = communism
 				}
 			}
@@ -934,7 +860,7 @@ country_event = {
 				factor = 0
 				OR = {
 					surrender_progress > 0.10
-					has_war_support < 0.35
+					has_war_support < 0.5
 				}
 			}
 		}
@@ -959,7 +885,7 @@ country_event = {
 }
 # POLISH-SOVIET WAR - RUSSIA ASK FOR PEACE
 #############################################
-country_event = {
+country_event = {	
 	title = ww1_soviet.20.t
 	desc = ww1_soviet.20.d
 	id = ww1_soviet.20
@@ -1337,40 +1263,17 @@ country_event = {
 	picture = GFX_report_event_generic_communist_congress
 	
 	trigger = {
+		is_subject_of = SOV
+		has_war = no
 		SOV = {
+			has_war = no
 			is_subject = no
 			has_cosmetic_tag = SOV_union
 		}
 		OR = {
-			original_tag = BLR
-			original_tag = UKR
-			original_tag = MOL
-			original_tag = POL
-			original_tag = EST
-			original_tag = LAT
-			original_tag = LIT
-			original_tag = COU
-			original_tag = GEO
-			original_tag = MOU
-			original_tag = AZR
-			original_tag = ARM
-			original_tag = KUB
-			original_tag = DON
-			original_tag = CRI
-			original_tag = KAZ
-			original_tag = TRK
-			original_tag = SIB
-			original_tag = FIN
+			is_russian_breakaway_tag = yes
 			original_tag = GAL
-			original_tag = WUK
-			original_tag = FER
-			original_tag = VLN
-			original_tag = TER
-			original_tag = TBK
-			original_tag = AMU
-			original_tag = SIB
-		}
-		is_subject_of = SOV
+		}	
 		NOT = {
 			has_country_flag = rejected_soviet_union
 		}
@@ -1693,7 +1596,7 @@ country_event = {
 	# 		}
 	# 	}
 	# 	OR = {
-	# 		has_global_flag = versallies_treaty
+	# 		has_global_flag = versailles_treaty
 	# 		has_global_flag = frankfurt_treaty
 	# 	}
 	# }
@@ -1748,8 +1651,13 @@ country_event = {
 						producer = ENG
 					}
 					add_equipment_to_stockpile = {
-						type = artillery_equipment
-						amount = 50
+						type = field_gun_equipment
+						amount = 40
+						producer = ENG
+					}
+					add_equipment_to_stockpile = {
+						type = howitzer_equipment
+						amount = 10
 						producer = ENG
 					}
 					add_ideas = idea_soviet_westward_offensive
@@ -1791,8 +1699,13 @@ country_event = {
 						producer = ENG
 					}
 					add_equipment_to_stockpile = {
-						type = artillery_equipment
-						amount = 50
+						type = field_gun_equipment
+						amount = 40
+						producer = ENG
+					}
+					add_equipment_to_stockpile = {
+						type = howitzer_equipment
+						amount = 10
 						producer = ENG
 					}
 					add_ideas = idea_soviet_westward_offensive
@@ -1833,8 +1746,13 @@ country_event = {
 						producer = ENG
 					}
 					add_equipment_to_stockpile = {
-						type = artillery_equipment
-						amount = 50
+						type = field_gun_equipment
+						amount = 40
+						producer = ENG
+					}
+					add_equipment_to_stockpile = {
+						type = howitzer_equipment
+						amount = 10
 						producer = ENG
 					}
 					add_ideas = idea_soviet_westward_offensive
@@ -2975,6 +2893,26 @@ news_event = {
 				has_war_with = SOV
 				tag = SOV
 			}
+		}
+	}
+}
+
+# Karakhan Menifesto
+country_event = {
+	id = ww1_soviet.51
+	title = ww1_soviet.51.t
+	desc = ww1_soviet.51.d
+	picture = GFX_report_event_china_soviet_volunteers
+	is_triggered_only = yes
+	option = {
+		name = ww1_soviet.51.a
+		add_popularity = {
+			ideology = communism
+			popularity = 0.05
+		}
+		add_opinion_modifier = {
+			target = FROM
+			modifier = karakhan_manifesto
 		}
 	}
 }

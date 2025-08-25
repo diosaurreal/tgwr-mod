@@ -784,7 +784,11 @@ SOV_industrial_focus = {
 			modifier = {
 				factor = 10
 				stockpile_ratio = {
-					archetype = artillery_equipment
+					archetype = field_gun_equipment
+					ratio < 0.35
+				}
+				stockpile_ratio = {
+					archetype = howitzer_equipment
 					ratio < 0.35
 				}
 			}
@@ -869,9 +873,7 @@ VLN_anarchy_decisions = {
 		remove_effect = {
 			FROM = {
 				add_core_of = VLN
-				VLN = {
-					set_state_owner = PREV
-				}
+				set_state_owner_to = VLN
 			}
 		}
 		ai_will_do = {
@@ -898,7 +900,7 @@ VLN_anarchy_decisions = {
 			controls_state = FROM
 			FROM = {
 				NOT = {
-					has_state_flag = VLN_has_mobilized
+					has_state_flag = VLN_has_mobilized_militia
 				}
 			}
 		}
@@ -911,17 +913,16 @@ VLN_anarchy_decisions = {
 			if = {
 				limit = {
 					NOT = {
-						has_template = "Chyornaya Gvardiya"
+						has_template = "Povstancheskiy Polk"
 					}
 				}
 				division_template = {
-					name = "Chyornaya Gvardiya"
-					is_locked = no
+					name = "Povstancheskiy Polk"
+					division_names_group = VLN_MIL_01
 					force_allow_recruiting = yes
 					regiments = {
 						militia = { x = 0 y = 0 }
 						militia = { x = 0 y = 1 }
-						militia = { x = 1 y = 0 }
 					}
 				}
 			}
@@ -929,7 +930,7 @@ VLN_anarchy_decisions = {
 				custom_effect_tooltip = VLN_3_infantry_unit
 				hidden_effect = {
 					create_unit = {
-						division = "name = \"Chyornaya Gvardiya\" division_template = \"Chyornaya Gvardiya\" start_experience_factor = 0.6"
+						division = "division_template = \"Povstancheskiy Polk\" start_experience_factor = 0.6"
 						owner = ROOT
 						count = 3
 						allow_spawning_on_enemy_provs = yes
@@ -1558,6 +1559,66 @@ peace_deals = {
 			}
 		}
 	}
+	SOV_sue_for_peace_FNG = {
+		name = sue_for_peace_FROM
+		icon = GFX_decision_SWI_consolidate_council_power
+		allowed = {
+			is_russian_tag_no_tt = yes
+		}
+		visible = {
+			has_global_flag = chinese_eastern_railway_incident
+			NOT = {
+				has_global_flag = khabarovsk_protocol
+			}
+			tag = event_target:fengtian_soviet_war_rus
+			FROM = {
+				tag = event_target:fengtian_soviet_war_chi
+				NOT = {
+					any_other_country = {
+						is_major = yes
+						is_china_or_warlord_no_tt = no
+						is_in_faction_with = PREV
+					}
+				}
+			}
+		}
+		available = {
+			
+		}
+		target_trigger = {
+			FROM = {
+				is_china_or_warlord_no_tt = yes
+			}
+		}
+		target_root_trigger = {
+			has_war_with = FROM
+		}
+		fire_only_once = yes
+		complete_effect = {
+			FROM = {
+				country_event = ww1_china.297
+			}
+			country_event = ww1_china.297
+		}
+		ai_will_do = {
+			base = 0
+			modifier = {
+				add = 1000
+				surrender_progress > 0.30
+			}
+			modifier = {
+				add = 1000
+				408 = {
+					is_owned_or_subject_trigger = yes
+					is_controlled_by_FROM_or_ally = yes
+				}
+				563 = {
+					is_owned_or_subject_trigger = yes
+					is_controlled_by_FROM_or_ally = yes
+				}
+			}
+		}
+	}
 }
 crisis = {
 	# SOV_german_offensive_mission = {
@@ -1819,13 +1880,18 @@ SOV_combat_the_counter_revolution = {
 				NOT = {
 					has_government = communism
 					has_war_with = ROOT
+					has_cosmetic_tag = TBK_okraina
 				}
 			}
 		}
 		target_trigger = {
 			FROM = { is_cossack_tag = yes }
 		}
-		cost = 5
+		custom_cost_text = decision_cost_CP_5
+		custom_cost_trigger = {
+			command_power > 4.9
+		}
+		cost = 0
 		ai_will_do = {
 			base = 100
 			modifier = {
@@ -1838,6 +1904,9 @@ SOV_combat_the_counter_revolution = {
 		}
 		fire_only_once = yes
 		days_remove = 15
+		complete_effect = {
+			add_command_power = -5
+		}
 		remove_effect  = {
 			declare_war_on = {
 				target = FROM
@@ -1891,7 +1960,11 @@ SOV_combat_the_counter_revolution = {
 			}
 			NOT = { has_country_flag = SOV_sue_for_peace_VLN }
 		}
-		cost = 25
+		custom_cost_text = decision_cost_CP_5
+		custom_cost_trigger = {
+			command_power > 4.9
+		}
+		cost = 0
 		fire_only_once = no
 		ai_will_do = {
 			factor = 10
@@ -1915,6 +1988,7 @@ SOV_combat_the_counter_revolution = {
 			}
 		}
 		complete_effect = {
+			add_command_power = -5
 			if = {
 				limit = {
 					has_subject = FROM
@@ -1967,7 +2041,7 @@ SOV_combat_the_counter_revolution = {
 				}
 				declare_war_on = {
 					target = FROM
-					type = puppet_wargoal_focus
+					type = annex_everything
 				}
 			}
 		}
@@ -3363,7 +3437,17 @@ SOV_decision_soviet_republics = {
 			NOT = {
 				has_war_with = TUR
 			}
-			has_global_flag = treaty_of_batum
+			OR = {
+				has_global_flag = treaty_of_batum
+				TUR = {
+					OR = {
+						has_country_flag = great_war_loser
+						NOT = {
+							is_in_faction_with = GER
+						}
+					}				
+				}
+			}		
 		}
 		target_trigger = {
 			FROM = {
@@ -3418,6 +3502,9 @@ SOV_decision_soviet_republics = {
 			OR = {
 				has_government = democratic
 				has_government = communism
+			}
+			NOT = {
+				has_war_with = SIB
 			}
 		}
 		visible = {
@@ -3494,6 +3581,9 @@ SOV_decision_soviet_republics = {
 			OR = {
 				has_government = democratic
 				has_government = communism
+			}
+			NOT = {
+				has_war_with = SIB
 			}
 		}
 		visible = {
@@ -4227,6 +4317,7 @@ SOV_decision_soviet_republics = {
 					type = puppet_wargoal_focus
 				}
 			}
+			137 = { reset_state_name = yes }
 		}
 	}
 	SOV_soviet_persia = {

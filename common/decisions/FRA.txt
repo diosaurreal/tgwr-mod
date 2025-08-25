@@ -176,7 +176,7 @@ FRA_ai_only_decision = {
 					infantry = { x = 3 y = 0 }
 					infantry = { x = 3 y = 1 }
 					infantry = { x = 3 y = 2 }
-					artillery_brigade = { x = 3 y = 3 }
+					field_gun_brigade = { x = 3 y = 3 }
 				}
 				support = {
 					recon = { x = 0 y = 0 }
@@ -634,6 +634,9 @@ GER_great_war = {
 			original_tag = FRA
 		}
 		visible = {
+			NOT = {
+				tag = FRC
+			}
 			NOT = { 
 				has_country_flag = great_war_loser
 				has_subject = FROM
@@ -707,6 +710,11 @@ GER_great_war = {
 				}
 				NOT = {
 					has_global_flag = france_tunisia_war_end
+				}
+				NOT = {
+					any_enemy_country = {
+						original_tag = FRA
+					}
 				}
 			}
 		}
@@ -1756,11 +1764,11 @@ FRA_defense_of_france = {
 		visible = {
 			tag = FRA
 			has_civil_war = no
+			is_great_war_ongoing = yes
 			NOT = {
 				any_enemy_country = {
 					original_tag = FRA
 				}
-				has_global_flag = great_war_ends
 				capital_scope = {
 					state = 19
 				}
@@ -1795,8 +1803,7 @@ FRA_defense_of_france = {
 				factor = 0
 			}
 			modifier = {
-				has_global_flag = great_war
-				NOT = { has_global_flag = great_war_ends }
+				is_great_war_ongoing = yes
 				factor = 0
 			}
 		}
@@ -2821,28 +2828,6 @@ peace_deals = {
 									}
 									transfer_state_to = PREV
 								}
-								if = {
-									limit = {
-										has_cosmetic_tag = BEL_burgundy
-									}
-									every_state = {
-										limit = {
-											OR = {
-												is_owned_by = FROM
-												is_owned_by = PREV.PREV.PREV
-											}
-											OR = {
-												state = 17
-												state = 863
-												state = 21
-												state = 735
-												state = 761
-												state = 834
-											}
-										}
-										transfer_state_to = PREV
-									}
-								}
 							}
 						}
 					}
@@ -3208,6 +3193,30 @@ peace_deals = {
 			}
 			modifier = {
 				add = 1000
+				surrender_progress > 0.30
+				longest_war_length > 8
+				NOT = {
+					has_global_flag = FRA_three_side_civil_war
+				}
+			}
+			modifier = {
+				add = 1000
+				surrender_progress > 0.25
+				longest_war_length > 14
+				NOT = {
+					has_global_flag = FRA_three_side_civil_war
+				}
+			}
+			modifier = {
+				add = 1000
+				surrender_progress > 0.20
+				longest_war_length > 24
+				NOT = {
+					has_global_flag = FRA_three_side_civil_war
+				}
+			}
+			modifier = {
+				add = 1000
 				NOT = { controls_state = 21 }
 				NOT = {
 					has_global_flag = FRA_three_side_civil_war
@@ -3232,6 +3241,30 @@ peace_deals = {
 				has_global_flag = FRA_three_side_civil_war
 				surrender_progress > 0.8
 			}
+			modifier = {
+				add = 1000 #its over guys
+				has_global_flag = FRA_three_side_civil_war
+				surrender_progress > 0.6
+				longest_war_length > 8
+			}
+			modifier = {
+				add = 1000 #its over guys
+				has_global_flag = FRA_three_side_civil_war
+				surrender_progress > 0.5
+				longest_war_length > 14
+			}
+			modifier = {
+				add = 1000 #its over guys
+				has_global_flag = FRA_three_side_civil_war
+				surrender_progress > 0.45
+				longest_war_length > 24
+			}
+			modifier = {
+				add = 1000 #its over guys
+				has_global_flag = FRA_three_side_civil_war
+				surrender_progress > 0.35
+				longest_war_length > 28
+			}
 		}
 		target_trigger = {
 			FROM = {
@@ -3243,6 +3276,16 @@ peace_deals = {
 		}
 		complete_effect = {
 			country_event = ww1_france.331
+			every_enemy_country = {
+				limit = {
+					has_country_flag = FRC_civil_war_intervention
+				}
+				white_peace = FROM
+			}
+			add_equipment_to_stockpile = {
+				type = convoy
+				amount = 50
+			}
 		}
 	}
 }
@@ -3940,176 +3983,7 @@ interwar_decisions = {
 		is_good = no
 	}
 }
-FRC_interwar_internationale_category = {
-	FRC_internationale = {
-		icon = GFX_decision_SOV_the_stalin_constitution
-		allowed = {
-			original_tag = FRA
-		}
-		available = {
-			is_subject = no
-			has_war = no
-			is_in_faction = no
-		}
-		visible = {
-			has_country_flag = FRA_socialist_france_flag
-			has_government = communism
-			is_faction_leader = no
-			has_global_flag = interbellum
-		}
-		fire_only_once = yes
-		cost = 100
-		ai_will_do = {
-			base = 0
-			modifier = {
-				add = 1000
-				any_other_country = {
-					OR = {
-						original_tag = ENG
-						original_tag = ITA
-						original_tag = GER
-						original_tag = BAY
-					}
-					has_government = communism
-				}
-			}
-		}
-		complete_effect = {
-			create_faction = internationale
-			hidden_effect = {
-				news_event = {
-					id = news.173
-					hours = 3
-				}
-			}
-		}
-	}
-	FRC_interwar_invite_in_internationale = {
-		icon = GFX_decision_SOV_the_stalin_constitution
-		allowed = {
-			original_tag = FRA
-		}
-		available = {
-			has_war = no
-			is_faction_leader = yes
-			FROM = {
-				has_war = no
-			}
-		}
-		visible = {
-			has_government = communism
-			is_faction_leader = yes
-			has_global_flag = interbellum
-			has_country_flag = FRA_socialist_france_flag
-		}
-		target_trigger = {
-			FROM = {
-				OR = {
-					original_tag = FRA
-					original_tag = ENG
-					original_tag = ITA
-					tag = GER
-					tag = BAY
-					AND = {
-						tag = HUN
-						has_war = no
-					}
-				}
-				has_government = communism
-				NOT = {
-					has_country_leader_ideology = market_socialism
-					has_country_flag = FRA_nationalist_france_flag
-					has_country_flag = ENG_nationalist_britain_flag
-				}
-				is_subject = no
-				is_in_faction = no
-			}
-		}
-		target_root_trigger = {
-			has_global_flag = interbellum
-			has_government = communism
-			has_country_flag = FRA_socialist_france_flag
-		}
-		fire_only_once = yes
-		cost = 25
-		complete_effect = {
-			if = {
-				limit = {
-					FROM = {
-						has_country_flag = ENG_socialist_britain_flag
-					}
-				}
-				FROM = {
-					if = {
-						limit = {
-							is_ai = yes
-						}
-						add_ai_strategy = {
-							type = alliance
-							id = ROOT
-							value = 200
-						}
-					}
-					country_event = ww1_england.175
-				}
-				else = {
-					FROM = {
-						hidden_effect = {
-							if = {
-								limit = {
-									is_ai = yes
-									OR = {
-										original_tag = FRA
-										original_tag = ENG
-										original_tag = BAY
-										original_tag = HUN
-									}
-								}
-								add_ai_strategy = {
-									type = alliance
-									id = ROOT
-									value = 200
-								}
-							}
-							if = {
-								limit = {
-									is_historical_focus_on = no
-									is_ai = yes
-								}
-								random_list = {
-									4 = {
-										add_ai_strategy = {
-											type = alliance
-											id = ROOT
-											value = 200
-										}
-									}
-									6 = {
-									}
-								}
-							}
-						}
-						country_event = generic.5
-					}
-				}
-			}
-		}
-		ai_will_do = {
-			base = 0 
-			modifier = {
-				add = 100
-				FROM = {
-					OR = {
-						original_tag = FRA
-						original_tag = ENG
-						original_tag = BAY
-						original_tag = HUN
-					}
-				}
-			}
-		}
-	}
-}
+
 
 prestigious_projects = {
 	FRC_valois_seize_the_power = {

@@ -335,7 +335,7 @@ country_event = {
 	trigger = {
 		tag = BUL
 		OR = {
-			has_global_flag = versallies_treaty
+			has_global_flag = versailles_treaty
 			has_global_flag = frankfurt_treaty
 		}
 		has_country_flag = great_war_loser
@@ -1112,8 +1112,7 @@ country_event = {
 				has_war_with = FRA
 				is_in_faction = yes
 				is_faction_leader = no
-				has_global_flag = great_war
-				NOT = { has_global_flag = great_war_ends }
+				is_great_war_ongoing = yes
 			}
 			if = {
 				limit = {
@@ -1235,6 +1234,7 @@ country_event = {
 	trigger = {
 		tag = GER
 		has_war_with = FRA
+		is_great_war_ongoing = yes
 		has_navy_size = {
 			size > 10
 			type = submarine
@@ -1242,9 +1242,6 @@ country_event = {
 		BUL = {
 			is_in_faction_with = ROOT
 			has_war_with = FRA
-		}
-		NOT = {
-			has_global_flag = great_war_ends
 		}
 	}
 	option = {
@@ -1747,68 +1744,50 @@ country_event = {
 	picture = GFX_report_event_bul_troops_macedonia
 	fire_only_once = yes
 	trigger = {
-		tag= BUL
+		tag = BUL
+		has_capitulated = no
+		is_subject = no
 		NOT = {
 			has_country_flag = orestiada_restitued
 		}
+		OR = {
+			200 = {
+				OWNER = { is_in_faction_with = ROOT }
+			}	
+			has_country_flag = great_war_winner
+		}
 		200 = {
-			is_owned_and_controlled_by = TUR
+			owner = {
+				controls_state = PREV
+				has_war_together_with = ROOT
+				OR = {
+					is_in_faction_with = ROOT
+					has_country_flag = great_war_winner
+				}
+			}
 		}
-		212 = {
-			is_owned_and_controlled_by = BUL
-		}
-		BUL = {
-			is_in_faction_with = TUR
+		451 = {
+			is_owned_and_controlled_by = ROOT
 		}
 	}
 	option = {
 		name = ww1_bulgaria.51.a
-		BUL = {
+		custom_effect_tooltip = if_they_accept
+		effect_tooltip = {
 			transfer_state = 200
 		}
-		if = {
-			limit = {
-				TUR = {
-					any_owned_state = {
-						OR = {
-							is_core_of = BUL
-							is_claimed_by = BUL
-						}
-						is_on_continent = europe
-						NOT = {
-							state = 756
-							state = 849
-							state = 860
-							state = 341
-							state = 347
-							state = 347
-						}
-					}
-				}
-			}
-			every_state = {
-				limit = {
-					OR = {
-						is_core_of = BUL
-						is_claimed_by = BUL
-					}
-					is_on_continent = europe
-					NOT = {
-						state = 756
-						state = 849
-						state = 860
-						state = 341
-						state = 347
-						state = 347
-					}
-					is_owned_by = TUR
-				}
-				transfer_state_to = BUL
+		hidden_effect = {
+			set_country_flag = orestiada_restitued
+			200 = {
+				OWNER = { country_event = ww1_bulgaria.52 }
 			}
 		}
-		set_country_flag = orestiada_restitued
-		TUR = {
-			country_event = ww1_bulgaria.52
+	}
+	option = {
+		name = ww1_bulgaria.51.b
+		add_war_support = -0.01
+		ai_chance = {
+			base = 0
 		}
 	}
 }
@@ -1822,31 +1801,20 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_bulgaria.52.a
-		effect_tooltip = {
-			BUL = {
-				transfer_state = 200
-			}
-			every_state = {
-				limit = {
-					OR = {
-						is_core_of = BUL
-						is_claimed_by = BUL
-					}
-					is_on_continent = europe
-					NOT = {
-						state = 756
-						state = 849
-						state = 860
-						state = 341
-						state = 347
-						state = 347
-					}
-					is_owned_by = TUR
-				}
-				transfer_state_to = BUL
+		FROM = { transfer_state = 200 }
+	}
+	option = {
+		name = ww1_bulgaria.52.b
+		add_war_support = -0.01
+		FROM = {
+			add_opinion_modifier = {
+				target = ROOT
+				modifier = orestiada_malus
 			}
 		}
-
+		ai_chance = {
+			base = 0
+		}
 	}
 }
 
@@ -2135,7 +2103,7 @@ country_event = {
 			create_wargoal = {
 				target = ROOT
 				type = take_claimed_state
-				generator = {788 451 200 756 849 759 106 203 184 757 345 225 731}
+				generator = {788 451 200 756 849 759 106 203 184 757 345 225 731 1140 1141 1213}
 			}
 		}
 	}
@@ -2263,6 +2231,106 @@ news_event = {
 					}
 				}
 			}
+		}
+	}
+}
+
+# Lone Liberator - The Balkan League Has Defeated the Ottomans Before Us!
+country_event = {
+	id = ww1_bulgaria.66
+	title = ww1_bulgaria.66.t
+	desc = ww1_bulgaria.66.d
+	picture = GFX_report_event_bulgarian_soldiers
+	trigger = {
+		tag = BUL
+		is_subject = no
+		has_war = no
+		has_global_flag = balkan_league_fail
+		has_global_flag = kis_firstbalkan_war
+		has_global_flag = TUR_surrender_1st_balkan_war
+		has_global_flag = kis_firstbalkanwar_victory
+		NOT = {
+			has_country_flag = won_balkan_war
+			has_global_flag = lone_liberator_victorious
+		}
+		has_start_date < 1914.1.1
+		TUR = {
+			any_owned_state = {
+				is_core_of = ROOT
+			}
+		}
+	}
+	fire_only_once = yes
+	mean_time_to_happen = {
+		days = 0
+	}
+	option = {
+		name = ww1_bulgaria.66.a
+		TUR = {
+			custom_effect_tooltip = agree_effect_tooltip
+			effect_tooltip = {
+				every_owned_state = {
+					limit = {
+						OR = {
+							is_claimed_by = ROOT
+							is_core_of = ROOT
+						}
+						#east thrace and constantinople
+						NOT = {
+							state = 200
+							state = 341
+							state = 347
+							state = 451
+							state = 756
+							state = 757
+							state = 860
+							state = 1018
+						}
+					}
+					transfer_state_to = ROOT
+				}
+			}
+			hidden_effect = {
+				country_event = {
+					id = ww1_bulgaria.67
+					hours = 10
+				}
+			}
+		}
+	}
+}
+
+# Lone Liberator - Bulgaria Demands Border Strip
+country_event = {
+	id = ww1_bulgaria.67
+	title = ww1_bulgaria.67.t
+	desc = ww1_bulgaria.67.d
+	picture = GFX_report_event_bulgarian_soldiers
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_bulgaria.67.a
+		set_country_flag = won_balkan_war
+		every_state = {
+			limit = {
+				is_owned_by = FROM
+				OR = {
+					is_claimed_by = ROOT
+					is_core_of = ROOT
+				}
+				#east thrace and constantinople
+				NOT = {
+					state = 200
+					state = 341
+					state = 347
+					state = 451
+					state = 756
+					state = 757
+					state = 860
+					state = 1018
+				}
+			}
+			transfer_state_to = ROOT
 		}
 	}
 }
