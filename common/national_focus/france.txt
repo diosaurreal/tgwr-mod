@@ -1071,7 +1071,7 @@ focus_tree = {
 
 	focus = {
 		id = FRA_ww1_munitionnettes
-		icon = GFX_goal_generic_construct_mil_factory
+		icon = GFX_focus_generic_munitions
 		relative_position_id = FRA_ww1_taylorist_rethoric
 		prerequisite = {
 			focus = FRA_ww1_rearmement_program
@@ -3241,6 +3241,7 @@ focus_tree = {
 		available = {
 			has_government = communism
 			has_war = no
+			has_country_flag = entente_leader
 			NOT = {
 				has_country_flag = great_war_loser
 			}
@@ -3253,20 +3254,15 @@ focus_tree = {
 			custom_effect_tooltip = FRA_cancel_all_alliances
 			
 			hidden_effect = {
-				every_country = {
+				every_other_country = {
 					limit = {
 						is_in_faction_with = FRA
-						NOT = {
-							tag = FRA
-						}
 					}
-					set_country_flag = was_part_of_entente
 					country_event = {
 						id = ww1_france.407
 						hours = 4
 					}
-				}
-				leave_faction = yes
+				}		
 				every_other_country = {
 					FRA = {
 						diplomatic_relation = {
@@ -3281,40 +3277,125 @@ focus_tree = {
 						}
 					}
 				}
+				every_country = {
+					limit = {
+						has_country_flag = entente_leader
+					}
+					clr_country_flag = entente_leader
+				}
 				if = {
 					limit = {
 						ENG = {
-							has_country_flag = was_part_of_entente
+							is_in_faction_with = ROOT
+							is_subject = no
+							has_capitulated = no
+							NOT = {
+								has_country_flag = has_capitulated_with_france_early
+							}
 						}
 					}
-					create_faction = entente
-					set_country_flag = entente_leader
 					ENG = {
-						every_country = {
-							limit = {
-								has_country_flag = was_part_of_entente
-							}
-							add_to_faction = PREV
-						}
-					}
-					else_if = {
-						limit = {
-							RUS = {
-								has_country_flag = was_part_of_entente
-							}
-						}
-						RUS = {
-							every_country = {
-								limit = {
-									has_country_flag = was_part_of_entente
-								}
-								add_to_faction = PREV
-							}
-						}
+						set_country_flag = entente_leader
+						set_faction_leader = yes
 					}
 				}
-			}
-			
+				else_if = {
+					limit = {
+						RUS = {
+							is_in_faction_with = ROOT
+							is_subject = no
+							has_capitulated = no
+							tag = SOV
+							NOT = {
+								has_country_flag = has_capitulated_with_france_early
+								has_global_flag = russ_kapitulation
+								tag = SOV
+							}
+						}
+					}
+					RUS = {
+						set_country_flag = entente_leader
+						set_faction_leader = yes
+					}
+				}
+				else_if = {
+					limit = {
+						any_allied_country = {
+							is_major = yes
+							is_subject = no
+							has_capitulated = no
+							capital_scope = {
+								is_on_continent = europe
+							}
+						}
+					}
+					random_other_country = {
+						limit = {
+							is_major = yes
+							is_subject = no
+							has_capitulated = no
+							capital_scope = {
+								is_on_continent = europe
+							}
+						}
+						set_country_flag = entente_leader
+						set_faction_leader = yes
+					}
+				}
+				else_if = {
+					limit = {
+						any_allied_country = {
+							is_major = yes
+							is_subject = no
+							has_capitulated = no
+						}
+					}
+					random_other_country = {
+						limit = {
+							is_major = yes
+							is_subject = no
+							has_capitulated = no
+						}
+						set_country_flag = entente_leader
+						set_faction_leader = yes
+					}
+				}
+				else_if = {
+					limit = {
+						any_allied_country = {
+							is_subject = no
+							has_capitulated = no
+							capital_scope = {
+								is_on_continent = europe
+							}
+						}
+					}
+					random_other_country = {
+						limit = {
+							is_in_faction_with = ROOT
+							is_subject = no
+							has_capitulated = no
+							capital_scope = {
+								is_on_continent = europe
+							}
+						}
+						set_country_flag = entente_leader
+						set_faction_leader = yes
+					}
+				}
+				else = {
+					random_other_country = {
+						limit = {
+							is_in_faction_with = ROOT
+							is_subject = no
+							has_capitulated = no
+						}
+						set_country_flag = entente_leader
+						set_faction_leader = yes
+					}
+				}
+				leave_faction = yes
+			}		
 		}
 
 		ai_will_do = {
@@ -4851,7 +4932,7 @@ focus_tree = {
 
 	focus = {
 		id = FRA_ww1_finish_the_west_african_railway
-		icon = GFX_focus_generic_railroad
+		icon = GFX_focus_generic_tropical_railway
 		relative_position_id = FRA_ww1_ecole_normale_william_ponty
 		prerequisite = {
 			focus = FRA_ww1_ecole_normale_william_ponty
@@ -4945,7 +5026,7 @@ focus_tree = {
 	}
 	focus = {
 		id = FRA_ww1_establish_france_equatoriale
-		icon = GFX_focus_por_luso_tropicalism
+		icon = GFX_focus_generic_african_goods
 		relative_position_id = FRA_ww1_ecole_normale_william_ponty
 		prerequisite = {
 			focus = FRA_ww1_ecole_normale_william_ponty
@@ -5027,6 +5108,7 @@ focus_tree = {
 			460 = {
 				is_controlled_by_ROOT_or_subject = yes
 			}
+			has_civil_war = no
 		}
 		bypass = {
 			ALG = {
@@ -5113,7 +5195,7 @@ focus_tree = {
 						amount = -2500
 					}
 					add_equipment_to_stockpile = {
-						type = artillery_equipment
+						type = field_gun_equipment
 						amount = -250
 					}
 				}
@@ -5928,7 +6010,6 @@ focus_tree = {
 						level = 2
 						province = {
 							all_provinces = yes
-							limit_to_naval_base = no
 						}
 						instant_build = yes
 					}
@@ -6007,6 +6088,7 @@ focus_tree = {
 			#support academy goncourt
 			#lead to add Antoine Schwerer Maurice Barrès Édouard de Castelnau
 			independent_radicals_hate = yes
+			custom_effect_tooltip = FRA_we_have_to_wait_next_elections
 		}
 		ai_will_do = {
 			factor = 50
@@ -6395,6 +6477,10 @@ focus_tree = {
 					cost_reduction = 0.25
 				}
 			}
+			add_breakthrough_progress = {
+				specialization = specialization_land
+				value = 0.5
+			}
 		}
 		ai_will_do = {
 			factor = 1
@@ -6436,7 +6522,11 @@ focus_tree = {
 			add_equipment_to_stockpile = {
 				type = infantry_equipment_0
 				producer = FRA
-				amount = 4000
+				amount = 12000
+			}
+			add_breakthrough_progress = {
+				specialization = specialization_land
+				value = 0.5
 			}
 		}
 		ai_will_do = {
@@ -6530,7 +6620,7 @@ focus_tree = {
 				uses = 2
 			}
 			add_equipment_to_stockpile = {
-				type = artillery_equipment_1
+				type = field_gun_equipment_1
 				producer = FRA
 				amount = 500
 			}
@@ -6579,8 +6669,7 @@ focus_tree = {
 			add_tech_bonus = {
 				name = FRA_ww1_howitzer_development
 				bonus = 1
-				technology = howitzer3
-				technology = howitzer2
+				category = cat_howitzer
 				uses = 1
 			}
 
@@ -6758,6 +6847,20 @@ focus_tree = {
 				idea = FRA_national_mobilization_focus
 				days = 480
 			}
+			add_breakthrough_progress = {
+				specialization = specialization_land
+				value = 1
+			}
+			if = {
+				limit = {
+					NOT = {
+						is_special_project_completed = sp:sp_land_tank_prototype
+					}
+				}
+				sp:sp_land_tank_prototype = {
+					add_project_progress_ratio = 0.5
+				}		
+			}
 		}
 		ai_will_do = {
 			factor = 1000
@@ -6858,10 +6961,7 @@ focus_tree = {
 			}
 			add_tech_bonus = {
 				name = FRA_ww1_anti_air_positions
-				technology = interwar_antiair
-				technology = antiair1
-				technology = antiair2
-				technology = antiair3
+				category = cat_anti_air
 				uses = 2
 				bonus = 1
 			}
@@ -6908,8 +7008,7 @@ focus_tree = {
 		completion_reward = {
 			add_tech_bonus = {
 				name = FRA_ww1_fund_apx
-				technology = interwar_antitank
-				technology = antitank2
+				category = cat_anti_tank
 				uses = 1
 				ahead_reduction = 1
 				bonus = 1
@@ -7777,7 +7876,7 @@ focus_tree = {
 			add_tech_bonus = {
 				name = FRA_ww1_motorization
 				bonus = 1
-				technology = motorised_infantry2
+				technology = motorised_infantry
 				uses = 1
 				ahead_reduction = 1
 			}
@@ -8423,7 +8522,7 @@ focus_tree = {
 		search_filters = {
 			FOCUS_FILTER_RESEARCH
 		}
-		cost = 10
+		cost = 5
 		x = 4
 		y = 2
 	}
@@ -8459,7 +8558,7 @@ focus_tree = {
 			FOCUS_FILTER_RESEARCH
 			FOCUS_FILTER_HISTORICAL
 		}
-		cost = 10
+		cost = 5
 		x = -2
 		y = 2
 	}
@@ -10189,7 +10288,7 @@ focus_tree = {
 		allow_branch = {
 		}
 		available = {
-			has_global_flag = versallies_treaty
+			has_global_flag = versailles_treaty
 			NOT = {
 				has_government = communism
 			}
@@ -11544,6 +11643,7 @@ focus_tree = {
 								state = 834
 								state = 998
 								state = 158
+								state = 1216
 							}
 						}
 						add_dynamic_modifier = {
@@ -12147,22 +12247,27 @@ focus_tree = {
 				}
 			}
 			controls_state = 869
+			controls_state = 1208
 		}
 		completion_reward = {
 			add_named_threat = {
 				threat = 2
 				name = FRA_annexation_of_sarre
 			}
-			869 = {
-				transfer_state_to = FRA
-			}
-			869 = {
+			every_state = {
+				limit = {
+					OR = {
+						state = 869
+						state = 1208
+					}
+				}
+				transfer_state_to = ROOT
 				add_dynamic_modifier = {
 					modifier = FRA_french_integration_weak
 					days = 360
 				}
 			}
-			#rename the city into Saarbrigge
+
 			news_event = ww1_france.441
 		}
 		ai_will_do = {
@@ -12195,11 +12300,19 @@ focus_tree = {
 			every_state = {
 				limit = {
 					OR = {
-						state = 989
 						state = 42
 						state = 51
-						state = 793
+						state = 55
 						state = 343
+						state = 1182
+						state = 1183
+						state = 1184
+						state = 1185
+
+						state = 873
+						state = 1186
+						state = 1187
+						state = 1188
 					}
 					NOT = {
 						is_claimed_by = FRA
@@ -12212,12 +12325,14 @@ focus_tree = {
 			every_state = {
 				limit = {
 					OR = {
-						state = 989
 						state = 42
-						state = 869
 						state = 51
-						state = 793
+						state = 55
 						state = 343
+						state = 1182
+						state = 1183
+						state = 1184
+						state = 1185
 					}
 				}
 				add_core_of = RHN
@@ -12234,9 +12349,7 @@ focus_tree = {
 					}
 					promote_character = GER_konrad_adenauer
 					inherit_technology = GER
-				}
-				
-				
+				}	
 			}
 			#
 			news_event = ww1_france.443
@@ -12455,13 +12568,14 @@ focus_tree = {
 			GER = {
 				has_country_flag = great_war_loser
 			}
-			873 = {
-				OR = {
-					is_owned_and_controlled_by = HAN
-					is_owned_and_controlled_by = FRA
+			OR = {
+				873 = {
 					is_owned_and_controlled_by = GER
 				}
-			}
+				1185 = {
+					is_owned_and_controlled_by = GER
+				}
+			}		
 		}
 		completion_reward = {
 			set_country_flag = can_occupy_ruhr
@@ -12920,52 +13034,52 @@ focus_tree = {
 	}
 
 	
-	focus = {
-		id = FRA_interwar_takeover_koln
-		icon = GFX_goal_generic_territory_or_war
-		relative_position_id = FRA_interwar_sanction_german_economy
-		prerequisite = {
-			focus = FRA_interwar_sanction_german_economy	
-		}
-		available = {
-			has_war = no 
-			has_country_flag = ENG_didnt_supported_paris_conference
-			controls_state = 42
-			controls_state = 873
-			NOT = {
-				owns_state = 343
-			}
-		}
-		bypass_if_unavailable = yes
-		completion_reward = {
-			343 = {
-				CONTROLLER = {
-					country_event = {
-						id = ww1_france.292
-						days = 1
-					}
-					add_opinion_modifier = {
-						target = ROOT
-						modifier = large_decrease
-					}
-				}
-			}
-		}
-		ai_will_do = {
-			base = 300
-			modifier = {
-				is_historical_focus_on = yes 
-				NOT = {
-					has_government = neutrality
-					has_government = fascism
-				}
-				factor = 0
-			}
-		}
-		cost = 10
-		x = -1
-		y = 1
-	}
+	# focus = {
+	# 	id = FRA_interwar_takeover_koln
+	# 	icon = GFX_goal_generic_territory_or_war
+	# 	relative_position_id = FRA_interwar_sanction_german_economy
+	# 	prerequisite = {
+	# 		focus = FRA_interwar_sanction_german_economy	
+	# 	}
+	# 	available = {
+	# 		has_war = no 
+	# 		has_country_flag = ENG_didnt_supported_paris_conference
+	# 		controls_state = 42
+	# 		controls_state = 873
+	# 		NOT = {
+	# 			owns_state = 343
+	# 		}
+	# 	}
+	# 	bypass_if_unavailable = yes
+	# 	completion_reward = {
+	# 		343 = {
+	# 			CONTROLLER = {
+	# 				country_event = {
+	# 					id = ww1_france.292
+	# 					days = 1
+	# 				}
+	# 				add_opinion_modifier = {
+	# 					target = ROOT
+	# 					modifier = large_decrease
+	# 				}
+	# 			}
+	# 		}
+	# 	}
+	# 	ai_will_do = {
+	# 		base = 300
+	# 		modifier = {
+	# 			is_historical_focus_on = yes 
+	# 			NOT = {
+	# 				has_government = neutrality
+	# 				has_government = fascism
+	# 			}
+	# 			factor = 0
+	# 		}
+	# 	}
+	# 	cost = 10
+	# 	x = -1
+	# 	y = 1
+	# }
 
 	focus = {
 		id = FRA_interwar_arrest_monarchist_figures
@@ -13006,9 +13120,13 @@ focus_tree = {
 	focus = {
 		id = FRA_interwar_ENG_rupture
 		icon = GFX_focus_eng_decolonization
-		relative_position_id = FRA_interwar_takeover_koln
+		# relative_position_id = FRA_interwar_takeover_koln
+		# prerequisite = {
+		# 	focus = FRA_interwar_takeover_koln	
+		# }
+		relative_position_id = FRA_interwar_sanction_german_economy
 		prerequisite = {
-			focus = FRA_interwar_takeover_koln	
+			focus = FRA_interwar_sanction_german_economy	
 		}
 		prerequisite = {
 			focus = FRA_interwar_ban_sfio
@@ -13072,8 +13190,8 @@ focus_tree = {
 			}
 		}
 		cost = 10
-		x = -1
-		y = 1
+		x = -2
+		y = 2
 	}
 
 	focus = {
@@ -13254,17 +13372,22 @@ focus_tree = {
 		}
 		available = {
 			has_war = no 
-			873 = {
+			1185 = {
 				is_owned_and_controlled_by = ROOT
+				has_resistance = yes
 			}
 		}
 		bypass_if_unavailable = yes
 		completion_reward = {
 			add_war_support = 0.05
-			873 = {
-				add_resistance = -50
-			}
-			51 = {
+			every_controlled_state = {
+				limit = {
+					OR = {
+						state = 873
+						state = 1185
+					}
+					has_resistance = yes
+				}		
 				add_resistance = -50
 			}
 		}
@@ -13863,645 +13986,6 @@ focus_tree = {
 	}
 
 	###############################################################
-	# DEFEATED FRANCE
-	###############################################################
-
-	focus = {
-		id = FRA_ww1_emergency_council
-		icon = GFX_focus_chi_reach_out_to_france
-		allow_branch = {
-			OR = {
-				AND = {
-					has_country_flag = great_war_loser
-					NOT = {
-						has_country_flag = great_war_winner
-					}
-				}
-				AND = {
-					NOT = {
-						has_country_flag = hide_interwar_trees
-					}
-					is_debug = yes
-				}
-				AND = {
-					has_global_flag = FRA_surrender_alone
-				}
-			}
-		}
-
-		available = {
-			OR = {
-				has_global_flag = FRA_surrender_alone
-				has_country_flag = great_war_loser
-			}
-		}
-		cancelable = no
-		select_effect = {
-			if = {
-				limit = {
-					NOT = { has_global_flag = FRA_surrender_alone }
-				}
-				country_event = {
-					id = ww1_france.249
-					days = 10
-				}
-			}
-		}
-		completion_reward = {
-			add_political_power = 75
-		}
-		ai_will_do = {
-			factor = 1000
-		}
-		cost = 3
-		x = -4
-		y = 8
-	}
-
-	focus = {
-		id = FRA_ww1_confront_the_debt
-		icon = GFX_goal_generic_demand_territory
-		relative_position_id = FRA_ww1_emergency_council
-		completion_reward = {
-			add_stability = -0.10
-			add_popularity = {
-				ideology = communism
-				popularity = 0.10
-			}
-			add_ideas = FRA_debt_council
-		}
-		prerequisite = {
-			focus = FRA_ww1_emergency_council
-		}
-		mutually_exclusive = {
-			focus = FRA_ww1_deal_with_the_germans
-		}
-		ai_will_do = {
-			base = 1000
-			modifier = {
-				add = 50
-				date > 1917.1.1
-			}
-			modifier = {
-				add = 100
-				any_other_country = {
-					is_major = yes
-					has_government = communism
-				}
-			}
-			modifier = {
-				add = 75
-				has_completed_focus = FRA_ww1_memories_of_the_commune
-			}
-			modifier = {
-				add = 50
-				has_global_flag = russian_revolution
-			}
-		}
-		cost = 5
-		x = -1
-		y = 1
-	}
-
-	focus = {
-		id = FRA_ww1_deal_with_the_germans
-		icon = GFX_goal_generic_dangerous_deal
-		relative_position_id = FRA_ww1_emergency_council
-		available = {
-			has_war = no
-			country_exists = GER
-		}
-		completion_reward = {
-			add_ideas = FRA_german_debt_supervision
-		}
-		prerequisite = {
-			focus = FRA_ww1_emergency_council
-		}
-		mutually_exclusive = {
-			focus = FRA_ww1_confront_the_debt
-		}
-		
-		ai_will_do = {
-			base = 1000
-			modifier = {
-				add = 100
-				date < 1917.1.1
-			}
-		}
-		cost = 5
-		x = 1
-		y = 1
-	}
-
-	focus = {
-		id = FRA_ww1_privatise_banks
-		icon = GFX_focus_generic_banking
-		relative_position_id = FRA_ww1_deal_with_the_germans
-		completion_reward = {
-			add_political_power = -75
-			add_ideas = FRA_privatized_banks
-		}
-		prerequisite = {
-			focus = FRA_ww1_deal_with_the_germans
-		}
-		ai_will_do = {
-			factor = 1000
-		}
-		cost = 5
-		x = 2
-		y = 1
-	}
-	
-	focus = {
-		id = FRA_ww1_The_wheat_of_the_victors
-		icon = GFX_focus_generic_wheat
-		relative_position_id = FRA_ww1_deal_with_the_germans
-		available = {
-			has_war = no
-		}
-		bypass = {
-			OR = {
-				NOT = { has_idea = idea_farm_crisis }
-				NOT = { country_exists = GER }
-			}
-		}
-		completion_reward = {
-			GER = {
-				country_event = {
-					id = ww1_france.251
-					hours = 3
-				}
-			}
-			custom_effect_tooltip = FRA_ww1_The_wheat_of_the_victors_tt
-			effect_tooltip = {
-				swap_ideas = {
-					remove_idea = idea_farm_crisis
-					add_idea = idea_farm_crisis_2
-				}
-			}
-			custom_effect_tooltip = FRA_ww1_The_wheat_of_the_victors_tt_negative
-			effect_tooltip = {
-				add_political_power = -200
-				add_stability = -0.10
-			}
-		}
-		prerequisite = {
-			focus = FRA_ww1_deal_with_the_germans
-		}
-		ai_will_do = {
-			factor = 1000
-		}
-		cost = 5
-		x = 0
-		y = 1
-	}
-
-	focus = {
-		id = FRA_ww1_negotiate_anti_communist_force
-		icon = GFX_goal_FRA_french_interventionism_focus
-		relative_position_id = FRA_ww1_The_wheat_of_the_victors
-		completion_reward = {
-			custom_effect_tooltip = FRA_deploy_occupation_army
-			hidden_effect = {
-				division_template = {
-					name = "Division d'Infanterie légère"
-					is_locked = yes
-					division_names_group = FRA_ARM_01
-					regiments = {
-						infantry = { x = 0 y = 0 }
-						infantry = { x = 0 y = 1 }
-						infantry = { x = 0 y = 2 }
-						infantry = { x = 1 y = 0 }
-						infantry = { x = 1 y = 1 }
-						infantry = { x = 1 y = 2 }
-						infantry = { x = 2 y = 0 }
-						infantry = { x = 2 y = 1 }
-						infantry = { x = 2 y = 2 }
-					}
-				}
-				division_template = {
-					name = "Division de Cavalerie légère" 	
-					division_names_group = FRA_CAV_01
-					regiments = {
-						cavalry = { x = 0 y = 0 }
-						cavalry = { x = 0 y = 1 }
-						cavalry = { x = 0 y = 2 }
-						cavalry = { x = 1 y = 0 }
-						cavalry = { x = 1 y = 1 }
-						cavalry = { x = 1 y = 2 }
-					}
-				}
-				random_owned_controlled_state = {
-					limit = {
-						is_core_of = ROOT
-						is_on_continent = europe
-					}
-					create_unit = {
-						division = "division_template = \"Division d'Infanterie légère\" start_experience_factor = 0.35 start_equipment_factor = 0.2"
-						owner = ROOT
-					}
-					create_unit = {
-						division = "division_template = \"Division d'Infanterie légère\" start_experience_factor = 0.35 start_equipment_factor = 0.2"
-						owner = ROOT
-					}
-					create_unit = {
-						division = "division_template = \"Division d'Infanterie légère\" start_experience_factor = 0.35 start_equipment_factor = 0.2"
-						owner = ROOT
-					}
-					create_unit = {
-						division = "division_template = \"Division d'Infanterie légère\" start_experience_factor = 0.35 start_equipment_factor = 0.2"
-						owner = ROOT
-					}
-				}
-				random_owned_controlled_state = {
-					limit = {
-						is_core_of = ROOT
-						is_on_continent = europe
-					}
-					create_unit = {
-						division = "division_template = \"Division d'Infanterie légère\" start_experience_factor = 0.35 start_equipment_factor = 0.2"
-						owner = ROOT
-					}
-					create_unit = {
-						division = "division_template = \"Division d'Infanterie légère\" start_experience_factor = 0.35 start_equipment_factor = 0.2"
-						owner = ROOT
-					}
-					create_unit = {
-						division = "division_template = \"Division d'Infanterie légère\" start_experience_factor = 0.35 start_equipment_factor = 0.2"
-						owner = ROOT
-					}
-					create_unit = {
-						division = "division_template = \"Division d'Infanterie légère\" start_experience_factor = 0.35 start_equipment_factor = 0.2"
-						owner = ROOT
-					}
-				}
-				random_owned_controlled_state = {
-					limit = {
-						is_core_of = ROOT
-						is_on_continent = europe
-					}
-					create_unit = {
-						division = "division_template = \"Division d'Infanterie légère\" start_experience_factor = 0.35 start_equipment_factor = 0.2"
-						owner = ROOT
-					}
-					create_unit = {
-						division = "division_template = \"Division d'Infanterie légère\" start_experience_factor = 0.35 start_equipment_factor = 0.2"
-						owner = ROOT
-					}
-					create_unit = {
-						division = "division_template = \"Division d'Infanterie légère\" start_experience_factor = 0.35 start_equipment_factor = 0.2"
-						owner = ROOT
-					}
-					create_unit = {
-						division = "division_template = \"Division d'Infanterie légère\" start_experience_factor = 0.35 start_equipment_factor = 0.2"
-						owner = ROOT
-					}
-				}
-				random_owned_controlled_state = {
-					limit = {
-						is_core_of = ROOT
-						is_on_continent = europe
-					}
-					create_unit = {
-						division = "division_template = \"Division de Cavalerie légère\" start_experience_factor = 0.35 start_equipment_factor = 0.2"
-						owner = ROOT
-					}
-					create_unit = {
-						division = "division_template = \"Division de Cavalerie légère\" start_experience_factor = 0.35 start_equipment_factor = 0.2"
-						owner = ROOT
-					}
-					create_unit = {
-						division = "division_template = \"Division de Cavalerie légère\" start_experience_factor = 0.35 start_equipment_factor = 0.2"
-						owner = ROOT
-					}
-					create_unit = {
-						division = "division_template = \"Division de Cavalerie légère\" start_experience_factor = 0.35 start_equipment_factor = 0.2"
-						owner = ROOT
-					}
-				}
-			}
-		}
-		prerequisite = {
-			focus = FRA_ww1_The_wheat_of_the_victors
-		}
-		prerequisite = {
-			focus = FRA_ww1_privatise_banks
-		}
-		ai_will_do = {
-			factor = 1000
-		}
-		cost = 5
-		x = 1
-		y = 1
-	}
-
-	focus = {
-		id = FRA_ww1_focus_on_reparation
-		icon = GFX_goal_generic_construct_civilian
-		relative_position_id = FRA_ww1_deal_with_the_germans
-		completion_reward = {
-			add_timed_idea = {
-				idea = FRA_idea_restore_the_nation
-				days = 360
-			}
-		}
-		prerequisite = {
-			focus = FRA_ww1_deal_with_the_germans
-			focus = FRA_ww1_confront_the_debt
-		}
-		ai_will_do = {
-			factor = 1000
-		}
-		cost = 5
-		x = -1
-		y = 2
-	}
-
-	focus = {
-		id = FRA_ww1_extreme_austerity_measures
-		icon = GFX_goal_generic_forceful_treaty
-		relative_position_id = FRA_ww1_confront_the_debt
-		completion_reward = {
-			add_ideas = FRA_extreme_austerity_measures
-		}
-		prerequisite = {
-			focus = FRA_ww1_confront_the_debt
-		}
-		ai_will_do = {
-			factor = 1000
-		}
-		cost = 5
-		x = 0
-		y = 1
-	}
-
-	focus = {
-		id = FRA_ww1_rationing_population
-		icon = GFX_focus_CZE_german_puppet
-		relative_position_id = FRA_ww1_confront_the_debt
-		completion_reward = {
-			add_popularity = {
-				ideology = communism
-				popularity = 0.10
-			}
-			swap_ideas = {
-				remove_idea = idea_farm_crisis
-				add_idea = idea_farm_crisis_2
-			}
-		}
-		prerequisite = {
-			focus = FRA_ww1_confront_the_debt
-		}
-		ai_will_do = {
-			factor = 1000
-		}
-		cost = 5
-		x = -2
-		y = 1
-	}
-
-	focus = {
-		id = FRA_ww1_armee_des_volontaires
-		icon = GFX_goal_FRA_colonial_volunteers_focus
-		relative_position_id = FRA_ww1_rationing_population
-		completion_reward = {
-			custom_effect_tooltip = FRA_ww1_8_div_army
-			hidden_effect = {
-				division_template = {
-					name = "Division d'Infanterie légère"
-					is_locked = yes
-					division_names_group = FRA_ARM_01
-					regiments = {
-						infantry = { x = 0 y = 0 }
-						infantry = { x = 0 y = 1 }
-						infantry = { x = 0 y = 2 }
-						infantry = { x = 1 y = 0 }
-						infantry = { x = 1 y = 1 }
-						infantry = { x = 1 y = 2 }
-						infantry = { x = 2 y = 0 }
-						infantry = { x = 2 y = 1 }
-						infantry = { x = 2 y = 2 }
-					}
-				}
-				random_owned_controlled_state = {
-					limit = {
-						is_core_of = ROOT
-						is_on_continent = europe
-					}
-					create_unit = {
-						division = "division_template = \"Division d'Infanterie légère\" start_experience_factor = 0.35 start_equipment_factor = 0.2"
-						owner = ROOT
-					}
-					create_unit = {
-						division = "division_template = \"Division d'Infanterie légère\" start_experience_factor = 0.35 start_equipment_factor = 0.2"
-						owner = ROOT
-					}
-					create_unit = {
-						division = "division_template = \"Division d'Infanterie légère\" start_experience_factor = 0.35 start_equipment_factor = 0.2"
-						owner = ROOT
-					}
-					create_unit = {
-						division = "division_template = \"Division d'Infanterie légère\" start_experience_factor = 0.35 start_equipment_factor = 0.2"
-						owner = ROOT
-					}
-				}
-				random_owned_controlled_state = {
-					limit = {
-						is_core_of = ROOT
-						is_on_continent = europe
-					}
-					create_unit = {
-						division = "division_template = \"Division d'Infanterie légère\" start_experience_factor = 0.35 start_equipment_factor = 0.2"
-						owner = ROOT
-					}
-					create_unit = {
-						division = "division_template = \"Division d'Infanterie légère\" start_experience_factor = 0.35 start_equipment_factor = 0.2"
-						owner = ROOT
-					}
-					create_unit = {
-						division = "division_template = \"Division d'Infanterie légère\" start_experience_factor = 0.35 start_equipment_factor = 0.2"
-						owner = ROOT
-					}
-					create_unit = {
-						division = "division_template = \"Division d'Infanterie légère\" start_experience_factor = 0.35 start_equipment_factor = 0.2"
-						owner = ROOT
-					}
-				}
-			}
-		}
-		prerequisite = {
-			focus = FRA_ww1_rationing_population
-		}
-		prerequisite = {
-			focus = FRA_ww1_extreme_austerity_measures
-		}
-		ai_will_do = {
-			factor = 1000
-		}
-		cost = 5
-		x = 1
-		y = 1
-	}
-
-	focus = {
-		id = FRA_ww1_maintain_the_regime
-		icon = GFX_goal_FRA_gold
-		relative_position_id = FRA_ww1_negotiate_anti_communist_force
-		completion_reward = {
-			add_stability = 0.05
-			add_days_mission_timeout = {
-				mission = three_side_uprising
-				days = 140
-			}
-		}
-		prerequisite = {
-			focus = FRA_ww1_negotiate_anti_communist_force
-		}
-		ai_will_do = {
-			factor = 1000
-		}
-		cost = 5
-		x = 0
-		y = 1
-	}
-
-	focus = {
-		id = FRA_ww1_repress_socialists
-		icon = GFX_goal_anti_comintern_pact
-		relative_position_id = FRA_ww1_maintain_the_regime
-		completion_reward = {
-			add_popularity = {
-				ideology = communism
-				popularity = -0.10
-			}
-			add_stability = 0.05
-		}
-		prerequisite = {
-			focus = FRA_ww1_maintain_the_regime
-		}
-		ai_will_do = {
-			factor = 1000
-		}
-		cost = 5
-		x = 0
-		y = 1
-	}
-
-	focus = {
-		id = FRA_ww1_cheat_on_rearmament
-		icon = GFX_goal_generic_construct_mil_factory
-		relative_position_id = FRA_ww1_repress_socialists
-		bypass = {
-			NOT = {
-				459 = {
-					is_controlled_by = ROOT
-				}
-			}
-		}
-		available = {
-			459 = {
-				is_controlled_by = ROOT
-			}
-		}
-		completion_reward = {
-			FRA = {
-				459 = {
-					add_extra_state_shared_building_slots = 2
-					add_building_construction = {
-						type = arms_factory
-						level = 2
-						instant_build = yes
-					}
-				}
-			}
-		}
-		prerequisite = {
-			focus = FRA_ww1_repress_socialists
-		}
-		ai_will_do = {
-			factor = 1000
-		}
-		cost = 5
-		x = -2
-		y = 1
-	}
-
-	focus = {
-		id = FRA_ww1_expand_police_forces
-		icon = GFX_focus_generic_military_academy
-		relative_position_id = FRA_ww1_repress_socialists
-		bypass = {
-		}
-		available = {
-			
-		}
-		completion_reward = {
-			custom_effect_tooltip = FRA_4_cavalry_units
-			random_owned_controlled_state = {
-				limit = {
-					is_core_of = ROOT
-					is_on_continent = europe
-				}
-				create_unit = {
-					division = "division_template = \"Division de Cavalerie légère\" start_experience_factor = 0.35 start_equipment_factor = 0.2"
-					owner = ROOT
-				}
-				create_unit = {
-					division = "division_template = \"Division de Cavalerie légère\" start_experience_factor = 0.35 start_equipment_factor = 0.2"
-					owner = ROOT
-				}
-				create_unit = {
-					division = "division_template = \"Division de Cavalerie légère\" start_experience_factor = 0.35 start_equipment_factor = 0.2"
-					owner = ROOT
-				}
-				create_unit = {
-					division = "division_template = \"Division de Cavalerie légère\" start_experience_factor = 0.35 start_equipment_factor = 0.2"
-					owner = ROOT
-				}
-			}
-		}
-		prerequisite = {
-			focus = FRA_ww1_repress_socialists
-		}
-		ai_will_do = {
-			factor = 1000
-		}
-		cost = 5
-		x = 0
-		y = 1
-	}
-
-	focus = {
-		id = FRA_ww1_secret_reserves
-		icon = GFX_goal_CAN_british_rifle_lease
-		relative_position_id = FRA_ww1_repress_socialists
-		bypass = {
-		}
-		available = {
-			
-		}
-		completion_reward = {
-			add_equipment_to_stockpile = {
-				type = infantry_equipment
-				amount = 5000
-			}
-			add_equipment_to_stockpile = {
-				type = artillery_equipment
-				amount = 500
-			}
-		}
-		prerequisite = {
-			focus = FRA_ww1_repress_socialists
-		}
-		ai_will_do = {
-			factor = 1000
-		}
-		cost = 5
-		x = 2
-		y = 1
-	}
-
-	###############################################################
 	# DEFEATED FRANCE 2 the democratic France in Africa
 	###############################################################
 
@@ -14516,27 +14000,44 @@ focus_tree = {
 			y = 0
 		}
 		allow_branch = {
-			has_global_flag = FRA_capitulation_alone
-			459 = {
-				is_capital = yes
+			16 = {
+				OWNER = {
+					original_tag = FRA
+				}
+			}
+			NOT = {
+				owns_state = 16
+			}
+			OR = {
+				459 = {
+					is_capital = yes
+				}
+				460 = {
+					is_capital = yes
+				}
 			}
 		}
 		bypass = {
 		}
 		available = {
-			459 = {
-				is_capital = yes
+			OR = {
+				459 = {
+					is_capital = yes
+				}
+				460 = {
+					is_capital = yes
+				}
 			}
 		}
 		bypass = {
 			459 = {
 				NOT = {
-					is_core_of = ROOT
+					is_owned_and_controlled_by = ROOT
 				}
 			}
 			460 = {
 				NOT = {
-					is_core_of = ROOT
+					is_owned_and_controlled_by = ROOT
 				}
 			}
 		}
@@ -14572,19 +14073,24 @@ focus_tree = {
 		bypass = {
 		}
 		available = {
-			459 = {
-				is_capital = yes
+			OR = {
+				459 = {
+					is_capital = yes
+				}
+				460 = {
+					is_capital = yes
+				}
 			}
 		}
 		bypass = {
 			459 = {
 				NOT = {
-					is_core_of = ROOT
+					is_owned_and_controlled_by = ROOT
 				}
 			}
 			460 = {
 				NOT = {
-					is_core_of = ROOT
+					is_owned_and_controlled_by = ROOT
 				}
 			}
 		}
@@ -14625,7 +14131,10 @@ focus_tree = {
 		}
 		available = {
 			has_government = communism
-			has_global_flag = versallies_treaty
+			OR = {
+				has_global_flag = versailles_treaty
+				has_country_flag = FRA_unlock_socialist_tree
+			}
 		}
 		relative_position_id = FRA_ww1_continental_affairs
 		completion_reward = {
@@ -14930,27 +14439,27 @@ focus_tree = {
 					priority = -1
 					is_locked = yes
 					regiments = { 
-						irregular_infantry = {
+						militia = {
 							x = 0
 							y = 0
 						}
-						irregular_infantry = {
+						militia = {
 							x = 0
 							y = 1
 						}
-						irregular_infantry = {
+						militia = {
 							x = 0
 							y = 2
 						}
-						irregular_infantry = {
+						militia = {
 							x = 1
 							y = 0
 						}
-						irregular_infantry = {
+						militia = {
 							x = 1
 							y = 1
 						}
-						irregular_infantry = {
+						militia = {
 							x = 1
 							y = 2
 						}
@@ -15283,7 +14792,7 @@ joint_focus = {
 	#relative_position_id = FRA_ww1_save_the_republic 
 	x = 44	#joint focuses between different architectures cant have relative position id
 	y = 2
-	text_icon = NORDIC_focus_style
+	text_icon = joint_FRA_MOR_focus_style
 	available = {
 		OR = {
 			AND = {
@@ -15359,7 +14868,7 @@ joint_focus = {
 				set_technology = {
 					tech_support = 1
 					tech_engineers = 1
-					artillery1 = 1
+					improved_field_gun = 1
 				}
 				division_template = {
 					name = "Division Coloniale du Maroc"
@@ -15372,7 +14881,7 @@ joint_focus = {
 					}
 					support = {
 						engineer = { x = 0 y = 0 }
-						artillery = { x = 0 y = 1 }
+						field_gun = { x = 0 y = 1 }
 					}
 				}
 				461 = {
@@ -15454,7 +14963,7 @@ joint_focus = {
 	id = FRA_ww1_setup_the_railway_network
 	icon = GFX_focus_generic_industry_2
 	relative_position_id = FRA_ww1_first_moroccan_campaign
-	text_icon = NORDIC_focus_style
+	text_icon = joint_FRA_MOR_focus_style
 	available = {
 		OR = {
 			AND = {
@@ -15545,7 +15054,7 @@ joint_focus = {
 	id = FRA_ww1_mineral_wealth
 	icon = GFX_focus_ENG_Legacy_Of_Industrial_Revolution
 	relative_position_id = FRA_ww1_first_moroccan_campaign
-	text_icon = NORDIC_focus_style
+	text_icon = joint_FRA_MOR_focus_style
 	available = {
 		OR = {
 			AND = {
@@ -15616,7 +15125,7 @@ joint_focus = {
 	id = FRA_ww1_reproduce_the_tunisian_model
 	icon = GFX_focus_eng_move_to_secure_the_dominions
 	relative_position_id = FRA_ww1_setup_the_railway_network
-	text_icon = NORDIC_focus_style
+	text_icon = joint_FRA_focus_style
 	available = {
 		has_subject = MOR
 	}
@@ -15663,7 +15172,7 @@ joint_focus = {
 	id = FRA_ww1_cooperation_with_sharif
 	icon = GFX_focus_BRA_reach_out_to_military_dem
 	relative_position_id = FRA_ww1_setup_the_railway_network
-	text_icon = NORDIC_focus_style
+	text_icon = joint_FRA_focus_style
 	available = {
 		has_subject = MOR
 	}
@@ -15718,7 +15227,7 @@ joint_focus = {
 	id = FRA_ww1_treaty_of_fes
 	icon = GFX_new_treaty
 	relative_position_id = FRA_ww1_cooperation_with_sharif
-	text_icon = NORDIC_focus_style
+	text_icon = joint_FRA_focus_style
 	available = {
 		has_subject = MOR
 	}
@@ -15797,7 +15306,13 @@ joint_focus = {
 joint_focus = {
 	id = FRA_french_military_supplies
 	icon = GFX_goal_generic_construct_mil_factory
-	text_icon = NORDIC_focus_style
+	text_icon = joint_FRA_MOR_focus_style
+	available = {
+		OR = {
+			has_subject = MOR
+			is_subject_of = FRA
+		}
+	}
 	x = 1
 	y = 1
 	cost = 10
@@ -15831,7 +15346,16 @@ joint_focus = {
 joint_focus = {
 	id = FRA_rabat_administrative_center
 	icon = GFX_focus_AFG_establish_darulaman
-	text_icon = NORDIC_focus_style
+	text_icon = joint_FRA_MOR_focus_style
+	available = {
+		OR = {
+			has_subject = MOR
+			is_subject_of = FRA
+		}
+		MOR = {
+			owns_state = 1093
+		}
+	}
 	x = -1
 	y = 1
 	cost = 8
@@ -15864,7 +15388,13 @@ joint_focus = {
 joint_focus = {
 	id = FRA_caid_and_pachas_tutelage
 	icon = GFX_focus_AFG_contact_rural_loyalists
-	text_icon = NORDIC_focus_style
+	text_icon = joint_FRA_MOR_focus_style
+	available = {
+		OR = {
+			has_subject = MOR
+			is_subject_of = FRA
+		}
+	}
 	x = 1
 	y = 1
 	cost = 8
@@ -15913,7 +15443,13 @@ joint_focus = {
 joint_focus = {
 	id = FRA_franco_arab_schools
 	icon = GFX_focus_AFG_education_reform
-	text_icon = NORDIC_focus_style
+	text_icon = joint_FRA_MOR_focus_style
+	available = {
+		OR = {
+			has_subject = MOR
+			is_subject_of = FRA
+		}
+	}
 	x = -1
 	y = 1
 	cost = 10
@@ -15944,7 +15480,13 @@ joint_focus = {
 joint_focus = {
 	id = FRA_support_habous
 	icon = GFX_focus_IRQ_a_new_caliph
-	text_icon = NORDIC_focus_style
+	text_icon = joint_FRA_MOR_focus_style
+	available = {
+		OR = {
+			has_subject = MOR
+			is_subject_of = FRA
+		}
+	}
 	x = 0
 	y = 2
 	cost = 10
@@ -15978,6 +15520,42 @@ joint_focus = {
 				add_resistance = -10
 				add_compliance = 25
 			}
+		}
+	}
+}
+
+joint_focus = {
+	id = FRA_berber_dahir
+	icon = GFX_focus_generic_court
+	text_icon = joint_FRA_MOR_focus_style
+	available = {
+		OR = {
+			has_subject = MOR
+			is_subject_of = FRA
+		}
+	}
+	x = 0
+	y = 1
+	cost = 10
+	search_filters = {
+		FOCUS_FILTER_INTERNAL_AFFAIRS
+		FOCUS_FILTER_HISTORICAL
+	}
+	prerequisite = {
+		focus = FRA_support_habous
+	}
+	relative_position_id = FRA_support_habous
+
+	ai_will_do = {
+		factor = 100
+		modifier = {
+			tag = FRA
+			factor = 0.1
+		}
+	}
+	completion_reward_joint_originator = {
+		MOR = {
+			add_stability = 0.05
 		}
 	}
 }

@@ -65,7 +65,11 @@ focus_tree = {
 			add_political_power = 75
 			if = {
 				limit = {
-					any_character = {
+					has_country_leader = {
+						character = MOR_mulay_abdelhafid
+					}
+					MOR_mulay_abdelhafid = {
+						has_ideology = semi_constitutional_monarchy
 						has_trait = unpopular_sultan
 					}
 				}
@@ -113,6 +117,7 @@ focus_tree = {
 				is_subject_of = FRA
 			}
 			has_war = no
+			has_crisis = no
 		}
 		bypass = {
 			owns_state = 462
@@ -136,9 +141,11 @@ focus_tree = {
 		}
 		completion_reward = {
 			custom_effect_tooltip = MOR_this_could_lead_to_a_political_crisis
-			country_event = {
-				id =  ww1_morocco.63
-				days = 1
+			FRA = {
+				country_event = {
+					id =  ww1_morocco.63
+					days = 1
+				}
 			}
 			custom_effect_tooltip = if_they_accept_tt
 			effect_tooltip = {
@@ -184,9 +191,11 @@ focus_tree = {
 			factor = 150
 		}
 		completion_reward = {
-			country_event = {
-				id =  ww1_morocco.76
-				days = 3
+			SPR = {
+				country_event = {
+					id =  ww1_morocco.76
+					days = 3
+				}
 			}
 			custom_effect_tooltip = if_they_accept_tt
 			effect_tooltip = {
@@ -352,6 +361,46 @@ focus_tree = {
 		}
 		cost = 5
 		x = 1
+		y = 1
+		search_filters = {
+			FOCUS_FILTER_ARMY_XP
+		}
+	}
+
+	focus = {
+		id = MOR_modernize_al_makina_arsenal
+		icon = GFX_focus_generic_military_industry
+		relative_position_id = MOR_second_army_reform
+		prerequisite = {
+			focus = MOR_second_army_reform
+			focus = MOR_guerrila_warfare_tradition
+		}
+		available = {
+			461 = {
+				is_owned_and_controlled_by = ROOT
+			}
+		}
+		ai_will_do = {
+			factor = 50
+		}
+		completion_reward = {
+			add_tech_bonus = {
+				name = MOR_modernize_al_makina_arsenal
+				bonus = 0.5
+				uses = 1
+				category = infantry_weapons
+			}
+			461 = {
+				add_extra_state_shared_building_slots = 1
+				add_building_construction = {
+					type = arms_factory
+					level = 1
+					instant_build = yes
+				}
+			}
+		}
+		cost = 10
+		x = -1
 		y = 1
 		search_filters = {
 			FOCUS_FILTER_ARMY_XP
@@ -569,6 +618,9 @@ focus_tree = {
 				limit = {
 					is_core_of = ROOT
 					is_controlled_by = ROOT
+					NOT = {
+						state = 461
+					}
 				}
 				prioritize = { 462 }
 				add_extra_state_shared_building_slots = 1
@@ -794,6 +846,65 @@ focus_tree = {
 		search_filters = {
 			FOCUS_FILTER_POLITICAL
 			FOCUS_FILTER_ANNEXATION
+		}
+	}
+
+	focus = {
+		allow_branch = {
+			original_tag = MOR
+		}
+		id = MOR_press_for_saoura
+		icon = GFX_focus_generic_camel_corps
+		cost = 5
+		relative_position_id = MOR_amir_al_muminin
+		x = 1
+		y = 1
+		search_filters = {
+			FOCUS_FILTER_ANNEXATION
+			FOCUS_FILTER_POLITICAL
+		}
+		available = {
+			108 = {
+				is_owned_and_controlled_by = ROOT
+			}
+			NOT = {
+				1151 = {
+					OWNER = {
+						has_war_with = ROOT
+					}
+				}
+			}
+			is_subject = no
+		}
+		prerequisite = {
+			focus = MOR_amir_al_muminin
+			focus = MOR_restore_sharifian_order_in_mauritania
+		}
+		completion_reward = { 
+			add_state_claim = 1151
+			if = {
+				limit = { 
+					OR = {
+						is_in_faction_with = FRA
+						NOT = {
+							has_war_with = FRA
+						}
+					}
+				}
+				1151 = {
+					OWNER = {
+						country_event = ww1_morocco.87
+					}
+				}
+				custom_effect_tooltip = if_they_accept.tt
+				effect_tooltip = {
+					MOR = {
+						transfer_state = 1151
+						add_political_power = 100
+						add_war_support = 0.05
+					}
+				}
+			}
 		}
 	}
 
@@ -1381,7 +1492,6 @@ focus_tree = {
 		}
 		completion_reward = {
 			FRA = {
-				custom_effect_tooltip = needs_approval
 				country_event = {
 					id = ww1_morocco.38
 					days = 4
@@ -1391,6 +1501,7 @@ focus_tree = {
 			effect_tooltip = {
 				MOR_improve_economical_situation = yes
 			}
+			custom_effect_tooltip = needs_approval
 		}
 		ai_will_do = {
 			factor = 80
@@ -1806,15 +1917,27 @@ focus_tree = {
 				target = GER
 				modifier = small_increase
 			}
-			add_equipment_to_stockpile = {
-				type = infantry_equipment_0
-				producer = GER
-				amount = 300
+			if = {
+				limit = {
+					has_dlc = "Arms Against Tyranny"
+				}
+				add_equipment_subsidy = {
+					cic = 1000 
+					equipment_type = infantry_equipment
+					seller_tags = { GER }
+				}
+				add_equipment_to_stockpile = {
+					type = infantry_equipment_0
+					producer = GER
+					amount = 300
+				}
 			}
-			add_equipment_subsidy = {
-				cic = 1000 
-				equipment_type = infantry_equipment
-				seller_tags = { GER }
+			else = {
+				add_equipment_to_stockpile = {
+					type = infantry_equipment_0
+					producer = GER
+					amount = 450
+				}
 			}
 		}
 		ai_will_do = {
@@ -1848,15 +1971,27 @@ focus_tree = {
 				target = FRA
 				modifier = small_increase
 			}
-			add_equipment_to_stockpile = {
-				type = infantry_equipment_0
-				producer = FRA
-				amount = 300
+			if = {
+				limit = {
+					has_dlc = "Arms Against Tyranny"
+				}
+				add_equipment_subsidy = {
+					cic = 1000 
+					equipment_type = infantry_equipment
+					seller_tags = { FRA }
+				}
+				add_equipment_to_stockpile = {
+					type = infantry_equipment_0
+					producer = FRA
+					amount = 300
+				}
 			}
-			add_equipment_subsidy = {
-				cic = 1000 
-				equipment_type = infantry_equipment
-				seller_tags = { FRA }
+			else = {
+				add_equipment_to_stockpile = {
+					type = infantry_equipment_0
+					producer = FRA
+					amount = 450
+				}
 			}
 		}
 		ai_will_do = {
