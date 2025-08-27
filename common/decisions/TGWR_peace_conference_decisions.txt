@@ -46,26 +46,13 @@ GER_great_war = {
 			set_country_flag = ask_for_peace
 			if = {
 				limit = {
-					OR = {
-						RUS = {
-							is_in_faction_with = ROOT
-							has_war_with = GER
-							is_subject = no
-							has_capitulated = no
-							NOT = {
-								has_country_flag = has_capitulated_with_france_early
-								has_global_flag = RUS_surrender_alone
-								tag = SOV
-							}
-						}
-						ENG = {
-							is_in_faction_with = ROOT
-							has_war_with = GER
-							is_subject = no
-							has_capitulated = no
-							NOT = {
-								has_country_flag = has_capitulated_with_france_early
-							}
+					any_allied_country = {
+						has_war_with = GER
+						is_major = yes
+						is_subject = no
+						has_capitulated = no
+						capital_scope = {
+							is_on_continent = europe
 						}
 					}
 				}
@@ -196,13 +183,13 @@ GER_great_war = {
 		complete_effect = {
 			if = {
 				limit = {
-					ENG = {
-						is_in_faction_with = ROOT
+					any_allied_country = {
 						has_war_with = GER
+						is_major = yes
 						is_subject = no
 						has_capitulated = no
-						NOT = {
-							has_country_flag = has_capitulated_with_france_early
+						capital_scope = {
+							is_on_continent = europe
 						}
 					}
 				}
@@ -337,49 +324,55 @@ GER_great_war = {
 					surrender_progress < 0.30
 				}
 			}
-			# there is no ally in europe capable to keep war effort
+			# there is a major ally in europe capable to keep war effort
 			modifier = {
 				factor = 0
-				# checking french condition
-				FRA = {
-					OR = {
-						# they re-joined the war and lost the again
-						AND = {
-							has_war_with = GER
-							has_capitulated = yes
-						}
-						# they already peaced out
-						NOT = {
-							has_war_with = GER
+				surrender_progress < 0.1
+				any_allied_country = {
+					is_major = yes
+					any_core_state = {
+						any_neighbor_state = {
+							is_core_of = owner
+							owner = {
+								OR = {
+									tag = GER
+									is_subject_of = GER
+									is_in_faction_with = GER
+								}
+								has_war_with = ROOT
+								has_capitulated = no
+							}
 						}
 					}
+					surrender_progress < 0.30
+				}		
+			}
+			# there is a minor ally in europe that didn't give up
+			modifier = {
+				factor = 0
+				surrender_progress < 0.1
+				war_length_with = {
+					tag = GER
+					months < 48
 				}
-				# there is no russian fighting spirit
-				RUS = {
-					OR = {
-						tag = SOV # you are soviet harry
-						has_war_with = SOV
-						has_civil_war = yes # that savinkov civil war
-						NOT = { has_war_with = GER } # they are not against germany at all
-						# no need since they either capitulate or get revolution
-						# surrender_progress > 0.1
-					}
-				}
-				NOT = {
-					any_allied_country = {
-						is_major = yes
-						capital_scope = {
-							is_on_continent = europe
+				any_allied_country = {
+					is_major = no
+					any_core_state = {
+						any_neighbor_state = {
+							is_core_of = owner
+							owner = {
+								OR = {
+									tag = GER
+									is_subject_of = GER
+									is_in_faction_with = GER
+								}
+								has_war_with = ROOT
+								has_capitulated = no
+							}
 						}
-						has_war_with = GER
-						has_capitulated = no
 					}
-				}
-				# America won't get much more involved if it has no allies in Europe at all
-				# this litteraly makes the Great War forever
-				# NOT = {
-				# 	is_in_faction_with = USA
-				# }
+					has_capitulated = no
+				}		
 			}
 			# Honourable Peace
 			modifier = {
@@ -391,6 +384,7 @@ GER_great_war = {
 				NOT = {
 					is_in_faction_with = RUS
 					is_in_faction_with = FRA
+					is_in_faction_with = ITA
 				}
 			}
 			# Entente leader is not major
