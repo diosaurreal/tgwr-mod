@@ -30,87 +30,6 @@ CHI_xinhai_revolution = {
 			}
 		}
 	}
-	CHI_sue_for_peace_QIN = {
-		icon = GFX_decision_SWI_consolidate_council_power
-		allowed = {
-			original_tag = CHI
-		}
-		visible = {
-			has_global_flag = xinhai_revolution
-			NOT = {
-				has_global_flag = xinhai_revolution_ends
-			}
-		}
-		available = {
-			has_global_flag = xinhai_revolution
-			NOT = {
-				has_global_flag = xinhai_revolution_ends
-			}
-			surrender_progress > 0.5
-		}
-		target_trigger = {
-			FROM = {
-				tag = QIN
-			}
-		}
-		# target_root_trigger = {
-		# 	has_war_with = FROM
-		# }
-		fire_only_once = yes
-		complete_effect = {
-			QIN = {
-				CHI = {
-					transfer_navy = {
-						target = PREV
-					}
-					every_owned_state = {
-						transfer_state_to = QIN
-					}
-				}
-				annex_country = {
-					target = CHI
-				}
-				hidden_effect = {
-					remove_ideas = QIN_idea_revolutionary_fervor
-					set_global_flag = xinhai_revolution_ends
-					set_country_flag = xinhai_victory
-
-					#QIN = { country_event = { id = ww1_qing.215 days = 1 } }
-
-					add_ideas = CHI_idea_inflation5
-		
-					add_ideas = CHI_idea_army_corruption3
-
-					
-					add_timed_idea = {
-						idea = CHI_idea_xinhai_revolution_ends
-						days = 500
-					}
-					
-					news_event = {
-						id = kis_news.119
-					}
-					# country_event = { id = ww1_qing.215 }
-				}
-				change_tag_from = CHI
-			}
-		}
-		ai_will_do = {
-			base = 0
-			modifier = {
-				add = 1000
-				OR = {
-					surrender_progress > 0.96
-					AND = {
-						surrender_progress > 0.9
-						NOT = { has_idea = QIN_idea_revolutionary_fervor }
-					}
-					#Remove this third condition if you want
-					casualties > 700000
-				}
-			}
-		}
-	}
 }
 
 CHI_warlord_era = {
@@ -1365,6 +1284,9 @@ CHI_warlord_era = {
 				set_nationality = FROM
 			}
 			white_peace = FROM
+			every_subject_country = {
+				PREV = { end_puppet = PREV }
+			}
 			clr_country_flag = first_chiang_feng_war
 			hidden_effect = {
 				if = {
@@ -4266,6 +4188,78 @@ CHI_chinese_warlords = {
 			}
 		}
 	}
+	CHI_unite_china_HBC = {
+		name = CHI_unite_china_FROM
+		icon = generic_prepare_civil_war
+		allowed = {
+			is_china_or_warlord_no_tt = yes
+		}
+		visible = {
+			is_china_or_warlord_no_tt = yes
+			OR = {
+				has_country_flag = ready_to_unite_china
+				has_country_flag = reunited_china
+			}
+			FROM = {
+				exists = yes
+				NOT = { has_war_with = ROOT }
+			}
+		}
+		target_trigger = {
+			FROM = {
+				tag = HBC
+			}
+		}
+		target_root_trigger = {
+			OR = {
+				has_country_flag = ready_to_unite_china
+				has_country_flag = reunited_china
+			}
+		}
+		war_with_target_on_remove = yes
+		available = {
+			FROM = {
+				exists = yes
+			}
+			is_subject = no
+			is_neighbor_of = FROM
+			has_capitulated = no
+		}
+		cost = 75
+		days_remove = 10
+		fire_only_once = no
+		remove_effect = {
+			FROM = {
+				if = {
+					limit = {
+						is_in_faction_with = PREV
+					}
+					leave_faction = yes
+				}
+				country_event = ww1_china.31
+			}
+		}
+		ai_will_do = {
+			base = 0
+			modifier = {
+				add = 10
+				strength_ratio = {
+					tag = FROM
+					ratio > 1
+				}
+				FROM = {
+					all_country = {
+						is_major = yes
+						NOT = {
+							has_guaranteed = PREV
+							has_subject = PREV
+							is_in_faction_with = PREV
+						}
+					}
+				}
+			}
+		}
+	}
 	CHI_proclaim_republic_nanjing = {
 		icon = GFX_decision_generic_nationalism
 		allowed = {
@@ -6267,7 +6261,7 @@ operations = {
 			NOT = {
 				has_war_with = FROM
 				has_global_flag = chinese_eastern_railway_incident
-				has_global_flag = khabarovsk_protocool
+				has_global_flag = khabarovsk_protocol
 			}
 			is_neighbor_of = FROM
 			# Fengtian must do with focus
@@ -6380,7 +6374,7 @@ operations = {
 			}
 			modifier = {
 				add = 1000
-				has_global_flag = russ_kapitulation
+				has_global_flag = RUS_surrender_alone
 			}
 		}
 		fire_only_once = no
@@ -6395,7 +6389,7 @@ operations = {
 						OR = {
 							is_subject = yes
 							has_country_flag = great_war_loser
-							has_global_flag = russ_kapitulation
+							has_global_flag = RUS_surrender_alone
 						}
 					}
 				}
@@ -6411,7 +6405,7 @@ operations = {
 									}
 								}
 								has_country_flag = great_war_loser
-								has_global_flag = russ_kapitulation
+								has_global_flag = RUS_surrender_alone
 							}
 						}
 					}
@@ -7627,25 +7621,6 @@ CHI_national_revolution = {
 	}
 }
 debug_decisions = {
-	CHI_debug_destroy_the_revolution = {
-		allowed = {
-			original_tag = QIN
-		}
-		available = {
-			is_ai = no
-			has_global_flag = xinhai_revolution
-		}
-		visible = {
-			is_debug = yes
-		}
-		fire_only_once = no
-		complete_effect = {
-			CHI = {
-				activate_decision = CHI_sue_for_peace_QIN 
-			}
-		}
-		ai_will_do = { factor = 0 }
-	}
 	CHI_debug_regional_government = {
 		allowed = {
 			is_china_or_warlord_no_tt = yes
@@ -8297,53 +8272,53 @@ peace_deals = {
 }
 
 crisis = {
-	CHI_provisional_government_mission = {
-		icon = GFX_decision_generic_political_discourse
-		days_mission_timeout = 300
-		activation = {
-			has_global_flag = xinhai_revolution_ends
-			has_war = no
-			NOT = {
-				has_completed_focus = CHI_ruling_of_yuan_shikai
-				has_completed_focus = CHI_kuomintang
-				has_government = fascism
-				has_government = communism
-				has_global_flag = chinese_warlord_crisis
-			}
-		}
-		allowed = {
-			tag = CHI
-		}
-		available = {
-			OR = {
-				has_completed_focus = CHI_ruling_of_yuan_shikai
-				has_completed_focus = CHI_kuomintang
-				hidden_trigger = {
-					is_subject = yes
-					has_civil_war = yes
-					has_government = fascism
-					has_government = communism
-					has_global_flag = chinese_warlord_crisis
-				}
-			}
-		}
-		visible = {
-			has_global_flag = xinhai_revolution_ends
-		}
-		fire_only_once = yes
-		is_good = no
-		timeout_effect = {
-			if = {
-				limit = {
-					has_government = neutrality
-				}
-				country_event = ww1_china.3
-			}
-			else = {
-				country_event = ww1_china.4
-			}
-		}
-	}
+	# CHI_provisional_government_mission = {
+	# 	icon = GFX_decision_generic_political_discourse
+	# 	days_mission_timeout = 300
+	# 	activation = {
+	# 		has_global_flag = xinhai_revolution_ends
+	# 		has_war = no
+	# 		NOT = {
+	# 			has_completed_focus = CHI_ruling_of_yuan_shikai
+	# 			has_completed_focus = CHI_kuomintang
+	# 			has_government = fascism
+	# 			has_government = communism
+	# 			has_global_flag = chinese_warlord_crisis
+	# 		}
+	# 	}
+	# 	allowed = {
+	# 		tag = CHI
+	# 	}
+	# 	available = {
+	# 		OR = {
+	# 			has_completed_focus = CHI_ruling_of_yuan_shikai
+	# 			has_completed_focus = CHI_kuomintang
+	# 			hidden_trigger = {
+	# 				is_subject = yes
+	# 				has_civil_war = yes
+	# 				has_government = fascism
+	# 				has_government = communism
+	# 				has_global_flag = chinese_warlord_crisis
+	# 			}
+	# 		}
+	# 	}
+	# 	visible = {
+	# 		has_global_flag = xinhai_revolution_ends
+	# 	}
+	# 	fire_only_once = yes
+	# 	is_good = no
+	# 	timeout_effect = {
+	# 		if = {
+	# 			limit = {
+	# 				has_government = neutrality
+	# 			}
+	# 			country_event = ww1_china.3
+	# 		}
+	# 		else = {
+	# 			country_event = ww1_china.4
+	# 		}
+	# 	}
+	# }
 	CHI_president_cao_kun_mission = {
 		icon = GFX_decision_SWI_no_elected_president
 		days_mission_timeout = 150
@@ -8477,6 +8452,39 @@ crisis = {
 			set_country_flag = republican_plot_fired
 			custom_effect_tooltip = historical_tt
 			country_event = ww1_china.3
+		}
+	}
+}
+
+debug_decisions = {
+	debug_start_warlord_era = {
+		allowed = {
+			is_china_or_warlord_no_tt = yes
+		}
+		visible = {
+			is_debug = yes
+			is_ai = no
+		}
+		available = {
+			NOT = {
+				has_global_flag = chinese_warlord_crisis
+				has_global_flag = national_protection_war
+				has_global_flag = warlord_era
+			}
+		}
+		fire_only_once = yes
+		complete_effect = {
+			set_global_flag = chinese_warlord_crisis
+			set_global_flag = national_protection_war
+			country_event = ww1_china.38
+			set_global_flag = constitutional_protection_war
+			set_global_flag = constitutional_protection_war_end
+			set_country_flag = chinese_government_crackdown
+			set_global_flag = CHI_government_split_mission
+			country_event = {
+				id = ww1_china.30
+				days = 2
+			}
 		}
 	}
 }
