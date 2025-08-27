@@ -3636,6 +3636,9 @@ country_event = {
 					NOT = { country_exists = UKR }
 				}
 				set_global_flag = ukraine_released_by_germany
+				UKR = {
+					set_country_flag = released_by_germany
+				}
 			}
 			else_if = {
 				limit = {
@@ -3765,11 +3768,21 @@ country_event = {
 			# FINLAND
 			if = {
 				limit = {
-					NOT = { country_exists = FIN }
+					FIN = {
+						OR = {
+							exists = no
+							is_subject_of = RUS
+						}
+					}					
 				}
 				set_global_flag = finland_released_by_germany
-			}
-			create_FIN = yes		
+				FIN = {
+					set_country_flag = released_by_germany
+				}
+				RUS = {
+					create_FIN = yes
+				}
+			}	
 			# CAUCASUS
 			every_state = {
 				limit = {
@@ -3780,6 +3793,7 @@ country_event = {
 				remove_russian_cores = yes
 				remove_russian_claims = yes
 				MOU = {
+					set_country_flag = released_by_germany
 					set_politics = {
 						ruling_party = democratic
 					}
@@ -3856,6 +3870,7 @@ country_event = {
 						autonomous_state = autonomy_tgwr_informal_protectorate
 					}
 					DON = {
+						set_country_flag = released_by_germany
 						set_politics = {
 							ruling_party = neutrality
 							elections_allowed = no 
@@ -3913,6 +3928,7 @@ country_event = {
 						autonomous_state = autonomy_tgwr_informal_protectorate
 					}
 					KUB = {
+						set_country_flag = released_by_germany
 						set_politics = {
 							ruling_party = neutrality
 							elections_allowed = no 
@@ -3979,6 +3995,7 @@ country_event = {
 					freedom_level = 0.6
 				}
 				GEO = {
+					set_country_flag = released_by_germany
 					set_politics = {
 						ruling_party = democratic
 						elections_allowed = yes
@@ -4055,6 +4072,7 @@ country_event = {
 							freedom_level = 0.8
 						}
 						ARM = {
+							set_country_flag = released_by_germany
 							set_politics = {
 								ruling_party = democratic
 								elections_allowed = yes
@@ -4088,6 +4106,7 @@ country_event = {
 						}
 						puppet = AZR
 						AZR = {
+							set_country_flag = released_by_germany
 							set_politics={
 								ruling_party = democratic
 								elections_allowed = no
@@ -4225,21 +4244,7 @@ country_event = {
 						days = 365
 					}
 				}
-			}
-			
-			# PEACE AT LAST
-			every_country = {
-				limit = {
-					has_war_with = RUS
-					is_in_faction_with = GER
-				}
-				white_peace = RUS
-				set_truce = {
-					target = RUS
-					days = 365
-				}
-			}
-			
+			}				
 			RUS = {
 				if = {
 					limit = {
@@ -4250,6 +4255,7 @@ country_event = {
 							tag = ENT
 						}
 						relinguish_entente_leadership = yes
+						leave_faction = yes
 						else = {
 							dismantle_faction = yes
 						}					
@@ -4263,13 +4269,43 @@ country_event = {
 				add_ideas = interwar_recovery
 				add_ideas = idea_armistice
 			}
+			# PEACE AT LAST
+			every_country = {
+				limit = {
+					OR = {
+						tag = RUS
+						is_subject_of = RUS
+					}
+					has_war = yes
+				}
+				set_country_flag = RUS_surrender_alone
+				set_country_flag = great_war_loser
+				every_enemy_country = {
+					limit = {
+						OR = {
+							tag = GER
+							has_war_together_with = GER
+						}				
+					}
+					PREV = {
+						white_peace = PREV
+						set_truce = {
+							target = PREV
+							days = 365
+						}
+					}				
+				}
+			}
 			
 			# FIRE ONLY ONCE
-			set_global_flag = russ_kapitulation
+			set_global_flag = RUS_surrender_alone
 		}
 	}
 	option = {
 		name = ww1_russia.98.a
+		effect_tooltip = {
+			white_peace = RUS
+		}
 		hidden_effect = {
 			news_event = ww1_russia.980
 		}
