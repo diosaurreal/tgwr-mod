@@ -17951,58 +17951,128 @@ operations = {
 		allowed = {
 			original_tag = TUR
 		}
+		target_trigger = {
+			FROM = {
+				tag = BID
+				owns_state = 930
+			}
+		}
+		visible = {
+			FROM = { is_neighbor_of_subject = yes }
+			FROM = {
+				NOT = { 
+					has_war_with = ROOT
+				}
+				OR = {
+					is_subject = no
+					is_subject_of = ROOT
+				}
+			}
+		}
 		available = {
-			has_war_with = 659.owner
+			OR = {
+				AND = {
+					has_war_with = 659.owner
+					OR = {
+						293 = { is_owned_or_subject_trigger = yes }
+						654 = { is_owned_or_subject_trigger = yes }
+					}
+				}
+				AND = { #baidah is landlocked
+					293 = { is_owned_or_subject_trigger = yes }
+					654 = { is_owned_or_subject_trigger = yes }
+					659 = { is_owned_or_subject_trigger = yes }
+				}
+			}
 			NOT = {
-				has_global_flag = great_war_ends
 				has_idea = idea_army_restrictions
 				has_active_mission = frankfurt_conference
 				has_active_mission = versallies_conference
 			}
 		}
-		fire_only_once = yes
-		war_with_on_remove = BID
-		visible = {
-			is_neighbor_of = FROM
-			FROM = {
+		cancel_trigger = {
+			OR = {
 				NOT = {
-					has_war_with = ROOT
-					is_subject_of = ROOT
-					is_in_faction_with = ROOT
+					has_war_with = 659.owner
+					293 = { is_owned_or_subject_trigger = yes }
+					654 = { is_owned_or_subject_trigger = yes }
+					659 = { is_owned_or_subject_trigger = yes }
+				}
+				has_idea = idea_army_restrictions
+				has_active_mission = frankfurt_conference
+				has_active_mission = versallies_conference
+			}
+		}
+		fire_only_once = no
+		days_remove = 45
+		cancel_if_not_visible = yes
+		war_with_target_on_remove = yes
+		remove_effect = {
+			if = {
+				limit = {
+					has_subject = FROM
+				}
+				if = {
+					limit = {
+						has_subject = YEM
+					}
+					YEM = {
+						add_state_core = 930
+						annex_country = {
+							target = FROM
+							transfer_troops = yes
+						}
+					}
+				}
+				else = {
+					annex_country = {
+						target = FROM
+					}
 				}
 			}
-			NOT = {
-				owns_state = 659
-			}
-		}
-		target_trigger = {
-			FROM = {
-				tag = BID
-			}
-		}
-		remove_effect = {
-			add_state_claim = 930
-			declare_war_on = {
-				target = FROM
-				type = annex_everything
+			else = {
+				declare_war_on = {
+					target = FROM
+					type = annex_everything
+				}
+				if = {
+					limit = {
+						has_subject = YEM
+					}
+					YEM = {
+						add_to_war = {
+							targeted_alliance = ROOT
+							enemy = FROM
+						}
+					}
+				}
 			}
 			hidden_effect = {
 				FROM = {
-					remove_ideas = standing_alone
+					if = {
+						limit = {
+							has_idea = standing_alone
+						}
+						remove_ideas = standing_alone
+					}
 				}		
 			}
 		}
 		ai_will_do = {
-			base = 1 
+			base = 1
 			modifier = {
 				factor = 0
-				FROM = {
-					is_subject = no
+				659 = {
+					owner = {
+						war_length_with = {
+							tag = ROOT
+							months < 3
+						}
+					}
 				}
-			}
-			modifier = {
-				factor = 0
-				longest_war_length < 3
+				NOT = {
+					has_subject = FROM
+				}
 			}
 		}
 	}
