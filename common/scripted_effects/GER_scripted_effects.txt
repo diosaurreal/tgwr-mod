@@ -749,9 +749,7 @@ left_vote_temp_var_setter = {
 	if = {
 		limit = {
 			has_country_flag = GER_war_coalition_active
-			NOT = {
-				has_global_flag = great_war_ends
-			}
+			is_great_war_ongoing = yes
 		}
 		custom_effect_tooltip = GER_vote_coalition_law
 		else = {
@@ -861,9 +859,7 @@ center_vote_temp_var_setter = {
 	if = {
 		limit = {
 			has_country_flag = GER_war_coalition_active
-			NOT = {
-				has_global_flag = great_war_ends
-			}
+			is_great_war_ongoing = yes
 		}
 		custom_effect_tooltip = GER_vote_coalition_law
 		else = {
@@ -998,9 +994,7 @@ right_vote_temp_var_setter = {
 	if = {
 		limit = {
 			has_country_flag = GER_war_coalition_active
-			NOT = {
-				has_global_flag = great_war_ends
-			}
+			is_great_war_ongoing = yes
 		}
 		custom_effect_tooltip = GER_vote_coalition_law
 		else = {
@@ -1113,9 +1107,7 @@ wartime_vote_temp_var_setter = {
 	if = {
 		limit = {
 			has_country_flag = GER_war_coalition_active
-			NOT = {
-				has_global_flag = great_war_ends
-			}
+			is_great_war_ongoing = yes
 		}
 		custom_effect_tooltip = GER_vote_coalition_law
 		else = {
@@ -2487,31 +2479,36 @@ GER_vote_ends = {
 }
 
 GER_reset_sway_reichstag = {
+	clr_country_flag = center_vote_in_progress
 	clr_country_flag = GER_center_sway_20_percent
 	clr_country_flag = GER_center_sway_40_percent
 	set_variable = {
 		var = center_ratio_sway_ratio
 		value = 0.00
 	}
+
 	clr_country_flag = left_vote_in_progress
 	clr_country_flag = GER_left_sway_20_percent
 	set_variable = {
 		var = left_ratio_sway_ratio
 		value = 0.00
 	}
-	clr_country_flag = center_vote_in_progress
+
+	clr_country_flag = right_vote_in_progress
 	clr_country_flag = GER_right_sway_20_percent
 	set_variable = {
 		var = right_ratio_sway_ratio
 		value = 0.00
 	}
+
 	clr_country_flag = neutral_vote_in_progress
 	clr_country_flag = GER_neutral_sway_20_percent
 	set_variable = {
 		var = neutral_ratio_sway_ratio
 		value = 0.00
 	}
-	clr_country_flag = right_vote_in_progress
+	
+	clr_country_flag = wartime_vote_in_progress
 	set_variable_to_random = GER.parliament_update
 }
 
@@ -2674,6 +2671,7 @@ GER_second_army_expansion_effect = {
 }
 GER_interwar_loser_new_constitution_effect = {
 	set_global_flag = weimar_constitution
+	set_country_flag = GER_march_reforms_completed
 	if = {
 		limit = {
 			NOT = { has_cosmetic_tag = PRE }
@@ -2704,6 +2702,7 @@ GER_interwar_loser_new_constitution_effect = {
 	GER_calculate_bundesrat_votes = yes
 }
 GER_interwar_winner_new_constitution_effect = {
+	set_country_flag = GER_march_reforms_completed
 	add_stability = 0.1 #for now
 	country_event = ww1_german_victory.11
 	hidden_effect = {
@@ -2712,7 +2711,6 @@ GER_interwar_winner_new_constitution_effect = {
 			days = 24
 		}
 	}
-	set_country_flag = GER_march_reforms_completed
 }
 # GER_rapid_urbanisation_reform_effect = {
 # 	IF = {
@@ -3096,6 +3094,7 @@ GER_silesia_deal_effect = {
 			relation = non_aggression_pact
 			active = yes
 		}
+		set_country_flag = ITA_silesian_bargain_success
 	}
 }
 
@@ -3649,9 +3648,7 @@ GER_neutral_got_hit_by_a_torpedo = {
 				tag = POR
 				tag = ITA
 				tag = IRE
-				tag = EST
-				tag = LIT
-				tag = LAT
+				tag = BRA
 			}
 			has_equipment = {
 				convoy > 5
@@ -5202,7 +5199,7 @@ GER_release_OST = {
 					infantry = { x = 2 y = 2 }
 				}
 				support = {
-					artillery = { x = 0 y = 0 }
+					field_gun = { x = 0 y = 0 }
 				}
 			}
 			division_template = {
@@ -5299,6 +5296,15 @@ GER_improve_structured_doctrines = {
 	}
 	else_if = {
 		limit = {
+			has_idea = GER_structured_doctrines3bis
+		}
+		swap_ideas = {
+			add_idea = GER_structured_doctrines4
+			remove_idea = GER_structured_doctrines3bis
+		}
+	}
+	else_if = {
+		limit = {
 			has_idea = GER_structured_doctrines4
 		}
 		swap_ideas = {
@@ -5311,7 +5317,68 @@ GER_improve_structured_doctrines = {
 	}
 }
 
+GER_abandon_structured_doctrines = {
+	if = {
+		limit = {
+			has_idea = GER_structured_doctrines
+		}
+		swap_ideas = {
+			remove_idea = GER_structured_doctrines
+			add_idea = GER_structured_doctrines_abandonned
+		}
+	}
+	else_if = {
+		limit = {
+			has_idea = GER_structured_doctrines2
+		}
+		swap_ideas = {
+			remove_idea = GER_structured_doctrines2
+			add_idea = GER_structured_doctrines_abandonned
+		}
+	}
+	else_if = {
+		limit = {
+			has_idea = GER_structured_doctrines3
+		}
+		swap_ideas = {
+			remove_idea = GER_structured_doctrines3
+			add_idea = GER_structured_doctrines_abandonned
+		}
+	}
+	else_if = {
+		limit = {
+			has_idea = GER_structured_doctrines3bis
+		}
+		swap_ideas = {
+			remove_idea = GER_structured_doctrines3bis
+			add_idea = GER_structured_doctrines_abandonned
+		}
+	}
+	else_if = {
+		limit = {
+			has_idea = GER_structured_doctrines4
+		}
+		swap_ideas = {
+			remove_idea = GER_structured_doctrines4
+			add_idea = GER_structured_doctrines_abandonned
+		}
+	}
+	else_if = {
+		limit = {
+			has_idea = GER_structured_doctrines5
+		}
+		swap_ideas = {
+			remove_idea = GER_structured_doctrines5
+			add_idea = GER_structured_doctrines_abandonned
+		}
+	}
+	else = {
+		add_ideas = GER_structured_doctrines_abandonned
+	}
+}
+
 GER_health_insurance_act_effect = {
+	GER_upgrade_idea_rising_unions = yes
 	add_to_variable = {
 		var = GER_social_reforms_stability_factor
 		value = 0.05
@@ -5342,6 +5409,7 @@ GER_health_insurance_act_effect = {
 }
 
 GER_employment_agency_act_effect = {
+	GER_upgrade_idea_rising_unions = yes
 	add_to_variable = {
 		var = GER_social_reforms_political_power_factor
 		value = -0.1
@@ -5352,11 +5420,7 @@ GER_employment_agency_act_effect = {
 	}
 	add_to_variable = {
 		var = GER_social_reforms_production_speed_buildings_factor
-		value = 0.1
-	}
-	add_to_variable = {
-		var = GER_social_reforms_production_factory_max_efficiency_factor
-		value = 0.1
+		value = 0.15
 	}
 	add_to_variable = {
 		var = GER_social_reforms_industrial_capacity_factory
@@ -5364,14 +5428,13 @@ GER_employment_agency_act_effect = {
 	}
 	add_to_variable = {
 		var = GER_social_reforms_consumer_goods_factor
-		value = -0.05
+		value = -0.075
 	}
 	add_to_temp_variable = { MODIFIER_1 = -0.1 }
 	add_to_temp_variable = { MODIFIER_2 = 0.05 }
-	add_to_temp_variable = { MODIFIER_3 = 0.1 }
-	add_to_temp_variable = { MODIFIER_4 = 0.1 }
+	add_to_temp_variable = { MODIFIER_3 = 0.15 }
 	add_to_temp_variable = { MODIFIER_5 = -0.05 }
-	add_to_temp_variable = { MODIFIER_6 = -0.05 }
+	add_to_temp_variable = { MODIFIER_6 = -0.075 }
 	custom_effect_tooltip = {
 		localization_key = GER_employment_agency_act_effect.tt
 		MODIFIER_ICON_1 = MODIFIER_POLITICAL_POWER_FACTOR
@@ -5384,20 +5447,21 @@ GER_employment_agency_act_effect = {
 }
 
 GER_homework_act_effect = {
+	GER_upgrade_idea_rising_unions = yes
 	add_to_variable = {
 		var = GER_social_reforms_stability_factor
 		value = 0.025
 	}
 	add_to_variable = {
 		var = GER_social_reforms_production_factory_max_efficiency_factor
-		value = 0.1
+		value = 0.05
 	}
 	add_to_variable = {
 		var = GER_social_reforms_production_speed_industrial_complex_factor
 		value = 0.1
 	}
 	add_to_temp_variable = { MODIFIER_1 = 0.025 }
-	add_to_temp_variable = { MODIFIER_2 = 0.1 }
+	add_to_temp_variable = { MODIFIER_2 = 0.05 }
 	add_to_temp_variable = { MODIFIER_3 = 0.1 }
 	custom_effect_tooltip = {
 		localization_key = GER_homework_act_effect.tt

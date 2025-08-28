@@ -156,7 +156,7 @@ country_event = {
 			modifier = {
 				add = 500
 				has_game_rule = {
-					rule = ITA_ai_behavior
+					rule = ITA_FACTION_AI_BEHAVIOUR
 					option = CENTRAL_POWERS
 				}
 			}
@@ -565,7 +565,7 @@ country_event = {
 						NOT = {
 							has_country_flag = great_war_loser
 							has_global_flag = october_revolution
-							has_global_flag = russ_kapitulation
+							has_global_flag = RUS_surrender_alone
 						}
 					}
 				}
@@ -748,13 +748,17 @@ country_event = {
 			limit = {
 				is_core_of = HUN
 			}
-			transfer_state_to = HUN
+			HUN = {
+				safe_transfer_state_to = yes
+			}
 		}	
 		every_owned_state = {
 			limit = {
 				is_core_of = ITA
 			}
-			transfer_state_to = ITA
+			ITA = {
+				safe_transfer_state_to = yes
+			}
 		}			
 		every_state = {
 			limit = {
@@ -857,6 +861,8 @@ country_event = {
 				set_autonomy = {
 					target = ROOT
 					autonomy_state = autonomy_tgwr_unilateral_union
+					end_wars = no
+					end_civil_wars = no
 				}
 			}
 			restore_previous_government_type = yes
@@ -1189,7 +1195,7 @@ country_event = {
 	trigger = {
 		tag = AUS
 		is_subject = no
-		has_global_flag = great_war
+		is_great_war_ongoing = yes
 		has_war_with = FRA
 		has_stability < 0.75
 		has_war_support < 0.75
@@ -1223,7 +1229,6 @@ country_event = {
 		}
 		NOT = {
 			has_country_flag = austria_promised_autonomy
-			has_global_flag = great_war_ends
 			has_completed_focus = AUH_federalist_reform
 			has_completed_focus = AUH_the_status_of_croatia
 			has_subject = HUN
@@ -1305,22 +1310,25 @@ country_event = {
 					add_state_core = 115
 					add_state_core = 117
 					add_state_core = 156
+					add_state_core = 1217
+					add_state_core = 1218
 				}
 				TUS = {
 					add_state_core = 162
 				}
 				EMI = {
-					add_state_core = 833
+					add_state_core = 161
 				}
 				PAP = {
 					add_state_core = 2
 					add_state_core = 157
-					add_state_core = 161
+					add_state_core = 833
 					add_state_core = 835
 				}
 				SRD = {
 					add_state_core = 114
 					add_state_core = 158
+					add_state_core = 1216
 					add_state_claim = 735
 					add_state_claim = 1210
 					add_state_claim = 834
@@ -1652,7 +1660,7 @@ country_event = {
 		is_subject = no
 		has_global_flag = great_war_ends
 		OR = {
-			has_global_flag = versallies_treaty
+			has_global_flag = versailles_treaty
 			has_global_flag = frankfurt_treaty
 		}
 		has_country_flag = great_war_winner
@@ -5065,9 +5073,22 @@ country_event = {
 				factor = 0
 			}
 		}
-		country_event = {
-			id = ww1_auh.96
-			days = 8
+		if = {
+			limit = {
+				HUN = { is_ai = no }
+			}
+			HUN = {
+				country_event = {
+					id = ww1_auh.96
+					days = 8
+				}
+			}
+		}
+		else = {
+			country_event = {
+				id = ww1_auh.96
+				days = 8
+			}
 		}
 		trigger = {
 			OR = {
@@ -5111,58 +5132,112 @@ country_event = {
 country_event = {
 	id = ww1_auh.96
 	title = ww1_auh.96.t
-	desc = ww1_auh.96.d
+	desc = {
+		text = ww1_auh.96.d
+		trigger = {
+			tag = AUS
+		}
+	}
+	desc = {
+		text = ww1_auh.96.d_hun
+		trigger = {
+			tag = HUN
+		}
+	}
 	picture = GFX_report_event_generic_usa_treaty
 	immediate = {
-		# if the player has favored Hungary by the past, there is more chance to get a friendly hungary at the congress
-		set_variable = {
-			var = HUN_friendly_level
-			value = 10
-		}
 		if = {
 			limit = {
-				has_completed_focus = AUH_Tiszas_Silent_Coup
+				HUN = { is_ai = yes }
 			}
-			add_to_variable = {
-				var = HUN_friendly_level
-				value = 15
-			}
-		}
-		if = {
-			limit = {
-				has_completed_focus = AUH_integrate_slovakia
-			}
-			add_to_variable = {
+			# if the player has favored Hungary by the past, there is more chance to get a friendly hungary at the congress
+			set_variable = {
 				var = HUN_friendly_level
 				value = 10
 			}
-		}
-		if = {
-			limit = {
-				has_completed_focus = AUH_act_of_protection
-			}
-			add_to_variable = {
-				var = HUN_friendly_level
+			set_variable = {
+				var = HUN_hostile_level
 				value = 10
 			}
-		}
-		if = {
-			limit = {
-				has_completed_focus = AUH_magyarisation
-			}
-			add_to_variable = {
-				var = HUN_friendly_level
-				value = 15
-			}
-		}
-		hidden_effect = {
 			if = {
 				limit = {
-					NOT = {
-						has_completed_focus = AUH_crush_hungarian_opposition
-						has_completed_focus = AUH_hungarian_universal_franchise
-					}
+					has_completed_focus = AUH_Tiszas_Silent_Coup
 				}
+				add_to_variable = {
+					var = HUN_friendly_level
+					value = 15
+				}
+			}
+			else = {
+				add_to_variable = {
+					var = HUN_hostile_level
+					value = 10
+				}
+			}
+			if = {
+				limit = {
+					has_completed_focus = AUH_integrate_slovakia
+				}
+				add_to_variable = {
+					var = HUN_friendly_level
+					value = 10
+				}
+			}
+			else = {
+				add_to_variable = {
+					var = HUN_hostile_level
+					value = 10
+				}
+			}
+			if = {
+				limit = {
+					has_completed_focus = AUH_act_of_protection
+				}
+				add_to_variable = {
+					var = HUN_friendly_level
+					value = 10
+				}
+			}
+			else = {
+				add_to_variable = {
+					var = HUN_hostile_level
+					value = 10
+				}
+			}
+			if = {
+				limit = {
+					has_completed_focus = AUH_magyarisation
+				}
+				add_to_variable = {
+					var = HUN_friendly_level
+					value = 15
+				}
+			}
+			else = {
+				add_to_variable = {
+					var = HUN_hostile_level
+					value = 10
+				}
+			}
+			if = {
+				limit = {
+					has_completed_focus = AUH_crush_hungarian_opposition
+				}
+				subtract_from_variable = {
+					var = HUN_friendly_level
+					value = 15
+				}
+			}
+			if = {
+				limit = {
+					has_completed_focus = AUH_hungarian_universal_franchise
+				}
+				add_to_variable = {
+					var = HUN_hostile_level
+					value = 15
+				}
+			}
+			hidden_effect = {
 				random_list = {
 					HUN_friendly_level = {
 						set_country_flag = HUN_are_friendly
@@ -5170,14 +5245,20 @@ country_event = {
 					20 = {
 						set_country_flag = HUN_are_neutrals
 					}
-					20 = {
+					HUN_hostile_level = {
 						set_country_flag = HUN_are_not_friendly
 					}
 				}
-				else = {
-					set_country_flag = HUN_are_friendly
+				country_event = {
+					id = ww1_auh.97
+					days = 4
 				}
-			}	
+			}
+		}
+		else_if = {
+			limit = {
+				tag = AUS
+			}
 			country_event = {
 				id = ww1_auh.97
 				days = 4
@@ -5188,6 +5269,7 @@ country_event = {
 	option = {
 		name = looked_friendly
 		trigger = {
+			tag = AUS
 			has_country_flag = HUN_are_friendly
 		}
 		custom_effect_tooltip = they_looked_friendly
@@ -5199,6 +5281,7 @@ country_event = {
 	option = {
 		name = looked_distant
 		trigger = {
+			tag = AUS
 			has_country_flag = HUN_are_neutrals
 		}
 		add_to_variable = {
@@ -5211,10 +5294,50 @@ country_event = {
 	option = {
 		name =looked_cold
 		trigger = {
+			tag = AUS
 			has_country_flag = HUN_are_not_friendly
 		}
 		custom_effect_tooltip = they_looked_lifted
 		custom_effect_tooltip = you_should_have_completed_HUN_focuses_to_gain_their_support
+	}
+	option = {
+		name = ww1_auh.96.a
+		trigger = {
+			tag = HUN
+		}
+		FROM = {
+			set_country_flag = HUN_are_friendly
+			country_event = {
+				id = ww1_auh.96
+				hours = 3
+			}
+		}
+	}
+	option = {
+		name = ww1_auh.96.b
+		trigger = {
+			tag = HUN
+		}
+		FROM = {
+			set_country_flag = HUN_are_neutrals
+			country_event = {
+				id = ww1_auh.96
+				hours = 3
+			}
+		}
+	}
+	option = {
+		name = ww1_auh.96.c
+		trigger = {
+			tag = HUN
+		}
+		FROM = {
+			set_country_flag = HUN_are_not_friendly
+			country_event = {
+				id = ww1_auh.96
+				hours = 3
+			}
+		}
 	}
 }
 
@@ -5335,6 +5458,10 @@ country_event = {
 			var = GAL_friendly_level
 			value = 0
 		}
+		set_variable = {
+			var = GAL_hostile_level
+			value = 0
+		}
 		if = {
 			limit = {
 				has_completed_focus = AUH_invest_in_galicia
@@ -5342,6 +5469,12 @@ country_event = {
 			add_to_variable = {
 				var = GAL_friendly_level
 				value = 30
+			}
+		}
+		else = {
+			add_to_variable = {
+				var = GAL_hostile_level
+				value = 20
 			}
 		}
 		hidden_effect = {
@@ -5364,7 +5497,7 @@ country_event = {
 				20 = {
 					set_country_flag = GAL_are_neutrals
 				}
-				20 = {
+				GAL_hostile_level = {
 					set_country_flag = GAL_are_not_friendly
 				}
 			}
@@ -5572,8 +5705,7 @@ country_event = {
 
 
 #######
-# great congress organisation - Bosnia want the recognization of islam as state religion
-# bruh in 1909 already recognised
+# great congress organisation - Bosnia want the condominium merged into croatia-slavonia
 ##############
 country_event = {
 	id = ww1_auh.101
@@ -5589,6 +5721,7 @@ country_event = {
 			var= federalism_acceptance
 			value = 5
 		}
+		set_country_flag = AUH_illiryia_contain_BOS
 	}
 	#lol no
 	option = {
@@ -5728,6 +5861,15 @@ country_event = {
 	desc = ww1_auh.106.d
 	picture = GFX_report_event_generic_usa_treaty
 	is_triggered_only = yes
+	immediate = {
+		hidden_effect = {
+			set_global_flag = second_ausgleich_failed
+			news_event = {
+				id = interwar_news.24
+				hours = 3
+			}
+		}
+	}
 	option = {
 		name = ww1_auh.106.a
 		trigger = {
@@ -5775,7 +5917,7 @@ country_event = {
 			limit = {
 				owns_or_subject_of = yes
 				OR = {
-					is_core_of = BOS
+					# is_core_of = BOS
 					is_core_of = FIU
 					is_core_of = MNT #it is needed when they do this after the victory
 					state = 208
@@ -5801,6 +5943,22 @@ country_event = {
 				SLV = { set_country_flag = assimilated_to_austria }
 				add_core_of = CRO
 				transfer_state_to = CRO
+			}
+		}
+		if = {
+			limit = {
+				has_country_flag = AUH_illiryia_contain_BOS
+			}
+			BOS = {
+				set_country_flag = assimilated_to_austria
+			}
+			CRO = {
+				annex_country = {
+					target = BOS
+					transfer_troops = yes
+				}
+				transfer_state = 104
+				add_state_core = 104
 			}
 		}
 		HUN = {
@@ -5916,6 +6074,7 @@ country_event = {
 		}
 		every_state = {
 			limit = {
+				has_resistance = yes
 				owns_or_subject_of = yes
 			}
 			add_compliance = 50
@@ -5989,7 +6148,9 @@ country_event = {
 			}
 			if = {
 				limit = {
-					has_government = democratic
+					NOT = {
+						has_government = neutrality
+					}
 				}
 				# their democratic country leaders wont fit
 				every_other_country = {
@@ -6026,6 +6187,15 @@ country_event = {
 	desc = ww1_auh.107.d
 	picture = GFX_report_event_generic_usa_treaty
 	is_triggered_only = yes
+	immediate = {
+		hidden_effect = {
+			set_global_flag = second_ausgleich
+			news_event = {
+				id = interwar_news.24
+				hours = 3
+			}
+		}
+	}
 	option = {
 	 	name = ww1_auh.107.a
 		every_state = {
@@ -6039,8 +6209,11 @@ country_event = {
 					is_core_of = CRO
 					is_core_of = BOS
 					is_core_of = SLO
-				} 
-				is_owned_and_controlled_by = ROOT	 
+				}
+				NOT = {
+					is_core_of = ROOT
+				}
+				is_owned_or_subject_trigger = yes
 			}
 			add_core_of = ROOT
 		}
@@ -6719,8 +6892,13 @@ country_event = {
 			producer = AUS
 		}
 		add_equipment_to_stockpile = {
-			type = artillery_equipment
-			amount = 500
+			type = field_gun_equipment
+			amount = 400
+			producer = AUS
+		}
+		add_equipment_to_stockpile = {
+			type = howitzer_equipment
+			amount = 100
 			producer = AUS
 		}
 		set_country_flag = AUH_gathering_weapons
@@ -7067,6 +7245,8 @@ country_event = {
 				owns_state = 44
 				owns_state = 803
 				owns_state = 871
+				owns_state = 1214
+				owns_state = 1215
 			}
 		}	
 		OR = {
@@ -7075,7 +7255,7 @@ country_event = {
 				has_country_flag = great_war_winner
 				OR = {
 					has_global_flag = frankfurt_treaty
-					has_global_flag = versallies_treaty
+					has_global_flag = versailles_treaty
 				}
 			}
 		}
@@ -7103,6 +7283,8 @@ country_event = {
 					owns_state = 44
 					owns_state = 870
 					owns_state = 871
+					owns_state = 1214
+					owns_state = 1215
 				}
 				NOT = {
 					original_tag = ALB
@@ -7201,17 +7383,11 @@ country_event = {
 					state = 803
 					state = 870
 					state = 871
+					state = 1214
+					state = 1215
 				}
 			}
 			transfer_state_to = ALB
-			# local greeks conflict | commented by le VRAI because greek rework will overwrite this
-			# if = {
-			# 	limit = { state = 803 }
-			# 	set_demilitarized_zone = yes
-			# 	add_dynamic_modifier = {
-			# 		modifier = ALB_greek_minority
-			# 	}
-			# }
 		}
 		FROM = {
 			hidden_effect = {
@@ -8902,6 +9078,7 @@ country_event = {
 	trigger = {
 		tag = AUS
 		has_war = yes
+		is_great_war_ongoing = yes
 		OR = {
 			has_idea = AUH_famine_effect_early
 			has_idea = AUH_famine_effect
@@ -8912,9 +9089,8 @@ country_event = {
 		has_country_flag = AUH_januarstreik_in_hungary
 		NOT = {
 			has_country_flag = AUH_end_of_the_line
-			has_global_flag = great_war_ends
 			has_global_flag = GER_capitulation
-			has_global_flag = FRA_capitulation
+			has_global_flag = ENT_capitulation
 		}
 	}
 	mean_time_to_happen = {
@@ -9195,7 +9371,9 @@ country_event = {
 					}
 					state = 109
 				}
-				transfer_state_to = CRO
+				CRO = {
+					safe_transfer_state_to = yes
+				}
 			}
 		}
 		transfer_units_fraction= {
@@ -9240,7 +9418,9 @@ country_event = {
 						state = 163
 					}
 				}
-				transfer_state_to = CRO
+				CRO = {
+					safe_transfer_state_to = yes
+				}
 			}
 		}
 		
@@ -11045,6 +11225,8 @@ country_event = {
 							has_war_with = AUS
 						}
 						transfer_state = 44
+						transfer_state = 1214
+						transfer_state = 1215
 						105 = { #Montenegro
 							owner = {
 								transfer_state = 870

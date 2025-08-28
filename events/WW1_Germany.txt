@@ -17,7 +17,8 @@ country_event = {
 	}
 	option = {
 		name = ww1_german_reichstag.1.a
-		custom_effect_tooltip = GER_the_parliament_seats_will_change_tt	
+		custom_effect_tooltip = GER_the_parliament_seats_will_change_tt
+		hidden_effect = { set_variable = { reichstag_election_date = 1917 } }
 	}
 }
 
@@ -35,6 +36,7 @@ country_event = {
 	option = {
 		name = ww1_german_reichstag.3.a	
 		custom_effect_tooltip = GER_the_parliament_seats_will_change_tt
+		hidden_effect = { add_to_variable = { reichstag_election_date = 5 } }
 	}
 }
 
@@ -3067,7 +3069,7 @@ news_event = {
 # 		is_subject = no
 # 		NOT = {
 # 			has_global_flag = GER_capitulation
-# 			has_global_flag = FRA_capitulation
+# 			has_global_flag = ENT_capitulation
 # 			has_game_rule = {
 # 				rule = allow_scripted_peace_treaty
 # 				option = "BLOCKED"
@@ -4869,11 +4871,10 @@ country_event = {
 		NOT = {
 			has_global_flag = frankfurt_treaty
 			has_war_with = FRA
+			has_global_flag = FRA_capitulation_alone
+			has_global_flag = german_french_border_decided
 		}
 		has_country_flag = great_war_winner
-		NOT = {
-			has_global_flag = FRA_capitulation_alone
-		}
 	}
 	immediate = {
 		hidden_effect = {
@@ -4887,6 +4888,7 @@ country_event = {
 				transfer_state = 28
 				transfer_state = 1107
 			}
+			set_global_flag = german_french_border_decided
 		}
 	}
 	fire_only_once = yes
@@ -5834,7 +5836,7 @@ country_event = {
 # Occupation of the Ruhr
 news_event = {
 	id = ww1_germany.135
-	title = ww1_germany.134.t
+	title = ww1_germany.135.t
 	desc = {
 		text = ww1_germany.135.d
 		trigger = {
@@ -6860,7 +6862,7 @@ country_event = {
 							y = 0
 						}
 						cavalry = {
-							x = 1
+							x = 2
 							y = 0
 						}
 					}
@@ -6869,6 +6871,7 @@ country_event = {
 			541 = {
 				create_unit = {
 					division = "name = \"Baster Volunteer Brigade\" division_template = \"Baster Volunteers\" start_experience_factor = 0.1"
+					allow_spawning_on_enemy_provs = yes
 					owner = SAF
 				}
 			}
@@ -6922,6 +6925,7 @@ country_event = {
 				create_unit = {
 					division = "name = \"Baster Volunteer Brigade\" division_template = \"Baster Volunteers\" start_experience_factor = 0.1"
 					owner = SAF
+					allow_spawning_on_enemy_provs = yes
 				}
 			}
 		}
@@ -7888,6 +7892,17 @@ country_event = {
 	desc = ww1_germany.125.d
 	picture = GFX_report_event_german_reichstag_gathering
 	is_triggered_only = yes
+	trigger = {
+		NOT = {
+			has_country_flag = great_war_loser
+			has_global_flag = german_french_border_decided
+		}
+	}
+	immediate = {
+		hidden_effect = {
+			set_global_flag = german_french_border_decided
+		}
+	}
 	option = {
 		name = ww1_germany.125.a
 		hidden_effect = {
@@ -8445,11 +8460,22 @@ country_event = {
 			ideology = democratic
 			popularity = 0.02
 		}
-		add_to_variable = { GER_influence_in_hesse = -1 }
-		custom_effect_tooltip = {
-			localization_key = GER_add_INFLUENCE_to_FEDERAL_STATE_tt
-			INFLUENCE = "-1"  #Negative influence is not a bug, I intended it
-			FEDERAL_STATE = GER_bundesrat_hesse_tt
+		if = {
+			limit = {check_variable = { GER_influence_in_hesse > 0 } }
+			add_to_variable = { GER_influence_in_hesse = -1 }
+			custom_effect_tooltip = {
+				localization_key = GER_add_INFLUENCE_to_FEDERAL_STATE_tt
+				INFLUENCE = "-1"
+				FEDERAL_STATE = GER_bundesrat_hesse_tt
+			}
+		}
+		else_if = {
+			limit = {check_variable = { GER_extra_influence > 0 } }
+			add_to_variable = { GER_extra_influence = -1 }
+			custom_effect_tooltip = {
+				localization_key = GER_get_extra_influence_tt
+				INFLUENCE = "-1"
+			}
 		}
 		#GER_update_bundesrat_gui = yes
 		HES = {
@@ -8995,7 +9021,7 @@ country_event = {
 		ai_chance = { base = 1 }
 		add_timed_idea = {
 			idea = GER_aftermath_of_the_zabern_affair
-			days = 730
+			days = 365
 		}
 		hidden_effect = {
 			news_event = {
@@ -9018,7 +9044,7 @@ country_event = {
 		ai_chance = { base = 1 }
 		add_timed_idea = {
 			idea = GER_scorned_army
-			days = 730
+			days = 365
 		}
 		hidden_effect = {
 			news_event = {
@@ -9073,7 +9099,7 @@ country_event = {
 		add_ideas = GER_wilhelm_ii
 		add_timed_idea = {
 			idea = GER_scorned_army
-			days = 730
+			days = 365
 		}
 		hidden_effect = {
 			news_event = {
@@ -9110,7 +9136,7 @@ country_event = {
 		}
 		add_timed_idea = {
 			idea = GER_aftermath_of_the_zabern_affair
-			days = 730
+			days = 365
 		}
 		hidden_effect = {
 			news_event = {
@@ -9361,6 +9387,15 @@ country_event = {
 		activate_advisor = GER_erich_von_falkenhayn_chief
 		add_ideas = GER_home_by_christmas
 		add_war_support = -0.05
+		if = {
+			limit = {
+				has_idea = GER_josias_von_heeringen
+			}
+			GER_josias_von_heeringen = {
+				remove_any_country_role_from_character = yes
+			}
+			activate_advisor = GER_erich_von_falkenhayn
+		}
 	}
 }
 
@@ -9373,6 +9408,7 @@ country_event = {
 	trigger = {
 		original_tag = GER
 		has_war_with = FRA
+		is_great_war_ongoing = yes
 		war_length_with = {
 			tag = FRA
 			months > 24
@@ -9380,9 +9416,6 @@ country_event = {
 		has_character = GER_erich_von_falkenhayn
 		GER_erich_von_falkenhayn = {
 			is_army_chief = yes
-		}
-		NOT = {
-			has_global_flag = great_war_ends
 		}
 	}
 	fire_only_once = yes
@@ -10053,7 +10086,7 @@ country_event = {
 	option = {
 		name = ww1_germanrework.75.a
 		custom_effect_tooltip = historical_tt
-		#Erich von Falkenhayn plan
+		#Moltke plan
 		effect_tooltip = {
 			swap_ideas = {
 				add_idea = GER_schlieffen_moltke_plan
@@ -10062,14 +10095,13 @@ country_event = {
 		}
 		set_country_flag = GER_schliffenmoltkeplan
 		unlock_decision_tooltip = GER_schliffenmoltkeplan
-		deactivate_advisor = GER_josias_von_heeringen
+	}
+	option = {
+		name = ww1_germanrework.75.b
 		GER_josias_von_heeringen = {
 			remove_any_country_role_from_character = yes
 		}
 		activate_advisor = GER_erich_von_falkenhayn
-	}
-	option = {
-		name = ww1_germanrework.75.b
 		trigger = {
 			NOT = {
 				has_completed_focus = GER_quantitative_plan
@@ -10715,7 +10747,7 @@ country_event = {
 	is_triggered_only = yes
 	fire_only_once = no
 	option = {
-		name = ww1_germanrework.99.a
+		name = ww1_germanrework.98.a
 		add_war_support = 0.05
 		add_political_power = 75
 	}
@@ -12142,8 +12174,7 @@ country_event = {
 	fire_only_once = yes
 	trigger = {
 		tag = GER
-		has_global_flag = great_war
-		NOT = { has_global_flag = great_war_ends }
+		is_great_war_ongoing = yes
 		has_capitulated = no
 		has_war_with_major = yes
 		enemies_naval_strength_ratio < 1.3
@@ -12203,8 +12234,7 @@ country_event = {
 	fire_only_once = yes
 	trigger = {
 		tag = GER
-		has_global_flag = great_war
-		NOT = { has_global_flag = great_war_ends }
+		is_great_war_ongoing = yes
 		has_capitulated = no
 		has_war_with_major = yes
 		OR = {
@@ -13003,6 +13033,7 @@ country_event = {
 		deactivate_advisor = GER_theobald_von_bethmann_hollweg
 		activate_advisor = GER_georg_michaelis
 		add_ideas = GER_1912_conservative_federal_budget
+		set_country_flag = GER_conservative_1912_budget_passed_in_reichstag
 	}
 	option = {
 		name = ww1_germanrework.172.a
@@ -13015,6 +13046,7 @@ country_event = {
 		deactivate_advisor = GER_georg_michaelis
 		activate_advisor = GER_georg_von_hertling
 		add_ideas = GER_1912_conservative_federal_budget
+		set_country_flag = GER_conservative_1912_budget_passed_in_reichstag
 	}
 	option = {
 		name = ww1_germanrework.172.a
@@ -13032,6 +13064,7 @@ country_event = {
 		}
 		#kaiser force a konservativ budget
 		add_ideas = GER_1912_conservative_federal_budget
+		set_country_flag = GER_conservative_1912_budget_passed_in_reichstag
 	}
 }
 
@@ -13759,6 +13792,7 @@ country_event = {
 	#we changed our mind
 	option = {
 		name = ww1_germanrework.174.d
+		GER_remove_all_negotiation_flags = yes
 		#GER_update_bundesrat_gui = yes	
 	}
 }
@@ -13872,6 +13906,7 @@ country_event = {
 	fire_only_once = yes
 	trigger = {
 		tag = GER
+		is_great_war_ongoing = yes
 		any_enemy_country = {
 			is_major = yes
 			any_owned_state = {
@@ -13881,7 +13916,6 @@ country_event = {
 		owns_state = 546
 		NOT = {
 			controls_state = 546
-			has_global_flag = great_war_ends
 		}
 		is_GER_a_monarchy = yes
 	}
