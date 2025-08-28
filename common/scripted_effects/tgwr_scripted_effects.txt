@@ -274,10 +274,10 @@ GER_release_POL = {
 			puppet = POL
 
 			hidden_effect = {
-				POL = {
-					set_country_flag = released_by_germany
+				POL = {			
 					drop_cosmetic_tag = yes
 					inherit_technology = ROOT
+					delete_obsolete_russian_templates = yes
 					# load_oob = "POL_divisions"	
 
 					# If either Kaiser or OHL in charge, setup Polands Politics
@@ -285,8 +285,9 @@ GER_release_POL = {
 						limit = { 
 							ROOT = { 
 								is_GER_a_monarchy = yes
-							} 
+							}
 						}
+						set_country_flag = released_by_germany
 						set_politics = { 
 							ruling_party = neutrality
 							elections_allowed = no
@@ -375,6 +376,7 @@ GER_release_LIT = {
 				set_country_flag = released_by_germany
 				set_cosmetic_tag = LIT_GER
 				inherit_technology = GER
+				delete_obsolete_russian_templates = yes
 				if = {
 					limit = {
 						GER = {
@@ -480,8 +482,10 @@ GER_release_LIT = {
 		puppet = LIT
 		hidden_effect = {
 			LIT = {
+				set_country_flag = released_by_germany
 				set_cosmetic_tag = LIT_GER
 				inherit_technology = GER
+				delete_obsolete_russian_templates = yes
 				if = {
 					limit = {
 						GER = {
@@ -665,7 +669,8 @@ GER_release_UBD = {
 				}
 			}	
 			set_country_flag = released_by_germany
-			inherit_technology = GER	
+			inherit_technology = GER
+			delete_obsolete_russian_templates = yes
 		}
 		every_state = {
 			limit = {
@@ -725,6 +730,7 @@ GER_release_COU = {
 			}
 			set_country_flag = released_by_germany
 			inherit_technology = GER
+			delete_obsolete_russian_templates = yes
 		}
 		if = {
 			limit = {
@@ -3403,6 +3409,160 @@ join_great_war_against_GER = {
 	}
 }
 
+relinguish_entente_leadership_peace = {
+	if = {
+		limit = {
+			tag = ENT
+		}
+		every_country = {
+			limit = {
+				has_country_flag = entente_leader
+			}
+			clr_country_flag = entente_leader
+		}
+		if = {
+			limit = {
+				FRA = {
+					is_in_faction_with = ROOT
+					is_subject = no
+					has_capitulated = no
+					NOT = {
+						has_country_flag = RUS_surrender_alone
+						tag = ROOT
+					}
+				}
+			}
+			FRA = {
+				set_country_flag = entente_leader
+				set_faction_leader = yes
+			}
+		}
+		else_if = {
+			limit = {
+				RUS = {
+					is_in_faction_with = ROOT
+					is_subject = no
+					has_capitulated = no
+					tag = SOV
+					NOT = {
+						has_country_flag = has_capitulated_with_france_early
+						has_global_flag = RUS_surrender_alone
+						tag = SOV
+						tag = ROOT
+					}
+				}
+			}
+			RUS = {
+				set_country_flag = entente_leader
+				set_faction_leader = yes
+			}
+		}
+		else_if = {
+			limit = {
+				ENG = {
+					is_in_faction_with = ROOT
+					is_subject = no
+					has_capitulated = no
+					NOT = {
+						has_country_flag = has_capitulated_with_france_early
+						tag = ROOT
+					}
+				}
+			}
+			ENG = {
+				set_country_flag = entente_leader
+				set_faction_leader = yes
+			}
+		}
+		else_if = {
+			limit = {
+				any_allied_country = {
+					is_major = yes
+					is_subject = no
+					has_capitulated = no
+					capital_scope = {
+						is_on_continent = europe
+					}
+				}
+			}
+			random_other_country = {
+				limit = {
+					is_major = yes
+					is_subject = no
+					has_capitulated = no
+					capital_scope = {
+						is_on_continent = europe
+					}
+				}
+				set_country_flag = entente_leader
+				set_faction_leader = yes
+			}
+		}
+		else_if = {
+			limit = {
+				any_allied_country = {
+					is_major = yes
+					is_subject = no
+					has_capitulated = no
+				}
+			}
+			random_other_country = {
+				limit = {
+					is_major = yes
+					is_subject = no
+					has_capitulated = no
+				}
+				set_country_flag = entente_leader
+				set_faction_leader = yes
+			}
+		}
+		else_if = {
+			limit = {
+				any_allied_country = {
+					is_subject = no
+					has_capitulated = no
+					capital_scope = {
+						is_on_continent = europe
+					}
+				}
+			}
+			random_other_country = {
+				limit = {
+					is_in_faction_with = ROOT
+					is_subject = no
+					has_capitulated = no
+					capital_scope = {
+						is_on_continent = europe
+					}
+				}
+				set_country_flag = entente_leader
+				set_faction_leader = yes
+			}
+		}
+		else_if = {
+			limit = {
+				any_allied_country = {
+					is_in_faction_with = ROOT
+					is_subject = no
+					has_capitulated = no
+				}
+			}
+			random_other_country = {
+				limit = {
+					is_in_faction_with = ROOT
+					is_subject = no
+					has_capitulated = no
+				}
+				set_country_flag = entente_leader
+				set_faction_leader = yes
+			}
+		}
+		else = {
+			dismantle_faction = yes
+		}
+	}		
+}
+
 relinguish_entente_leadership = {
 	if = {
 		limit = {
@@ -3416,17 +3576,18 @@ relinguish_entente_leadership = {
 		}
 		if = {
 			limit = {
-				ENG = {
+				FRA = {
 					is_in_faction_with = ROOT
 					has_war_with = GER
 					is_subject = no
 					has_capitulated = no
 					NOT = {
-						has_country_flag = has_capitulated_with_france_early
+						has_country_flag = RUS_surrender_alone
+						tag = ROOT
 					}
 				}
 			}
-			ENG = {
+			FRA = {
 				set_country_flag = entente_leader
 				set_faction_leader = yes
 			}
@@ -3438,11 +3599,11 @@ relinguish_entente_leadership = {
 					has_war_with = GER
 					is_subject = no
 					has_capitulated = no
-					tag = SOV
 					NOT = {
 						has_country_flag = has_capitulated_with_france_early
-						has_global_flag = russ_kapitulation
+						has_global_flag = RUS_surrender_alone
 						tag = SOV
+						tag = ROOT
 					}
 				}
 			}
@@ -3453,6 +3614,24 @@ relinguish_entente_leadership = {
 		}
 		else_if = {
 			limit = {
+				ENG = {
+					is_in_faction_with = ROOT
+					has_war_with = GER
+					is_subject = no
+					has_capitulated = no
+					NOT = {
+						has_country_flag = has_capitulated_with_france_early
+						tag = ROOT
+					}
+				}
+			}
+			ENG = {
+				set_country_flag = entente_leader
+				set_faction_leader = yes
+			}
+		}
+		else_if = {
+			limit = {
 				any_allied_country = {
 					has_war_with = GER
 					is_major = yes
@@ -3517,22 +3696,33 @@ relinguish_entente_leadership = {
 					capital_scope = {
 						is_on_continent = europe
 					}
+				}
+				set_country_flag = entente_leader
+				set_faction_leader = yes
+			}
+		}
+		else_if = {
+			limit = {
+				any_allied_country = {
+					is_in_faction_with = ROOT
+					is_subject = no
+					has_capitulated = no
+					has_war_with = GER
+				}
+			}
+			random_other_country = {
+				limit = {
+					is_in_faction_with = ROOT
+					is_subject = no
+					has_capitulated = no
+					has_war_with = GER
 				}
 				set_country_flag = entente_leader
 				set_faction_leader = yes
 			}
 		}
 		else = {
-			random_other_country = {
-				limit = {
-					is_in_faction_with = ROOT
-					is_subject = no
-					has_capitulated = no
-					has_war_with = GER
-				}
-				set_country_flag = entente_leader
-				set_faction_leader = yes
-			}
+			dismantle_faction = yes
 		}
 	}		
 }

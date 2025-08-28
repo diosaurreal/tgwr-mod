@@ -713,7 +713,7 @@ armistice_effect = {
 						}					
 					}
 				}
-				FRA = {
+				ENT = {
 					country_event = {
 						id = ww1_luxembourg.6
 						days = 25
@@ -1566,7 +1566,7 @@ armistice_effect = {
 			}
 			NOT = {
 				has_global_flag = october_revolution
-				has_global_flag = russ_kapitulation
+				has_global_flag = RUS_surrender_alone
 			}
 		}
 		##### Russia Puppet Poland no Piłsudski #####
@@ -1626,7 +1626,7 @@ armistice_effect = {
 				has_country_flag = great_war_loser
 			}													
 		}
-		set_global_flag = russ_kapitulation
+		set_global_flag = RUS_surrender_alone
 	}
 	### ROMANIA / HUNGARY ###
 	ROM = {
@@ -3029,9 +3029,7 @@ armistice_effect = {
 					is_core_of = PREV
 				}
 			}
-			PER = {
-				transfer_state = PREV
-			}
+			transfer_state_to = PER
 		}
 	}
 	every_country = {
@@ -3072,21 +3070,16 @@ armistice_effect = {
 		}
 		if = {
 			limit = {
-				FRA= {
+				ENT = {
 					has_country_flag = great_war_winner
 				}
 			}
 			add_ideas = idea_victors_of_wwi_entente
 		}
-		if = {
+		else_if = {
 			limit = {
 				GER = {
 					has_country_flag = great_war_winner
-				}
-				NOT = {
-					FRA = {
-						has_country_flag = great_war_winner
-					}
 				}
 			}
 			add_ideas = idea_victors_of_wwi_cp
@@ -3327,10 +3320,10 @@ conference_effect = {
 			}
 		}
 	}
-	### FRANCE ###
+	### ENTENTE ###
 	if = {
 		limit = {
-			FRA = { has_country_flag = great_war_winner }
+			ENT = { has_country_flag = great_war_winner }
 		}
 		if = {
 			limit = {
@@ -3388,6 +3381,86 @@ conference_effect = {
 				}
 			}
 		}
+		# Memelland
+		if = {
+			limit = {
+				any_country = {
+					owns_state = 188
+					has_country_flag = great_war_loser
+				}
+				NOT = {
+					RUS = { has_country_flag = great_war_winner }
+					any_country = {
+						has_country_flag = great_war_winner
+						OR = {
+							188 = { is_claimed_by = PREV }
+							188 = { is_core_of = PREV }
+						}
+						
+					}
+				}
+			}
+			188 = {
+				add_dynamic_modifier = { modifier = international_city }
+				if = {
+					limit = { 
+						FRA = { has_country_flag = great_war_winner }
+					}
+					transfer_state_to = FRA
+					add_contested_owner = GER
+					if = {
+						limit = {  country_exists = LIT }
+						add_contested_owner = LIT
+					}
+				}
+				else_if = {
+					limit = { country_exists = LIT }
+					transfer_state_to = LIT
+					add_contested_owner = GER
+				}		
+			}
+		}
+		every_state = {
+			limit = {
+				is_owned_by = GER
+				NOT = {
+					is_on_continent = europe
+					is_core_of = GER
+				}	
+			}
+			if = {
+				limit = {
+					FRA = { has_country_flag = great_war_winner }
+				}
+				transfer_state_to = FRA
+			}	
+			else_if = {
+				limit = {
+					ENG = { has_country_flag = great_war_winner }
+				}
+				transfer_state_to = ENG
+			}
+			else = {
+				transfer_state_to = ENT
+			}
+			# Remove German Cameroon cores
+			every_state = {
+				limit = {
+					is_core_of = CMR
+					NOT = {
+						state = 539
+						state = 813
+					}
+				}
+				remove_core_of = CMR
+			}
+		}
+	}	
+	### FRANCE ###
+	if = {
+		limit = {
+			FRA = { has_country_flag = great_war_winner }
+		}	
 		# Rhineland
 		every_state = {
 			limit = {
@@ -3411,54 +3484,7 @@ conference_effect = {
 			}
 			transfer_state_to = FRA
 			add_contested_owner = GER
-		}
-		# Memelland
-		if = {
-			limit = {
-				any_country = {
-					owns_state = 188
-					has_country_flag = great_war_loser
-				}
-				NOT = {
-					RUS = { has_country_flag = great_war_winner }
-					any_country = {
-						has_country_flag = great_war_winner
-						188 = { is_claimed_by = PREV }
-					}
-					any_country = {
-						has_country_flag = great_war_winner
-						188 = { is_core_of = PREV }
-					}
-				}
-			}
-			188 = {
-				add_dynamic_modifier = { modifier = international_city }
-				transfer_state_to = FRA
-				add_contested_owner = GER
-				add_contested_owner = LIT
-			}
-		}
-		every_state = {
-			limit = {
-				is_owned_by = GER
-				NOT = {
-					is_on_continent = europe
-					is_core_of = GER
-				}	
-			}
-			FRA = { transfer_state = PREV }
-		}
-		# Remove German Cameroon cores
-		every_state = {
-			limit = {
-				is_core_of = CMR
-				NOT = {
-					state = 539
-					state = 813
-				}
-			}
-			remove_core_of = CMR
-		}
+		}	
 	}
 	### GERMANY ###
 	if = {
@@ -4145,9 +4171,7 @@ conference_effect = {
 							state = 1134
 						}
 					}
-					LBA = {
-						transfer_state = PREV
-					}
+					transfer_state_to = LBA
 				}
 				TUR = {
 					set_autonomy = {
@@ -4318,7 +4342,7 @@ conference_effect = {
 						NOT = { has_country_flag = great_war_winner }
 					}
 				}
-				BUL = {
+				AUS = {
 					set_autonomy = {
 						target = BUL
 						autonomy_state = autonomy_dominion
@@ -4740,9 +4764,7 @@ conference_effect = {
 					}
 					is_owned_by = RUS
 				}
-				UKR = {
-					transfer_state = PREV
-				}
+				transfer_state_to = UKR
 			}
 			if = {
 				limit = {
@@ -4769,6 +4791,15 @@ conference_effect = {
 					AUS = {
 						has_country_flag = great_war_winner
 						is_subject = no
+					}
+					UKR = {
+						OR = {
+							is_subject = no
+							is_subject_of = RUS
+						}						
+						NOT = {
+							has_country_flag = great_war_winner
+						}
 					}
 				}
 				UKR = {
@@ -4930,9 +4961,7 @@ conference_effect = {
 					}
 					is_owned_by = TUR
 				}
-				RUS = {
-					transfer_state = PREV
-				}		
+				transfer_state_to = RUS		
 			}
 		}				
 	}
@@ -4998,9 +5027,7 @@ conference_effect = {
 				is_core_of = ROM
 				is_owned_by = GER
 			}
-			BUL = {
-				transfer_state = PREV
-			}
+			transfer_state_to = BUL
 		}
 		#fix ottoman exclave wtf
 		if = {
@@ -5854,61 +5881,56 @@ conference_effect = {
 					}
 				}
 			}
-			every_state = {
-				limit = {
-					is_core_of = TRP				
-				}
-				if = {
+			ITA = {
+				every_owned_state = {
 					limit = {
-						FRA = {
-							has_country_flag = great_war_winner
-						}
+						is_core_of = TRP				
 					}
-					add_claim_by = FRA
 					if = {
 						limit = {
-							OWNER = {
-								has_country_flag = great_war_loser
+							FRA = {
+								has_country_flag = great_war_winner
 							}
 						}
-						transfer_state_to = FRA
-					}
-				}	
-				else = {
-					transfer_state_to = TRP
-				}
-			}
-			every_state = {
-				limit = {
-					OR = {
-						state = 450
-						state = 1061
-						state = 663
-						state = 1156
-						state = 754
-						state = 1121
-					}				
-				}
-				if = {
-					limit = {
-						ENG = {
-							has_country_flag = great_war_winner
+						add_claim_by = FRA
+						if = {
+							limit = {
+								OWNER = {
+									has_country_flag = great_war_loser
+								}
+							}
+							transfer_state_to = FRA
 						}
 					}
-					add_claim_by = ENG
+					else = {
+						transfer_state_to = TRP
+					}
+				}
+				every_owned_state = {
+					limit = {
+						is_core_of = LBA			
+					}
 					if = {
 						limit = {
-							OWNER = {
-								has_country_flag = great_war_loser
+							ENG = {
+								has_country_flag = great_war_winner
 							}
 						}
-						transfer_state_to = ENG
+						add_claim_by = ENG
+						if = {
+							limit = {
+								OWNER = {
+									has_country_flag = great_war_loser
+								}
+							}
+							transfer_state_to = ENG
+						}
+					}	
+					else = {
+						transfer_state_to = LBA
 					}
-				}	
-				else = {
-					transfer_state_to = LBA
 				}
-			}
+			}	
 		}
 	}
 	##Syria givaway
