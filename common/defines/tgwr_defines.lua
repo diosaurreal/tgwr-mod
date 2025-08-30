@@ -118,6 +118,11 @@ NDefines.NGraphics.VICTORY_POINTS_DISTANCE_CUTOFF = {300, 500, 1000} 		-- Vanill
 
 NDefines_Graphics.NGraphics.POLITICAL_GRID_SMALL_BOX_LIMIT = 18              	-- Limit for gridbox in political view before it will be replaced with extended gridbox, Vanilla is 6
 
+NDefines.NSupply.CAPITAL_SUPPLY_BASE = 1.0
+NDefines.NSupply.CAPITAL_SUPPLY_CIVILIAN_FACTORIES = 0.6
+NDefines.NSupply.CAPITAL_SUPPLY_MILITARY_FACTORIES = 0.5
+NDefines.NSupply.CAPITAL_SUPPLY_DOCKYARDS = 0.3
+
 -- Production AI
 
 NDefines.NDiplomacy.EMBARGO_COST = 0 -- Vanilla is 100
