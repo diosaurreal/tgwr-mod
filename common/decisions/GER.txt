@@ -1,6 +1,6 @@
 GER_internal_affairs = {
 	GER_price_ceilling_on_food = {
-		icon = GFX_decision_SOV_place_hq
+		icon = SWI_support_humanitarian_efforts
 		allowed = {
 			original_tag = GER
 		}
@@ -87,18 +87,16 @@ GER_internal_affairs = {
 	}
 
 	GER_OHL_takeover = {
+		icon = generic_pickelhaube
 		days_mission_timeout = 215
 		is_good = no
 		allowed = {
 			tag = GER
 		}
 		activation = {
-			#has_global_flag = great_war
 			tag = GER
 			has_country_flag = GER_OHL_oppose_hollweg
-			NOT = {
-				has_global_flag = great_war_ends
-			}
+			is_great_war_ongoing = yes
 			GER_theobald_von_bethmann_hollweg = {
 				is_hired_as_advisor = yes #is chancellor 
 			}
@@ -129,9 +127,7 @@ GER_internal_affairs = {
 		}
 		visible = {
 			has_completed_focus = GER_the_hindenburg_program
-			NOT = {
-				has_global_flag = great_war_ends
-			}
+			is_great_war_ongoing = yes
 		}
 		remove_effect = {
 			if = {
@@ -160,6 +156,36 @@ GER_internal_affairs = {
 
 GER_great_war = {
 
+	GER_alfred_von_tirpitz_resignation_mission = {
+		icon = SWE_set_navy_budget
+		days_mission_timeout = 310
+		is_good = no
+		allowed = {
+			original_tag = GER
+		}
+		visible = {
+			tag = GER
+		}
+		available = {
+			has_unrestricted_submarine_warfare = yes
+		}
+		activation = {
+			always = no
+		}
+		cancel_trigger = {
+			NOT = {
+				has_war = yes
+				has_idea = GER_alfred_von_tirpitz
+			}
+		}
+		timeout_effect = {
+			effect_tooltip = {
+				retire_character = GER_alfred_von_tirpitz
+			}
+			country_event = ww1_germanrework.181
+		}
+	}
+
 	#unrestricted submarine warfare bonus
 	GER_intensification_of_submarine_warfare = {
 		icon = GFX_decision_generic_human_torpedo
@@ -173,9 +199,7 @@ GER_great_war = {
 				has_country_flag = GER_unrestricted_submarine_warfare_flag
 				has_completed_focus = GER_u_boat_campaign
 			}
-			NOT = {
-				has_global_flag = great_war_ends
-			}
+			is_great_war_ongoing = yes
 			has_war = yes
 			NOT = {
 				has_idea = GER_unrestricted_submarine_warfare_idea4
@@ -217,11 +241,9 @@ GER_great_war = {
 				has_country_flag = GER_unrestricted_submarine_warfare_flag
 				has_completed_focus = GER_u_boat_campaign
 			}
-			NOT = {
-				has_global_flag = great_war_ends
-			}
+			is_great_war_ongoing = yes
 			has_war = yes
-			has_unrestricted_submarine_warfare_idea = yes
+			has_u_boat_campaign = yes
 		}
 		available = {
 			has_war = yes
@@ -247,8 +269,8 @@ GER_great_war = {
 			tag = GER
 		}
 		visible = {
+			is_great_war_ongoing = yes
 			NOT = {
-				has_global_flag = great_war_ends
 				has_global_flag = zimmermann_telegram_intercepted
 				any_other_country = {
 					has_country_flag = mexico_agrees
@@ -256,8 +278,10 @@ GER_great_war = {
 			}
 			FROM = {
 				has_war_with_major = no
-				is_in_faction_with = USA
-				has_war_together_with = USA
+				NOT = {
+					is_in_faction_with = USA
+					has_war_together_with = USA
+				}
 			}
 			OR = {
 				has_war_with = USA
@@ -288,7 +312,7 @@ GER_great_war = {
 			custom_effect_tooltip = GER_zimmermann_depesche_tt
 			FROM = {
 				country_event = {
-					id = ww1_germany.53
+					id = ww1_germanrework.185
 					days = 1
 				}
 			}
@@ -333,17 +357,18 @@ GER_great_war = {
 	}
 
 	GER_date_naval_report = {
+		icon = SWE_set_navy_budget
 		days_mission_timeout = 28
 		is_good = no
 		allowed = {
 			tag = GER
 		}
 		activation = {
-			has_unrestricted_submarine_warfare_idea = yes
+			has_u_boat_campaign = yes
 			has_war = yes
 		}
 		available = {
-			has_unrestricted_submarine_warfare_idea = no
+			has_u_boat_campaign = no
 		}
 		timeout_effect = {
 			if = {
@@ -376,6 +401,7 @@ GER_great_war = {
 	}
 
 	GER_major_deficit_spending = {
+		icon = gre_paying_ifc_debt
 		days_mission_timeout = 150
 		selectable_mission = no
 		is_good = no
@@ -383,17 +409,18 @@ GER_great_war = {
 			tag = GER
 		}
 		activation = {
-			has_global_flag = great_war
-			tag = GER
+			is_great_war_ongoing = yes
+			has_war = yes
 			NOT = {
 				has_completed_focus = GER_financing_the_war_economy
-			}
-			NOT = {
 				has_idea = GER_lack_of_capital
 			}
 		}
 		available = {
-			has_completed_focus = GER_financing_the_war_economy
+			OR = {
+				has_completed_focus = GER_financing_the_war_economy
+				has_war = no
+			}	
 		}
 		timeout_effect = {
 			add_ideas = GER_lack_of_capital
@@ -405,6 +432,7 @@ GER_great_war = {
 	}
 
 	GER_national_debt_mission = {
+		icon = gre_paying_ifc_debt
 		days_mission_timeout = 365
 		days_re_enable = 1
 		selectable_mission = no
@@ -414,8 +442,12 @@ GER_great_war = {
 		}
 		activation = {
 			has_completed_focus = GER_financing_the_war_economy
+			has_war = no
 			NOT = {
 				has_idea = GER_idea_national_debt_4
+				has_global_flag = great_war_ends
+				has_capitulated = no
+				is_subject = no
 			}
 		}
 		available = {
@@ -455,49 +487,46 @@ GER_great_war = {
 		}
 		
 	}
-	#Kaiserschlacht
-	GER_kaiserschlacht_offensive = {
+	# OFFENSIVES
+	###########################
+	#first and second offensive
+	GER_ypres_offensive = {
 		icon = GFX_decision_hol_draw_up_staff_plans
 		days_remove = 120
 		is_good = no
 		fire_only_once = yes
 		target_trigger = {
 			FROM = {
-				tag = FRA
+				tag = BEL
 			}
 		}
 		target_root_trigger = {
-			has_completed_focus = GER_organise_fresh_offensives
+			has_completed_focus = GER_organise_fresh_offensives			
 		}
 		allowed = {
 			tag = GER
 		}
 		visible = {
 			has_completed_focus = GER_organise_fresh_offensives
+			is_great_war_ongoing = yes
 		}
 		available = {
-			has_war_with = FRA
-			OR = {
-				29 = {
-					NOT = {
-						is_fully_controlled_by = FRA
+			AND = {
+				has_war_with = FRA
+				has_war_with = BEL
+			}
+			NOT = {
+				any_country = {
+					OR = {
+						tag = ROOT
+						is_ally_with = ROOT
 					}
-				}
-				785 = {
-					NOT = {
-						is_fully_controlled_by = FRA
-					}
+					controls_province = 6548
 				}
 			}
-			OR = {
+			6 = {
 				NOT = {
-					controls_province = 11420
-				}
-				NOT = {
-					controls_province = 6585
-				}
-				NOT = {
-					controls_province = 9561
+					is_fully_controlled_by = BEL
 				}
 			}
 			NOT = {
@@ -507,38 +536,36 @@ GER_great_war = {
 		
 		highlight_states = {
 			highlight_provinces = {
-				11420
-				6585
-				9561
+				6548
 			}
 			highlight_color_while_active = 1
 		}
 		remove_effect = {
 			hidden_effect = {
-				remove_ideas = GER_focus_on_french_front
+				remove_ideas = GER_focus_on_belgian_front
 			}
 			country_event = {
-				id = ww1_germanrework.77
+				id = ww1_germanrework.78
 				days = 2
 			}
 			clr_country_flag = GER_on_offensive
-			hidden_effect = {
-				set_global_flag = ludendorff_offensive_failed
-				if = {
-					limit = {
-						NOT = { has_idea = idea_mass_desertion }
-					}
-					add_timed_idea = {
-						idea = idea_mass_desertion
-						days = 90
-					}
-				}
-			}
 		}
-		cancel_trigger = {
-			controls_province = 9561
-			controls_province = 6585
-			controls_province = 11420
+		cancel_trigger = {		
+			OR = {
+				any_country = {
+					OR = {
+						tag = ROOT
+						is_ally_with = ROOT
+					}
+					controls_province = 6548
+				}
+				hidden_trigger = {
+					OR = {
+						NOT = { has_war_with = FROM }
+						is_great_war_ongoing = no
+					}
+				}			
+			}
 		}
 		cancel_effect = {
 			add_war_support = 0.05
@@ -547,27 +574,19 @@ GER_great_war = {
 		complete_effect = {
 			set_country_flag = GER_on_offensive
 			add_timed_idea = {
-				idea = GER_focus_on_french_front
+				idea = GER_focus_on_belgian_front
 				days = 120
 			}
-			custom_effect_tooltip = GER_capture_compiene_beauvais_amiens
-			hidden_effect = {
-				set_global_flag = ludendorff_offensive
-				news_event = {
-					id = ww1_germany.92
-					hours = 3
-				}
-			}
+			custom_effect_tooltip = GER_capture_ypres
 		}
 		ai_will_do = {
 			factor = 100
 			modifier = {
-				date < 1918.3.20
+				date < 1915.2.2
 				factor = 0
 			}
 		}
 	}
-
 	#attack russian poland
 	GER_gorlice_tarnow = {
 		icon = GFX_decision_hol_draw_up_staff_plans
@@ -581,17 +600,27 @@ GER_great_war = {
 		}
 		target_root_trigger = {
 			has_completed_focus = GER_organise_fresh_offensives
+			is_great_war_ongoing = yes
 		}
 		allowed = {
 			tag = GER
 		}
 		visible = {
 			has_completed_focus = GER_organise_fresh_offensives
+			FROM = {
+				has_capitulated = no 
+			}
 		}
 		available = {
 			has_war_with = RUS
 			NOT = {
-				controls_province = 3544
+				any_country = {
+					OR = {
+						tag = ROOT
+						is_ally_with = ROOT
+					}
+					controls_province = 3544
+				}
 			}
 			NOT = {
 				has_country_flag = GER_on_offensive
@@ -616,12 +645,31 @@ GER_great_war = {
 			clr_country_flag = GER_on_offensive
 		}
 		cancel_trigger = {
-			controls_province = 3544
-			controls_province = 9508
-			controls_province = 3458
-			controls_province = 3559
-			controls_province = 3392
-			controls_province = 11301
+			OR = {
+				any_country = {
+					OR = {
+						tag = ROOT
+						is_ally_with = ROOT
+					}
+					controls_province = 3544
+					controls_province = 9508
+					controls_province = 3458
+					controls_province = 3559
+					controls_province = 3392
+					controls_province = 11301
+				}
+				custom_trigger_tooltip = {
+					tooltip = GER_controls_polish_states_tt
+					are_polish_criteria_states_controlled_by_ROOT_or_ally = yes
+				}
+				hidden_trigger = {
+					OR = {
+						NOT = { has_war_with = FROM }
+						FROM = { has_capitulated = yes }
+						is_great_war_ongoing = no
+					}
+				}			
+			}
 		}
 		cancel_effect = {
 			add_war_support = 0.05
@@ -643,6 +691,99 @@ GER_great_war = {
 			}
 		}
 	}
+	GER_verdun_offensive = {
+		icon = GFX_decision_hol_draw_up_staff_plans
+		days_remove = 210
+		is_good = no
+		fire_only_once = yes
+		target_trigger = {
+			FROM = {
+				tag = FRA
+			}
+		}
+		target_root_trigger = {
+			has_completed_focus = GER_organise_fresh_offensives		
+		}
+		allowed = {
+			tag = GER
+		}
+		visible = {
+			has_completed_focus = GER_organise_fresh_offensives
+			is_great_war_ongoing = yes
+			FROM = {
+				has_capitulated = no 
+			}
+		}
+		available = {
+			has_war_with = FRA
+			NOT = {
+				any_country = {
+					OR = {
+						tag = ROOT
+						is_ally_with = ROOT
+					}
+					controls_province = 5291
+				}
+			}
+			NOT = {
+				has_country_flag = GER_on_offensive
+			}
+		}
+		
+		highlight_states = {
+			highlight_provinces = {
+				5291
+			}
+			highlight_color_while_active = 1
+		}
+		remove_effect = {
+			hidden_effect = {
+				remove_ideas = GER_focus_on_french_front
+			}
+			country_event = {
+				id = ww1_germanrework.76
+				days = 2
+			}
+			clr_country_flag = GER_on_offensive
+		}
+		cancel_trigger = {
+			OR = {
+				any_country = {
+					OR = {
+						tag = ROOT
+						is_ally_with = ROOT
+					}
+					controls_province = 5291
+				}
+				hidden_trigger = {
+					OR = {
+						NOT = { has_war_with = FROM }
+						FROM = { has_capitulated = yes }
+						has_global_flag = great_war_ends
+					}
+				}			
+			}
+		}
+		cancel_effect = {
+			add_war_support = 0.05
+			clr_country_flag = GER_on_offensive
+		}
+		complete_effect = {
+			set_country_flag = GER_on_offensive
+			add_timed_idea = {
+				idea = GER_focus_on_french_front
+				days = 210
+			}
+			custom_effect_tooltip = GER_capture_verdun
+		}
+		ai_will_do = {
+			factor = 100
+			modifier = {
+				date < 1916.2.20
+				factor = 0
+			}
+		}
+	}
 	#attack riga in 1917
 	GER_baltics_offensive = {
 		icon = GFX_decision_hol_draw_up_staff_plans
@@ -655,18 +796,32 @@ GER_great_war = {
 			}
 		}
 		target_root_trigger = {
-			has_completed_focus = GER_organise_fresh_offensives
+			has_completed_focus = GER_organise_fresh_offensives			
 		}
 		allowed = {
 			tag = GER
 		}
 		visible = {
 			has_completed_focus = GER_organise_fresh_offensives
+			is_great_war_ongoing = yes
+			FROM = {
+				has_capitulated = no 
+			}
 		}
 		available = {
 			has_war_with = RUS
+			custom_trigger_tooltip = {
+				tooltip = GER_controls_polish_states_tt
+				are_polish_criteria_states_controlled_by_ROOT_or_ally = yes
+			}
 			NOT = {
-				controls_province = 9340
+				any_country = {
+					OR = {
+						tag = ROOT
+						is_ally_with = ROOT
+					}
+					controls_province = 9340
+				}
 			}
 			NOT = {
 				has_country_flag = GER_on_offensive
@@ -691,12 +846,40 @@ GER_great_war = {
 			clr_country_flag = GER_on_offensive
 		}
 		cancel_trigger = {
-			controls_province = 9340
-			controls_province = 9262
-			controls_province = 3296
-			controls_province = 9483
-			controls_province = 6296
-			controls_province = 3320
+			OR = {
+				any_country = {
+					OR = {
+						tag = ROOT
+						is_ally_with = ROOT
+					}
+					controls_province = 9340
+					controls_province = 9262
+					controls_province = 3296
+					controls_province = 9483
+					controls_province = 6296
+					controls_province = 3320
+				}
+				12 = {
+					controller = {
+						OR = {
+							is_subject_of = GER
+							has_war_together_with = GER
+						}
+					}
+				}
+				hidden_trigger = {
+					OR = {
+						NOT = {
+							has_war_with = FROM
+						}
+						FROM = {
+							has_capitulated = yes 
+						}
+						is_great_war_ongoing = no
+					}				
+				}
+				
+			}
 		}
 		cancel_effect = {
 			add_war_support = 0.05
@@ -718,7 +901,6 @@ GER_great_war = {
 			}
 		}
 	}
-
 	#attack italy with help of austria
 	GER_karfreit_offensive = {
 		icon = GFX_decision_hol_draw_up_staff_plans
@@ -738,6 +920,7 @@ GER_great_war = {
 		}
 		visible = {
 			has_completed_focus = GER_organise_fresh_offensives
+			is_great_war_ongoing = yes
 		}
 		available = {
 			has_war_with = ITA
@@ -751,8 +934,14 @@ GER_great_war = {
 				}
 			}
 			NOT = {
-				controls_province = 628
-				controls_province = 13074
+				any_country = {
+					OR = {
+						tag = ROOT
+						is_ally_with = ROOT
+					}
+					controls_province = 628
+					controls_province = 13074
+				}
 			}
 			NOT = {
 				has_country_flag = GER_on_offensive
@@ -776,9 +965,24 @@ GER_great_war = {
 			}
 			clr_country_flag = GER_on_offensive
 		}
-		cancel_trigger = {
-			controls_province = 628
-			controls_province = 13074
+		cancel_trigger = {		
+			OR = {
+				any_country = {
+					OR = {
+						tag = ROOT
+						is_ally_with = ROOT
+					}
+					controls_province = 628
+					controls_province = 13074
+				}
+				hidden_trigger = {
+					OR = {
+						NOT = { has_war_with = FROM }
+						FROM = { has_capitulated = yes }
+						has_global_flag = great_war_ends
+					}
+				}			
+			}
 		}
 		cancel_effect = {
 			add_war_support = 0.05
@@ -807,76 +1011,157 @@ GER_great_war = {
 			}
 		}
 	}
-
-	GER_verdun_offensive = {
+	#Kaiserschlacht
+	GER_ludendorff_offensive = {
 		icon = GFX_decision_hol_draw_up_staff_plans
-		days_remove = 210
-		is_good = no
+		available = {
+			has_war_with = FRA
+			is_great_war_ongoing = yes
+			NOT = {
+				AND = {
+					29 = {
+						is_fully_controlled_by = FRA
+					}
+					785 = {
+						is_fully_controlled_by = FRA
+					}
+				}				
+			}
+			NOT = {
+				has_country_flag = GER_on_offensive
+				has_war_with = RUS
+			}
+			# shouldn't able to launch this early
+			OR = {
+				has_war_with = USA
+				has_idea =  GER_famine
+				has_war_support < 0.5
+				has_stability < 0.5
+				surrender_progress > 0.05
+			}
+		}	
+		visible = {
+			is_great_war_ongoing = yes
+			FROM = {
+				has_capitulated = no 
+			}
+			NOT = {
+				any_country = {
+					OR = {
+						tag = ROOT
+						is_ally_with = ROOT
+					}
+					controls_province = 11506
+					controls_province = 11420
+					controls_province = 6585
+					controls_province = 9561
+				}
+			}	
+			has_completed_focus = GER_organise_fresh_offensives
+			has_character = GER_erich_ludendorff
+		}
 		fire_only_once = yes
+		allowed = {
+			original_tag = GER
+		}
+		days_remove = 120
+		is_good = no
 		target_trigger = {
 			FROM = {
 				tag = FRA
 			}
 		}
-		target_root_trigger = {
-			has_completed_focus = GER_organise_fresh_offensives
-		}
-		allowed = {
-			tag = GER
-		}
-		visible = {
-			has_completed_focus = GER_organise_fresh_offensives
-		}
-		available = {
-			has_war_with = FRA
-			NOT = {
-				controls_province = 5291
-			}
-			NOT = {
-				has_country_flag = GER_on_offensive
-			}
-		}
-		
 		highlight_states = {
 			highlight_provinces = {
-				5291
+				11420
+				6585
+				9561
 			}
 			highlight_color_while_active = 1
 		}
-		remove_effect = {
-			hidden_effect = {
-				remove_ideas = GER_focus_on_french_front
+		target_root_trigger = {
+			has_completed_focus = GER_organise_fresh_offensives
+		}
+		cancel_trigger = {
+			OR = {
+				any_country = {
+					OR = {
+						tag = ROOT
+						is_ally_with = ROOT
+					}
+					controls_province = 9561
+					controls_province = 6585
+					controls_province = 11420
+				}
+				hidden_trigger = {
+					OR = {
+						NOT = { has_war_with = FROM }
+						FROM = { has_capitulated = yes }
+						has_global_flag = great_war_ends
+					}			
+				}		
 			}
+		}
+		complete_effect = {
+			custom_effect_tooltip = GER_ludendorff_offensive_tt
+			add_timed_idea = {
+				idea = GER_idea_ludendorff_offensive
+				days = 120
+			}
+			custom_effect_tooltip = GER_capture_compiene_beauvais_amiens
+			hidden_effect = {
+				set_global_flag = ludendorff_offensive
+				news_event = {
+					id = ww1_germanrework.193
+					hours = 3
+				}
+			}
+		}
+		remove_effect = {
 			country_event = {
-				id = ww1_germanrework.76
+				id = ww1_germanrework.77
 				days = 2
 			}
 			clr_country_flag = GER_on_offensive
-		}
-		cancel_trigger = {
-			controls_province = 5291
+			hidden_effect = {
+				remove_ideas = GER_idea_ludendorff_offensive
+				set_global_flag = ludendorff_offensive_failed
+				# if = {
+				# 	limit = {
+				# 		NOT = { has_idea = idea_mass_desertion }
+				# 	}
+				# 	add_timed_idea = {
+				# 		idea = idea_mass_desertion
+				# 		days = 90
+				# 	}
+				# }
+			}
 		}
 		cancel_effect = {
 			add_war_support = 0.05
 			clr_country_flag = GER_on_offensive
-		}
-		complete_effect = {
-			set_country_flag = GER_on_offensive
-			add_timed_idea = {
-				idea = GER_focus_on_french_front
-				days = 210
+			hidden_effect = {
+				remove_ideas = GER_idea_ludendorff_offensive
 			}
-			custom_effect_tooltip = GER_capture_verdun
 		}
 		ai_will_do = {
-			factor = 100
+			base = 0
 			modifier = {
-				date < 1916.2.20
-				factor = 0
+				add = 1000
+				has_war_with = USA
+				OR = {
+					has_country_leader = {
+						character = GER_erich_ludendorff
+						ruling_only = yes
+					}
+					GER_erich_ludendorff = {
+						is_hired_as_advisor = yes
+					}
+				}
+				date > 1918.3.21
 			}
 		}
 	}
-
 	#ahistorical assault to make France surrender
 	GER_hindenburg_offensive = {
 		icon = GFX_decision_hol_draw_up_staff_plans
@@ -895,11 +1180,25 @@ GER_great_war = {
 			tag = GER
 		}
 		visible = {
+			is_great_war_ongoing = yes
 			has_completed_focus = GER_organise_fresh_offensives
+			any_country = {
+				OR = {
+					tag = ROOT
+					is_ally_with = ROOT
+				}
+				controls_province = 11506
+			}
 		}
 		available = {
 			has_war_with = FRA
-			controls_province = 11506
+			any_country = {
+				OR = {
+					tag = ROOT
+					is_ally_with = ROOT
+				}
+				controls_province = 11506
+			}
 			FRA = {
 				surrender_progress > 0.15
 			}
@@ -926,12 +1225,10 @@ GER_great_war = {
 			clr_country_flag = GER_on_offensive
 		}
 		cancel_trigger = {
-			FRA = {
-				OR = {
-					has_capitulated = yes
-					has_war = no
-					has_country_flag = great_war_loser
-				}
+			OR = {
+				NOT = { has_war_with = FROM }
+				FROM = { has_capitulated = yes }
+				has_global_flag = great_war_ends	
 			}
 		}
 		cancel_effect = {
@@ -955,86 +1252,8 @@ GER_great_war = {
 		}
 	}
 
-	#first and second offensive
-	GER_ypres_offensive = {
-		icon = GFX_decision_hol_draw_up_staff_plans
-		days_remove = 120
-		is_good = no
-		fire_only_once = yes
-		target_trigger = {
-			FROM = {
-				tag = BEL
-			}
-		}
-		target_root_trigger = {
-			has_completed_focus = GER_organise_fresh_offensives
-		}
-		allowed = {
-			tag = GER
-		}
-		visible = {
-			has_completed_focus = GER_organise_fresh_offensives
-		}
-		available = {
-			AND = {
-				has_war_with = FRA
-				has_war_with = BEL
-			}
-			NOT = {
-				controls_province = 6548
-			}
-			6 = {
-				NOT = {
-					is_fully_controlled_by = BEL
-				}
-			}
-			NOT = {
-				has_country_flag = GER_on_offensive
-			}
-		}
-		
-		highlight_states = {
-			highlight_provinces = {
-				6548
-			}
-			highlight_color_while_active = 1
-		}
-		remove_effect = {
-			hidden_effect = {
-				remove_ideas = GER_focus_on_belgian_front
-			}
-			country_event = {
-				id = ww1_germanrework.78
-				days = 2
-			}
-			clr_country_flag = GER_on_offensive
-		}
-		cancel_trigger = {
-			controls_province = 6548
-		}
-		cancel_effect = {
-			add_war_support = 0.05
-			clr_country_flag = GER_on_offensive
-		}
-		complete_effect = {
-			set_country_flag = GER_on_offensive
-			add_timed_idea = {
-				idea = GER_focus_on_belgian_front
-				days = 120
-			}
-			custom_effect_tooltip = GER_capture_ypres
-		}
-		ai_will_do = {
-			factor = 100
-			modifier = {
-				date < 1915.2.2
-				factor = 0
-			}
-		}
-	}
-
 	GER_decision_frustration_among_general_staff = {
-		icon = GFX_decision_generic_naval
+		icon = generic_pickelhaube
 		days_mission_timeout = 410
 		is_good = no
 		allowed = {
@@ -1046,11 +1265,9 @@ GER_great_war = {
 		available = {
 			OR = {
 				has_global_flag = great_war_ends
-				NOT = {
-					has_idea = GER_famine
-				}
 				has_war_support > 0.65
 			}
+			NOT = { has_idea = GER_famine }
 		}
 		activation = {
 			#at war with Britain and another major
@@ -1089,7 +1306,7 @@ GER_great_war = {
 	#trigger kiel mutinies if war support is too low
 	GER_decision_naval_order_of_october_1918 = {
 		icon = GFX_decision_generic_naval
-		days_remove = 180
+		days_remove = 10
 		is_good = yes
 		fire_only_once = yes
 		allowed = {
@@ -1106,9 +1323,7 @@ GER_great_war = {
 			else = {
 				has_war_with_major = yes
 			}
-			NOT = {
-				has_global_flag = great_war_ends
-			}
+			is_great_war_ongoing = yes
 			has_country_flag = exasperation_mission_done
 		}
 		available = {
@@ -1119,7 +1334,6 @@ GER_great_war = {
 			command_power > 9.9
 		}
 		custom_cost_text = decision_cost_CP_10
-		days_remove = 10
 		remove_effect = {
 			add_timed_idea = {
 				idea = GER_all_or_nothing_plan
@@ -1137,7 +1351,7 @@ GER_great_war = {
 				}
 				hidden_effect = {
 					country_event = {
-						id = ww1_germany.11
+						id = ww1_german_revolution.1
 						days = 7
 					}
 				}
@@ -1159,6 +1373,7 @@ GER_great_war = {
 	}
 
 	GER_fleet_in_being_mission = {
+		icon = generic_naval
 		days_mission_timeout = 1096
 		selectable_mission = no
 		is_good = no
@@ -1174,9 +1389,11 @@ GER_great_war = {
 		}
 		available = {
 			custom_trigger_tooltip = {
-				tooltip = get_36_battleships
+				tooltip = GER_has_battleships_tt
 				check_variable = {
-					num_ships_with_type@battleship > 35
+					var = num_ships_with_type@battleship
+					value = GER_fleet_in_being_battleships_goal
+					compare = greater_than_or_equals
 				}
 			}
 		}
@@ -1195,6 +1412,7 @@ GER_great_war = {
 	}
 
 	GER_smarter_navy_mission = {
+		icon = generic_naval
 		days_mission_timeout = 366
 		selectable_mission = no
 		is_good = no
@@ -1244,6 +1462,9 @@ GER_great_war = {
 					is_in_faction_with = ROOT
 					has_war_with = FRA
 				}
+			}
+			NOT = {
+				has_completed_focus = GER_heeringens_plan
 			}
 		}
 		visible = {
@@ -1626,129 +1847,6 @@ GER_great_war = {
 			factor = 10000
 		}
 	}
-	# LUDENDORFF OFFENSIVE
-	###########################
-	GER_ludendorff_offensive = { # This should be turned into an event - Shall
-		icon = GFX_decision_hol_draw_up_staff_plans
-		available = {
-			has_war_with = FRA
-			NOT = {
-				FRA = {
-					has_capitulated = yes 
-				}
-				has_global_flag = great_war_ends
-				has_country_flag = great_war_winner
-				has_global_flag = GER_capitulation
-				has_global_flag = FRA_capitulation
-				has_war_with = RUS
-			}
-			# shouldn't able to launch this early
-			OR = {
-				has_idea =  GER_famine
-				has_war_support < 0.5
-				has_stability < 0.5
-				surrender_progress > 0.05
-			}
-		}	
-		visible = {
-			always = no
-			tag = GER
-			has_global_flag = great_war
-			NOT = {
-				has_active_mission = before_the_leaves_fall
-				has_global_flag = great_war_ends
-			}	
-			# has_completed_focus = GER_oberster_kriegsherr
-			has_completed_focus = GER_organise_fresh_offensives
-			# You can't launch Ludendorff Offensive without him
-			has_character = GER_erich_ludendorff
-		}
-		fire_only_once = yes
-		allowed = {
-			original_tag = GER
-		}
-		days_remove = 120
-		target_trigger = {
-			FROM = {
-				tag = FRA
-			}
-		}
-		target_root_trigger = {
-			has_completed_focus = GER_organise_fresh_offensives
-		}
-		cancel_trigger = {
-			OR = {
-				NOT = {
-					has_war_with = FRA
-				}
-				FRA = {
-					has_capitulated = yes 
-				}
-				has_global_flag = great_war_ends
-				has_country_flag = great_war_winner
-				has_global_flag = GER_capitulation
-				has_global_flag = FRA_capitulation
-				controls_state = 16
-				16 = { is_controlled_by = PREV }
-			}
-		}
-		complete_effect = {
-			custom_effect_tooltip = GER_ludendorff_offensive_tt
-			add_ideas = GER_idea_ludendorff_offensive
-			hidden_effect = {
-				set_global_flag = ludendorff_offensive
-				news_event = {
-					id = ww1_germany.92
-					hours = 3
-				}
-			}
-		}
-		remove_effect = {
-			# It would be critical for the German Empire
-			add_war_support = -0.10
-			add_stability = -0.10
-			hidden_effect = {
-				remove_ideas = GER_idea_ludendorff_offensive
-				set_global_flag = ludendorff_offensive_failed
-				if = {
-					limit = {
-						NOT = { has_idea = idea_mass_desertion }
-					}
-					add_timed_idea = {
-						idea = idea_mass_desertion
-						days = 90
-					}
-				}
-			}
-		}
-		cancel_effect = {
-			hidden_effect = {
-				remove_ideas = GER_idea_ludendorff_offensive
-			}
-		}
-		ai_will_do = {
-			base = 0
-			modifier = {
-				add = 1000
-				OR = {
-					has_country_leader = {
-						character = GER_erich_ludendorff
-						ruling_only = yes
-					}
-					GER_erich_ludendorff = {
-						is_hired_as_advisor = yes
-					}
-				}
-				OR = {
-					has_war_with = USA
-					date > 1918.3.21
-					# Near Paris
-					controls_province = 9561
-					controls_province = 11518
-				}
-			}
-		}
-	}
 	# FAMINE TIMER
 	#################
 	GER_mission_famine_timer = {
@@ -1758,8 +1856,8 @@ GER_great_war = {
 		}
 		days_mission_timeout = 520 #focus/decision will make it longer
 		activation = {
-			has_idea = GER_famine_early
-			has_global_flag = great_war
+			is_great_war_ongoing = yes
+			has_idea = GER_food_shortages
 			OR = {
 				has_war_with = FRA
 				has_war_with_major = yes
@@ -1776,7 +1874,6 @@ GER_great_war = {
 				}
 			}
 			NOT = {
-				has_global_flag = great_war_ends
 				has_global_flag = GER_capitulation
 				is_in_faction_with = RUS
 				has_idea =  GER_famine
@@ -1787,24 +1884,31 @@ GER_great_war = {
 				has_war = no
 				has_global_flag = great_war_ends
 				has_global_flag = GER_capitulation
-				USA = {
-					has_war_with = PREV
-					has_capitulated = yes
-				}
-				ENG = {
-					has_war_with = PREV
-					has_capitulated = yes
-				}
-				enemies_naval_strength_ratio < 1.3
 				is_in_faction_with = RUS
+				AND = {
+					if = {
+						limit = { 
+							has_war_with = USA
+						}
+						USA = { has_capitulated = yes }
+					}
+					if = {
+						limit = { 
+							has_war_with = ENG
+						}
+						OR = {
+							ENG = { has_capitulated = yes }
+							enemies_naval_strength_ratio < 1
+						}					
+					}
+				}
 			}
 		}
 		visible = {
-			has_global_flag = great_war
 			has_war = yes
+			is_great_war_ongoing = yes
 			NOT = {
 				has_idea =  GER_famine
-				has_global_flag = great_war_ends
 			}
 		}
 		fire_only_once = no
@@ -1813,7 +1917,7 @@ GER_great_war = {
 			add_ideas = GER_famine
 			hidden_effect = {
 				country_event = {
-					id = ww1_germany.91
+					id = ww1_germanrework.192
 					hours = 10
 				}
 			}
@@ -1822,81 +1926,88 @@ GER_great_war = {
 			remove_ideas = GER_famine
 		}
 	}
-	GER_mission_famine_timer_early = {
+	GER_mission_food_shortages_timer = {
 		icon = GFX_decision_SWI_consolidate_council_power
 		allowed = {
 			original_tag = GER
 		}
 		days_mission_timeout = 485
 		activation = {
-			has_global_flag = great_war
-			has_war_with = FRA
-			enemies_naval_strength_ratio > 1.2
+			is_great_war_ongoing = yes
+			has_war_with = FRA		
 			OR = {
 				USA = {
 					has_war_with = PREV
 					has_capitulated = no
 				}
-				ENG = {
-					has_war_with = PREV
-					has_capitulated = no
-				}
+				AND = {
+					ENG = {
+						has_war_with = PREV
+						has_capitulated = no
+					}
+					enemies_naval_strength_ratio > 1.2
+				}	
 			}
 			NOT = {
-				has_global_flag = great_war_ends
 				has_global_flag = GER_capitulation
 				is_in_faction_with = RUS
 				has_idea =  GER_famine
-				has_idea = GER_famine_early
+				has_idea = GER_food_shortages
 			}
 		}
 		available = {
 			OR = {
 				has_war = no
 				has_global_flag = great_war_ends
-				has_global_flag = GER_capitulation
-				USA = {
-					has_war_with = PREV
-					has_capitulated = yes
-				}
-				ENG = {
-					has_war_with = PREV
-					has_capitulated = yes
-				}
-				enemies_naval_strength_ratio < 1.1
+				has_global_flag = GER_capitulation		
 				is_in_faction_with = RUS
+				AND = {
+					if = {
+						limit = { 
+							has_war_with = USA
+						}
+						USA = { has_capitulated = yes }
+					}
+					if = {
+						limit = { 
+							has_war_with = ENG
+						}
+						OR = {
+							ENG = { has_capitulated = yes }
+							enemies_naval_strength_ratio < 1
+						}					
+					}
+				}
 			}
 		}
 		visible = {
-			has_global_flag = great_war
+			is_great_war_ongoing = yes
 			has_war = yes
 			NOT = {
 				has_idea = GER_famine
-				has_idea = GER_famine_early
-				has_global_flag = great_war_ends
+				has_idea = GER_food_shortages
 			}
 		}
 		fire_only_once = no
 		is_good = no
 		timeout_effect = {
-			add_ideas = GER_famine_early
+			add_ideas = GER_food_shortages
 			hidden_effect = {
 				country_event = {
-					id = ww1_germany.91
+					id = ww1_germanrework.192
 					hours = 10
 				}
 			}
 		}
 		complete_effect = {
 			remove_ideas = GER_famine
-			remove_ideas = GER_famine_early
+			remove_ideas = GER_food_shortages
 		}
 	}
 	#Conference timer moved to TGWR_peace_conference_decisions
 	GER_fix_belgium_supply = {
 		icon = GFX_decision_generic_railway
-		fire_only_once = yes
-		days_remove = 45
+		days_remove = 15 # less days we have blitzkrieg
 		allowed = {
 			original_tag = GER
 		}
@@ -1905,11 +2016,19 @@ GER_great_war = {
 		}
 		custom_cost_text = decision_cost_2_civ
 		available = {
-			has_war_with = FRA
-			has_war_with = BEL
-			can_build_railway = {
-				path = {
-					587 3547 3488 6537 11519
+			custom_trigger_tooltip = {
+				tooltip = GER_fix_belgium_supply_check
+				controls_province = 587
+				controls_province = 10126
+				controls_province = 3547
+				controls_province = 9522
+				controls_province = 3488
+				controls_province = 6537
+				controls_province = 11519
+				can_build_railway = { # it doesnt check control of provinces
+					path = {
+						587 10126 3547 9522 3488 6537 11519
+					}
 				}
 			}
 		}
@@ -1918,7 +2037,7 @@ GER_great_war = {
 		}
 		highlight_states = {
 			highlight_provinces = {
-				3488 6537 9522 11519
+				587 10126 3547 9522 3488 6537 11519
 			}
 		}
 		state_target = yes
@@ -1929,14 +2048,17 @@ GER_great_war = {
 			}
 		}
 		on_map_mode = map_and_decisions_view
+		cancel_if_not_visible = yes
 		visible = {
-			has_capitulated = no
-			35 = {
-				is_controlled_by_ROOT_or_ally = no
-			}
-			NOT = {
-				has_global_flag = great_war_ends
-				has_global_flag = GER_capitulation
+			hidden_trigger = {
+				has_war_with = FRA
+				has_war_with = BEL
+				has_capitulated = no
+				is_great_war_ongoing = yes
+				NOT = {
+					has_global_flag = GER_capitulation
+					has_country_flag = GER_build_supply_in_BEL
+				}
 			}
 		}
 		modifier = {
@@ -1945,14 +2067,38 @@ GER_great_war = {
 		# complete_effect = {
 		# 	add_command_power = -50
 		# }
+		cancel_trigger = {
+			hidden_trigger = {
+				NOT = {
+					custom_trigger_tooltip = {
+						tooltip = GER_fix_belgium_supply_check
+						controls_province = 587
+						controls_province = 10126
+						controls_province = 3547
+						controls_province = 9522
+						controls_province = 3488
+						controls_province = 6537
+						controls_province = 11519
+						can_build_railway = { # it doesnt check control of provinces
+							path = {
+								587 10126 3547 9522 3488 6537 11519
+							}
+						}
+					}
+				}
+			}
+		}
 		remove_effect = {
 			build_railway = {
 				level = 3
 				build_only_on_allied = yes
 				fallback = yes
 				path = {
-					587 3547 3488 6537 11519
+					587 10126 3547 9522 3488 6537 11519
 				}
+			}
+			hidden_effect = {
+				set_country_flag = GER_build_supply_in_BEL
 			}
 		}
 	}
@@ -1972,7 +2118,7 @@ GER_great_war = {
 				difficulty < 1
 			}
 			has_war = yes
-			NOT = { has_global_flag = great_war_ends }
+			is_great_war_ongoing = yes
 		}
 		available = {
 			# has_completed_focus = GER_atlantic_class
@@ -2025,7 +2171,7 @@ GER_great_war = {
 		}
 	}
 	GER_stricten_rationing = {
-		icon = GFX_decision_eng_trade_unions_support
+		icon = generic_welfare
 		days_remove = 50
 		cost = 25
 		allowed = {
@@ -2038,6 +2184,12 @@ GER_great_war = {
 			has_completed_focus = GER_introduce_rationing_measures
 			NOT = {
 				has_idea = GER_idea_extreme_rationing
+			}
+			has_war_with_major = yes
+			is_great_war_ongoing = yes
+			OR = {
+				has_idea = GER_famine
+				has_idea = GER_food_shortages
 			}
 		}
 		complete_effect = {
@@ -2065,10 +2217,10 @@ GER_great_war = {
 				}
 				if = {
 					limit = {
-						has_active_mission = GER_mission_famine_timer_early
+						has_active_mission = GER_mission_food_shortages_timer
 					}
 					add_days_mission_timeout = {
-						mission = GER_mission_famine_timer_early
+						mission = GER_mission_food_shortages_timer
 						days = 50
 					}
 				}
@@ -2092,10 +2244,10 @@ GER_great_war = {
 				}
 				if = {
 					limit = {
-						has_active_mission = GER_mission_famine_timer_early
+						has_active_mission = GER_mission_food_shortages_timer
 					}
 					add_days_mission_timeout = {
-						mission = GER_mission_famine_timer_early
+						mission = GER_mission_food_shortages_timer
 						days = 60
 					}
 				}
@@ -2119,10 +2271,10 @@ GER_great_war = {
 				}
 				if = {
 					limit = {
-						has_active_mission = GER_mission_famine_timer_early
+						has_active_mission = GER_mission_food_shortages_timer
 					}
 					add_days_mission_timeout = {
-						mission = GER_mission_famine_timer_early
+						mission = GER_mission_food_shortages_timer
 						days = 70
 					}
 				}
@@ -2153,12 +2305,11 @@ GER_great_war = {
 		}
 		days_mission_timeout = 75
 		activation = {
-			has_global_flag = great_war
+			is_great_war_ongoing = yes
 			GER = { has_war_with = FRA }
 			NOT = {
-				has_global_flag = great_war_ends
 				has_global_flag = GER_capitulation
-				has_global_flag = FRA_capitulation
+				has_global_flag = ENT_capitulation
 				has_global_flag = FRA_capitulation_alone
 				has_global_flag = before_the_leaves_fall_flag
 				has_global_flag = before_the_leaves_fall_failed
@@ -2174,7 +2325,7 @@ GER_great_war = {
 					}
 					has_global_flag = great_war_ends
 					has_global_flag = GER_capitulation
-					has_global_flag = FRA_capitulation
+					has_global_flag = ENT_capitulation
 					has_global_flag = FRA_capitulation_alone
 					has_global_flag = before_the_leaves_fall_flag
 					has_global_flag = before_the_leaves_fall_failed
@@ -2182,10 +2333,7 @@ GER_great_war = {
 			}
 		}
 		visible = {
-			has_global_flag = great_war
-			NOT = {
-				has_global_flag = great_war_ends
-			}
+			is_great_war_ongoing = yes
 		}
 		fire_only_once = yes
 		is_good = no
@@ -2210,7 +2358,6 @@ GER_great_war = {
 					NOT = { has_completed_focus = GER_heeringens_plan }
 				}
 				complete_national_focus = GER_schlieffen_plan_scuppered
-				country_event = ww1_germanrework.46 #Removes Moltke due to stroke
 			}
 			hidden_effect = {
 				set_global_flag = before_the_leaves_fall_failed
@@ -4862,7 +5009,7 @@ GER_agadir_crisis = {
 # 				producer = CMR
 # 			}
 # 			add_equipment_to_stockpile = {
-# 				type = artillery_equipment
+# 				type = field_gun_equipment
 # 				amount = 250
 # 				producer = CMR
 # 			}
@@ -4913,7 +5060,7 @@ GER_agadir_crisis = {
 # 				producer = TZN
 # 			}
 # 			add_equipment_to_stockpile = {
-# 				type = artillery_equipment
+# 				type = field_gun_equipment
 # 				amount = 250
 # 				producer = TZN
 # 			}
@@ -4964,7 +5111,7 @@ GER_agadir_crisis = {
 # 				producer = NMB
 # 			}
 # 			add_equipment_to_stockpile = {
-# 				type = artillery_equipment
+# 				type = field_gun_equipment
 # 				amount = 250
 # 				producer = NMB
 # 			}
@@ -5016,7 +5163,7 @@ GER_agadir_crisis = {
 # 				producer = TOG
 # 			}
 # 			add_equipment_to_stockpile = {
-# 				type = artillery_equipment
+# 				type = field_gun_equipment
 # 				amount = 250
 # 				producer = TOG
 # 			}
@@ -5067,7 +5214,7 @@ GER_agadir_crisis = {
 # 				producer = PNG
 # 			}
 # 			add_equipment_to_stockpile = {
-# 				type = artillery_equipment
+# 				type = field_gun_equipment
 # 				amount = 250
 # 				producer = PNG
 # 			}
@@ -5449,7 +5596,7 @@ GER_decision_military_advisers = {
 # 				support = {
 # 					engineer = { x = 0 y = 0 }
 # 					recon = { x = 0 y = 1 }
-# 					artillery = { x = 0 y = 2 }
+# 					field_gun = { x = 0 y = 2 }
 # 				}
 # 			}
 # 			65 = {
@@ -5516,7 +5663,7 @@ GER_decision_military_advisers = {
 # 				support = {
 # 					engineer = { x = 0 y = 0 }
 # 					recon = { x = 0 y = 1 }
-# 					artillery = { x = 0 y = 2 }
+# 					field_gun = { x = 0 y = 2 }
 # 				}
 # 			}
 # 			53 = {
@@ -5592,7 +5739,7 @@ GER_decision_military_advisers = {
 # 				support = {
 # 					engineer = { x = 0 y = 0 }
 # 					recon = { x = 0 y = 1 }
-# 					artillery = { x = 0 y = 2 }
+# 					field_gun = { x = 0 y = 2 }
 # 				}
 # 			}
 # 			59 = {
@@ -5658,7 +5805,7 @@ GER_decision_military_advisers = {
 # 				support = {
 # 					engineer = { x = 0 y = 0 }
 # 					recon = { x = 0 y = 1 }
-# 					artillery = { x = 0 y = 2 }
+# 					field_gun = { x = 0 y = 2 }
 # 				}
 # 			}
 # 			61 = {
@@ -5902,53 +6049,25 @@ GER_decision_military_advisers = {
 # 		}
 # 	}
 # }
-prestigious_projects = {
+
+GER_mittelafrika_project = {
 	GER_decision_mittelafrika = {
 		icon = GFX_decision_generic_operation
 		allowed = { tag = GER }
+		visible = {
+			any_owned_state = {
+				GER_is_MAF_state = yes
+			}
+			MAF = { 
+				exists = no 
+			}
+		}
 		available = {
 			has_war = no
 			has_global_flag = frankfurt_treaty
-			any_owned_state = {
-				OR = {
-					is_core_of = GAB
-					is_core_of = RCG
-					is_core_of = COG
-					is_core_of = ZAM
-					is_core_of = MLW
-					iS_core_of = UGA
-					is_core_of = KEN
-					is_core_of = RWA
-					is_core_of = CHA
-					is_core_of = GHA
-					is_core_of = IVO
-					state = 789
-				}
+			custom_override_tooltip = {
+				tooltip = GER_control_MAF_state_tt
 			}
-		}
-		visible = {
-			is_subject = no
-			# has_completed_focus = GER_claim_mittelafrika
-			has_global_flag = great_war_ends
-			any_owned_state = {
-				OR = {
-					is_core_of = GAB
-					is_core_of = RCG
-					is_core_of = COG
-					is_core_of = ZAM
-					is_core_of = MLW
-					iS_core_of = UGA
-					is_core_of = KEN
-					is_core_of = RWA
-					is_core_of = CHA
-					is_core_of = GHA
-					is_core_of = IVO
-					state = 789
-				}
-			}
-			MAF = { exists = no }
-			NOT = { has_government = communism }
-			NOT = { has_country_flag = great_war_loser }
 		}
 		cost = 100
 		days_remove = 50
@@ -5960,25 +6079,15 @@ prestigious_projects = {
 				OR = {
 					has_war = yes
 					is_subject = yes
+					has_government = communism
+					MAF = {
+						exists = yes
+					}
 					NOT = {
 						any_owned_state = {
-							OR = {
-								is_core_of = GAB
-								is_core_of = RCG
-								is_core_of = COG
-								is_core_of = ZAM
-								is_core_of = MLW
-								iS_core_of = UGA
-								is_core_of = KEN
-								is_core_of = RWA
-								is_core_of = CHA
-								is_core_of = GHA
-								is_core_of = IVO
-								state = 789
-							}
+							GER_is_MAF_state = yes
 						}
 					}
-					has_government = communism
 				}
 			}
 		}
@@ -5986,7 +6095,8 @@ prestigious_projects = {
 			add_political_power = 90
 		}
 		remove_effect = {
-			country_event = ww1_germany.26
+			GER_release_MAF = yes
+			country_event = ww1_german_victory.31
 		}
 	}
 	GER_decision_expand_mittelafrika = {
@@ -6000,77 +6110,28 @@ prestigious_projects = {
 		target_root_trigger = {
 			has_global_flag = frankfurt_treaty
 		}
-		available = {
-			has_war = no
-			has_subject = MAF
-			has_global_flag = frankfurt_treaty
-			OR = {
-				any_owned_state = {
-					NOT = {
-						is_owned_by = MAF
-					}
-					OR = {
-						region = 140
-						region = 184
-						region = 185
-						region = 215
-						region = 217
-						region = 223
-						region = 224
-						region = 226
-						region = 227
-						state = 902 #West Nile
-						state = 903 #Zanzibar
-						state = 660
-						state = 1142
-						state = 769
-					}
-				}
-				has_subject = TOG
-				has_subject = NMB
-				has_subject = TZN
-				has_subject = CMR
-				has_subject = LIB
-				has_subject = KEN #Kenya Revolt :(
-			}
-		}
 		visible = {
-			is_subject = no
 			has_subject = MAF
-			NOT = { has_country_flag = great_war_loser }
-			OR = {
-				any_owned_state = {
-					NOT = {
+			any_state = {
+				NOT = {
+					is_owned_by = MAF
+				}
+				GER_is_MAF_state = yes
+				OR = {
+					is_coastal = yes
+					any_neighbor_state = {
 						is_owned_by = MAF
 					}
-					OR = {
-						region = 140
-						region = 184
-						region = 185
-						region = 215
-						region = 217
-						region = 223
-						region = 224
-						region = 226
-						region = 227
-						state = 902 #West Nile
-						state = 903 #Zanzibar
-						state = 660
-						state = 1142
-						state = 769
-					}
-				}
-				has_subject = TOG
-				has_subject = NMB
-				has_subject = TZN
-				has_subject = CMR
-				has_subject = LIB
-				has_subject = KEN #Kenya Revolt :(
+				}			
+				owns_or_subject_of = yes
 			}
 			# has_completed_focus = GER_claim_mittelafrika
-			has_global_flag = great_war_ends
-			NOT = {
-				has_government = communism
+		}
+		available = {
+			has_war = no
+			has_global_flag = frankfurt_treaty
+			custom_override_tooltip = {
+				tooltip = GER_control_MAF_state_tt
 			}
 		}
 		cancel_trigger = {
@@ -6078,123 +6139,95 @@ prestigious_projects = {
 				OR = {
 					has_war = yes
 					is_subject = yes
-					NOT = { has_subject = MAF }
 					has_government = communism
+					NOT = { has_subject = MAF }
 				}
-			}	
+			}
 		}	
 		cancel_effect = {
 			add_political_power = 25
 		}
+		highlight_states = {
+			highlight_states_trigger = {
+				NOT = {
+					is_owned_by = MAF
+				}
+				GER_is_MAF_state = yes
+				OR = {
+					is_coastal = yes
+					any_neighbor_state = {
+						is_owned_by = MAF
+					}
+				}
+				owns_or_subject_of = yes
+			}
+		}
 		cost = 30
 		days_remove = 20
-		days_re_enable = 50
+		days_re_enable = 10
 		ai_will_do = {
 			factor = 100
 		}
 		remove_effect = {
-			every_owned_state = {
+			add_named_threat = {
+				name = GER_decision_expand_mittelafrika
+				threat = 1
+			}
+			every_state = {
 				limit = {
 					NOT = {
 						is_owned_by = MAF
 					}
+					GER_is_MAF_state = yes
 					OR = {
-						region = 140
-						region = 184
-						region = 185
-						region = 215
-						region = 217
-						region = 223
-						region = 224
-						region = 226
-						region = 227
-						state = 902 #West Nile
-						state = 903 #Zanzibar
-						state = 660
-						state = 1142
-						state = 769
+						is_coastal = yes
+						any_neighbor_state = {
+							is_owned_by = MAF
+						}
 					}
+					owns_or_subject_of = yes
 				}
-				transfer_state_to = MAF
-				remove_claim_by = ROOT
+
+				# If the country is a subject, and all its states are in Africa, completely annex it
 				if = {
 					limit = {
-						OR = {
-							# Togoland
-							state = 777
-							state = 794
-							# Kamerun
-							state = 539
-							state = 769
-							state = 813
-							state = 814
-							state = 1143
-							state = 815
-							state = 1144
-							# Ostafrika
-							state = 546
-							state = 768
-							# Südwestafrika
-							state = 541
-							state = 1050
+						owner = {
+							# Don't know why this is needed, but got "MAF trying to annex itself" error without it sometimes, please enlighten me
+							NOT = {
+								tag = MAF
+							}
+							is_subject_of = ROOT
+							all_owned_state = {
+								GER_is_MAF_state = yes
+							}
+						}
+					}
+					owner = {
+						drop_cosmetic_tag = yes
+						every_unit_leader = { set_nationality = MAF }
+						MAF = {
+							annex_country = {
+								target = PREV
+								transfer_troops = yes
+							}
+						}
+					}
+				}
+
+				transfer_state_to = MAF
+				remove_claim_by = ROOT
+
+				if = {
+					limit = {
+						THIS = {
+							GER_is_MAF_core = yes
 						}
 					}
 					add_core_of = MAF
 				}
 			}
-			every_other_country = {
-				limit = {
-					is_subject_of = GER
-					OR = {
-						tag = TOG
-						tag = NMB
-						tag = TZN
-						tag = CMR
-						tag = KEN
-						tag = LIB
-					}
-				}
-				hidden_effect = {
-					drop_cosmetic_tag = yes
-					every_owned_state = {
-						limit = {
-							is_on_continent = africa
-							is_core_of = PREV
-						}
-						transfer_state_to = MAF
-						if = {
-							limit = {
-								OR = {
-									# Togoland
-									state = 777
-									state = 794
-									# Kamerun
-									state = 539
-									state = 769
-									state = 813
-									state = 814
-									state = 1143
-									state = 815
-									state = 1144
-									# Ostafrika
-									state = 546
-									state = 768
-									# Südwestafrika
-									state = 541
-								}
-							}
-							add_core_of = MAF
-						}
-					}
-					every_unit_leader = { set_nationality = MAF }
-				}
-				MAF = { 
-					annex_country = {
-						target = PREV
-						 transfer_troops = yes
-					} 
-				}
-			}
+
+			# Set capital to Dar es Salaam
 			if = {
 				limit = {
 					MAF = {
@@ -6208,8 +6241,10 @@ prestigious_projects = {
 					set_capital = { state = 546 }
 				}
 			}
+
 			hidden_effect = {
 				MAF = {
+					# What is the historical background of this bro
 					every_owned_state = {
 						limit = {
 							OR = {
@@ -6220,6 +6255,8 @@ prestigious_projects = {
 						}
 						set_demilitarized_zone = yes
 					}
+
+					# Military access to Ethiopia to access Djibouti
 					if = {
 						limit = {
 							ETH = { is_neighbor_of = PREV }
@@ -6249,93 +6286,340 @@ prestigious_projects = {
 			}
 		}
 	}
-	GER_annex_new_east_prussia = {
-		icon = generic_operation
-		allowed = {
-			tag = GER
-		}
-		target_trigger = {
-			FROM = {
-				NOT = { tag = ROOT }
-				OR = {
-					owns_state = 87
-					owns_state = 98
-					owns_state = 1204
+	GER_seize_madagascar = {
+		icon = GFX_decision_generic_operation
+		allowed = { tag = GER }
+		visible = {
+			FRA = {
+				# Madagascar
+				543 = {
+					is_owned_or_subject_original_tag_PREV_trigger = no
 				}
 			}
-		}
-		target_root_trigger = {
-			has_global_flag = frankfurt_treaty
-		}
-		visible = {
-			NOT = { has_country_flag = great_war_loser }
-			is_subject = no
-			owns_state = 5
-			owns_state = 85
-			87 = {
-				is_controlled_by_ROOT_or_ally = yes
-			}
-			98 = {
-				is_controlled_by_ROOT_or_ally = yes
-			}
-			1204 = {
-				is_controlled_by_ROOT_or_ally = yes
-			}
+			is_french_civil_war_ongoing = yes
 		}
 		available = {
+			has_war = no
 			has_global_flag = frankfurt_treaty
-			87 = {
-				OWNER = {
-					controls_state = PREV
-					is_subject_of = ROOT
-				}
-			}
-			98 = {
-				OWNER = {
-					controls_state = PREV
-					is_subject_of = ROOT
-				}
-			}
-			1204 = {
-				OWNER = {
-					controls_state = PREV
-					is_subject_of = ROOT
-				}
-			}
+			is_french_civil_war_ongoing = yes
 		}
 		fire_only_once = yes
-		cost = 75
-		complete_effect = {
-			87 = {
-				transfer_state_to = ROOT
-				add_resistance = 20
-			}
-			98 = {
-				transfer_state_to = ROOT
-				add_resistance = 20
-			}
-			1204 = {
-				transfer_state_to = ROOT
-				add_resistance = 20
+		cost = 50
+		days_remove = 15
+		ai_will_do = {
+			factor = 100
+		}
+		cancel_trigger = {
+			hidden_trigger = {
+				OR = {
+					has_war = yes
+					is_subject = yes
+					has_government = communism
+					is_french_civil_war_ongoing = no
+					FRA = {
+						# Madagascar
+						543 = {
+							is_owned_or_subject_original_tag_PREV_trigger = no
+						}
+					}
+				}
 			}
 		}
-		ai_will_do = {
-			factor = 1
-			modifier = {
-				factor = 0
-				NOT = { has_government = fascism }
-				has_stability < 0.7
+		cancel_effect = {
+			add_political_power = 50
+		}
+		remove_effect = {
+			# Madagascar
+			543 = {
+				transfer_state_to = ROOT
 			}
-			modifier = {
-				factor = 0
-				has_war = yes
+			# La Réunion
+			706 = {
+				transfer_state_to = ROOT
 			}
-			modifier = {
-				factor = 0
-				is_historical_focus_on = yes
+			# Comoros
+			708 = {
+				transfer_state_to = ROOT
 			}
 		}
 	}
+
+	GER_seize_djibouti = {
+		icon = GFX_decision_generic_operation
+		allowed = { tag = GER }
+		visible = {
+			FRA = {
+				268 = {
+					is_owned_or_subject_original_tag_PREV_trigger = yes
+				}
+				1036 = {
+					is_owned_or_subject_original_tag_PREV_trigger = yes
+				}
+			}
+			is_french_civil_war_ongoing = yes
+		}
+		available = {
+			has_war = no
+			has_global_flag = frankfurt_treaty
+			is_french_civil_war_ongoing = yes
+		}
+		fire_only_once = yes
+		cost = 30
+		days_remove = 15
+		ai_will_do = {
+			factor = 100
+		}
+		cancel_trigger = {
+			hidden_trigger = {
+				OR = {
+					has_war = yes
+					is_subject = yes
+					has_government = communism
+					is_french_civil_war_ongoing = no
+					FRA = {
+						268 = {
+							is_owned_or_subject_original_tag_PREV_trigger = no
+						}
+						1036 = {
+							is_owned_or_subject_original_tag_PREV_trigger = no
+						}
+					}
+				}
+			}
+		}
+		cancel_effect = {
+			add_political_power = 30
+		}
+		remove_effect = {
+			268 = {
+				transfer_state_to = ROOT
+			}
+			1036 = {
+				transfer_state_to = ROOT
+			}
+			if = {
+				limit = {
+					ETH = {
+						exists = yes
+						NOT = {
+							has_war_with = GER
+							has_war_with = MAF
+						}
+					}
+				}
+				ETH = {
+					give_military_access = GER
+					give_military_access = MAF
+				}
+			}
+			if = {
+				limit = {
+					AFA = {
+						exists = yes
+						NOT = {
+							has_war_with = GER
+							has_war_with = MAF
+						}
+					}
+				}
+				AFA = {
+					give_military_access = GER
+					give_military_access = MAF
+				}
+			}
+		}
+	}
+
+	GER_seize_dahomey = {
+		icon = GFX_decision_generic_operation
+		allowed = { tag = GER }
+		visible = {
+			FRA = {
+				776 = {
+					is_owned_or_subject_original_tag_PREV_trigger = yes
+				}
+			}
+			is_french_civil_war_ongoing = yes
+		}
+		available = {
+			has_war = no
+			has_global_flag = frankfurt_treaty
+			is_french_civil_war_ongoing = yes
+		}
+		fire_only_once = yes
+		cost = 30
+		days_remove = 15
+		ai_will_do = {
+			factor = 100
+		}
+		cancel_trigger = {
+			hidden_trigger = {
+				OR = {
+					has_war = yes
+					is_subject = yes
+					has_government = communism
+					is_french_civil_war_ongoing = no
+					FRA = {
+						776 = {
+							is_owned_or_subject_original_tag_PREV_trigger = no
+						}
+					}
+				}
+			}
+		}
+		cancel_effect = {
+			add_political_power = 30
+		}
+		remove_effect = {
+			776 = {
+				transfer_state_to = ROOT
+			}
+		}
+	}
+
+	GER_seize_french_congo = {
+		icon = GFX_decision_generic_operation
+		allowed = { tag = GER }
+		visible = {
+			FRA = {
+				any_owned_state = {
+					is_french_congo_state = yes
+				}
+			}
+			is_french_civil_war_ongoing = yes
+		}
+		available = {
+			has_war = no
+			has_global_flag = frankfurt_treaty
+			is_french_civil_war_ongoing = yes
+		}
+		fire_only_once = yes
+		cost = 50
+		days_remove = 15
+		ai_will_do = {
+			factor = 100
+		}
+		cancel_trigger = {
+			hidden_trigger = {
+				OR = {
+					has_war = yes
+					is_subject = yes
+					has_government = communism
+					is_french_civil_war_ongoing = no
+					NOT = {
+						FRA = {
+							any_owned_state = {
+								is_french_congo_state = yes
+							}
+						}
+					}
+				}
+			}
+		}
+		cancel_effect = {
+			add_political_power = 50
+		}
+		remove_effect = {
+			FRA = {
+				every_owned_state = {
+					limit = {
+						is_french_congo_state = yes
+					}
+					transfer_state_to = ROOT
+				}
+			}
+		}
+	}
+}
+
+prestigious_projects = {
+	#GER_annex_new_east_prussia = {
+	#	icon = generic_operation
+	#	allowed = {
+	#		tag = GER
+	#	}
+	#	target_trigger = {
+	#		FROM = {
+	#			NOT = { tag = ROOT }
+	#			OR = {
+	#				owns_state = 87
+	#				owns_state = 98
+	#				owns_state = 1204
+	#			}
+	#		}
+	#	}
+	#	target_root_trigger = {
+	#		has_global_flag = frankfurt_treaty
+	#	}
+	#	visible = {
+	#		NOT = { has_country_flag = great_war_loser }
+	#		is_subject = no
+	#		owns_state = 5
+	#		owns_state = 85
+	#		87 = {
+	#			is_controlled_by_ROOT_or_ally = yes
+	#		}
+	#		98 = {
+	#			is_controlled_by_ROOT_or_ally = yes
+	#		}
+	#		1204 = {
+	#			is_controlled_by_ROOT_or_ally = yes
+	#		}
+	#	}
+	#	available = {
+	#		has_global_flag = frankfurt_treaty
+	#		87 = {
+	#			OWNER = {
+	#				controls_state = PREV
+	#				is_subject_of = ROOT
+	#			}
+	#		}
+	#		98 = {
+	##			OWNER = {
+	#				controls_state = PREV
+	#				is_subject_of = ROOT
+	#			}
+	#		}
+	#		1204 = {
+	#			OWNER = {
+	#				controls_state = PREV
+	#				is_subject_of = ROOT
+	#			}
+	#		}
+	#	}
+	#	fire_only_once = yes
+	#	cost = 75
+	#	complete_effect = {
+	#		87 = {
+	#			transfer_state_to = ROOT
+	#			add_resistance = 20
+	#		}
+	#		98 = {
+	#			transfer_state_to = ROOT
+	#			add_resistance = 20
+	#		}
+	#		1204 = {
+	#			transfer_state_to = ROOT
+	#			add_resistance = 20
+	#		}
+	#	}
+	#	ai_will_do = {
+	#		factor = 1
+	#		modifier = {
+	#			factor = 0
+	#			NOT = { has_government = fascism }
+	#			has_stability < 0.7
+	#		}
+	#		modifier = {
+	#			factor = 0
+	#			has_war = yes
+	#		}
+	#		modifier = {
+	#			factor = 0
+	#			is_historical_focus_on = yes
+	#		}
+	#	}
+	#}
 }
 # GER_prussian_blue_category = {
 # 	BAY_reunite_germany = {
@@ -7069,7 +7353,7 @@ GER_afghan_expeditions = {
 			}
 		}
 		visible = {
-			NOT = { has_global_flag = great_war_ends }
+			is_great_war_ongoing = yes
 			has_war_with = ENG
 			has_war_with = RAJ
 			NOT = { is_in_faction_with = AFG }
@@ -7101,7 +7385,7 @@ GER_afghan_expeditions = {
 			NOT = { is_in_faction_with = AFG }
 			has_war_with = ENG
 			has_war_with = RAJ
-			NOT = { has_global_flag = great_war_ends }
+			is_great_war_ongoing = yes
 			AFG = {
 				exists = yes
 				has_war = no
@@ -7113,7 +7397,7 @@ GER_afghan_expeditions = {
 		available = {
 			has_war_with = ENG
 			has_war_with = RAJ
-			NOT = { has_global_flag = great_war_ends }
+			is_great_war_ongoing = yes
 			has_manpower > 500
 			AFG = {
 				exists = yes
@@ -7139,7 +7423,7 @@ GER_afghan_expeditions = {
 		}
 		remove_effect = {
 			country_event = {
-				id = ww1_germany.78
+				id = ww1_germanrework.191
 				days = 30
 			}
 			add_manpower = -500
@@ -7205,7 +7489,7 @@ GER_afghan_expeditions = {
 		visible = {
 			has_war_with = ENG
 			has_war_with = RAJ
-			NOT = { has_global_flag = great_war_ends }
+			is_great_war_ongoing = yes
 			AFG = {
 				exists = yes
 				NOT = { is_in_faction_with = GER }
@@ -7217,7 +7501,7 @@ GER_afghan_expeditions = {
 		available = {
 			has_war_with = ENG
 			has_war_with = RAJ
-			NOT = { has_global_flag = great_war_ends }
+			is_great_war_ongoing = yes
 			has_manpower > 500
 			AFG = {
 				exists = yes
@@ -7244,10 +7528,21 @@ GER_afghan_expeditions = {
 		icon = generic_operation
 		allowed = { tag = GER }
 		fire_only_once = yes
+		visible = {
+			has_war_with = ENG
+			has_war_with = RAJ
+			is_great_war_ongoing = yes
+			AFG = {
+				exists = yes
+				NOT = { is_in_faction_with = GER }
+				has_war = no
+				has_country_flag = GER_expedition_start
+			}
+		}
 		available = {
 			has_war_with = ENG
 			has_war_with = RAJ
-			NOT = { has_global_flag = great_war_ends }
+			is_great_war_ongoing = yes
 			AFG = {
 				exists = yes
 				NOT = { is_in_faction_with = GER }
@@ -7255,17 +7550,6 @@ GER_afghan_expeditions = {
 				has_country_flag = GER_expedition_start
 			}
 			has_manpower > 500
-		}
-		visible = {
-			has_war_with = ENG
-			has_war_with = RAJ
-			NOT = { has_global_flag = great_war_ends }
-			AFG = {
-				exists = yes
-				NOT = { is_in_faction_with = GER }
-				has_war = no
-				has_country_flag = GER_expedition_start
-			}
 		}
 		cost = 35
 		complete_effect = {
@@ -7282,7 +7566,7 @@ GER_afghan_expeditions = {
 				country_event = {
 					id = ww1_afghanistan.1
 					days = 10
-					random = 50
+					random_hours = 50
 					random_days = 10
 				}
 			}
@@ -7296,10 +7580,13 @@ GER_afghan_expeditions = {
 		icon = generic_operation
 		allowed = { tag = GER }
 		fire_only_once = yes
-		available = {
+		visible = {
 			has_war_with = ENG
 			has_war_with = RAJ
-			NOT = { has_global_flag = great_war_ends }
+			is_great_war_ongoing = yes
+			has_equipment = {
+    			infantry_equipment_1 > 3000
+			}
 			AFG = {
 				exists = yes
 				has_war_with = RAJ
@@ -7307,13 +7594,10 @@ GER_afghan_expeditions = {
 				has_country_flag = AFG_cp
 			}
 		}
-		visible = {
+		available = {
 			has_war_with = ENG
 			has_war_with = RAJ
-			has_equipment = {
-    		infantry_equipment_1 > 3000
-							}
-			NOT = { has_global_flag = great_war_ends }
+			is_great_war_ongoing = yes
 			AFG = {
 				exists = yes
 				has_war_with = RAJ
@@ -7739,7 +8023,7 @@ interwar_decisions = {
 		timeout_effect = {
 			clr_country_flag = GER_spartakist_revolt_timer
 			country_event = {
-				id = ww1_germany.12
+				id = ww1_german_revolution.13
 				days = 2
 			}
 		}
@@ -7779,7 +8063,7 @@ interwar_decisions = {
 		activation = {
 			tag = GER
 			has_global_flag = interbellum
-			has_global_flag = karl_leibknecht_dead
+			has_global_flag = karl_liebknecht_dead
 			has_government = democratic
 			has_country_flag = great_war_loser
 			is_subject = no
@@ -7803,7 +8087,7 @@ interwar_decisions = {
 		visible = {
 			tag = GER
 			has_global_flag = interbellum
-			has_global_flag = karl_leibknecht_dead
+			has_global_flag = karl_liebknecht_dead
 			has_government = democratic
 			has_country_flag = great_war_loser
 			is_subject = no
@@ -7830,7 +8114,7 @@ interwar_decisions = {
 	# 			}
 	# 		}
 	# 		has_global_flag = interbellum
-	# 		has_global_flag = versallies_treaty
+	# 		has_global_flag = versailles_treaty
 	# 		threat < 0.2
 	# 		FRA = {
 	# 			is_subject = no
@@ -8211,23 +8495,6 @@ GER_german_east_asia_cat = {
 	GER_german_east_asia = {
 		icon = GFX_decision_generic_operation
 		allowed = { tag = GER }
-		available = {
-			has_war = no
-			has_global_flag = frankfurt_treaty
-			OR = {
-				any_owned_state = {
-					OR = {
-						state = 647
-						state = 523
-						state = 932
-						is_core_of = VIN
-						is_core_of = CAM
-						is_core_of = LAO
-					}
-				}
-				has_subject = IND
-			}
-		}
 		visible = {
 			is_subject = no
 			has_country_flag = great_war_winner
@@ -8235,7 +8502,20 @@ GER_german_east_asia_cat = {
 			NOT = {
 				has_government = communism
 				has_country_flag = great_war_loser
-				OST = { has_cosmetic_tag = OST_LGC }
+			}
+		}
+		available = {
+			has_war = no
+			has_global_flag = frankfurt_treaty
+			custom_override_tooltip = {
+				tooltip = GER_control_OST_state_tt
+				OR = {
+					any_owned_state = {
+						GER_is_OST_core = yes
+					}
+					has_subject = IND
+				}
+				
 			}
 		}
 		cost = 100
@@ -8250,16 +8530,7 @@ GER_german_east_asia_cat = {
 					is_subject = yes
 					NOT = {
 						any_owned_state = {
-							OR = {
-								state = 647
-								state = 523
-								state = 336
-								is_core_of = VIN
-								is_core_of = CAM
-								is_core_of = LAO
-								is_core_of = SIA
-								is_core_of = MAL
-							}
+							GER_is_OST_core = yes
 						}
 						has_subject = IND
 					}
@@ -8271,65 +8542,49 @@ GER_german_east_asia_cat = {
 			add_political_power = 90
 		}
 		remove_effect = {
+			GER_release_OST = yes
+			custom_effect_tooltip = GER_release_OST
 			country_event = ww1_germany.152
 		}
 	}
 	GER_german_east_asia_expand = {
 		icon = GFX_decision_generic_operation
-		allowed = { tag = GER }
-		available = {
-			has_war = no
+		target_trigger = {
+			FROM = {
+				tag = OST
+			}
 		}
-		visible = {
+		target_root_trigger = {
 			has_global_flag = frankfurt_treaty
+		}
+		allowed = { tag = GER }
+		visible = {
 			has_subject = OST
 			is_subject = no
-			OR = {
-				has_subject = IND
-				any_owned_state = {
-					OR = {
-						state = 326
-						state = 524
-						state = 526
-						state = 591
-						state = 592
-						state = 613
-						state = 728
-						state = 729
-						state = 744
-						state = 745
-						state = 746
-						is_core_of = VIN
-						is_core_of = CAM
-						is_core_of = LAO
-						is_core_of = SIA
-						is_core_of = MAL
-						is_core_of = SRW
-						is_core_of = BRN
-						is_core_of = INS
-						is_core_of = PHI
-						is_core_of = PNG
-						region = 71
-						region = 78
-						region = 83
-						region = 84
-						region = 94
-						region = 95
-						region = 97
-						region = 99
-						region = 101
-						region = 105
-						region = 172
-						region = 178
-						region = 179
-						region = 180
-					}
-				}
+			any_state = {
+				GER_is_OST_state = yes
+				owns_or_subject_of = yes
+				NOT = { is_owned_by = OST }
 			}
 			NOT = {
 				has_government = communism
 				has_country_flag = great_war_loser
-				OST = { has_cosmetic_tag = OST_LGC }
+			}
+		}
+		available = {
+			has_war = no
+			has_global_flag = frankfurt_treaty
+			custom_override_tooltip = {
+				tooltip = GER_control_OST_state_tt
+			}
+		}
+		highlight_states = {
+			highlight_states_trigger = {
+				NOT = {
+					is_owned_by = OST
+				}
+				GER_is_OST_state = yes
+				owns_or_subject_of = yes
 			}
 		}
 		fire_only_once = no
@@ -8341,50 +8596,15 @@ GER_german_east_asia_cat = {
 					NOT = { has_subject = OST }
 					has_government = communism
 					NOT = {
-						any_owned_state = {
-							OR = {
-								state = 326
-								state = 524
-								state = 526
-								state = 591
-								state = 592
-								state = 613
-								state = 728
-								state = 729
-								state = 744
-								state = 745
-								state = 746
-								is_core_of = VIN
-								is_core_of = CAM
-								is_core_of = LAO
-								is_core_of = SIA
-								is_core_of = MAL
-								is_core_of = SRW
-								is_core_of = BRN
-								is_core_of = INS
-								is_core_of = PHI
-								is_core_of = PNG
-								region = 71
-								region = 78
-								region = 83
-								region = 84
-								region = 94
-								region = 95
-								region = 97
-								region = 99
-								region = 101
-								region = 105
-								region = 172
-								region = 178
-								region = 179
-								region = 180
-							}
+						any_state = {
+							GER_is_OST_state = yes
+							owns_or_subject_of = yes
+							NOT = { is_owned_by = OST }
 						}
-						has_subject = IND
 					}
 				}
-			}	
-		}	
+			}
+		}
 		cancel_effect = {
 			add_political_power = 25
 		}
@@ -8395,105 +8615,216 @@ GER_german_east_asia_cat = {
 			factor = 100
 		}
 		remove_effect = {
-			if = {
+			add_named_threat = {
+				name = GER_german_east_asia_expand
+				threat = 1
+			}
+			every_state = {
 				limit = {
-					has_subject = IND
+					NOT = {
+						is_owned_by = OST
+					}
+					GER_is_OST_state = yes
+					owns_or_subject_of = yes
 				}
-				IND = {
+
+				# If the country is a subject, and all its states are Ostasien States, completely annex it
+				owner = {
 					if = {
 						limit = {
-							has_character = OST_wilhelm_filchner
+							NOT = {
+								tag = OST
+							}
+							is_subject_of = ROOT
+							all_owned_state = {
+								GER_is_OST_state = yes
+							}
 						}
-						OST_wilhelm_filchner = { set_nationality = OST }
-					}
-					OST = {
-						annex_country = {
-							target = IND
-							transfer_troops = yes
-						}
-						OST_wilhelm_filchner = {
-							promote_character = colonial_government
-							promote_character = conservatism
-						}
+						# Special stuff if the subject we are annexing is Indochina
 						if = {
 							limit = {
-								has_character = OST_maximilian_von_spee
+								tag = IND
 							}
-							OST_maximilian_von_spee = {
-								promote_character = colonial_government
-								promote_character = stratocracy
+							if = {
+								limit = {
+									has_character = OST_wilhelm_filchner
+								}
+								OST_wilhelm_filchner = { set_nationality = OST }
+							}
+							OST = {
+								OST_wilhelm_filchner = {
+									promote_character = colonial_government
+									promote_character = conservatism
+								}
+								if = {
+									limit = {
+										has_character = OST_maximilian_von_spee
+									}
+									OST_maximilian_von_spee = {
+										promote_character = colonial_government
+										promote_character = stratocracy
+									}
+								}
+							}
+						}
+						else = {
+							every_unit_leader = { set_nationality = OST }
+						}
+
+						# Annex the country
+						drop_cosmetic_tag = yes
+						OST = {
+							annex_country = {
+								target = PREV
+								transfer_troops = yes
 							}
 						}
 					}
 				}
-			}
-			every_owned_state = {
-				limit = {
-					OR = {
-						state = 326
-						state = 524
-						state = 526
-						state = 591
-						state = 592
-						state = 613
-						state = 728
-						state = 729
-						state = 744
-						state = 745
-						state = 746
-						is_core_of = VIN
-						is_core_of = CAM
-						is_core_of = LAO
-						is_core_of = SIA
-						is_core_of = MAL
-						is_core_of = SRW
-						is_core_of = BRN
-						is_core_of = INS
-						is_core_of = PHI
-						is_core_of = PNG
-						region = 71
-						region = 78
-						region = 83
-						region = 84
-						region = 94
-						region = 95
-						region = 97
-						region = 99
-						region = 101
-						region = 105
-						region = 172
-						region = 178
-						region = 179
-						region = 180
-					}
-				}
-				remove_claim_by = ROOT
+
 				transfer_state_to = OST
+				remove_claim_by = ROOT
+
 				if = {
 					limit = {
-						OR = {
-							state = 932
-							state = 745
-							is_core_of = VIN
-							is_core_of = CAM
-							is_core_of = LAO
-							is_core_of = SRW
-						}
+						GER_is_OST_core = yes
 					}
-					OST = {
-						add_state_core = PREV
-						if = {
-							limit = {
-								owns_state = 932
-								932 = { is_capital = no }
-							}
-							set_capital = { state = 932 }
-						}
+					add_core_of = OST
+				}
+			}
+			
+			# Try to set capital to Singapore
+			OST = {
+				if = {
+					limit = {
+						owns_state = 932
+						932 = { is_capital = no }
 					}
+					set_capital = { state = 932 }
 				}
 			}
 		}
 	}
+	GER_seize_indochina = {
+		icon = GFX_decision_generic_operation
+		allowed = { tag = GER }
+		visible = {
+			is_subject = no
+			has_country_flag = great_war_winner
+			NOT = {
+				has_government = communism
+				has_country_flag = great_war_loser
+			}
+			IND = {
+				is_subject = yes
+				overlord = {
+					original_tag = FRA
+				}
+			}
+			is_french_civil_war_ongoing = yes
+		}
+		available = {
+			has_war = no
+			has_global_flag = frankfurt_treaty
+			is_french_civil_war_ongoing = yes
+		}
+		fire_only_once = yes
+		cost = 50
+		days_remove = 15
+		ai_will_do = {
+			factor = 100
+		}
+		cancel_trigger = {
+			hidden_trigger = {
+				OR = {
+					has_war = yes
+					is_subject = yes
+					NOT = {
+						IND = {
+							is_subject = yes
+							overlord = {
+								original_tag = FRA
+							}
+						}
+					}
+					has_government = communism
+				}
+			}
+		}	
+		cancel_effect = {
+			add_political_power = 30
+		}
+		remove_effect = {
+			puppet = IND
+			hidden_effect = {
+				news_event = { id = interwar_news.22 hours = 3 }
+			}
+		}
+	}
+
+	GER_seize_french_pacific_islands = {
+		icon = GFX_decision_generic_operation
+		allowed = { tag = GER }
+		visible = {
+			is_subject = no
+			has_country_flag = great_war_winner
+			NOT = {
+				has_government = communism
+				has_country_flag = great_war_loser
+			}
+			any_state = {
+				GER_is_OST_state = yes
+				owner = {
+					original_tag = FRA
+				}
+			}
+			is_french_civil_war_ongoing = yes
+		}
+		available = {
+			has_war = no
+			has_global_flag = frankfurt_treaty
+			is_french_civil_war_ongoing = yes
+		}
+		fire_only_once = yes
+		cost = 10
+		days_remove = 15
+		ai_will_do = {
+			factor = 100
+		}
+		cancel_trigger = {
+			hidden_trigger = {
+				OR = {
+					has_war = yes
+					is_subject = yes
+					NOT = {
+						any_state = {
+							GER_is_OST_state = yes
+							owner = {
+								original_tag = FRA
+							}
+						}
+					}
+					has_government = communism
+				}
+			}
+		}	
+		cancel_effect = {
+			add_political_power = 30
+		}
+		remove_effect = {
+			every_state = {
+				limit = {
+					GER_is_OST_state = yes
+					owner = {
+						original_tag = FRA
+					}
+				}
+				transfer_state_to = ROOT
+				add_contested_owner = FRA
+			}
+		}
+	}
+
 	# GER_OST_demand_annex = {
 	# 	icon = GFX_decision_eng_trade_unions_demand
 	# 	allowed = { tag = GER }
@@ -8804,10 +9135,10 @@ GER_bundesrat_category = {
 				limit = { has_majority_in_bundesrat = yes }
 				custom_effect_tooltip = GER_likely_to_pass
 				#here should be effects of accepting this law, like apply country_flag and effects (stability, autonomy idk)
-				country_event = ww1_german_reichstag.6
+				hidden_effect = { country_event = ww1_german_reichstag.6 }
 				else = { 
 					custom_effect_tooltip = GER_likely_to_be_rejected
-					country_event = ww1_german_reichstag.7
+					hidden_effect = { country_event = ww1_german_reichstag.7 }
 				}
 			}
 			GER_vote_ends = yes
@@ -8869,7 +9200,7 @@ GER_bundesrat_category = {
 			set_temp_variable = { ger_modify_bundersrat_votes_in_favor_var = GER_votes_of_prussia }
 			GER_modify_bundersrat_votes_in_favor = yes
 			# custom_effect_tooltip = GER_prussia_cooldown_tt
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		ai_will_do = {
 			base = 5
@@ -8891,9 +9222,9 @@ GER_bundesrat_category = {
 			GER_is_bavaria_available_in_bundesrat = yes
 		}
 		available = {
-			NOT = {
-				has_country_flag = GER_bavaria_cooldown
-			}
+			# NOT = {
+			# 	has_country_flag = GER_bavaria_cooldown
+			# }
 		}
 		on_map_mode = decision_view_only
 		highlight_states = {
@@ -8923,7 +9254,7 @@ GER_bundesrat_category = {
 			set_temp_variable = { ger_modify_bundersrat_votes_in_favor_var = GER_votes_of_bavaria }
 			GER_modify_bundersrat_votes_in_favor = yes
 			# custom_effect_tooltip = GER_bavaria_cooldown_tt
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		ai_will_do = {
 			base = 5
@@ -8945,9 +9276,9 @@ GER_bundesrat_category = {
 			GER_is_saxony_available_in_bundesrat = yes
 		}
 		available = {
-			NOT = {
-				has_country_flag = GER_saxony_cooldown
-			}
+			# NOT = {
+			# 	has_country_flag = GER_saxony_cooldown
+			# }
 		}
 		on_map_mode = decision_view_only
 		highlight_states = {
@@ -8977,7 +9308,7 @@ GER_bundesrat_category = {
 			set_temp_variable = { ger_modify_bundersrat_votes_in_favor_var = GER_votes_of_saxony }
 			GER_modify_bundersrat_votes_in_favor = yes
 			# custom_effect_tooltip = GER_saxony_cooldown_tt
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		ai_will_do = {
 			base = 5
@@ -8999,9 +9330,9 @@ GER_bundesrat_category = {
 			GER_is_wurttemberg_available_in_bundesrat = yes
 		}
 		available = {
-			NOT = {
-				has_country_flag = GER_wurttemberg_cooldown
-			}
+			# NOT = {
+			# 	has_country_flag = GER_wurttemberg_cooldown
+			# }
 		}
 		on_map_mode = decision_view_only
 		highlight_states = {
@@ -9022,7 +9353,7 @@ GER_bundesrat_category = {
 		complete_effect = {
 			if = {
 				limit = {check_variable = { GER_influence_in_wurttemberg > 0 } }
-				add_to_variable = { GER_influence_wurttemberg = -1 }
+				add_to_variable = { GER_influence_in_wurttemberg = -1 }
 			}
 			else = {
 				add_to_variable = { GER_extra_influence = -1 }
@@ -9031,7 +9362,7 @@ GER_bundesrat_category = {
 			set_temp_variable = { ger_modify_bundersrat_votes_in_favor_var = GER_votes_of_wurttemberg }
 			GER_modify_bundersrat_votes_in_favor = yes
 			# custom_effect_tooltip = GER_wurttemberg_cooldown_tt
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		ai_will_do = {
 			base = 5
@@ -9053,9 +9384,9 @@ GER_bundesrat_category = {
 			GER_is_baden_available_in_bundesrat = yes
 		}
 		available = {
-			NOT = {
-				has_country_flag = GER_baden_cooldown
-			}
+			# NOT = {
+			# 	has_country_flag = GER_baden_cooldown
+			# }
 		}
 		on_map_mode = decision_view_only
 		highlight_states = {
@@ -9076,7 +9407,7 @@ GER_bundesrat_category = {
 		complete_effect = {
 			if = {
 				limit = {check_variable = { GER_influence_in_baden > 0 } }
-				add_to_variable = { GER_influence_baden = -1 }
+				add_to_variable = { GER_influence_in_baden = -1 }
 			}
 			else = {
 				add_to_variable = { GER_extra_influence = -1 }
@@ -9085,7 +9416,7 @@ GER_bundesrat_category = {
 			set_temp_variable = { ger_modify_bundersrat_votes_in_favor_var = GER_votes_of_baden }
 			GER_modify_bundersrat_votes_in_favor = yes
 			# custom_effect_tooltip = GER_baden_cooldown_tt
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		ai_will_do = {
 			base = 5
@@ -9107,9 +9438,9 @@ GER_bundesrat_category = {
 			GER_is_hesse_available_in_bundesrat = yes
 		}
 		available = {
-			NOT = {
-				has_country_flag = GER_hesse_cooldown
-			}
+			# NOT = {
+			# 	has_country_flag = GER_hesse_cooldown
+			# }
 		}
 		on_map_mode = decision_view_only
 		highlight_states = {
@@ -9130,7 +9461,7 @@ GER_bundesrat_category = {
 		complete_effect = {
 			if = {
 				limit = {check_variable = { GER_influence_in_hesse > 0 } }
-				add_to_variable = { GER_influence_hesse = -1 }
+				add_to_variable = { GER_influence_in_hesse = -1 }
 			}
 			else = {
 				add_to_variable = { GER_extra_influence = -1 }
@@ -9139,7 +9470,7 @@ GER_bundesrat_category = {
 			set_temp_variable = { ger_modify_bundersrat_votes_in_favor_var = GER_votes_of_hesse }
 			GER_modify_bundersrat_votes_in_favor = yes
 			# custom_effect_tooltip = GER_hesse_cooldown_tt
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		ai_will_do = {
 			base = 5
@@ -9161,9 +9492,9 @@ GER_bundesrat_category = {
 			GER_is_mecklenburg_available_in_bundesrat = yes
 		}
 		available = {
-			NOT = {
-				has_country_flag = GER_mecklenburg_cooldown
-			}
+			# NOT = {
+			# 	has_country_flag = GER_mecklenburg_cooldown
+			# }
 		}
 		on_map_mode = decision_view_only
 		highlight_states = {
@@ -9179,7 +9510,7 @@ GER_bundesrat_category = {
 		custom_cost_trigger = { 
 			OR = {
 				check_variable = { GER_extra_influence > 0 } 
-				check_variable = { GER_influence_mecklenburg > 0 } 
+				check_variable = { GER_influence_in_mecklenburg > 0 } 
 			}
 		}
 		custom_cost_text = decision_cost_1_influence
@@ -9187,7 +9518,7 @@ GER_bundesrat_category = {
 		complete_effect = {
 			if = {
 				limit = {check_variable = { GER_influence_in_mecklenburg > 0 } }
-				add_to_variable = { GER_influence_mecklenburg = -1 }
+				add_to_variable = { GER_influence_in_mecklenburg = -1 }
 			}
 			else = {
 				add_to_variable = { GER_extra_influence = -1 }
@@ -9196,7 +9527,7 @@ GER_bundesrat_category = {
 			set_temp_variable = { ger_modify_bundersrat_votes_in_favor_var = GER_votes_of_mecklenburg }
 			GER_modify_bundersrat_votes_in_favor = yes
 			# custom_effect_tooltip = GER_mecklenburg_cooldown_tt
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		ai_will_do = {
 			base = 5
@@ -9218,9 +9549,9 @@ GER_bundesrat_category = {
 			GER_is_brunswick_available_in_bundesrat = yes
 		}
 		available = {
-			NOT = {
-				has_country_flag = GER_brunswick_cooldown
-			}
+			# NOT = {
+			# 	has_country_flag = GER_brunswick_cooldown
+			# }
 		}
 		on_map_mode = decision_view_only
 		highlight_states = {
@@ -9233,7 +9564,7 @@ GER_bundesrat_category = {
 		custom_cost_trigger = { 
 			OR = {
 				check_variable = { GER_extra_influence > 0 } 
-				check_variable = { GER_influence_brunswick > 0 } 
+				check_variable = { GER_influence_in_brunswick > 0 } 
 			}
 		}
 		custom_cost_text = decision_cost_1_influence
@@ -9241,7 +9572,7 @@ GER_bundesrat_category = {
 		complete_effect = {
 			if = {
 				limit = {check_variable = { GER_influence_in_brunswick > 0 } }
-				add_to_variable = { GER_influence_brunswick = -1 }
+				add_to_variable = { GER_influence_in_brunswick = -1 }
 			}
 			else = {
 				add_to_variable = { GER_extra_influence = -1 }
@@ -9250,7 +9581,7 @@ GER_bundesrat_category = {
 			set_temp_variable = { ger_modify_bundersrat_votes_in_favor_var = GER_votes_of_brunswick }
 			GER_modify_bundersrat_votes_in_favor = yes
 			# custom_effect_tooltip = GER_brunswick_cooldown_tt
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		ai_will_do = {
 			base = 5
@@ -9272,9 +9603,9 @@ GER_bundesrat_category = {
 			GER_is_alsace_lorraine_available_in_bundesrat = yes
 		}
 		available = {
-			NOT = {
-				has_country_flag = GER_alsace_lorraine_cooldown
-			}
+			# NOT = {
+			# 	has_country_flag = GER_alsace_lorraine_cooldown
+			# }
 		}
 		on_map_mode = decision_view_only
 		highlight_states = {
@@ -9305,7 +9636,7 @@ GER_bundesrat_category = {
 			set_temp_variable = { ger_modify_bundersrat_votes_in_favor_var = GER_votes_of_alsace_lorraine }
 			GER_modify_bundersrat_votes_in_favor = yes
 			# custom_effect_tooltip = GER_alsace_lorraine_cooldown_tt
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		ai_will_do = {
 			base = 5
@@ -9327,25 +9658,15 @@ GER_bundesrat_category = {
 			GER_is_thuringia_available_in_bundesrat = yes
 		}
 		available = {
-			NOT = {
-				has_country_flag = GER_thuringia_cooldown
-			}
+			# NOT = {
+			# 	has_country_flag = GER_thuringia_cooldown
+			# }
 		}
 		on_map_mode = decision_view_only
 		highlight_states = {
 			highlight_states_trigger = {
 				is_owned_by = ROOT
-				OR = {
-					state = 60
-					state = 1173
-					state = 1174
-					state = 1175
-					state = 1176
-					state = 1177
-					state = 1178
-					state = 1179
-					state = 1179
-				}
+				is_core_of = THU
 				is_core_of = ROOT
 			}
 		}
@@ -9370,7 +9691,7 @@ GER_bundesrat_category = {
 			set_temp_variable = { ger_modify_bundersrat_votes_in_favor_var = GER_votes_of_thuringia }
 			GER_modify_bundersrat_votes_in_favor = yes
 			# custom_effect_tooltip = GER_thuringia_cooldown_tt
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		ai_will_do = {
 			base = 5
@@ -9392,9 +9713,9 @@ GER_bundesrat_category = {
 			GER_is_any_minor_state_available_in_bundesrat = yes
 		}
 		available = {
-			NOT = {
-				has_country_flag = GER_minor_states_cooldown
-			}
+			# NOT = {
+			# 	has_country_flag = GER_minor_states_cooldown
+			# }
 		}
 		on_map_mode = decision_view_only
 		highlight_states = {
@@ -9435,7 +9756,7 @@ GER_bundesrat_category = {
 			set_temp_variable = { ger_modify_bundersrat_votes_in_favor_var = GER_votes_of_minor_states }
 			GER_modify_bundersrat_votes_in_favor = yes
 			# custom_effect_tooltip = GER_minor_states_cooldown_tt
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		ai_will_do = {
 			base = 5
@@ -9457,18 +9778,18 @@ GER_bundesrat_category = {
 			GER_is_any_free_city_available_in_bundesrat = yes
 		}
 		available = {
-			NOT = {
-				has_country_flag = GER_free_cities_cooldown
-			}
+			# NOT = {
+			# 	has_country_flag = GER_free_cities_cooldown
+			# }
 		}
 		on_map_mode = decision_view_only
 		highlight_states = {
 			highlight_states_trigger = {
 				is_owned_by = ROOT
 				OR = {
-					state = 1163
-					state = 1165
-					state = 1166
+					is_core_of = BRE
+					is_core_of = HAM
+					is_core_of = LUB
 				}
 				is_core_of = ROOT
 			}
@@ -9494,7 +9815,7 @@ GER_bundesrat_category = {
 			set_temp_variable = { ger_modify_bundersrat_votes_in_favor_var = GER_votes_of_free_cities }
 			GER_modify_bundersrat_votes_in_favor = yes
 			# custom_effect_tooltip = GER_free_cities_cooldown_tt
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		ai_will_do = {
 			base = 5
@@ -9516,9 +9837,9 @@ GER_bundesrat_category = {
 			GER_is_austria_available_in_bundesrat = yes
 		}
 		available = {
-			NOT = {
-				has_country_flag = GER_austria_cooldown
-			}
+			# NOT = {
+			# 	has_country_flag = GER_austria_cooldown
+			# }
 		}
 		on_map_mode = decision_view_only
 		highlight_states = {
@@ -9550,7 +9871,7 @@ GER_bundesrat_category = {
 			set_temp_variable = { ger_modify_bundersrat_votes_in_favor_var = GER_votes_of_austria }
 			GER_modify_bundersrat_votes_in_favor = yes
 			# custom_effect_tooltip = GER_austria_cooldown_tt
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		ai_will_do = {
 			base = 5
@@ -9572,9 +9893,9 @@ GER_bundesrat_category = {
 			GER_is_luxembourg_available_in_bundesrat = yes
 		}
 		available = {
-			NOT = {
-				has_country_flag = GER_luxembourg_cooldown
-			}
+			# NOT = {
+			# 	has_country_flag = GER_luxembourg_cooldown
+			# }
 		}
 		on_map_mode = decision_view_only
 		highlight_states = {
@@ -9605,7 +9926,7 @@ GER_bundesrat_category = {
 			set_temp_variable = { ger_modify_bundersrat_votes_in_favor_var = GER_votes_of_luxembourg }
 			GER_modify_bundersrat_votes_in_favor = yes
 			# custom_effect_tooltip = GER_luxembourg_cooldown_tt
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		ai_will_do = {
 			base = 5
@@ -9666,7 +9987,7 @@ GER_bundesrat_category = {
 			country_event = ww1_germanrework.174
 			custom_effect_tooltip = escape_line
 			custom_effect_tooltip = GER_influence_points_count_in_prussia
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		ai_will_do = {
 			base = 5
@@ -9678,6 +9999,10 @@ GER_bundesrat_category = {
 				GER_ai_has_too_many_bundesrat_missions = yes
 				GER_ai_has_too_many_bundesrat_infrastructure_missions = yes
 				has_idea = GER_political_concessions
+			}
+			modifier = {
+				factor  = 0
+				check_variable = { GER_influence_in_prussia > 2 }
 			}
 		}
 	}
@@ -9738,7 +10063,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		complete_effect = {
 			add_to_variable = { GER_influence_in_prussia = 1 }
@@ -9755,7 +10080,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		timeout_effect = {
 			add_political_power = -50
@@ -9767,7 +10092,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 	GER_investment_in_prussia_infrastructure = {
@@ -9827,7 +10152,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		complete_effect = {
 			add_to_variable = { GER_influence_in_prussia = 1 }
@@ -9844,7 +10169,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		timeout_effect = {
 			add_political_power = -50
@@ -9856,7 +10181,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 	#Bavaria
@@ -9905,7 +10230,7 @@ GER_bundesrat_category = {
 			country_event = ww1_germanrework.174
 			custom_effect_tooltip = escape_line
 			custom_effect_tooltip = GER_influence_points_count_in_bavaria
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		ai_will_do = {
 			base = 5
@@ -9917,6 +10242,10 @@ GER_bundesrat_category = {
 				GER_ai_has_too_many_bundesrat_missions = yes
 				GER_ai_has_too_many_bundesrat_infrastructure_missions = yes
 				has_idea = GER_political_concessions
+			}
+			modifier = {
+				factor  = 0
+				check_variable = { GER_influence_in_bavaria > 2 }
 			}
 		}
 	}
@@ -9974,7 +10303,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		complete_effect = {
 			add_to_variable = { GER_influence_in_bavaria = 1 }
@@ -9991,7 +10320,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		timeout_effect = {
 			add_political_power = -50
@@ -10003,7 +10332,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 	GER_investment_in_bavaria_infrastructure = {
@@ -10060,7 +10389,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		complete_effect = {
 			add_to_variable = { GER_influence_in_bavaria = 1 }
@@ -10077,7 +10406,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		timeout_effect = {
 			add_political_power = -50
@@ -10089,7 +10418,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 	#Saxony
@@ -10138,7 +10467,7 @@ GER_bundesrat_category = {
 			country_event = ww1_germanrework.174
 			custom_effect_tooltip = escape_line
 			custom_effect_tooltip = GER_influence_points_count_in_saxony
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		ai_will_do = {
 			base = 5
@@ -10150,6 +10479,10 @@ GER_bundesrat_category = {
 				GER_ai_has_too_many_bundesrat_missions = yes
 				GER_ai_has_too_many_bundesrat_infrastructure_missions = yes
 				has_idea = GER_political_concessions
+			}
+			modifier = {
+				factor  = 0
+				check_variable = { GER_influence_in_saxony > 2 }
 			}
 		}
 	}
@@ -10207,7 +10540,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		complete_effect = {
 			add_to_variable = { GER_influence_in_saxony = 1 }
@@ -10224,7 +10557,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		timeout_effect = {
 			add_political_power = -50
@@ -10236,7 +10569,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 	GER_investment_in_saxony_infrastructure = {
@@ -10293,7 +10626,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		complete_effect = {
 			add_to_variable = { GER_influence_in_saxony = 1 }
@@ -10310,7 +10643,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		timeout_effect = {
 			add_political_power = -50
@@ -10322,7 +10655,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 	#Wurttemberg
@@ -10371,7 +10704,7 @@ GER_bundesrat_category = {
 			country_event = ww1_germanrework.174
 			custom_effect_tooltip = escape_line
 			custom_effect_tooltip = GER_influence_points_count_in_wurttemberg
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		ai_will_do = {
 			base = 5
@@ -10383,6 +10716,10 @@ GER_bundesrat_category = {
 				GER_ai_has_too_many_bundesrat_missions = yes
 				GER_ai_has_too_many_bundesrat_infrastructure_missions = yes
 				has_idea = GER_political_concessions
+			}
+			modifier = {
+				factor  = 0
+				check_variable = { GER_influence_in_wurttemberg > 2 }
 			}
 		}
 	}
@@ -10440,7 +10777,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		complete_effect = {
 			add_to_variable = { GER_influence_in_wurttemberg = 1 }
@@ -10457,7 +10794,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		timeout_effect = {
 			add_political_power = -50
@@ -10469,7 +10806,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 	GER_investment_in_wurttemberg_infrastructure = {
@@ -10526,7 +10863,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		complete_effect = {
 			add_to_variable = { GER_influence_in_wurttemberg = 1 }
@@ -10543,7 +10880,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		timeout_effect = {
 			add_political_power = -50
@@ -10555,7 +10892,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 	#Baden
@@ -10604,7 +10941,7 @@ GER_bundesrat_category = {
 			country_event = ww1_germanrework.174
 			custom_effect_tooltip = escape_line
 			custom_effect_tooltip = GER_influence_points_count_in_baden
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		ai_will_do = {
 			base = 5
@@ -10616,6 +10953,10 @@ GER_bundesrat_category = {
 				GER_ai_has_too_many_bundesrat_missions = yes
 				GER_ai_has_too_many_bundesrat_infrastructure_missions = yes
 				has_idea = GER_political_concessions
+			}
+			modifier = {
+				factor  = 0
+				check_variable = { GER_influence_in_baden > 2 }
 			}
 		}
 	}
@@ -10673,7 +11014,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		complete_effect = {
 			add_to_variable = { GER_influence_in_baden = 1 }
@@ -10690,7 +11031,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		timeout_effect = {
 			add_political_power = -50
@@ -10702,7 +11043,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 	GER_investment_in_baden_infrastructure = {
@@ -10759,7 +11100,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		complete_effect = {
 			add_to_variable = { GER_influence_in_baden = 1 }
@@ -10776,7 +11117,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		timeout_effect = {
 			add_political_power = -50
@@ -10788,7 +11129,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 	#Hesse
@@ -10837,7 +11178,7 @@ GER_bundesrat_category = {
 			country_event = ww1_germanrework.174
 			custom_effect_tooltip = escape_line
 			custom_effect_tooltip = GER_influence_points_count_in_hesse
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		ai_will_do = {
 			base = 5
@@ -10849,6 +11190,10 @@ GER_bundesrat_category = {
 				GER_ai_has_too_many_bundesrat_missions = yes
 				GER_ai_has_too_many_bundesrat_infrastructure_missions = yes
 				has_idea = GER_political_concessions
+			}
+			modifier = {
+				factor  = 0
+				check_variable = { GER_influence_in_hesse > 2 }
 			}
 		}
 	}
@@ -10906,7 +11251,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		complete_effect = {
 			add_to_variable = { GER_influence_in_hesse = 1 }
@@ -10923,7 +11268,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		timeout_effect = {
 			add_political_power = -50
@@ -10935,7 +11280,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 	GER_investment_in_hesse_infrastructure = {
@@ -10992,7 +11337,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		complete_effect = {
 			add_to_variable = { GER_influence_in_hesse = 1 }
@@ -11009,7 +11354,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		timeout_effect = {
 			add_political_power = -50
@@ -11021,7 +11366,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 	#Mecklenburg
@@ -11076,7 +11421,7 @@ GER_bundesrat_category = {
 			country_event = ww1_germanrework.174
 			custom_effect_tooltip = escape_line
 			custom_effect_tooltip = GER_influence_points_count_in_mecklenburg
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		ai_will_do = {
 			base = 5
@@ -11088,6 +11433,10 @@ GER_bundesrat_category = {
 				GER_ai_has_too_many_bundesrat_missions = yes
 				GER_ai_has_too_many_bundesrat_infrastructure_missions = yes
 				has_idea = GER_political_concessions
+			}
+			modifier = {
+				factor  = 0
+				check_variable = { GER_influence_in_mecklenburg > 2 }
 			}
 		}
 	}
@@ -11154,7 +11503,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		complete_effect = {
 			add_to_variable = { GER_influence_in_mecklenburg = 1 }
@@ -11174,7 +11523,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		timeout_effect = {
 			add_political_power = -50
@@ -11189,7 +11538,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory	
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 	GER_investment_in_mecklenburg_infrastructure = {
@@ -11255,7 +11604,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		complete_effect = {
 			add_to_variable = { GER_influence_in_mecklenburg = 1 }
@@ -11275,7 +11624,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		timeout_effect = {
 			add_political_power = -50
@@ -11290,7 +11639,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 	#Brunswick
@@ -11339,7 +11688,7 @@ GER_bundesrat_category = {
 			country_event = ww1_germanrework.174
 			custom_effect_tooltip = escape_line
 			custom_effect_tooltip = GER_influence_points_count_in_brunswick
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		ai_will_do = {
 			base = 5
@@ -11351,6 +11700,10 @@ GER_bundesrat_category = {
 				GER_ai_has_too_many_bundesrat_missions = yes
 				GER_ai_has_too_many_bundesrat_infrastructure_missions = yes
 				has_idea = GER_political_concessions
+			}
+			modifier = {
+				factor  = 0
+				check_variable = { GER_influence_in_brunswick > 2 }
 			}
 		}
 	}
@@ -11408,7 +11761,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		complete_effect = {
 			add_to_variable = { GER_influence_in_brunswick = 1 }
@@ -11425,7 +11778,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		timeout_effect = {
 			add_political_power = -50
@@ -11437,7 +11790,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 	GER_investment_in_brunswick_infrastructure = {
@@ -11494,7 +11847,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		complete_effect = {
 			add_to_variable = { GER_influence_in_brunswick = 1 }
@@ -11511,7 +11864,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		timeout_effect = {
 			add_political_power = -50
@@ -11523,7 +11876,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 	#Alsace–Lorraine
@@ -11572,7 +11925,7 @@ GER_bundesrat_category = {
 			country_event = ww1_germanrework.174
 			custom_effect_tooltip = escape_line
 			custom_effect_tooltip = GER_influence_points_count_in_alsace_lorraine
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		ai_will_do = {
 			base = 5
@@ -11584,6 +11937,10 @@ GER_bundesrat_category = {
 				GER_ai_has_too_many_bundesrat_missions = yes
 				GER_ai_has_too_many_bundesrat_infrastructure_missions = yes
 				has_idea = GER_political_concessions
+			}
+			modifier = {
+				factor  = 0
+				check_variable = { GER_influence_in_alsace_lorraine > 2 }
 			}
 		}
 	}
@@ -11641,7 +11998,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		complete_effect = {
 			add_to_variable = { GER_influence_in_alsace_lorraine = 1 }
@@ -11658,7 +12015,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		timeout_effect = {
 			add_political_power = -50
@@ -11670,7 +12027,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 	GER_investment_in_alsace_lorraine_infrastructure = {
@@ -11727,7 +12084,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		complete_effect = {
 			add_to_variable = { GER_influence_in_alsace_lorraine = 1 }
@@ -11744,7 +12101,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		timeout_effect = {
 			add_political_power = -50
@@ -11756,7 +12113,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 	#Thuringia
@@ -11785,17 +12142,7 @@ GER_bundesrat_category = {
 					has_active_mission = GER_investment_in_thuringia_infrastructure
 					any_owned_state = {
 						is_core_of = ROOT
-						OR = {
-							state = 60
-							state = 1173
-							state = 1174
-							state = 1175
-							state = 1176
-							state = 1177
-							state = 1178
-							state = 1179
-							state = 1179
-						}
+						is_core_of = THU
 						has_state_flag = GER_political_concession_target
 					}
 				}
@@ -11806,17 +12153,7 @@ GER_bundesrat_category = {
 			highlight_states_trigger = {
 				is_owned_by = ROOT
 				is_core_of = ROOT
-				OR = {
-					state = 60
-					state = 1173
-					state = 1174
-					state = 1175
-					state = 1176
-					state = 1177
-					state = 1178
-					state = 1179
-					state = 1179
-				}
+				is_core_of = THU
 			}
 		}
 		complete_effect = {
@@ -11825,7 +12162,7 @@ GER_bundesrat_category = {
 			country_event = ww1_germanrework.174
 			custom_effect_tooltip = escape_line
 			custom_effect_tooltip = GER_influence_points_count_in_thuringia
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		ai_will_do = {
 			base = 5
@@ -11838,6 +12175,10 @@ GER_bundesrat_category = {
 				GER_ai_has_too_many_bundesrat_infrastructure_missions = yes
 				has_idea = GER_political_concessions
 			}
+			modifier = {
+				factor  = 0
+				check_variable = { GER_influence_in_thuringia > 2 }
+			}
 		}
 	}
 	GER_investment_in_thuringia = {
@@ -11849,17 +12190,7 @@ GER_bundesrat_category = {
 		available = {
 			any_owned_state = {
 				is_core_of = ROOT
-				OR = {
-					state = 60
-					state = 1173
-					state = 1174
-					state = 1175
-					state = 1176
-					state = 1177
-					state = 1178
-					state = 1179
-					state = 1179
-				}
+				is_core_of = THU
 				has_state_flag = GER_building_mission_civilian_factory
 				if = {
 					limit = { ROOT = { is_ai = no } }
@@ -11885,17 +12216,7 @@ GER_bundesrat_category = {
 		}
 		highlight_states = {
 			highlight_states_trigger = {
-				OR = {
-					state = 60
-					state = 1173
-					state = 1174
-					state = 1175
-					state = 1176
-					state = 1177
-					state = 1178
-					state = 1179
-					state = 1179
-				}
+				is_core_of = THU
 				is_core_of = ROOT
 				is_owned_by = ROOT
 				has_state_flag = GER_building_mission_civilian_factory
@@ -11909,23 +12230,11 @@ GER_bundesrat_category = {
 		cancel_effect = {
 			hidden_effect = {
 				every_state = {
-					limit = {
-						OR = {
-							state = 60
-							state = 1173
-							state = 1174
-							state = 1175
-							state = 1176
-							state = 1177
-							state = 1178
-							state = 1179
-							state = 1179
-						}
-					}
+					limit = { is_core_of = THU }
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		complete_effect = {
 			add_to_variable = { GER_influence_in_thuringia = 1 }
@@ -11936,45 +12245,21 @@ GER_bundesrat_category = {
 			}
 			hidden_effect = {
 				every_state = {
-					limit = {
-						OR = {
-							state = 60
-							state = 1173
-							state = 1174
-							state = 1175
-							state = 1176
-							state = 1177
-							state = 1178
-							state = 1179
-							state = 1179
-						}
-					}
+					limit = { is_core_of = THU }
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		timeout_effect = {
 			add_political_power = -50
 			hidden_effect = {
 				every_state = {
-					limit = {
-						OR = {
-							state = 60
-							state = 1173
-							state = 1174
-							state = 1175
-							state = 1176
-							state = 1177
-							state = 1178
-							state = 1179
-							state = 1179
-						}
-					}
+					limit = { is_core_of = THU }
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 	GER_investment_in_thuringia_infrastructure = {
@@ -11986,17 +12271,7 @@ GER_bundesrat_category = {
 		available = {
 			any_owned_state = {
 				is_core_of = ROOT
-				OR = {
-					state = 60
-					state = 1173
-					state = 1174
-					state = 1175
-					state = 1176
-					state = 1177
-					state = 1178
-					state = 1179
-					state = 1179
-				}
+				OR = { is_core_of = THU }
 				has_state_flag = GER_building_mission_infrastructure
 				if = {
 					limit = { ROOT = { is_ai = no } }
@@ -12022,17 +12297,7 @@ GER_bundesrat_category = {
 		}
 		highlight_states = {
 			highlight_states_trigger = {
-				OR = {
-					state = 60
-					state = 1173
-					state = 1174
-					state = 1175
-					state = 1176
-					state = 1177
-					state = 1178
-					state = 1179
-					state = 1179
-				}
+				is_core_of = THU
 				is_owned_by = ROOT
 				is_core_of = ROOT
 				has_state_flag = GER_building_mission_infrastructure
@@ -12047,22 +12312,12 @@ GER_bundesrat_category = {
 			hidden_effect = {
 				every_state = {
 					limit = {
-						OR = {
-							state = 60
-							state = 1173
-							state = 1174
-							state = 1175
-							state = 1176
-							state = 1177
-							state = 1178
-							state = 1179
-							state = 1179
-						}
+						is_core_of = THU
 					}
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		complete_effect = {
 			add_to_variable = { GER_influence_in_thuringia = 1 }
@@ -12074,44 +12329,22 @@ GER_bundesrat_category = {
 			hidden_effect = {
 				every_state = {
 					limit = {
-						OR = {
-							state = 60
-							state = 1173
-							state = 1174
-							state = 1175
-							state = 1176
-							state = 1177
-							state = 1178
-							state = 1179
-							state = 1179
-						}
+						is_core_of = THU
 					}
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		timeout_effect = {
 			add_political_power = -50
 			hidden_effect = {
 				every_state = {
-					limit = {
-						OR = {
-							state = 60
-							state = 1173
-							state = 1174
-							state = 1175
-							state = 1176
-							state = 1177
-							state = 1178
-							state = 1179
-							state = 1179
-						}
-					}
+					limit = { is_core_of = THU }
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 	#Minor States
@@ -12180,7 +12413,7 @@ GER_bundesrat_category = {
 			country_event = ww1_germanrework.174
 			custom_effect_tooltip = escape_line
 			custom_effect_tooltip = GER_influence_points_count_in_minor_states
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		ai_will_do = {
 			base = 5
@@ -12192,6 +12425,10 @@ GER_bundesrat_category = {
 				GER_ai_has_too_many_bundesrat_missions = yes
 				GER_ai_has_too_many_bundesrat_infrastructure_missions = yes
 				has_idea = GER_political_concessions
+			}
+			modifier = {
+				factor  = 0
+				check_variable = { GER_influence_in_minor_states > 2 }
 			}
 		}
 	}
@@ -12277,7 +12514,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		complete_effect = {
 			add_to_variable = { GER_influence_in_minor_states = 1 }
@@ -12301,7 +12538,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		timeout_effect = {
 			add_political_power = -50
@@ -12320,7 +12557,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 	GER_investment_in_minor_states_infrastructure = {
@@ -12405,7 +12642,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		complete_effect = {
 			add_to_variable = { GER_influence_in_minor_states = 1 }
@@ -12429,7 +12666,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		timeout_effect = {
 			add_political_power = -50
@@ -12448,7 +12685,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 	#Free and Hanseatic Cities
@@ -12478,9 +12715,9 @@ GER_bundesrat_category = {
 					any_owned_state = {
 						is_core_of = ROOT
 						OR = {
-							state = 1163
-							state = 1165
-							state = 1166
+							is_core_of = BRE
+							is_core_of = HAM
+							is_core_of = LUB
 						}
 						has_state_flag = GER_political_concession_target
 					}
@@ -12492,9 +12729,9 @@ GER_bundesrat_category = {
 			highlight_states_trigger = {
 				is_owned_by = ROOT
 				OR = {
-					state = 1163
-					state = 1165
-					state = 1166
+					is_core_of = BRE
+					is_core_of = HAM
+					is_core_of = LUB
 				}
 				is_core_of = ROOT
 			}
@@ -12505,7 +12742,7 @@ GER_bundesrat_category = {
 			country_event = ww1_germanrework.174
 			custom_effect_tooltip = escape_line
 			custom_effect_tooltip = GER_influence_points_count_in_free_cities
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		ai_will_do = {
 			base = 5
@@ -12518,6 +12755,10 @@ GER_bundesrat_category = {
 				GER_ai_has_too_many_bundesrat_infrastructure_missions = yes
 				has_idea = GER_political_concessions
 			}
+			modifier = {
+				factor  = 0
+				check_variable = { GER_influence_in_free_cities > 2 }
+			}
 		}
 	}
 	GER_investment_in_free_cities = {
@@ -12529,9 +12770,9 @@ GER_bundesrat_category = {
 		available = {
 			any_owned_state = {
 				OR = {
-					state = 1163
-					state = 1165
-					state = 1166
+					is_core_of = BRE
+					is_core_of = HAM
+					is_core_of = LUB
 				}
 				has_state_flag = GER_building_mission_civilian_factory
 				if = {
@@ -12559,9 +12800,9 @@ GER_bundesrat_category = {
 		highlight_states = {
 			highlight_states_trigger = {
 				OR = {
-					state = 1163
-					state = 1165
-					state = 1166
+					is_core_of = BRE
+					is_core_of = HAM
+					is_core_of = LUB
 				}
 				is_owned_by = ROOT
 				is_core_of = ROOT
@@ -12578,15 +12819,15 @@ GER_bundesrat_category = {
 				every_state = {
 					limit = {
 						OR = {
-							state = 1163
-							state = 1165
-							state = 1166
+							is_core_of = BRE
+							is_core_of = HAM
+							is_core_of = LUB
 						}
 					}
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		complete_effect = {
 			add_to_variable = { GER_influence_in_free_cities = 1 }
@@ -12599,15 +12840,15 @@ GER_bundesrat_category = {
 				every_state = {
 					limit = {
 						OR = {
-							state = 1163
-							state = 1165
-							state = 1166
+							is_core_of = BRE
+							is_core_of = HAM
+							is_core_of = LUB
 						}
 					}
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		timeout_effect = {
 			add_political_power = -50
@@ -12615,15 +12856,15 @@ GER_bundesrat_category = {
 				every_state = {
 					limit = {
 						OR = {
-							state = 1163
-							state = 1165
-							state = 1166
+							is_core_of = BRE
+							is_core_of = HAM
+							is_core_of = LUB
 						}
 					}
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 	GER_investment_in_free_cities_infrastructure = {
@@ -12635,9 +12876,9 @@ GER_bundesrat_category = {
 		available = {
 			any_owned_state = {
 				OR = {
-					state = 1163
-					state = 1165
-					state = 1166
+					is_core_of = BRE
+					is_core_of = HAM
+					is_core_of = LUB
 				}
 				has_state_flag = GER_building_mission_infrastructure
 				if = {
@@ -12665,9 +12906,9 @@ GER_bundesrat_category = {
 		highlight_states = {
 			highlight_states_trigger = {
 				OR = {
-					state = 1163
-					state = 1165
-					state = 1166
+					is_core_of = BRE
+					is_core_of = HAM
+					is_core_of = LUB
 				}
 				is_owned_by = ROOT
 				is_core_of = ROOT
@@ -12684,15 +12925,15 @@ GER_bundesrat_category = {
 				every_state = {
 					limit = {
 						OR = {
-							state = 1163
-							state = 1165
-							state = 1166
+							is_core_of = BRE
+							is_core_of = HAM
+							is_core_of = LUB
 						}
 					}
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		complete_effect = {
 			add_to_variable = { GER_influence_in_free_cities = 1 }
@@ -12705,15 +12946,15 @@ GER_bundesrat_category = {
 				every_state = {
 					limit = {
 						OR = {
-							state = 1163
-							state = 1165
-							state = 1166
+							is_core_of = BRE
+							is_core_of = HAM
+							is_core_of = LUB
 						}
 					}
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		timeout_effect = {
 			add_political_power = -50
@@ -12721,15 +12962,15 @@ GER_bundesrat_category = {
 				every_state = {
 					limit = {
 						OR = {
-							state = 1163
-							state = 1165
-							state = 1166
+							is_core_of = BRE
+							is_core_of = HAM
+							is_core_of = LUB
 						}
 					}
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 	#Austria
@@ -12780,7 +13021,7 @@ GER_bundesrat_category = {
 			country_event = ww1_germanrework.174
 			custom_effect_tooltip = escape_line
 			custom_effect_tooltip = GER_influence_points_count_in_austria
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		ai_will_do = {
 			base = 5
@@ -12792,6 +13033,10 @@ GER_bundesrat_category = {
 				GER_ai_has_too_many_bundesrat_missions = yes
 				GER_ai_has_too_many_bundesrat_infrastructure_missions = yes
 				has_idea = GER_political_concessions
+			}
+			modifier = {
+				factor  = 0
+				check_variable = { GER_influence_in_austria > 2 }
 			}
 		}
 	}
@@ -12852,7 +13097,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		complete_effect = {
 			add_to_variable = { GER_influence_in_austria = 1 }
@@ -12870,7 +13115,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		timeout_effect = {
 			add_political_power = -50
@@ -12883,7 +13128,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 	GER_investment_in_austria_infrastructure = {
@@ -12943,7 +13188,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		complete_effect = {
 			add_to_variable = { GER_influence_in_austria = 1 }
@@ -12961,7 +13206,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		timeout_effect = {
 			add_political_power = -50
@@ -12974,7 +13219,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 	#Luxembourg
@@ -13023,7 +13268,7 @@ GER_bundesrat_category = {
 			country_event = ww1_germanrework.174
 			custom_effect_tooltip = escape_line
 			custom_effect_tooltip = GER_influence_points_count_in_luxembourg
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		ai_will_do = {
 			base = 5
@@ -13035,6 +13280,10 @@ GER_bundesrat_category = {
 				GER_ai_has_too_many_bundesrat_missions = yes
 				GER_ai_has_too_many_bundesrat_infrastructure_missions = yes
 				has_idea = GER_political_concessions
+			}
+			modifier = {
+				factor  = 0
+				check_variable = { GER_influence_in_luxembourg > 2 }
 			}
 		}
 	}
@@ -13092,7 +13341,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		complete_effect = {
 			add_to_variable = { GER_influence_in_luxembourg = 1 }
@@ -13109,7 +13358,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		timeout_effect = {
 			add_political_power = -50
@@ -13121,7 +13370,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_civilian_factory
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 	GER_investment_in_luxembourg_infrastructure = {
@@ -13178,7 +13427,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		complete_effect = {
 			add_to_variable = { GER_influence_in_luxembourg = 1 }
@@ -13195,7 +13444,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 		timeout_effect = {
 			add_political_power = -50
@@ -13207,7 +13456,7 @@ GER_bundesrat_category = {
 					clr_state_flag = GER_building_mission_infrastructure
 				}
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 
@@ -13240,7 +13489,7 @@ GER_bundesrat_category = {
 				localization_key = GER_get_extra_influence_tt
 				INFLUENCE = 1
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 	GER_give_5_influence = {
@@ -13259,7 +13508,7 @@ GER_bundesrat_category = {
 				localization_key = GER_get_extra_influence_tt
 				INFLUENCE = 5
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}	
 	}
 	GER_give_10_influence = {
@@ -13278,7 +13527,7 @@ GER_bundesrat_category = {
 				localization_key = GER_get_extra_influence_tt
 				INFLUENCE = 10
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}		
 	}
 	GER_give_1000_influence = {
@@ -13297,7 +13546,7 @@ GER_bundesrat_category = {
 				localization_key = GER_get_extra_influence_tt
 				INFLUENCE = 1000
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}	
 	}
 	GER_debug_calculate_bundesrat_votes = {
@@ -13333,7 +13582,7 @@ GER_bundesrat_category = {
 				clr_state_flag = GER_building_mission_civilian_factory
 				clr_state_flag = GER_building_mission_infrastructure
 			}
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 	GER_debug_give_points_to_prussia = {
@@ -13354,7 +13603,7 @@ GER_bundesrat_category = {
                 INFLUENCE = "1"
                 FEDERAL_STATE = GER_bundesrat_prussia_tt
             }
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 	GER_debug_give_points_to_bavaria = {
@@ -13374,13 +13623,14 @@ GER_bundesrat_category = {
                 INFLUENCE = "1"
                 FEDERAL_STATE = GER_bundesrat_bavaria_tt
             }
-			GER_update_bundesrat_gui = yes
+			#GER_update_bundesrat_gui = yes
 		}
 	}
 
 	#Bundestrat Laws
 	#Centrist
 	GER_law_on_the_constitution_for_alsace_lorraine_bund = {
+		icon = eng_trade_unions_support
 		cost = 10
 		visible = {
 			tag = GER
@@ -13418,7 +13668,7 @@ GER_bundesrat_category = {
 					add_political_power = -75
 				}
 				set_country_flag = GER_law_alsace_lorraine_new_member_passed_in_bundesrat
-				country_event = ww1_german_reichstag.6
+				hidden_effect = { country_event = ww1_german_reichstag.6 }
 			}
 			else = {
 				custom_effect_tooltip = GER_likely_to_be_rejected
@@ -13429,12 +13679,13 @@ GER_bundesrat_category = {
 				custom_effect_tooltip = GER_if_law_fails_bund
 				add_stability = -0.1
 				add_political_power = -75
-				country_event = ww1_german_reichstag.7			
+				hidden_effect = { country_event = ww1_german_reichstag.7 }			
 			}
 			GER_vote_ends = yes
 		}
 	}
-	GER_job_placement_act_bund = {
+	GER_employment_agency_act_bund = {
+		icon = eng_trade_unions_support
 		cost = 10
 		visible = {
 			tag = GER
@@ -13443,9 +13694,8 @@ GER_bundesrat_category = {
 					is_debug = yes
 					has_country_flag = GER_show_debug_decisions
 				}
-				has_country_flag = GER_job_placement_act_unlocked_in_bund
+				has_country_flag = GER_employment_agency_act_unlocked_in_bund
 			}
-			has_GER_idea_rapid_urbanisation = yes
 		}
 		available = {
 			NOT = {
@@ -13461,26 +13711,26 @@ GER_bundesrat_category = {
 		remove_effect = {
 			if = {
 				limit = { has_majority_in_bundesrat = yes }
-				clr_country_flag = GER_job_placement_act_unlocked_in_bund
+				clr_country_flag = GER_employment_agency_act_unlocked_in_bund
 				custom_effect_tooltip = GER_likely_to_pass
 				custom_effect_tooltip = GER_if_law_passes_bund
-				GER_rapid_urbanisation_reform_effect = yes
+				GER_employment_agency_act_effect = yes
 				custom_effect_tooltip = GER_if_law_fails_bund
 				effect_tooltip = {
 					add_stability = -0.02
 					add_political_power = -20
 				}
-				country_event = ww1_german_reichstag.6
+				hidden_effect = { country_event = ww1_german_reichstag.6 }
 				else = {
 					custom_effect_tooltip = GER_likely_to_be_rejected
 					custom_effect_tooltip = GER_if_law_passes_bund
 					effect_tooltip = {
-						GER_rapid_urbanisation_reform_effect = yes
+						GER_employment_agency_act_effect = yes
 					}
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-					country_event = ww1_german_reichstag.7
+					hidden_effect = { country_event = ww1_german_reichstag.7 }
 				}
 			}
 			GER_vote_ends = yes
@@ -13490,6 +13740,7 @@ GER_bundesrat_category = {
 		}
 	}
 	GER_prussian_electoral_reform_bund = {
+		icon = eng_trade_unions_support
 		cost = 10
 		visible = {
 			tag = GER
@@ -13524,7 +13775,7 @@ GER_bundesrat_category = {
 					add_stability = -0.02
 					add_political_power = -20
 				}
-				country_event = ww1_german_reichstag.6
+				hidden_effect = { country_event = ww1_german_reichstag.6 }
 				else = {
 					custom_effect_tooltip = GER_likely_to_be_rejected
 					custom_effect_tooltip = GER_if_law_passes_bund
@@ -13534,7 +13785,7 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-					country_event = ww1_german_reichstag.7
+					hidden_effect = { country_event = ww1_german_reichstag.7 }
 				}
 			}
 			GER_vote_ends = yes
@@ -13544,6 +13795,7 @@ GER_bundesrat_category = {
 		}
 	}
 	GER_health_insurance_act_bund = {
+		icon = eng_trade_unions_support
 		cost = 10
 		visible = {
 			tag = GER
@@ -13572,23 +13824,23 @@ GER_bundesrat_category = {
 				clr_country_flag = GER_health_insurance_act_unlocked_in_bund
 				custom_effect_tooltip = GER_likely_to_pass
 				custom_effect_tooltip = GER_if_law_passes_bund
-				GER_upgrade_idea_rising_unions = yes
+				GER_health_insurance_act_effect = yes
 				custom_effect_tooltip = GER_if_law_fails_bund
 				effect_tooltip = {
 					add_stability = -0.02
 					add_political_power = -20
 				}
-				country_event = ww1_german_reichstag.6
+				hidden_effect = { country_event = ww1_german_reichstag.6 }
 				else = {
 					custom_effect_tooltip = GER_likely_to_be_rejected
 					custom_effect_tooltip = GER_if_law_passes_bund
 					effect_tooltip = {
-						GER_upgrade_idea_rising_unions = yes
+						GER_health_insurance_act_effect = yes
 					}
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-					country_event = ww1_german_reichstag.7
+					hidden_effect = { country_event = ww1_german_reichstag.7 }
 				}
 			}
 			GER_vote_ends = yes
@@ -13598,6 +13850,7 @@ GER_bundesrat_category = {
 		}
 	}
 	GER_hausarbeitsgesetz_bund = {
+		icon = eng_trade_unions_support
 		cost = 10
 		visible = {
 			tag = GER
@@ -13620,38 +13873,39 @@ GER_bundesrat_category = {
 			GER_calculate_bundesrat_votes = yes
 		}
 		days_remove = 30
+		ai_will_do = {
+			factor = 100
+		}
 		remove_effect = {
 			if = {
 				limit = { has_majority_in_bundesrat = yes }
 				clr_country_flag = GER_hausarbeitsgesetz_unlocked_in_bund
 				custom_effect_tooltip = GER_likely_to_pass
 				custom_effect_tooltip = GER_if_law_passes_bund
-				GER_protection_of_home_workers_law_effect = yes
+				GER_homework_act_effect = yes
 				custom_effect_tooltip = GER_if_law_fails_bund
 				effect_tooltip = {
 					add_stability = -0.02
 					add_political_power = -20
 				}
-				country_event = ww1_german_reichstag.6
+				hidden_effect = { country_event = ww1_german_reichstag.6 }
 				else = {
 					custom_effect_tooltip = GER_likely_to_be_rejected
 					custom_effect_tooltip = GER_if_law_passes_bund
 					effect_tooltip = {
-						GER_protection_of_home_workers_law_effect = yes
+						GER_homework_act_effect = yes
 					}
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-					country_event = ww1_german_reichstag.7
+					hidden_effect = { country_event = ww1_german_reichstag.7 }
 				}
 			}
 			GER_vote_ends = yes
 		}
-		 ai_will_do = {
-			factor = 100
-		}
 	}
 	GER_law_on_rustungswende_bund = {
+		icon = eng_trade_unions_support
 		cost = 10
 		visible = {
 			tag = GER
@@ -13689,7 +13943,7 @@ GER_bundesrat_category = {
 					add_stability = -0.02
 					add_political_power = -20
 				}
-				country_event = ww1_german_reichstag.6
+				hidden_effect = { country_event = ww1_german_reichstag.6 }
 				else = {
 					custom_effect_tooltip = GER_likely_to_be_rejected
 					custom_effect_tooltip = GER_if_law_passes_bund
@@ -13699,13 +13953,14 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-					country_event = ww1_german_reichstag.7
+					hidden_effect = { country_event = ww1_german_reichstag.7 }
 				}
 			}
 			GER_vote_ends = yes
 		}
 	}
 	GER_limited_army_bill_law_bund = {
+		icon = eng_trade_unions_support
 		cost = 10
 		visible = {
 			tag = GER
@@ -13742,7 +13997,7 @@ GER_bundesrat_category = {
 					add_stability = -0.02
 					add_political_power = -20
 				}
-				country_event = ww1_german_reichstag.6
+				hidden_effect = { country_event = ww1_german_reichstag.6 }
 				else = {
 					custom_effect_tooltip = GER_likely_to_be_rejected
 					custom_effect_tooltip = GER_if_law_passes_bund
@@ -13752,13 +14007,14 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-					country_event = ww1_german_reichstag.7
+					hidden_effect = { country_event = ww1_german_reichstag.7 }
 				}
 			}
 			GER_vote_ends = yes
 		}
 	}
 	GER_first_army_law_cen_bund = {
+		icon = eng_trade_unions_support
 		cost = 10
 		visible = {
 			tag = GER
@@ -13795,7 +14051,7 @@ GER_bundesrat_category = {
 					add_stability = -0.02
 					add_political_power = -20
 				}
-				country_event = ww1_german_reichstag.6
+				hidden_effect = { country_event = ww1_german_reichstag.6 }
 				else = {
 					custom_effect_tooltip = GER_likely_to_be_rejected
 					custom_effect_tooltip = GER_if_law_passes_bund
@@ -13805,13 +14061,14 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-					country_event = ww1_german_reichstag.7
+					hidden_effect = { country_event = ww1_german_reichstag.7 }
 				}
 			}
 			GER_vote_ends = yes
 		}	
 	}
 	GER_second_army_law_cen_bund = {
+		icon = eng_trade_unions_support
 		cost = 10
 		visible = {
 			tag = GER
@@ -13849,7 +14106,7 @@ GER_bundesrat_category = {
 					add_stability = -0.02
 					add_political_power = -20
 				}
-				country_event = ww1_german_reichstag.6
+				hidden_effect = { country_event = ww1_german_reichstag.6 }
 				else = {
 					custom_effect_tooltip = GER_likely_to_be_rejected
 					custom_effect_tooltip = GER_if_law_passes_bund
@@ -13859,13 +14116,14 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-					country_event = ww1_german_reichstag.7
+					hidden_effect = { country_event = ww1_german_reichstag.7 }
 				}
 			}
 			GER_vote_ends = yes
 		}
 	}
 	GER_five_year_army_law_bund = {
+		icon = eng_trade_unions_support
 		cost = 10
 		visible = {
 			tag = GER
@@ -13902,7 +14160,7 @@ GER_bundesrat_category = {
 					add_stability = -0.02
 					add_political_power = -20
 				}
-				country_event = ww1_german_reichstag.6
+				hidden_effect = { country_event = ww1_german_reichstag.6 }
 				else = {
 					custom_effect_tooltip = GER_likely_to_be_rejected
 					custom_effect_tooltip = GER_if_law_passes_bund
@@ -13912,7 +14170,7 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-					country_event = ww1_german_reichstag.7
+					hidden_effect = { country_event = ww1_german_reichstag.7 }
 				}
 			}
 			GER_vote_ends = yes
@@ -13921,6 +14179,7 @@ GER_bundesrat_category = {
 
 	#Leftist
 	GER_law_on_the_reich_and_nationality_left_bund = {
+		icon = eng_trade_unions_support
 		cost = 10
 		visible = {
 			tag = GER
@@ -13957,7 +14216,7 @@ GER_bundesrat_category = {
 					add_stability = -0.02
 					add_political_power = -20
 				}
-				country_event = ww1_german_reichstag.6
+				hidden_effect = { country_event = ww1_german_reichstag.6 }
 				else = {
 					custom_effect_tooltip = GER_likely_to_be_rejected
 					custom_effect_tooltip = GER_if_law_passes_bund
@@ -13967,13 +14226,14 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-					country_event = ww1_german_reichstag.7
+					hidden_effect = { country_event = ww1_german_reichstag.7 }
 				}
 			}
 			GER_vote_ends = yes
 		}
 	}
 	GER_wealth_tax_law_bund = {
+		icon = eng_trade_unions_support
 		cost = 10
 		visible = {
 			tag = GER
@@ -14010,7 +14270,7 @@ GER_bundesrat_category = {
 					add_stability = -0.02
 					add_political_power = -20
 				}
-				country_event = ww1_german_reichstag.6
+				hidden_effect = { country_event = ww1_german_reichstag.6 }
 				else = {
 					custom_effect_tooltip = GER_likely_to_be_rejected
 					custom_effect_tooltip = GER_if_law_passes_bund
@@ -14020,13 +14280,14 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-					country_event = ww1_german_reichstag.7
+					hidden_effect = { country_event = ww1_german_reichstag.7 }
 				}
 			}
 			GER_vote_ends = yes
 		}
 	}
 	GER_1912_liberal_budget_law_bund = {
+		icon = eng_trade_unions_support
 		cost = 10
 		visible = {
 			tag = GER
@@ -14064,7 +14325,7 @@ GER_bundesrat_category = {
 					add_stability = -0.02
 					add_political_power = -20
 				}
-				country_event = ww1_german_reichstag.6
+				hidden_effect = { country_event = ww1_german_reichstag.6 }
 				else = {
 					custom_effect_tooltip = GER_likely_to_be_rejected
 					custom_effect_tooltip = GER_if_law_passes_bund
@@ -14074,13 +14335,14 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-					country_event = ww1_german_reichstag.7
+					hidden_effect = { country_event = ww1_german_reichstag.7 }
 				}
 			}
 			GER_vote_ends = yes
 		}
 	}
 	GER_law_on_hollwegs_national_pension_bund = {
+		icon = eng_trade_unions_support
 		cost = 10
 		visible = {
 			tag = GER
@@ -14117,7 +14379,7 @@ GER_bundesrat_category = {
 					add_stability = -0.02
 					add_political_power = -20
 				}
-				country_event = ww1_german_reichstag.6
+				hidden_effect = { country_event = ww1_german_reichstag.6 }
 				else = {
 					custom_effect_tooltip = GER_likely_to_be_rejected
 					custom_effect_tooltip = GER_if_law_passes_bund
@@ -14127,7 +14389,7 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-					country_event = ww1_german_reichstag.7
+					hidden_effect = { country_event = ww1_german_reichstag.7 }
 				}
 			}
 			GER_vote_ends = yes
@@ -14136,6 +14398,7 @@ GER_bundesrat_category = {
 
 	#Rightist
 	GER_law_on_discrimitory_national_pension_bund = {
+		icon = eng_trade_unions_support
 		cost = 10
 		visible = {
 			tag = GER
@@ -14173,7 +14436,7 @@ GER_bundesrat_category = {
 					add_political_power = -20
 				}
 				set_country_flag = GER_law_alsace_lorraine_new_member_passed_in_bundesrat
-				country_event = ww1_german_reichstag.6
+				hidden_effect = { country_event = ww1_german_reichstag.6 }
 				else = {
 					custom_effect_tooltip = GER_likely_to_be_rejected
 					custom_effect_tooltip = GER_if_law_passes_bund
@@ -14183,13 +14446,150 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-					country_event = ww1_german_reichstag.7
+					hidden_effect = { country_event = ww1_german_reichstag.7 }
 				}
 			}
 			GER_vote_ends = yes
 		}
 	}
+	
+	GER_auxiliary_services_act_bund = {
+		name = GER_auxiliary_services_act
+		icon = eng_trade_unions_support
+		cost = 10
+		visible = {
+			is_GER_a_monarchy = yes
+			is_great_war_ongoing = yes
+			OR = {
+				AND = {
+					is_debug = yes
+					has_country_flag = GER_show_debug_decisions
+				}
+				has_country_flag = GER_auxiliary_services_act_passed_in_reichstag
+			}
+		}
+		available = {
+			has_war = yes
+			NOT = {
+				has_country_flag = GER_vote_in_bundesrat
+			}
+		}
+		complete_effect = {
+			set_country_flag = GER_vote_in_bundesrat
+			GER_calculate_bundesrat_votes = yes
+		}
+		days_remove = 30
+        ai_will_do = {
+			factor = 100
+		}
+		remove_effect = {
+			if = {
+				limit = { has_majority_in_bundesrat = yes }
+				clr_country_flag = GER_auxiliary_services_act_passed_in_reichstag
+				custom_effect_tooltip = GER_likely_to_pass
+				custom_effect_tooltip = GER_if_law_passes_bund
+				GER_auxiliary_services_act_effect = yes
+				set_country_flag = GER_auxiliary_services_act_passed
+				custom_effect_tooltip = GER_if_law_fails_bund
+				effect_tooltip = {
+					add_stability = -0.02
+					add_political_power = -20
+				}
+				#hidden_effect = { country_event = ww1_german_reichstag.6 } has a unique event
+				else = {
+					clr_country_flag = GER_auxiliary_services_act_passed_in_reichstag
+					custom_effect_tooltip = GER_likely_to_be_rejected
+					custom_effect_tooltip = GER_if_law_passes_bund
+					effect_tooltip = {
+						GER_auxiliary_services_act_effect = yes
+					}
+					custom_effect_tooltip = GER_if_law_fails_bund
+					add_stability = -0.02
+					add_political_power = -20
+					hidden_effect = { country_event = ww1_german_reichstag.7 }
+				}
+			}
+			GER_vote_ends = yes
+		}
+	}
+
+	GER_democratization_reforms_act_bund = {
+		name = GER_democratization_reforms_act
+		icon = eng_trade_unions_support
+		cost = 10
+		visible = {
+			has_government = neutrality
+			OR = {
+				AND = {
+					is_debug = yes
+					has_country_flag = GER_show_debug_decisions
+				}
+				has_country_flag = GER_democratization_reforms_act_passed_in_reichstag
+			}
+			OR = {
+				AND = {
+					is_debug = yes
+					has_country_flag = GER_show_debug_decisions
+				}
+				AND = {
+					has_completed_focus = GER_forced_democratization_reforms
+					has_war = yes
+				}
+				AND = {
+					is_GER_a_monarchy = yes
+					has_country_flag = great_war_loser
+					NOT = {
+						has_global_flag = GER_1918_revolution
+					}
+				}
+			}
+		}
+		available = {
+			NOT = {
+				has_country_flag = GER_vote_in_bundesrat
+			}
+		}
+		complete_effect = {
+			set_country_flag = GER_vote_in_bundesrat
+			GER_calculate_bundesrat_votes = yes
+		}
+		days_remove = 10
+        ai_will_do = {
+			factor = 5000 #oh yeah
+		}
+		remove_effect = {
+			if = {
+				limit = { has_majority_in_bundesrat = yes }
+				clr_country_flag = GER_democratization_reforms_act_passed_in_reichstag
+				custom_effect_tooltip = GER_likely_to_pass
+				custom_effect_tooltip = GER_if_law_passes_bund
+				GER_democratization_reforms_effect = yes
+				set_country_flag = GER_democratization_reforms_act_passed
+				custom_effect_tooltip = GER_if_law_fails_bund
+				effect_tooltip = {
+					add_stability = -0.02
+					add_political_power = -20
+				}
+				#hidden_effect = { country_event = ww1_german_reichstag.6 } has a unique event
+				else = {
+					clr_country_flag = GER_democratization_reforms_act_passed_in_reichstag
+					custom_effect_tooltip = GER_likely_to_be_rejected
+					custom_effect_tooltip = GER_if_law_passes_bund
+					effect_tooltip = {
+						GER_democratization_reforms_effect = yes
+					}
+					custom_effect_tooltip = GER_if_law_fails_bund
+					add_stability = -0.02
+					add_political_power = -20
+					#hidden_effect = { country_event = ww1_german_reichstag.7 }
+				}
+			}
+			GER_vote_ends = yes
+		}
+	}
+
 	GER_law_on_the_reich_and_nationality_right_bund = {
+		icon = eng_trade_unions_support
 		cost = 10
 		visible = {
 			tag = GER
@@ -14226,7 +14626,7 @@ GER_bundesrat_category = {
 					add_stability = -0.02
 					add_political_power = -20
 				}
-				country_event = ww1_german_reichstag.6
+				hidden_effect = { country_event = ww1_german_reichstag.6 }
 				else = {
 					custom_effect_tooltip = GER_likely_to_be_rejected
 					custom_effect_tooltip = GER_if_law_passes_bund
@@ -14237,13 +14637,14 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-					country_event = ww1_german_reichstag.7
+					hidden_effect = { country_event = ww1_german_reichstag.7 }
 				}
 			}
 			GER_vote_ends = yes
 		}
 	}
 	GER_law_on_raising_tariffs_bund = {
+		icon = eng_trade_unions_support
 		cost = 10
 		visible = {
 			tag = GER
@@ -14280,7 +14681,7 @@ GER_bundesrat_category = {
 					add_stability = -0.02
 					add_political_power = -20
 				}
-				country_event = ww1_german_reichstag.6
+				hidden_effect = { country_event = ww1_german_reichstag.6 }
 				else = {
 					custom_effect_tooltip = GER_likely_to_be_rejected
 					custom_effect_tooltip = GER_if_law_passes_bund
@@ -14290,13 +14691,14 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-					country_event = ww1_german_reichstag.7
+					hidden_effect = { country_event = ww1_german_reichstag.7 }
 				}
 			}
 			GER_vote_ends = yes
 		}
 	}
 	GER_fith_fleet_act_bund = {
+		icon = eng_trade_unions_support
 		cost = 10
 		visible = {
 			tag = GER
@@ -14336,7 +14738,7 @@ GER_bundesrat_category = {
 					add_stability = -0.02
 					add_political_power = -20
 				}
-				country_event = ww1_german_reichstag.6
+				hidden_effect = { country_event = ww1_german_reichstag.6 }
 				else = {
 					custom_effect_tooltip = GER_likely_to_be_rejected
 					custom_effect_tooltip = GER_if_law_passes_bund
@@ -14346,13 +14748,14 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-					country_event = ww1_german_reichstag.7
+					hidden_effect = { country_event = ww1_german_reichstag.7 }
 				}
 			}
 			GER_vote_ends = yes
 		}
 	}
 	GER_law_on_polish_landholders_bund = {
+		icon = eng_trade_unions_support
 		cost = 10
 		visible = {
 			tag = GER
@@ -14395,7 +14798,7 @@ GER_bundesrat_category = {
 					add_stability = -0.02
 					add_political_power = -20
 				}
-				country_event = ww1_german_reichstag.6
+				hidden_effect = { country_event = ww1_german_reichstag.6 }
 				else = {
 					custom_effect_tooltip = GER_likely_to_be_rejected
 					custom_effect_tooltip = GER_if_law_passes_bund
@@ -14405,13 +14808,14 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-					country_event = ww1_german_reichstag.7
+					hidden_effect = { country_event = ww1_german_reichstag.7 }
 				}
 			}
 			GER_vote_ends = yes
 		}
 	}
 	GER_1912_conservative_budget_law_bund = {
+		icon = eng_trade_unions_support
 		cost = 10
 		visible = {
 			tag = GER
@@ -14449,7 +14853,7 @@ GER_bundesrat_category = {
 					add_stability = -0.02
 					add_political_power = -20
 				}
-				country_event = ww1_german_reichstag.6
+				hidden_effect = { country_event = ww1_german_reichstag.6 }
 				else = {
 					custom_effect_tooltip = GER_likely_to_be_rejected
 					custom_effect_tooltip = GER_if_law_passes_bund
@@ -14459,7 +14863,7 @@ GER_bundesrat_category = {
 					custom_effect_tooltip = GER_if_law_fails_bund
 					add_stability = -0.02
 					add_political_power = -20
-					country_event = ww1_german_reichstag.7
+					hidden_effect = { country_event = ww1_german_reichstag.7 }
 				}			
 			}
 			GER_vote_ends = yes
@@ -14555,7 +14959,6 @@ GER_reichstag_category = {
 	}
 
 	GER_debug_reset_sways = {
-		icon = GFX_decision_SOV_place_hq
 		available = {
 			is_ai = no
 		}
@@ -14587,8 +14990,26 @@ GER_reichstag_category = {
 		}
 	}
 
+	
+	GER_debug_transfert_SPD_to_USPD = {
+		icon = generic_political_discourse
+		allowed = {
+			original_tag = GER
+		}
+		available = {
+			is_ai = no
+		}
+		visible = {
+			is_debug = yes
+			has_country_flag = GER_show_debug_decisions
+		}
+		complete_effect = {
+			GER_spd_split_seats = yes
+		}
+	}
+
 	GER_temp_sway_left = {
-		icon = GFX_decision_SOV_place_hq
+		icon = generic_political_discourse
 		allowed = {
 			original_tag = GER
 		}
@@ -14597,7 +15018,10 @@ GER_reichstag_category = {
 			has_country_flag = GER_reichstag_vote_in_progress
 		}
 		available = {
-			has_country_flag = center_vote_in_progress
+			OR = {
+				has_country_flag = center_vote_in_progress
+				has_country_flag = wartime_vote_in_progress
+			}
 			NOT = {
 				has_country_flag = GER_left_sway_20_percent
 			}
@@ -14625,7 +15049,7 @@ GER_reichstag_category = {
 	}
 
 	GER_temp_sway_center = {
-		icon = GFX_decision_SOV_place_hq
+		icon = generic_political_discourse
 		allowed = {
 			original_tag = GER
 		}
@@ -14637,6 +15061,7 @@ GER_reichstag_category = {
 			OR = {
 				has_country_flag = left_vote_in_progress
 				has_country_flag = right_vote_in_progress
+				has_country_flag = wartime_vote_in_progress
 			}
 			NOT = {
 				has_country_flag = GER_center_sway_20_percent
@@ -14661,7 +15086,7 @@ GER_reichstag_category = {
 	}
 
 	GER_temp_sway_center_even_more = {
-		icon = GFX_decision_SOV_place_hq
+		icon = generic_political_discourse
 		allowed = {
 			original_tag = GER
 		}
@@ -14698,7 +15123,7 @@ GER_reichstag_category = {
 	}
 
 	GER_temp_sway_right = {
-		icon = GFX_decision_SOV_place_hq
+		icon = generic_political_discourse
 		allowed = {
 			original_tag = GER
 		}
@@ -14731,7 +15156,7 @@ GER_reichstag_category = {
 		}
 	}
 	GER_temp_sway_neutral = {
-		icon = GFX_decision_SOV_place_hq
+		icon = generic_political_discourse
 		allowed = {
 			original_tag = GER
 		}
@@ -14744,6 +15169,7 @@ GER_reichstag_category = {
 				has_country_flag = center_vote_in_progress
 				has_country_flag = left_vote_in_progress
 				has_country_flag = right_vote_in_progress
+				has_country_flag = wartime_vote_in_progress
 			}
 			NOT = {
 				has_country_flag = GER_neutral_sway_20_percent
@@ -14759,10 +15185,8 @@ GER_reichstag_category = {
 			}
 		}
 	}
-
 	
 	GER_law_that_left_like = {
-		icon = GFX_decision_SOV_place_hq
 		available = {
 			is_ai = no
 			NOT = {
@@ -14784,11 +15208,7 @@ GER_reichstag_category = {
 			left_vote_temp_var_setter = yes
 			if = {
 				limit = {
-					check_variable = {
-						var = merged_vote_strengh
-						value = 199
-						compare = greater_than_or_equals
-					}
+					has_majority_in_reichstag = yes
 				}
 				hidden_effect = {
 					set_variable = {
@@ -14821,7 +15241,6 @@ GER_reichstag_category = {
 	}
 
 	GER_law_that_center_like = {
-		icon = GFX_decision_SOV_place_hq
 		available = {
 			is_ai = no
 			NOT = {
@@ -14844,11 +15263,7 @@ GER_reichstag_category = {
 			center_vote_temp_var_setter = yes
 			if = {
 				limit = {
-					check_variable = {
-						var = merged_vote_strengh
-						value = 199
-						compare = greater_than_or_equals
-					}
+					has_majority_in_reichstag = yes
 				}
 				hidden_effect = {
 					set_variable = {
@@ -14885,7 +15300,7 @@ GER_reichstag_category = {
 	}
 
 	GER_law_that_right_like = {
-		icon = GFX_decision_SOV_place_hq
+		icon = eng_trade_unions_demand
 		available = {
 			is_ai = no
 			NOT = {
@@ -14908,11 +15323,7 @@ GER_reichstag_category = {
 			right_vote_temp_var_setter = yes
 			if = {
 				limit = {
-					check_variable = {
-						var = merged_vote_strengh
-						value = 199
-						compare = greater_than_or_equals
-					}
+					has_majority_in_reichstag = yes
 				}
 				hidden_effect = {
 					set_variable = {
@@ -14955,7 +15366,7 @@ GER_reichstag_category = {
 			has_active_mission = GER_election_1919
 		}
 
-		icon = mission_icon     # For GFX_decision_mission_icon
+		icon = generic_political_discourse
 		is_good = yes
 		days_mission_timeout = 621 #621
 		fire_only_once  = yes
@@ -15007,7 +15418,7 @@ GER_reichstag_category = {
 			}	
 		}
 
-		icon = mission_icon     # For GFX_decision_mission_icon
+		icon = generic_political_discourse
 		is_good = yes
 		days_mission_timeout = 1825 
 		complete_effect = {
@@ -15046,7 +15457,7 @@ GER_reichstag_category = {
 		cancel_trigger = {
 		}
 
-		icon = mission_icon     # For GFX_decision_mission_icon
+		icon = generic_political_discourse
 		is_good = yes
 		days_mission_timeout = 21 
 		complete_effect = {
@@ -15099,7 +15510,7 @@ GER_reichstag_category = {
 		cancel_trigger = {
 		}
 
-		icon = mission_icon
+		icon = generic_welfare
 		is_good = no
 		days_mission_timeout = 180
 		fire_only_once  = yes
@@ -15131,7 +15542,7 @@ GER_reichstag_category = {
 		cancel_trigger = {
 		}
 
-		icon = mission_icon
+		icon = generic_welfare
 		is_good = no
 		days_mission_timeout = 90
 		fire_only_once  = yes
@@ -15159,8 +15570,7 @@ GER_reichstag_category = {
 			tag = GER
 		}
 		available = {
-			has_global_flag = great_war_ends
-			
+			has_war = no
 		}
 		cancel_trigger = {
 			is_hollweg_chancellor = no
@@ -15179,9 +15589,10 @@ GER_reichstag_category = {
 			} 
 		}
 
-		icon = mission_icon
+		icon = generic_political_discourse
 		is_good = no
 		days_mission_timeout = 280 
+		fire_only_once = yes
 		complete_effect = {
 			custom_effect_tooltip = tt_while_ongoing
 			show_ideas_tooltip = GER_idea_coalition_benefits
@@ -15215,13 +15626,13 @@ GER_reichstag_category = {
 		available = {
 			has_country_flag = prussian_electoral_reform_passed
 			has_country_flag = snap_elections_are_done
-			has_country_flag = GER_establish_the_german_recovery_comittee
+			has_country_flag = GER_establish_the_german_recovery_comittee_done
 			has_country_flag = GER_march_reforms_completed
 		}
 		cancel_trigger = {
 			is_GER_a_monarchy = no
 		}
-		icon = mission_icon
+		icon = SWI_swiss_democratic_tradition_campaign
 		is_good = no
 		days_mission_timeout = 360 
 		
@@ -15232,8 +15643,8 @@ GER_reichstag_category = {
 
 	#Laws
 	#Centrist
-	GER_job_placement_act_reich = {
-		icon = GFX_decision_SOV_place_hq
+	GER_employment_agency_act_reich = {
+		icon = eng_trade_unions_demand
 		allowed = {
 			original_tag = GER
 		}
@@ -15245,13 +15656,12 @@ GER_reichstag_category = {
 					has_country_flag = GER_show_debug_decisions
 				}
 				AND = {
-					has_completed_focus = GER_healthcare_reforms
+					has_completed_focus = GER_combating_worker_exploitation
 					NOT = {
-						has_country_flag = GER_job_placement_act_passed
+						has_country_flag = GER_employment_agency_act_passed
 					}
 				}
 			}
-			has_GER_idea_rapid_urbanisation = yes
 		}
 		available = {
 			NOT = {
@@ -15269,34 +15679,30 @@ GER_reichstag_category = {
 			center_vote_temp_var_setter = yes
 			if = {
 				limit = {
-					check_variable = {
-						var = merged_vote_strengh
-						value = 199
-						compare = greater_than_or_equals
-					}
+					has_majority_in_reichstag = yes
 				}
 
-				set_country_flag = GER_job_placement_act_unlocked_in_bund
+				set_country_flag = GER_employment_agency_act_unlocked_in_bund
 
 				custom_effect_tooltip = GER_law_pass
 				custom_effect_tooltip = GER_if_law_passes_reich
 				custom_effect_tooltip = GER_allows_law_to_be_passed
 				custom_effect_tooltip = GER_if_law_passes_bund
 				effect_tooltip = {
-					GER_rapid_urbanisation_reform_effect = yes
+					GER_employment_agency_act_effect = yes
 				}
 
-				set_country_flag = GER_job_placement_act_passed
-				country_event = ww1_german_reichstag.4
+				set_country_flag = GER_employment_agency_act_passed
+				hidden_effect = { country_event = ww1_german_reichstag.4 }
 				else = {
 					custom_effect_tooltip = GER_law_dont_pass
 					custom_effect_tooltip = GER_if_law_passes_reich
 					custom_effect_tooltip = GER_allows_law_to_be_passed
 					custom_effect_tooltip = GER_if_law_passes_bund
 					effect_tooltip = {
-						GER_rapid_urbanisation_reform_effect = yes
+						GER_employment_agency_act_effect = yes
 					}
-					country_event = ww1_german_reichstag.5
+					hidden_effect = { country_event = ww1_german_reichstag.5 }
 				}
 			}
 			hidden_effect = {
@@ -15312,7 +15718,7 @@ GER_reichstag_category = {
 		}
 	}
 	GER_health_insurance_act_reich = {
-		icon = GFX_decision_SOV_place_hq
+		icon = eng_trade_unions_demand
 		allowed = {
 			original_tag = GER
 		}
@@ -15347,11 +15753,7 @@ GER_reichstag_category = {
 			center_vote_temp_var_setter = yes
 			if = {
 				limit = {
-					check_variable = {
-						var = merged_vote_strengh
-						value = 199
-						compare = greater_than_or_equals
-					}
+					has_majority_in_reichstag = yes
 				}
 
 				set_country_flag = GER_health_insurance_act_unlocked_in_bund
@@ -15361,20 +15763,20 @@ GER_reichstag_category = {
 				custom_effect_tooltip = GER_allows_law_to_be_passed
 				custom_effect_tooltip = GER_if_law_passes_bund
 				effect_tooltip = {
-					GER_upgrade_idea_rising_unions = yes
+					GER_health_insurance_act_effect = yes
 				}
 
 				set_country_flag = GER_health_insurance_act_reich_passed
-				country_event = ww1_german_reichstag.4
+				hidden_effect = { country_event = ww1_german_reichstag.4 }
 				else = {
 					custom_effect_tooltip = GER_law_dont_pass
 					custom_effect_tooltip = GER_if_law_passes_reich
 					custom_effect_tooltip = GER_allows_law_to_be_passed
 					custom_effect_tooltip = GER_if_law_passes_bund
 					effect_tooltip = {
-						GER_upgrade_idea_rising_unions = yes
+						GER_health_insurance_act_effect = yes
 					}
-					country_event = ww1_german_reichstag.5
+					hidden_effect = { country_event = ww1_german_reichstag.5 }
 				}
 			}
 			hidden_effect = {
@@ -15390,7 +15792,7 @@ GER_reichstag_category = {
 		}
 	}
 	GER_hausarbeitsgesetz_reich = {
-		icon = GFX_decision_SOV_place_hq
+		icon = eng_trade_unions_demand
 		allowed = {
 			original_tag = GER
 		}
@@ -15425,11 +15827,7 @@ GER_reichstag_category = {
 			center_vote_temp_var_setter = yes
 			if = {
 				limit = {
-					check_variable = {
-						var = merged_vote_strengh
-						value = 199
-						compare = greater_than_or_equals
-					}
+					has_majority_in_reichstag = yes
 				}
 
 				set_country_flag = GER_hausarbeitsgesetz_unlocked_in_bund
@@ -15439,20 +15837,20 @@ GER_reichstag_category = {
 				custom_effect_tooltip = GER_allows_law_to_be_passed
 				custom_effect_tooltip = GER_if_law_passes_bund
 				effect_tooltip = {
-					GER_protection_of_home_workers_law_effect = yes
+					GER_homework_act_effect = yes
 				}
 
 				set_country_flag = GER_hausarbeitsgesetz_reich_passed
-				country_event = ww1_german_reichstag.4
+				hidden_effect = { country_event = ww1_german_reichstag.4 }
 				else = {
 					custom_effect_tooltip = GER_law_dont_pass
 					custom_effect_tooltip = GER_if_law_passes_reich
 					custom_effect_tooltip = GER_allows_law_to_be_passed
 					custom_effect_tooltip = GER_if_law_passes_bund
 					effect_tooltip = {
-						GER_protection_of_home_workers_law_effect = yes
+						GER_homework_act_effect = yes
 					}
-					country_event = ww1_german_reichstag.5
+					hidden_effect = { country_event = ww1_german_reichstag.5 }
 				}
 			}
 			hidden_effect = {
@@ -15467,8 +15865,10 @@ GER_reichstag_category = {
 			}
 		}
 	}
+
+	
 	GER_law_on_the_constitution_for_alsace_lorraine_reich = {
-		icon = GFX_decision_SOV_place_hq
+		icon = eng_trade_unions_demand
 		allowed = {
 			original_tag = GER
 		}
@@ -15503,11 +15903,7 @@ GER_reichstag_category = {
 			center_vote_temp_var_setter = yes
 			if = {
 				limit = {
-					check_variable = {
-						var = merged_vote_strengh
-						value = 199
-						compare = greater_than_or_equals
-					}
+					has_majority_in_reichstag = yes
 				}
 				set_country_flag = GER_constitution_for_alsace_lorraine_unlocked_in_bund
 
@@ -15520,7 +15916,7 @@ GER_reichstag_category = {
 				}
 				
 				set_country_flag = GER_law_on_alsace_lorraine_passed
-				country_event = ww1_german_reichstag.4
+				hidden_effect = { country_event = ww1_german_reichstag.4 }
 				else = {
 					custom_effect_tooltip = GER_law_dont_pass
 					custom_effect_tooltip = GER_if_law_passes_reich
@@ -15529,7 +15925,7 @@ GER_reichstag_category = {
 					effect_tooltip = {
 						GER_alsace_lorraine_constitution_effect = yes
 					}
-					country_event = ww1_german_reichstag.5
+					hidden_effect = { country_event = ww1_german_reichstag.5 }
 				}
 			}
 			hidden_effect = {
@@ -15541,7 +15937,7 @@ GER_reichstag_category = {
 		}
 	}
 	GER_law_on_rustungswende_reich = {
-		icon = GFX_decision_SOV_place_hq
+		icon = eng_trade_unions_demand
 		allowed = {
 			original_tag = GER	
 		}
@@ -15576,11 +15972,7 @@ GER_reichstag_category = {
 			center_vote_temp_var_setter = yes
 			if = {
 				limit = {
-					check_variable = {
-						var = merged_vote_strengh
-						value = 199
-						compare = greater_than_or_equals
-					}
+					has_majority_in_reichstag = yes
 				}
 
 				set_country_flag = GER_law_on_rustungswende_unlocked_in_bund
@@ -15594,7 +15986,7 @@ GER_reichstag_category = {
 				}
 				
 				set_country_flag = GER_law_on_rustungswende_passed
-				country_event = ww1_german_reichstag.4
+				hidden_effect = { country_event = ww1_german_reichstag.4 }
 				else = {
 					custom_effect_tooltip = GER_law_dont_pass
 					custom_effect_tooltip = GER_if_law_passes_reich
@@ -15603,7 +15995,7 @@ GER_reichstag_category = {
 					effect_tooltip = {
 						GER_rustungswende_effect = yes
 					}
-					country_event = ww1_german_reichstag.5
+					hidden_effect = { country_event = ww1_german_reichstag.5 }
 				}
 			}
 			hidden_effect = {
@@ -15619,7 +16011,7 @@ GER_reichstag_category = {
 		}
 	}
 	GER_limited_army_bill_law_reich = {
-		icon = GFX_decision_SOV_place_hq
+		icon = eng_trade_unions_demand
 		allowed = {
 			original_tag = GER
 		}
@@ -15654,11 +16046,7 @@ GER_reichstag_category = {
 			center_vote_temp_var_setter = yes
 			if = {
 				limit = {
-					check_variable = {
-						var = merged_vote_strengh
-						value = 199
-						compare = greater_than_or_equals
-					}
+					has_majority_in_reichstag = yes
 				}
 				set_country_flag = GER_limited_army_bill_law_unlocked_in_bund
 
@@ -15671,7 +16059,7 @@ GER_reichstag_category = {
 				}
 				
 				set_country_flag = GER_limited_army_bill_law_passed
-				country_event = ww1_german_reichstag.4
+				hidden_effect = { country_event = ww1_german_reichstag.4 }
 				else = {
 					custom_effect_tooltip = GER_law_dont_pass
 					custom_effect_tooltip = GER_if_law_passes_reich
@@ -15680,7 +16068,7 @@ GER_reichstag_category = {
 					effect_tooltip = {
 						GER_limited_army_bill_effect = yes
 					}
-					country_event = ww1_german_reichstag.5
+					hidden_effect = { country_event = ww1_german_reichstag.5 }
 				}
 			}
 			hidden_effect = {
@@ -15696,7 +16084,7 @@ GER_reichstag_category = {
 		}
 	}
 	GER_first_army_law_cen_reich = {
-		icon = GFX_decision_SOV_place_hq
+		icon = eng_trade_unions_demand
 		allowed = {
 			original_tag = GER
 		}
@@ -15731,11 +16119,7 @@ GER_reichstag_category = {
 			center_vote_temp_var_setter = yes
 			if = {
 				limit = {
-					check_variable = {
-						var = merged_vote_strengh
-						value = 199
-						compare = greater_than_or_equals
-					}
+					has_majority_in_reichstag = yes
 				}
 				set_country_flag = GER_first_army_law_cen_unlocked_in_bund
 
@@ -15748,7 +16132,7 @@ GER_reichstag_category = {
 				}
 				
 				set_country_flag = GER_first_army_law_cen_passed
-				country_event = ww1_german_reichstag.4
+				hidden_effect = { country_event = ww1_german_reichstag.4 }
 				else = {
 					custom_effect_tooltip = GER_law_dont_pass
 					custom_effect_tooltip = GER_if_law_passes_reich
@@ -15757,7 +16141,7 @@ GER_reichstag_category = {
 					effect_tooltip = {
 						GER_first_army_expansion_effect = yes
 					}
-					country_event = ww1_german_reichstag.5
+					hidden_effect = { country_event = ww1_german_reichstag.5 }
 				}
 			}
 			hidden_effect = {
@@ -15773,7 +16157,7 @@ GER_reichstag_category = {
 		}
 	}
 	GER_second_army_law_cen_reich = {
-		icon = GFX_decision_SOV_place_hq
+		icon = eng_trade_unions_demand
 		allowed = {
 			original_tag = GER
 		}
@@ -15809,11 +16193,7 @@ GER_reichstag_category = {
 			center_vote_temp_var_setter = yes
 			if = {
 				limit = {
-					check_variable = {
-						var = merged_vote_strengh
-						value = 199
-						compare = greater_than_or_equals
-					}
+					has_majority_in_reichstag = yes
 				}
 				set_country_flag = GER_second_army_law_cen_unlocked_in_bund
 
@@ -15826,7 +16206,7 @@ GER_reichstag_category = {
 				}
 				
 				set_country_flag = GER_second_army_law_cen_passed
-				country_event = ww1_german_reichstag.4
+				hidden_effect = { country_event = ww1_german_reichstag.4 }
 				else = {
 					custom_effect_tooltip = GER_law_dont_pass
 					custom_effect_tooltip = GER_if_law_passes_reich
@@ -15835,7 +16215,7 @@ GER_reichstag_category = {
 					effect_tooltip = {
 						GER_second_army_expansion_effect = yes
 					}
-					country_event = ww1_german_reichstag.5
+					hidden_effect = { country_event = ww1_german_reichstag.5 }
 				}
 			}
 			hidden_effect = {
@@ -15851,7 +16231,7 @@ GER_reichstag_category = {
 		}
 	}
 	GER_five_year_army_law_reich = {
-		icon = GFX_decision_SOV_place_hq
+		icon = eng_trade_unions_demand
 		allowed = {
 			original_tag = GER
 		}
@@ -15886,11 +16266,7 @@ GER_reichstag_category = {
 			center_vote_temp_var_setter = yes
 			if = {
 				limit = {
-					check_variable = {
-						var = merged_vote_strengh
-						value = 199
-						compare = greater_than_or_equals
-					}
+					has_majority_in_reichstag = yes
 				}
 				set_country_flag = GER_five_year_army_law_unlocked_in_bund
 
@@ -15903,7 +16279,7 @@ GER_reichstag_category = {
 				}
 				
 				set_country_flag = GER_five_year_army_law_passed_in_reichstag
-				country_event = ww1_german_reichstag.4
+				hidden_effect = { country_event = ww1_german_reichstag.4 }
 				else = {
 					custom_effect_tooltip = GER_law_dont_pass
 					custom_effect_tooltip = GER_if_law_passes_reich
@@ -15912,7 +16288,7 @@ GER_reichstag_category = {
 					effect_tooltip = {
 						GER_five_year_army_law_effect = yes
 					}
-					country_event = ww1_german_reichstag.5
+					hidden_effect = { country_event = ww1_german_reichstag.5 }
 				}
 			}
 			hidden_effect = {
@@ -15930,7 +16306,7 @@ GER_reichstag_category = {
 
 	#Leftist
 	GER_law_on_hollwegs_national_pension_reich = {
-		icon = GFX_decision_SOV_place_hq
+		icon = eng_trade_unions_demand
 		allowed = {
 			original_tag = GER
 		}
@@ -15965,11 +16341,7 @@ GER_reichstag_category = {
 			left_vote_temp_var_setter = yes
 			if = {
 				limit = {
-					check_variable = {
-						var = merged_vote_strengh
-						value = 199
-						compare = greater_than_or_equals
-					}
+					has_majority_in_reichstag = yes
 				}
 
 				set_country_flag = GER_hollwegs_national_pension_passed_in_reichstag
@@ -15983,7 +16355,7 @@ GER_reichstag_category = {
 				}
 
 				set_country_flag = GER_law_on_hollweg_pension_passed
-				country_event = ww1_german_reichstag.4
+				hidden_effect = { country_event = ww1_german_reichstag.4 }
 				else = {
 					custom_effect_tooltip = GER_law_dont_pass
 					custom_effect_tooltip = GER_if_law_passes_reich
@@ -15992,7 +16364,7 @@ GER_reichstag_category = {
 					effect_tooltip = {
 						GER_national_pension_effect = yes
 					}
-					country_event = ww1_german_reichstag.5
+					hidden_effect = { country_event = ww1_german_reichstag.5 }
 				}
 			}
 			hidden_effect = {
@@ -16008,7 +16380,7 @@ GER_reichstag_category = {
 		}
 	}
 	GER_law_on_the_reich_and_nationality_left_reich = {
-		icon = GFX_decision_SOV_place_hq
+		icon = eng_trade_unions_demand
 		allowed = {
 			original_tag = GER
 		}
@@ -16043,11 +16415,7 @@ GER_reichstag_category = {
 			left_vote_temp_var_setter = yes
 			if = {
 				limit = {
-					check_variable = {
-						var = merged_vote_strengh
-						value = 199
-						compare = greater_than_or_equals
-					}
+					has_majority_in_reichstag = yes
 				}
 				add_political_power = 25
 				add_stability = 0.02
@@ -16062,7 +16430,7 @@ GER_reichstag_category = {
 				}
 
 				set_country_flag = GER_reich_and_nationality_left_passed
-				country_event = ww1_german_reichstag.4
+				hidden_effect = { country_event = ww1_german_reichstag.4 }
 				else = {
 					custom_effect_tooltip = GER_law_dont_pass
 					custom_effect_tooltip = GER_if_law_passes_reich
@@ -16071,7 +16439,7 @@ GER_reichstag_category = {
 					effect_tooltip = {
 						GER_nationality_inclusive_law = yes
 					}
-					country_event = ww1_german_reichstag.5
+					hidden_effect = { country_event = ww1_german_reichstag.5 }
 				}
 			}
 			hidden_effect = {
@@ -16087,7 +16455,7 @@ GER_reichstag_category = {
 		}
 	}
 	GER_prussian_electoral_reform = {
-		icon = GFX_decision_SOV_place_hq
+		icon = eng_trade_unions_demand
 		allowed = {
 			original_tag = GER
 		}
@@ -16099,7 +16467,10 @@ GER_reichstag_category = {
 					has_country_flag = GER_show_debug_decisions
 				}
 				AND = {
-					has_completed_focus = GER_push_for_prussian_electoral_reform
+					OR = {
+						has_completed_focus = GER_push_for_prussian_electoral_reform
+						has_completed_focus = GER_new_prussian_electoral_reform
+					}
 					NOT = {
 						has_country_flag = GER_prussian_electoral_reform_passed
 					}
@@ -16120,11 +16491,7 @@ GER_reichstag_category = {
 			left_vote_temp_var_setter = yes
 			if = {
 				limit = {
-					check_variable = {
-						var = merged_vote_strengh
-						value = 199
-						compare = greater_than_or_equals
-					}
+					has_majority_in_reichstag = yes
 				}
 				add_political_power = 25
 				add_stability = 0.02
@@ -16139,7 +16506,7 @@ GER_reichstag_category = {
 				}
 
 				set_country_flag = GER_prussian_electoral_reform_passed
-				country_event = ww1_german_reichstag.4
+				hidden_effect = { country_event = ww1_german_reichstag.4 }
 				else = {
 					custom_effect_tooltip = GER_law_dont_pass
 					custom_effect_tooltip = GER_if_law_passes_reich
@@ -16148,7 +16515,7 @@ GER_reichstag_category = {
 					effect_tooltip = {
 						GER_prussian_electoral_reform_effect = yes
 					}
-					country_event = ww1_german_reichstag.5
+					hidden_effect = { country_event = ww1_german_reichstag.5 }
 				}
 			}
 			hidden_effect = {
@@ -16165,7 +16532,7 @@ GER_reichstag_category = {
 		}
 	}
 	GER_approve_new_constition = {
-		icon = GFX_decision_SOV_place_hq
+		icon = eng_trade_unions_demand
 		allowed = {
 			original_tag = GER
 		}
@@ -16177,9 +16544,12 @@ GER_reichstag_category = {
 					has_country_flag = GER_show_debug_decisions
 				}
 				AND = {
-					has_completed_focus = GER_new_constitution
+					OR = {
+						has_completed_focus = GER_march_constitution
+						has_completed_focus = GER_new_constitution
+					}
 					NOT = {
-						has_country_flag = GER_GER_new_constitution_passed
+						has_country_flag = GER_march_reforms_completed
 					}
 				}
 			}
@@ -16198,35 +16568,30 @@ GER_reichstag_category = {
 			left_vote_temp_var_setter = yes
 			if = {
 				limit = {
-					check_variable = {
-						var = merged_vote_strengh
-						value = 199
-						compare = greater_than_or_equals
-					}
+					has_majority_in_reichstag = yes
 				}
 				add_political_power = 25
 				add_stability = 0.02
-				set_country_flag = GER_reichstag_vote_in_progress
 				
 				custom_effect_tooltip = GER_law_pass
 				custom_effect_tooltip = GER_if_law_passes_reich
 				if = {
 					limit = {
-						has_country_flag = great_war_loser
+						has_global_flag = GER_1918_revolution
 					}
 					GER_interwar_loser_new_constitution_effect = yes
 					else = {
 						GER_interwar_winner_new_constitution_effect = yes
 					}
 				}
-				country_event = ww1_german_reichstag.4
+				#hidden_effect = { country_event = ww1_german_reichstag.4 }
 				else = {
 					custom_effect_tooltip = GER_law_dont_pass
 					custom_effect_tooltip = GER_if_law_passes_reich
 					effect_tooltip = {
 						if = {
 							limit = {
-								has_country_flag = great_war_loser
+								has_global_flag = GER_1918_revolution
 							}
 							GER_interwar_loser_new_constitution_effect = yes
 							else = {
@@ -16234,7 +16599,7 @@ GER_reichstag_category = {
 							}
 						}
 					}
-					country_event = ww1_german_reichstag.5
+					hidden_effect = { country_event = ww1_german_reichstag.5 }
 				}
 			}
 			hidden_effect = {
@@ -16247,7 +16612,7 @@ GER_reichstag_category = {
 		}
 	}
 	GER_wealth_tax_law_reich = {
-		icon = GFX_decision_SOV_place_hq
+		icon = eng_trade_unions_demand
 		allowed = {
 			original_tag = GER
 		}
@@ -16282,11 +16647,7 @@ GER_reichstag_category = {
 			left_vote_temp_var_setter = yes
 			if = {
 				limit = {
-					check_variable = {
-						var = merged_vote_strengh
-						value = 199
-						compare = greater_than_or_equals
-					}
+					has_majority_in_reichstag = yes
 				}
 
 				set_country_flag = GER_wealth_tax_law_passed_in_reichstag
@@ -16300,7 +16661,7 @@ GER_reichstag_category = {
 				}
 
 				set_country_flag = GER_wealth_tax_law_passed
-				country_event = ww1_german_reichstag.4
+				hidden_effect = { country_event = ww1_german_reichstag.4 }
 				else = {
 					custom_effect_tooltip = GER_law_dont_pass
 					custom_effect_tooltip = GER_if_law_passes_reich
@@ -16309,7 +16670,7 @@ GER_reichstag_category = {
 					effect_tooltip = {
 						GER_progressive_taxation_effect = yes
 					}
-					country_event = ww1_german_reichstag.5
+					hidden_effect = { country_event = ww1_german_reichstag.5 }
 				}
 			}
 			hidden_effect = {
@@ -16325,7 +16686,7 @@ GER_reichstag_category = {
 		}
 	}
 	GER_1912_liberal_budget_law_reich = {
-		icon = GFX_decision_SOV_place_hq
+		icon = eng_trade_unions_demand
 		allowed = {
 			original_tag = GER
 		}
@@ -16360,11 +16721,7 @@ GER_reichstag_category = {
 			left_vote_temp_var_setter = yes
 			if = {
 				limit = {
-					check_variable = {
-						var = merged_vote_strengh
-						value = 199
-						compare = greater_than_or_equals
-					}
+					has_majority_in_reichstag = yes
 				}
 
 				set_country_flag = GER_1912_liberal_budget_passed_in_reichstag
@@ -16378,7 +16735,7 @@ GER_reichstag_category = {
 				}
 
 				set_country_flag = GER_1912_liberal_budget_passed
-				country_event = ww1_german_reichstag.4
+				hidden_effect = { country_event = ww1_german_reichstag.4 }
 				else = {
 					custom_effect_tooltip = GER_law_dont_pass
 					custom_effect_tooltip = GER_if_law_passes_reich
@@ -16387,7 +16744,7 @@ GER_reichstag_category = {
 					effect_tooltip = {
 						add_ideas = GER_1912_liberal_federal_budget
 					}
-					country_event = ww1_german_reichstag.5
+					hidden_effect = { country_event = ww1_german_reichstag.5 }
 				}
 			}
 			hidden_effect = {
@@ -16401,7 +16758,7 @@ GER_reichstag_category = {
 
 	#Rightist
 	GER_law_on_discrimitory_national_pension_reich = {
-		icon = GFX_decision_SOV_place_hq
+		icon = eng_trade_unions_demand
 		allowed = {
 			original_tag = GER
 		}
@@ -16436,11 +16793,7 @@ GER_reichstag_category = {
 			right_vote_temp_var_setter = yes
 			if = {
 				limit = {
-					check_variable = {
-						var = merged_vote_strengh
-						value = 199
-						compare = greater_than_or_equals
-					}
+					has_majority_in_reichstag = yes
 				}
 
 				set_country_flag = GER_discrimitory_national_pension_passed_in_reichstag
@@ -16454,7 +16807,7 @@ GER_reichstag_category = {
 				}
 
 				set_country_flag = GER_law_on_discrimitory_pension_passed
-				country_event = ww1_german_reichstag.4
+				hidden_effect = { country_event = ww1_german_reichstag.4 }
 				else = {
 					custom_effect_tooltip = GER_law_dont_pass
 					custom_effect_tooltip = GER_if_law_passes_reich
@@ -16463,7 +16816,7 @@ GER_reichstag_category = {
 					effect_tooltip = {
 						GER_german_pension_effect = yes
 					}
-					country_event = ww1_german_reichstag.5
+					hidden_effect = { country_event = ww1_german_reichstag.5 }
 				}
 			}
 			hidden_effect = {
@@ -16479,14 +16832,14 @@ GER_reichstag_category = {
 		}
 	}
 	GER_enabling_act = {
-		icon = GFX_decision_SOV_place_hq
+		icon = eng_trade_unions_demand
 		allowed = {
 			original_tag = GER
 		}
 		cost = 10
 		visible = {
 			NOT = {
-				has_country_flag = GER_reich_and_nationality_right_passed
+				has_country_flag = GER_enabling_act_passed
 			}
 			OR = {
 				AND = {
@@ -16507,34 +16860,30 @@ GER_reichstag_category = {
 		days_remove = 21
 
 		complete_effect = {
-			set_country_flag = right_vote_in_progress
+			set_country_flag = wartime_vote_in_progress
 			set_country_flag = GER_reichstag_vote_in_progress
 		}
 
 		remove_effect = {
-			right_vote_temp_var_setter = yes
+			wartime_vote_temp_var_setter = yes
 			if = {
 				limit = {
-					check_variable = {
-						var = merged_vote_strengh
-						value = 199
-						compare = greater_than_or_equals
-					}
+					has_majority_in_reichstag = yes
 				}
 
 				custom_effect_tooltip = GER_law_pass
 				custom_effect_tooltip = GER_if_law_passes_reich
 				GER_enabling_act_effect = yes
 
-				set_country_flag = GER_reich_and_nationality_right_passed
-				#country_event = ww1_german_reichstag.4 has a unique event
+				set_country_flag = GER_enabling_act_passed
+				#hidden_effect = { country_event = ww1_german_reichstag.4 } has a unique event
 				else = {
 					custom_effect_tooltip = GER_law_dont_pass
 					custom_effect_tooltip = GER_if_law_passes_reich
 					effect_tooltip = {
 						GER_enabling_act_effect = yes
 					}
-					country_event = ww1_german_reichstag.5
+					hidden_effect = { country_event = ww1_german_reichstag.5 }
 				}
 			}
 			hidden_effect = {
@@ -16542,18 +16891,21 @@ GER_reichstag_category = {
 			}
 		}
 		ai_will_do = {
-			factor = 5000 #oh yeah
+			factor = 8000 #oh yeah
 		}
 	}
-	GER_auxiliary_services_act = {
-		icon = GFX_decision_SOV_place_hq
+	GER_auxiliary_services_act_reich = {
+		name = GER_auxiliary_services_act
+		icon = eng_trade_unions_demand
 		allowed = {
 			original_tag = GER
 		}
 		cost = 10
 		visible = {
+			is_GER_a_monarchy = yes
 			NOT = {
 				has_country_flag = GER_auxiliary_services_act_passed
+				has_global_flag = great_war_ends
 			}
 			OR = {
 				AND = {
@@ -16567,6 +16919,7 @@ GER_reichstag_category = {
 			}
 		}
 		available = {
+			has_war = yes
 			NOT = {
 				has_country_flag = GER_reichstag_vote_in_progress
 			}
@@ -16574,34 +16927,118 @@ GER_reichstag_category = {
 		days_remove = 21
 
 		complete_effect = {
-			set_country_flag = right_vote_in_progress
+			set_country_flag = wartime_vote_in_progress
 			set_country_flag = GER_reichstag_vote_in_progress
 		}
 
 		remove_effect = {
-			right_vote_temp_var_setter = yes
+			wartime_vote_temp_var_setter = yes
 			if = {
 				limit = {
-					check_variable = {
-						var = merged_vote_strengh
-						value = 199
-						compare = greater_than_or_equals
-					}
+					has_majority_in_reichstag = yes
 				}
 
+				set_country_flag = GER_auxiliary_services_act_passed_in_reichstag
+				
 				custom_effect_tooltip = GER_law_pass
 				custom_effect_tooltip = GER_if_law_passes_reich
-				GER_auxiliary_services_act_effect = yes
+				custom_effect_tooltip = GER_allows_law_to_be_passed
+				custom_effect_tooltip = GER_if_law_passes_bund
+				effect_tooltip = {
+					GER_auxiliary_services_act_effect = yes
+				}
 
 				set_country_flag = GER_auxiliary_services_act_passed
-				#country_event = ww1_german_reichstag.4 has a unique event
+				hidden_effect = { country_event = ww1_german_reichstag.4 }
 				else = {
 					custom_effect_tooltip = GER_law_dont_pass
 					custom_effect_tooltip = GER_if_law_passes_reich
+					custom_effect_tooltip = GER_allows_law_to_be_passed
+					custom_effect_tooltip = GER_if_law_passes_bund
 					effect_tooltip = {
 						GER_auxiliary_services_act_effect = yes
 					}
-					country_event = ww1_german_reichstag.5
+					hidden_effect = { country_event = ww1_german_reichstag.5 }
+				}
+			}
+			hidden_effect = {
+				GER_reset_sway_reichstag = yes
+			}
+		}
+		ai_will_do = {
+			factor = 5000 #oh yeah
+		}
+	}
+	GER_democratization_reforms_act_reich = {
+		name = GER_democratization_reforms_act
+		icon = eng_trade_unions_demand
+		allowed = {
+			original_tag = GER
+		}
+		cost = 10
+		visible = {
+			has_government = neutrality
+			NOT = {
+				has_country_flag = GER_democratization_reforms_act_passed
+			}
+			OR = {
+				AND = {
+					is_debug = yes
+					has_country_flag = GER_show_debug_decisions
+				}
+				AND = {
+					has_completed_focus = GER_forced_democratization_reforms
+					has_war = yes
+				}
+				AND = {
+					is_GER_a_monarchy = yes
+					has_country_flag = great_war_loser
+					NOT = {
+						has_global_flag = GER_1918_revolution
+					}
+				}
+			}
+		}
+		available = {
+			NOT = {
+				has_country_flag = GER_reichstag_vote_in_progress
+			}
+		}
+		days_remove = 10
+
+		complete_effect = {
+			set_country_flag = wartime_vote_in_progress
+			set_country_flag = GER_reichstag_vote_in_progress
+		}
+
+		remove_effect = {
+			wartime_vote_temp_var_setter = yes
+			if = {
+				limit = {
+					has_majority_in_reichstag = yes
+				}
+
+				set_country_flag = GER_democratization_reforms_act_passed_in_reichstag
+				
+				custom_effect_tooltip = GER_law_pass
+				custom_effect_tooltip = GER_if_law_passes_reich
+				custom_effect_tooltip = GER_allows_law_to_be_passed
+				custom_effect_tooltip = GER_if_law_passes_bund
+				effect_tooltip = {
+					GER_democratization_reforms_effect = yes
+				}
+
+				set_country_flag = GER_democratization_reforms_act_passed
+				#hidden_effect = { country_event = ww1_german_reichstag.4 }
+				else = {
+					custom_effect_tooltip = GER_law_dont_pass
+					custom_effect_tooltip = GER_if_law_passes_reich
+					custom_effect_tooltip = GER_allows_law_to_be_passed
+					custom_effect_tooltip = GER_if_law_passes_bund
+					effect_tooltip = {
+						GER_democratization_reforms_effect = yes
+					}
+					#hidden_effect = { country_event = ww1_german_reichstag.5 }
 				}
 			}
 			hidden_effect = {
@@ -16613,7 +17050,7 @@ GER_reichstag_category = {
 		}
 	}
 	GER_law_on_the_reich_and_nationality_right_reich = {
-		icon = GFX_decision_SOV_place_hq
+		icon = eng_trade_unions_demand
 		allowed = {
 			original_tag = GER
 		}
@@ -16648,11 +17085,7 @@ GER_reichstag_category = {
 			right_vote_temp_var_setter = yes
 			if = {
 				limit = {
-					check_variable = {
-						var = merged_vote_strengh
-						value = 199
-						compare = greater_than_or_equals
-					}
+					has_majority_in_reichstag = yes
 				}
 				add_political_power = 25
 				add_stability = 0.02
@@ -16669,7 +17102,7 @@ GER_reichstag_category = {
 				}
 
 				set_country_flag = GER_reich_and_nationality_right_passed
-				country_event = ww1_german_reichstag.4
+				hidden_effect = { country_event = ww1_german_reichstag.4 }
 				else = {
 					custom_effect_tooltip = GER_law_dont_pass
 					custom_effect_tooltip = GER_if_law_passes_reich
@@ -16678,7 +17111,7 @@ GER_reichstag_category = {
 					effect_tooltip = {
 						GER_nationality_discriminatory_law = yes
 					}
-					country_event = ww1_german_reichstag.5
+					hidden_effect = { country_event = ww1_german_reichstag.5 }
 				}
 			}
 			hidden_effect = {
@@ -16694,7 +17127,7 @@ GER_reichstag_category = {
 		}
 	}
 	GER_law_on_raising_tariffs_reich = {
-		icon = GFX_decision_SOV_place_hq
+		icon = eng_trade_unions_demand
 		allowed = {
 			original_tag = GER
 		}
@@ -16729,11 +17162,7 @@ GER_reichstag_category = {
 			right_vote_temp_var_setter = yes
 			if = {
 				limit = {
-					check_variable = {
-						var = merged_vote_strengh
-						value = 199
-						compare = greater_than_or_equals
-					}
+					has_majority_in_reichstag = yes
 				}
 								
 				set_country_flag = GER_law_on_raising_tariffs_passed_in_reichstag
@@ -16747,7 +17176,7 @@ GER_reichstag_category = {
 				}
 
 				set_country_flag = GER_law_on_raising_tariffs_passed
-				country_event = ww1_german_reichstag.4
+				hidden_effect = { country_event = ww1_german_reichstag.4 }
 				else = {
 					custom_effect_tooltip = GER_law_dont_pass
 					custom_effect_tooltip = GER_if_law_passes_reich
@@ -16756,7 +17185,7 @@ GER_reichstag_category = {
 					effect_tooltip = {
 						GER_emergency_tariff_effect = yes
 					}
-					country_event = ww1_german_reichstag.5
+					hidden_effect = { country_event = ww1_german_reichstag.5 }
 				}
 			}		
 			hidden_effect = {
@@ -16772,7 +17201,7 @@ GER_reichstag_category = {
 		}
 	}
 	GER_fith_fleet_act_reich_force = {
-		icon = GFX_decision_SOV_place_hq
+		icon = eng_trade_unions_demand
 		allowed = {
 			original_tag = GER
 		}
@@ -16808,7 +17237,7 @@ GER_reichstag_category = {
 			effect_tooltip = {
 				GER_fith_naval_law_effect = yes
 			}
-			country_event = ww1_german_reichstag.4
+			hidden_effect = { country_event = ww1_german_reichstag.4 }
 			hidden_effect = {
 				GER_reset_sway_reichstag = yes
 			}			
@@ -16818,7 +17247,7 @@ GER_reichstag_category = {
 		}
 	}
 	GER_fith_fleet_act_reich = {
-		icon = GFX_decision_SOV_place_hq
+		icon = eng_trade_unions_demand
 		allowed = {
 			original_tag = GER
 		}
@@ -16853,11 +17282,7 @@ GER_reichstag_category = {
 			right_vote_temp_var_setter = yes
 			if = {
 				limit = {
-					check_variable = {
-						var = merged_vote_strengh
-						value = 199
-						compare = greater_than_or_equals
-					}
+					has_majority_in_reichstag = yes
 				}
 								
 				set_country_flag = GER_fith_fleet_act_passed_in_reichstag
@@ -16871,7 +17296,7 @@ GER_reichstag_category = {
 				}
 
 				set_country_flag = GER_fith_fleet_act_passed
-				country_event = ww1_german_reichstag.4
+				hidden_effect = { country_event = ww1_german_reichstag.4 }
 				else = {
 					custom_effect_tooltip = GER_law_dont_pass
 					custom_effect_tooltip = GER_if_law_passes_reich
@@ -16880,7 +17305,7 @@ GER_reichstag_category = {
 					effect_tooltip = {
 						GER_fith_naval_law_effect = yes
 					}
-					country_event = ww1_german_reichstag.5
+					hidden_effect = { country_event = ww1_german_reichstag.5 }
 				}
 			}	
 			hidden_effect = {
@@ -16896,7 +17321,7 @@ GER_reichstag_category = {
 		}
 	}
 	GER_law_on_polish_landholders_reich = {
-		icon = GFX_decision_SOV_place_hq
+		icon = eng_trade_unions_demand
 		allowed = {
 			original_tag = GER
 		}
@@ -16937,11 +17362,7 @@ GER_reichstag_category = {
 			right_vote_temp_var_setter = yes
 			if = {
 				limit = {
-					check_variable = {
-						var = merged_vote_strengh
-						value = 199
-						compare = greater_than_or_equals
-					}
+					has_majority_in_reichstag = yes
 				}
 								
 				set_country_flag = GER_law_on_polish_landholders_passed_in_reichstag
@@ -16955,7 +17376,7 @@ GER_reichstag_category = {
 				}
 
 				set_country_flag = GER_law_on_polish_landholders_passed
-				country_event = ww1_german_reichstag.4
+				hidden_effect = { country_event = ww1_german_reichstag.4 }
 				else = {
 					custom_effect_tooltip = GER_law_dont_pass
 					custom_effect_tooltip = GER_if_law_passes_reich
@@ -16964,7 +17385,7 @@ GER_reichstag_category = {
 					effect_tooltip = {
 						GER_polish_landholders_effect = yes
 					}
-					country_event = ww1_german_reichstag.5
+					hidden_effect = { country_event = ww1_german_reichstag.5 }
 				}
 			}	
 			hidden_effect = {
@@ -16980,7 +17401,7 @@ GER_reichstag_category = {
 		}
 	}
 	GER_1912_conservative_budget_law_reich = {
-		icon = GFX_decision_SOV_place_hq
+		icon = eng_trade_unions_demand
 		allowed = {
 			original_tag = GER
 		}
@@ -17015,11 +17436,7 @@ GER_reichstag_category = {
 			right_vote_temp_var_setter = yes
 			if = {
 				limit = {
-					check_variable = {
-						var = merged_vote_strengh
-						value = 199
-						compare = greater_than_or_equals
-					}
+					has_majority_in_reichstag = yes
 				}
 								
 				set_country_flag = GER_conservative_1912_budget_passed_in_reichstag
@@ -17033,7 +17450,7 @@ GER_reichstag_category = {
 				}
 
 				set_country_flag = GER_conservative_1912_budget_passed
-				country_event = ww1_german_reichstag.4
+				hidden_effect = { country_event = ww1_german_reichstag.4 }
 				else = {
 					custom_effect_tooltip = GER_law_dont_pass
 					custom_effect_tooltip = GER_if_law_passes_reich
@@ -17042,7 +17459,7 @@ GER_reichstag_category = {
 					effect_tooltip = {
 						add_ideas = GER_1912_conservative_federal_budget
 					}
-					country_event = ww1_german_reichstag.5
+					hidden_effect = { country_event = ww1_german_reichstag.5 }
 				}
 			}	
 			hidden_effect = {
@@ -17057,31 +17474,31 @@ GER_reichstag_category = {
 			}
 		}
 	}
-	GER_frankfurt_university_funding = {
-		days_mission_timeout = 1627
-		is_good = yes
-		allowed = {
-			tag = GER
-		}
-		available = {
-			NOT = {
-				owns_state = 55
-			}
-		}
-		activation = {
-			always = no
-		}
-		timeout_effect = {
-			country_event = {
-				id = ww1_germanrework.24
-				days = 2
-			}
-			effect_tooltip = {
-				add_research_slot = 1
-			}
-		}
+	# GER_frankfurt_university_funding = {
+	# 	icon = SOV_academy_of_sciences
+	# 	days_mission_timeout = 1627
+	# 	is_good = yes
+	# 	allowed = {
+	# 		tag = GER
+	# 	}
+	# 	available = {
+	# 		NOT = {
+	# 			owns_state = 55
+	# 		}
+	# 	}
+	# 	activation = {
+	# 		always = no
+	# 	}
+	# 	timeout_effect = {
+	# 		country_event = {
+	# 			id = ww1_germanrework.24
+	# 		}
+	# 		effect_tooltip = {
+	# 			add_research_slot = 1
+	# 		}
+	# 	}
 		
-	}
+	# }
 }
 
 GER_economic_actions = {
@@ -17261,13 +17678,6 @@ GER_economic_actions = {
 			num_of_civilian_factories > 2
 		}
 		custom_cost_text = decision_cost_3_civ
-		available = {
-			num_of_civilian_factories_available_for_projects > 2
-			custom_trigger_tooltip = {
-				tooltip = is_dealing_with_urbanization_crisis
-				GER_only_2_urbanization_decision_at_the_time = no
-			}
-		}
 		visible = {
 			tag = GER
 			has_completed_focus = GER_conduct_a_national_census
@@ -17278,9 +17688,16 @@ GER_economic_actions = {
 				}
 			}
 		}
+		available = {
+			num_of_civilian_factories_available_for_projects > 2
+			custom_trigger_tooltip = {
+				tooltip = is_dealing_with_urbanization_crisis
+				GER_only_2_urbanization_decision_at_the_time = no
+			}
+		}
 		on_map_mode = map_and_decisions_view
 		highlight_states = {
-			highlight_state_targets = { state = 1165 } 
+			highlight_state_targets = { state = 1165 }
 			highlight_color_while_active = 1
 		}
 		ai_will_do = {
@@ -17520,7 +17937,7 @@ GER_military_constructions = {
 			}
 			modifier = {
 				factor = 0
-				has_global_flag = FRA_capitulation
+				has_global_flag = ENT_capitulation
 			}
 			modifier = {
 				factor = 0
@@ -17595,7 +18012,7 @@ GER_military_constructions = {
 			}
 			modifier = {
 				factor = 0
-				has_global_flag = FRA_capitulation
+				has_global_flag = ENT_capitulation
 			}
 			modifier = {
 				factor = 0
@@ -17670,7 +18087,7 @@ GER_military_constructions = {
 			}
 			modifier = {
 				factor = 0
-				has_global_flag = FRA_capitulation
+				has_global_flag = ENT_capitulation
 			}
 			modifier = {
 				factor = 0
@@ -17745,7 +18162,7 @@ GER_military_constructions = {
 			}
 			modifier = {
 				factor = 0
-				has_global_flag = FRA_capitulation
+				has_global_flag = ENT_capitulation
 			}
 			modifier = {
 				factor = 0
@@ -17820,7 +18237,7 @@ GER_military_constructions = {
 			}
 			modifier = {
 				factor = 0
-				has_global_flag = FRA_capitulation
+				has_global_flag = ENT_capitulation
 			}
 			modifier = {
 				factor = 0
@@ -17895,7 +18312,7 @@ GER_military_constructions = {
 			}
 			modifier = {
 				factor = 0
-				has_global_flag = FRA_capitulation
+				has_global_flag = ENT_capitulation
 			}
 			modifier = {
 				factor = 0
@@ -17970,7 +18387,7 @@ GER_military_constructions = {
 			}
 			modifier = {
 				factor = 0
-				has_global_flag = FRA_capitulation
+				has_global_flag = ENT_capitulation
 			}
 			modifier = {
 				factor = 0
@@ -18045,7 +18462,7 @@ GER_military_constructions = {
 			}
 			modifier = {
 				factor = 0
-				has_global_flag = FRA_capitulation
+				has_global_flag = ENT_capitulation
 			}
 			modifier = {
 				factor = 0
@@ -18120,7 +18537,7 @@ GER_military_constructions = {
 			}
 			modifier = {
 				factor = 0
-				has_global_flag = FRA_capitulation
+				has_global_flag = ENT_capitulation
 			}
 			modifier = {
 				factor = 0
@@ -18446,10 +18863,10 @@ GER_military_constructions = {
 }
 GER_sokehs_rebellion = {
 	GER_sokehs_mission_countdown = {
-		icon = GFX_decision_generic_nationalism
+		icon = revolt
 		days_mission_timeout = 30
 		activation = {
-			always = no # Triggered by ww1_germanrework.13
+			has_country_flag = sokehs_rebellion_ongoing
 		}
 		available = {
 			has_country_flag = sokehs_rebellion_crushed
@@ -18467,13 +18884,14 @@ GER_sokehs_rebellion = {
 				add_resistance = 12
 				add_compliance = -4
 			}
+			add_stability = -0.01
 		}
 		complete_effect = {
 			add_stability = 0.02
 		}
 	}
 	GER_deal_with_sokehs_rebellion = {
-		icon = GFX_decision_generic_military
+		icon = generic_disband_irregulars
 		visible = {
 			has_country_flag = sokehs_rebellion_ongoing
 		}
@@ -18829,6 +19247,9 @@ GER_african_railways = {
 					13312 # Muansa
 				}
 			}
+			546 = {
+				is_owned_or_subject_trigger = yes
+			}
 		}
 		modifier = {
 			civilian_factory_use = 1
@@ -18842,14 +19263,9 @@ GER_african_railways = {
 			highlight_color_while_active = 1
 		}
 		state_target = yes
-		target_array = ROOT.controlled_states
-		target_trigger = {
-			FROM = {
-				state = 546
-			}
-		}
+		targets = { state = 546 }
 		on_map_mode = map_and_decisions_view
-		complete_effect = {
+		remove_effect = {
 			# Build Railway from Moshi to Mwanza
 			hidden_effect = {
 				build_railway = {
@@ -18864,8 +19280,8 @@ GER_african_railways = {
 			custom_effect_tooltip = {
 				localization_key = GER_build_railway_tt
 				LEVEL = "1"
-				SOURCE = "Neu-Moschi"
-				DEST = "Muansa"
+				SOURCE = GER_VICTORY_POINTS_2206
+				DEST = GER_VICTORY_POINTS_13312
 			}
 			546 = {
 				add_building_construction = {
@@ -18897,6 +19313,12 @@ GER_african_railways = {
 					9962 # Kigali
 				}
 			}
+			768 = {
+				is_owned_or_subject_trigger = yes
+			}
+			546 = {
+				is_owned_or_subject_trigger = yes
+			}
 		}
 		modifier = {
 			civilian_factory_use = 1
@@ -18910,14 +19332,9 @@ GER_african_railways = {
 			highlight_color_while_active = 1
 		}
 		state_target = yes
-		target_array = ROOT.controlled_states
-		target_trigger = {
-			FROM = {
-				state = 768
-			}
-		}
+		targets = { state = 768 }
 		on_map_mode = map_and_decisions_view
-		complete_effect = {
+		remove_effect = {
 			hidden_effect = {
 				build_railway = {
 					path = {
@@ -18931,8 +19348,8 @@ GER_african_railways = {
 			custom_effect_tooltip = {
 				localization_key = GER_build_railway_tt
 				LEVEL = "1"
-				SOURCE = "Tabora"
-				DEST = "Kigali"
+				SOURCE = VICTORY_POINTS_10932
+				DEST = VICTORY_POINTS_9962
 			}
 			768 = {
 				add_building_construction = {
@@ -18964,6 +19381,9 @@ GER_african_railways = {
 					10845 # Wiedhafen
 				}
 			}
+			546 = {
+				is_owned_or_subject_trigger = yes
+			}
 		}
 		modifier = {
 			civilian_factory_use = 2
@@ -18977,15 +19397,10 @@ GER_african_railways = {
 			highlight_color_while_active = 1
 		}
 		state_target = yes
-		target_array = ROOT.controlled_states
-		target_trigger = {
-			FROM = {
-				state = 546
-			}
-		}
+		targets = { state = 546 }
 		on_map_mode = map_and_decisions_view
-		complete_effect = {
-			# Build Railway from Tabora to Kigali
+		remove_effect = {
+			# Build Railway from Kilwa to Wiedhafen
 			hidden_effect = {
 				build_railway = {
 					path = {
@@ -18999,8 +19414,8 @@ GER_african_railways = {
 			custom_effect_tooltip = {
 				localization_key = GER_build_railway_tt
 				LEVEL = "1"
-				SOURCE = "Kilwa"
-				DEST = "Wiedhafen"
+				SOURCE = VICTORY_POINTS_8182
+				DEST = VICTORY_POINTS_10845
 			}
 			546 = {
 				add_building_construction = {
@@ -19032,6 +19447,9 @@ GER_african_railways = {
 					11194
 				}
 			}
+			539 = {
+				is_owned_or_subject_trigger = yes
+			}
 		}
 		modifier = {
 			civilian_factory_use = 2
@@ -19045,15 +19463,10 @@ GER_african_railways = {
 			highlight_color_while_active = 1
 		}
 		state_target = yes
-		target_array = ROOT.controlled_states
-		target_trigger = {
-			FROM = {
-				state = 539
-			}
-		}
+		targets = { state = 539 }
 		on_map_mode = map_and_decisions_view
-		complete_effect = {
-			# Build Railway from Tabora to Kigali
+		remove_effect = {
+			# Build Railway from Duala to Bafoussam
 			hidden_effect = {
 				build_railway = {
 					path = {
@@ -19067,8 +19480,8 @@ GER_african_railways = {
 			custom_effect_tooltip = {
 				localization_key = GER_build_railway_tt
 				LEVEL = "1"
-				SOURCE = "Duala"
-				DEST = "Bafoussam"
+				SOURCE = GER_VICTORY_POINTS_9137
+				DEST = VICTORY_POINTS_13313
 			}
 			539 = {
 				add_building_construction = {
@@ -19093,8 +19506,15 @@ GER_african_railways = {
 		icon = GFX_decision_generic_railway
 		available = {
 			has_completed_focus = GER_finance_african_railways
+			can_build_railway = {
+				path = {
+					1951
+					13314
+					12843
+				}
+			}
 			777 = {
-				is_owned_and_controlled_by = ROOT
+				is_owned_or_subject_trigger = yes
 			}
 		}
 		modifier = {
@@ -19109,14 +19529,9 @@ GER_african_railways = {
 			highlight_color_while_active = 1
 		}
 		state_target = yes
-		target_array = ROOT.controlled_states
-		target_trigger = {
-			FROM = {
-				state = 777
-			}
-		}
+		targets = { state = 777 }
 		on_map_mode = map_and_decisions_view
-		complete_effect = {
+		remove_effect = {
 			hidden_effect = {
 				build_railway = {
 					path = {
@@ -19130,8 +19545,8 @@ GER_african_railways = {
 			custom_effect_tooltip = {
 				localization_key = GER_build_railway_tt
 				LEVEL = "1"
-				SOURCE = "Lome"
-				DEST = "Atakpame"
+				SOURCE = VICTORY_POINTS_1951
+				DEST = VICTORY_POINTS_12843
 			}
 			777 = {
 				add_building_construction = {
@@ -19164,13 +19579,10 @@ GER_mitteleuropa_category = {
 				NOT = {
 					has_idea = closed_economy
 					original_tag = ENG
+					is_in_faction_with = ENG
 					has_government = communism
 					has_idea = GER_mitteleuropa_member
 					has_country_flag = GER_refused_mitteleuropa
-				}
-				if = {
-					limit = {  NOT = { is_in_faction_with = GER } }
-					NOT = { is_in_faction_with = ENG }
 				}
 				if = {
 					limit = { is_subject = yes }

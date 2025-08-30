@@ -18,13 +18,7 @@ FRA_area_priority = {
 		original_tag = FRA
 	}
 	abort = { always = no }
-
-	ai_strategy = {
-		type = area_priority
-		id = globally
-		value = -500
-	}
-
+	
 	ai_strategy = {
 		type = front_unit_request
 		area = europe
@@ -826,26 +820,46 @@ FRA_ignore_russia = {
 	}
 }
 
-prepare_agadir = {
+FRA_prepare_crisis = {
 	allowed = {
 		original_tag = FRA	
 	}
 	enable = {
-		original_tag = FRA
-		has_global_flag = agadir_crisis
-	}
-	abort = {
-		OR = {
-			has_global_flag = agadir_crisis_ends
+		is_subject = no
+		NOT = {
+			has_global_flag = great_war_ends
+		}
+		NOT = {
 			has_war_with = GER
-			has_global_flag = great_war
+			has_war_together_with = GER
+			is_in_faction_with = GER
+		}
+		OR = {
+			has_global_flag = crisis_in_progress
+			threat > 0.3
+			has_wargoal_against = GER
+			is_justifying_wargoal_against = GER
+			any_allied_country = {
+				OR = {
+					has_wargoal_against = GER
+					has_war_with = GER
+					is_justifying_wargoal_against = GER
+					GER = {
+						OR = {
+							is_justifying_wargoal_against = PREV
+							has_wargoal_against = PREV
+						}				
+					}
+				}
+			}
+			GER = {
+				is_justifying_wargoal_against = ROOT
+				has_wargoal_against = ROOT
+			}
 		}
 	}
-	ai_strategy = {
-		type = conquer
-		id = GER
-		value = 200
-	}
+	abort_when_not_enabled = yes
+
 	ai_strategy = {
 		type = put_unit_buffers
 		
@@ -862,19 +876,9 @@ prepare_agadir = {
 		subtract_invasions_from_need = no
 	}
 	ai_strategy = {
-		type = front_unit_request
-		tag = GER
-		value = 100
-	}
-	ai_strategy = {
-		type = front_control
-		tag = GER
-		ratio = 0.35
-		
-		priority = 100
-		ordertype = front
-		execution_type = rush
-		execute_order = yes
+		type = prepare_for_war 
+		id = GER
+		value = 1
 	}
 }
 
@@ -915,10 +919,13 @@ FRA_italy_endangers_south = {
 		has_war_with = GER
 		ITA = {
 			OR = {
-				has_completed_focus = ITA_claim_on_france
+				has_completed_focus = ITA_negotiations_with_germany
 				has_war_with = FRA
 			}
 		}
+	}
+	abort = {
+		is_in_faction_with = ITA
 	}
 	abort_when_not_enabled = yes
 	ai_strategy = {
@@ -949,13 +956,26 @@ FRA_THE_garnison = {
 	}
 	abort_when_not_enabled = yes
 	enable = {
-		any_state = {
-			has_state_flag = french_salonika
-			is_controlled_by_ROOT_or_ally = yes
+		any_controlled_state = {
+			is_coastal = yes
+			OR = {
+				region = 25
+				region = 129
+			}
 		}
 		NOT = {
 			has_global_flag = WW1_is_stuck
 			has_global_flag = great_war_ends
+		}
+		NOT = {
+			any_allied_country = {
+				capital_scope = {
+					OR = {
+						region = 25
+						region = 129
+					}
+				}
+			}
 		}
 		surrender_progress < 0.1
 	}	
@@ -979,7 +999,6 @@ FRA_THE_garnison = {
 		}
 		subtract_fronts_from_need = no
 	}
-
 }
 FRA_GRE_low_prio = {
 	allowed = {
@@ -989,40 +1008,33 @@ FRA_GRE_low_prio = {
 	enable = {
 		original_tag = FRA
 		OR = {
-			has_war_together_with = GRE
-			has_war_together_with = THE
+			any_allied_country = {
+				capital_scope = {
+					OR = {
+						region = 25
+						region = 129
+					}
+				}
+			}
+			any_controlled_state = {
+				is_coastal = yes
+				OR = {
+					region = 25
+					region = 129
+				}
+			}
 		}
-		any_state = {
-			has_state_flag = french_salonika
-			is_controlled_by_ROOT_or_ally = yes
-			NOT = {
-				is_controlled_by = FRA
+		any_enemy_country = {
+			capital_scope = {
+				OR = {
+					region = 25
+					region = 129
+				}
 			}
 		}
 		NOT = {
 			has_global_flag = WW1_is_stuck
 			has_global_flag = great_war_ends
-		}
-		345 = {
-			OR = {
-				is_fully_controlled_by = THE
-				is_fully_controlled_by = GRE
-				is_fully_controlled_by = FRA
-			}
-		}
-		731 = {
-			OR = {
-				is_fully_controlled_by = THE
-				is_fully_controlled_by = GRE
-				is_fully_controlled_by = FRA
-			}
-		}
-		184 = {
-			OR = {
-				is_fully_controlled_by = THE
-				is_fully_controlled_by = GRE
-				is_fully_controlled_by = FRA
-			}
 		}
 	}	
 
@@ -1083,9 +1095,6 @@ FRA_hate_other_frances = {
 		original_tag = FRA
 		any_other_country = {
 			original_tag = FRA
-			NOT = {
-				tag = ROOT
-			}
 		}
 		NOT = {
 			has_war_with = GER
@@ -1111,6 +1120,11 @@ FRA_hate_other_frances = {
 	}
 	ai_strategy = {
 		type = front_unit_request
+		tag = FRA
+		value = 2500
+	}
+	ai_strategy = {
+		type = front_unit_request
 		tag = GER
 		value = -2500
 	}
@@ -1126,7 +1140,7 @@ FRA_hate_other_frances = {
 	}
 	ai_strategy = {
 		type = garrison
-		value = -250
+		value = -2500
 	}
 }
 
@@ -1322,6 +1336,7 @@ FRA_ITA_prepare_in_moutains = {
 		ratio = 0.15
 		states = {
 			735
+			1210
 			21
 		}
 		subtract_fronts_from_need = no
@@ -1338,8 +1353,30 @@ FRA_MOR_protect = {
 		MOR = {
 			is_subject_of = FRA
 		}
-		NOT = {
-			has_global_flag = AUH_franz_ferdinand_killed_in_sarajevo
+		OR = {
+			has_global_flag = casablanca_crisis_alert
+			NOT = {
+				has_global_flag = crisis_in_progress
+				has_wargoal_against = GER
+				is_justifying_wargoal_against = GER
+				any_allied_country = {
+					OR = {
+						has_wargoal_against = GER
+						has_war_with = GER
+						is_justifying_wargoal_against = GER
+						GER = {
+							OR = {
+								is_justifying_wargoal_against = PREV
+								has_wargoal_against = PREV
+							}				
+						}
+					}
+				}
+				GER = {
+					is_justifying_wargoal_against = ROOT
+					has_wargoal_against = ROOT
+				}
+			}
 		}
 		OR = {
 			has_war_with = RMO
@@ -1705,7 +1742,6 @@ armored_car_production = {
 		OR = {
 			has_global_flag = great_war_ends
 			has_tech = basic_light_tank_chassis
-			has_global_flag = great_war_ends
 		}
 
 	}
@@ -2151,8 +2187,21 @@ FRA_TUN_MOR_mobilization = {
 			has_global_flag = great_war_ends
 		}
 		OR = {
+			has_global_flag = crisis_in_progress
 			has_war_with_major = yes
-			has_global_flag = AUH_franz_ferdinand_killed_in_sarajevo
+			any_allied_country = {
+				OR = {
+					has_wargoal_against = GER
+					has_war_with = GER
+					is_justifying_wargoal_against = GER
+				}
+				GER = {
+					OR = {
+						is_justifying_wargoal_against = PREV
+						has_wargoal_against = PREV
+					}				
+				}
+			}
 			AND = {
 				date > 1914.4.4 #be ready
 				is_historical_focus_on = yes
