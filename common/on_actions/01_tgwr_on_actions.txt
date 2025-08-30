@@ -201,18 +201,18 @@
 						has_global_flag = manchu_restoration
 					}
 					QIN = {
+						QIN_zhang_xun = {
+							remove_country_leader_role = {
+								ideology = stratocracy
+							}
+							remove_country_leader_role = {
+								ideology = absolute_monarchy
+							}
+							remove_unit_leader_role = yes
+						}
 						every_character = {
 							limit = {
 								has_character_flag = manchu_restoration
-							}
-							QIN_zhang_xun = {
-								remove_country_leader_role = {
-									ideology = stratocracy
-								}
-								remove_country_leader_role = {
-									ideology = absolute_monarchy
-								}
-								remove_unit_leader_role = yes
 							}
 							set_nationality = CHI
 						}
@@ -445,33 +445,107 @@
 			}
 			if = {
 				limit = {
-					tag = AUS
+					tag = AUS					#winner
 					FROM = {
-						original_tag = HUN
+						tag = HUN #loser
+					}					
+					has_global_flag = AUH_civil_war
+					NOT = {
+						has_global_flag = AUH_HUN_civil_war_ends
 					}
-					HUN = {
-						OR = {
-							is_subject_of = AUS
-							is_subject = no
+				}
+				set_global_flag = AUH_HUN_civil_war_ends
+				set_global_flag = AUH_won_against_hungary
+				remove_ideas = standing_alone
+				HUN = {
+					remove_ideas = standing_alone
+					delete_unit_template_and_units = {
+						division_template = "Forradalmi Milícia"
+						disband = no
+					}
+				}
+				if = {
+					limit = {
+						has_country_flag = AUS_empire_flag
+						NOT = {
+							has_government = communism
 						}
 					}
-				}
-				release_puppet = HUN
-				set_autonomy = {
-					target = HUN
-					autonomous_state = autonomy_tgwr_real_union
-				}
-				HUN = {
-					set_politics = {
-						ruling_party = neutrality
-						elections_allowed = no
+					every_owned_state = {
+						limit = {
+							region = 27
+						}
+						transfer_state_to = HUN
+					}
+					HUN = {
+						every_owned_state = {
+							remove_claim_by = AUS
+							if = {
+								limit = {
+									NOT = {
+										region = 27
+									}
+								}
+								transfer_state_to = AUS
+								if = {
+									limit = { is_core_of = HUN }
+									remove_core_of = HUN
+									add_core_of = AUS
+								}				
+							}				
+						}
+					}
+					set_autonomy = {
+						target = HUN
+						autonomous_state = autonomy_tgwr_real_union
+						end_wars = no
+					}
+					AUS = {
+						AUH_joseph_august_von_osterreich = {
+							set_nationality = HUN
+							set_character_name = HUN_joseph_august
+							promote_character = semi_constitutional_monarchy
+						}
+					}	
+					HUN = {
+						set_politics = {
+							ruling_party = neutrality
+							long_name = HUN_viceroy_council_party_long
+							name = HUN_viceroy_council_party
+							elections_allowed = no
+						}
+						set_popularities = {
+							democratic = 53
+							neutrality = 46
+							fascism = 0
+							communism = 1
+						}
+						add_ideas = HUN_ausgleich
+						AUH_create_habsburg = yes
+						drop_cosmetic_tag = yes	
 					}
 				}
-				every_owned_state = {
-					limit = {
-						region = 27
+			}
+			else_if = {
+				limit = {
+					tag = HUN					#winner
+					FROM = {
+						tag = AUS #loser
+					}					
+					has_global_flag = AUH_civil_war
+					NOT = {
+						has_global_flag = AUH_HUN_civil_war_ends
 					}
-					transfer_state_to = HUN
+				}
+				set_global_flag = AUH_HUN_civil_war_ends
+				set_global_flag = AUH_lose_against_hungary
+				remove_ideas = standing_alone
+				delete_unit_template_and_units = {
+					division_template = "Forradalmi Milícia"
+					disband = no
+				}
+				AUS = {
+					remove_ideas = standing_alone
 				}
 			}
 			# if = {
@@ -3585,11 +3659,11 @@
 							# }
 						}
 						AND = {
-							is_subject_of = AUH
+							is_subject_of = AUS
 							GER = {
 								OR = {
 									exists = no
-									is_subject_of = AUH
+									is_subject_of = AUS
 								}
 							}
 						}
@@ -6139,9 +6213,6 @@
 					FROM = { tag = CHI }
 					has_country_flag = CHI_national_protection_flag
 					has_global_flag = national_protection_war
-					NOT = {
-						has_global_flag = hongxian_failed
-					}
 				}
 				if = {
 					limit = {
@@ -6154,17 +6225,9 @@
 						remove_core_of = PREV
 					}
 				}
-				else_if = {
-					limit = {
-						has_cosmetic_tag = CHI_hongxian_empire
-					}
+				else = {
 					set_global_flag = CHI_empire_won_npw
 					country_event = ww1_china.155
-				}
-				else = {
-					set_global_flag = hongxian_failed
-					country_event = ww1_china.38
-					unlock_national_focus = CHI_beiyang_meditator
 				}
 			}
 			# national protection army victorious
@@ -7126,27 +7189,25 @@
 			if = {
 				limit = {
 					tag = JNC
-					has_country_leader = {
-						character = ZHC_qi_xieyuan
-						ruling_only = yes
-					}
 					any_enemy_country = {
 						is_china_or_warlord_no_tt = yes
 					}
 				}
-				ZHC_qi_xieyuan = {
-					remove_country_leader_role = {
-						ideology = warlordism
-					}
-					remove_country_leader_role = {
-						ideology = stratocracy
-					}
-					demote_leader = yes
-					if = {
-						limit = {
-							country_exists = FNG
+				ZHC = {
+					ZHC_qi_xieyuan = {
+						remove_country_leader_role = {
+							ideology = warlordism
 						}
-						set_nationality = FNG
+						remove_country_leader_role = {
+							ideology = stratocracy
+						}
+						demote_leader = yes
+						if = {
+							limit = {
+								country_exists = FNG
+							}
+							set_nationality = FNG
+						}
 					}
 				}
 				if = {
@@ -7462,14 +7523,6 @@
 						communism = 20
 						neutrality = 48
 					}
-					every_possible_country = {
-						limit = {
-							has_character = CHI_chen_jiongming
-						}
-						CHI_chen_jiongming = {
-							set_nationality = PREV.PREV
-						}
-					}
 					if = {
 						limit = {
 							any_other_country = {
@@ -7491,68 +7544,71 @@
 							transfer_troops = yes
 						}
 					}
-					CHI_chen_jiongming = {
-						if = {
-							limit = {
-								has_ideology = social_liberalism
+					CHI = {
+						CHI_chen_jiongming = {
+							set_nationality = PREV.PREV
+							if = {
+								limit = {
+									has_ideology = social_liberalism
+								}
+								promote_character = social_liberalism
 							}
-							promote_character = social_liberalism
-						}
-						else = {
-							add_country_leader_role = {
-								promote_leader = yes
-								country_leader = {
-									ideology = social_liberalism
-									traits = { CHI_revolutionary_lawyer decentralist_liberal }
-									desc = CHI_chen_jiongming_desc
+							else = {
+								add_country_leader_role = {
+									promote_leader = yes
+									country_leader = {
+										ideology = social_liberalism
+										traits = { CHI_revolutionary_lawyer decentralist_liberal }
+										desc = CHI_chen_jiongming_desc
+									}
 								}
 							}
-						}
-						if = {
-							limit = {
-								has_ideology = authoritarian_democracy
+							if = {
+								limit = {
+									has_ideology = authoritarian_democracy
+								}
+								promote_character = authoritarian_democracy
 							}
-							promote_character = authoritarian_democracy
-						}
-						else = {
-							add_country_leader_role = {
-								promote_leader = yes
-								country_leader = {
-									ideology = authoritarian_democracy
-									traits = { CHI_revolutionary_lawyer decentralist_liberal }
-									desc = CHI_chen_jiongming_desc
+							else = {
+								add_country_leader_role = {
+									promote_leader = yes
+									country_leader = {
+										ideology = authoritarian_democracy
+										traits = { CHI_revolutionary_lawyer decentralist_liberal }
+										desc = CHI_chen_jiongming_desc
+									}
 								}
 							}
-						}
-						if = {
-							limit = {
-								has_ideology = stratocracy
+							if = {
+								limit = {
+									has_ideology = stratocracy
+								}
+								promote_character = stratocracy
 							}
-							promote_character = stratocracy
-						}
-						else = {
-							add_country_leader_role = {
-								promote_leader = yes
-								country_leader = {
-									ideology = stratocracy
-									traits = { CHI_revolutionary_lawyer decentralist_liberal }
-									desc = CHI_chen_jiongming_desc
+							else = {
+								add_country_leader_role = {
+									promote_leader = yes
+									country_leader = {
+										ideology = stratocracy
+										traits = { CHI_revolutionary_lawyer decentralist_liberal }
+										desc = CHI_chen_jiongming_desc
+									}
 								}
 							}
-						}
-						if = {
-							limit = {
-								has_ideology = reformist_socialism
+							if = {
+								limit = {
+									has_ideology = reformist_socialism
+								}
+								promote_character = reformist_socialism
 							}
-							promote_character = reformist_socialism
-						}
-						else = {
-							add_country_leader_role = {
-								promote_leader = yes
-								country_leader = {
-									ideology = reformist_socialism
-									traits = { CHI_revolutionary_lawyer decentralist_liberal }
-									desc = CHI_chen_jiongming_desc
+							else = {
+								add_country_leader_role = {
+									promote_leader = yes
+									country_leader = {
+										ideology = reformist_socialism
+										traits = { CHI_revolutionary_lawyer decentralist_liberal }
+										desc = CHI_chen_jiongming_desc
+									}
 								}
 							}
 						}
@@ -7743,39 +7799,18 @@
 					}
 				}
 				add_ideas = CHI_idea_long_march
-				PRC_mao_zedong = {
-					if = {
-						limit = {
-							has_ideology = agrarian_socialism
-						}
-						promote_character = agrarian_socialism
+				set_global_flag = long_march
+				random_enemy_country = {
+					limit = {
+						is_china_or_warlord_no_tt = yes
 					}
-					else = {
-						add_country_leader_role = {
-							promote_leader = yes
-							country_leader = {
-								ideology = agrarian_socialism
-								traits = { cornered_fox }
-							}
-						}
-					}
-					if = {
-						limit = {
-							has_ideology = stratocracy
-						}
-						promote_character = stratocracy
-					}
-					else = {
-						add_country_leader_role = {
-							promote_leader = yes
-							country_leader = {
-								ideology = stratocracy
-								traits = { cornered_fox }
-							}
+					PREV = {
+						become_exiled_in = {
+							target = PREV
+							legitimacy = 0
 						}
 					}
 				}
-				set_global_flag = long_march
 			}
 			# Entente leader transfer
 			if = {
@@ -8369,10 +8404,7 @@
 							}
 						}
 					}
-					if = {
-						limit = {
-							has_character = ENG_herbert_george_wells
-						}
+					ENG = {
 						ENG_herbert_george_wells = {
 							add_advisor_role = {
 								advisor = {
@@ -8384,11 +8416,6 @@
 								}
 							}
 							set_nationality = UOB
-						}
-					}
-					if = {
-						limit = {
-							has_character = ENG_john_robert_clynes
 						}
 						ENG_john_robert_clynes = {
 							add_advisor_role = {
@@ -8403,11 +8430,6 @@
 							}
 							set_nationality = UOB
 						}
-					}
-					if = {
-						limit = {
-							has_character = ENG_ramsay_macdonald
-						}
 						ENG_ramsay_macdonald = {
 							add_advisor_role = {
 								advisor = {
@@ -8418,14 +8440,6 @@
 									}
 								}
 							}
-							set_nationality = UOB
-						}
-					}
-					if = {
-						limit = {
-							has_character = ENG_ramsay_macdonald
-						}
-						ENG_ramsay_macdonald = {
 							set_nationality = UOB
 						}
 					}
@@ -8533,14 +8547,10 @@
 						set_nationality = ROOT
 					}
 				}
-				if = {
-					limit = { has_character = CHI_li_liejun }
+				CHI = {
 					CHI_li_liejun = {
 						set_nationality = YUN
 					}
-				}
-				if = {
-					limit = { has_character = CHI_yuan_shikai }
 					CHI_yuan_shikai = {
 						if = {
 							limit = {
@@ -8556,15 +8566,9 @@
 						}
 						promote_character = stratocracy
 					}
-				}
-				if = {
-					limit = { has_character = CHI_sun_yatsen }
 					CHI_sun_yatsen = {
 						promote_character = tridemism
 					}
-				}
-				if = {
-					limit = { has_character = CHI_jiang_kanghu }
 					promote_character = CHI_jiang_kanghu
 				}
 				if = {
@@ -8590,8 +8594,7 @@
 						set_nationality = ROOT
 					}
 				}
-				if = {
-					limit = { has_character = CHI_yuan_shikai }
+				CHI = {
 					CHI_yuan_shikai = {
 						if = {
 							limit = {
@@ -8607,9 +8610,6 @@
 						}
 						promote_character = stratocracy
 					}
-				}
-				if = {
-					limit = { has_character = CHI_li_yuanhong }
 					CHI_li_yuanhong = {
 						if = {
 							limit = { has_ideology = authoritarian_democracy }
@@ -8624,15 +8624,9 @@
 							}
 						}
 					}
-				}
-				if = {
-					limit = { has_character = CHI_sun_yatsen }
 					CHI_sun_yatsen = {
 						promote_character = tridemism
 					}
-				}
-				if = {
-					limit = { has_character = CHI_jiang_kanghu }
 					promote_character = CHI_jiang_kanghu
 				}
 				set_popularities = {
@@ -9103,7 +9097,7 @@
 						limit = {
 							OR = {
 								has_cosmetic_tag = AUH
-								has_cosmetic_tag = AUH_conrad
+								has_cosmetic_tag = AUH_empire
 							}			
 						}
 						set_cosmetic_tag = AUH_communism
@@ -9939,7 +9933,15 @@
 						limit = {
 							has_cosmetic_tag = AUH_communism		
 						}
-						set_cosmetic_tag = AUH
+						if = {
+							limit = {
+								has_country_flag = AUH_empire
+							}
+							set_cosmetic_tag = AUH_empire
+						}
+						else = {
+							set_cosmetic_tag = AUH
+						}
 						else_if = {
 							limit = { 
 								has_cosmetic_tag = AUR_communism		
@@ -10118,9 +10120,9 @@
 						else_if = {
 							limit = {
 								has_cosmetic_tag = AUH
-								has_country_flag = AUH_conrad
+								has_country_flag = AUH_empire
 							}
-							set_cosmetic_tag = AUH_conrad
+							set_cosmetic_tag = AUH_empire
 						}	
 					}
 				}
