@@ -51,24 +51,20 @@ news_event = {
 		set_global_flag = AUH_franz_joseph_i_retired
 		hidden_effect = {
 			AUH_retire_franz_joseph_i = yes
-			retire_character = AUH_franz_joseph_i
+			AUS = {
+				retire_character = AUH_franz_joseph_i
+			}	
 			mark_focus_tree_layout_dirty = yes
 		}
 	}
 	option = {
 		name = ww1_auh.1.a
-		ai_chance = {
-			factor = 100
-		}
 		trigger = {
 			TAG = AUS
 		}
 	}
 	option = {
 		name = ww1_auh.1.b
-		ai_chance = {
-			factor = 100
-		}
 		trigger = {
 			NOT = {
 				TAG = AUS
@@ -106,7 +102,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 100
+			base = 100
 		}
 	}
 }
@@ -128,6 +124,8 @@ country_event = {
 						state = 244
 						state = 513
 						state = 736
+						state = 1197
+						state = 1198
 						state = 1010
 					}
 				}
@@ -154,9 +152,15 @@ country_event = {
 			modifier = large_increase
 		}
 		ai_chance = {
-			factor = 100
+			base = 0
+			modifier = {
+				add = 500
+				has_game_rule = {
+					rule = ITA_FACTION_AI_BEHAVIOUR
+					option = CENTRAL_POWERS
+				}
+			}
 		}
-		
 	}
 	option = {
 		name = ww1_auh.3.b
@@ -216,7 +220,7 @@ country_event = {
 		}
 		remove_ideas = idea_italy_triple_alliance
 		ai_chance = {
-			factor = 100
+			base = 20
 		}
 	}
 }
@@ -227,14 +231,11 @@ news_event = {
 	id = ww1_auh.4
 	title = ww1_auh.4.t
 	desc = ww1_auh.4.d
-	picture = EVENT_hoi4tgw_trialism
+	picture = GFX_news_event_italy_in_central_powers
 	is_triggered_only = yes
 	major = yes
 	option = {
 		name = ww1_auh.4.a
-		ai_chance = {
-			factor = 100
-		}
 	}
 }
 
@@ -301,16 +302,15 @@ country_event = {
 				}
 				declare_war_on = {
 					target = AUS
-					type = take_state_focus
-					generator = { 4 152 153 39 }
+					type = independence_wargoal
 				}
 				division_template = {
 					name = "Bosanski pobunjenici"
 					is_locked = yes
 					regiments = {
-						irregular_infantry = { x = 0 y = 0 }
-						irregular_infantry = { x = 0 y = 1 }
-						irregular_infantry = { x = 0 y = 2 }
+						militia = { x = 0 y = 0 }
+						militia = { x = 0 y = 1 }
+						militia = { x = 0 y = 2 }
 					}	
 				}	
 			}
@@ -357,10 +357,9 @@ country_event = {
 	option = {
 		name = ww1_auh.6.a
 		FROM = {
-			declare_war_on = {
-				target = ROOT
-				type = take_state_focus
-				generator = { 575 104 }
+			add_to_war = {
+				targeted_alliance = BOS
+				enemy = ROOT
 			}
 		}
 		ai_chance = {
@@ -445,18 +444,25 @@ country_event = {
 			add_to_faction = ROM
 		}
 		ai_chance = {
-			factor = 30
+			base = 0
+			modifier = {
+				add = 50
+				has_game_rule = {
+					rule = ROM_ai_behavior
+					option = ROM_CENTRAL_POWERS
+				}
+			}
 		}
 	}
 	option = {
 		name = ww1_auh.10.b
 		ai_chance = {
-			factor = 10
+			base = 10
 		}
 	}
 }
 
-# DEAL WITH ROMANIA - AUSTRIA GIVES SOUTH TRANSILVANIA
+# DEAL WITH ROMANIA - AUSTRIA GIVES SOUTH TRANSYLVANIA
 #################
 country_event = {
 	id = ww1_auh.11
@@ -498,9 +504,6 @@ country_event = {
 		news_event = {
 			id = ww1_auh.12
 		}
-		ai_chance = {
-			factor = 100
-		}
 	}
 }
 
@@ -510,14 +513,11 @@ news_event = {
 	id = ww1_auh.12
 	title = ww1_auh.12.t
 	desc = ww1_auh.12.d
-	picture = EVENT_hoi4tgw_trialism
+	picture = GFX_news_event_romania_austria
 	is_triggered_only = yes
 	major = yes
 	option = {
 		name = ww1_auh.12.a
-		ai_chance = {
-			factor = 100
-		}
 	}
 }
 
@@ -564,7 +564,7 @@ country_event = {
 						NOT = {
 							has_country_flag = great_war_loser
 							has_global_flag = october_revolution
-							has_global_flag = russ_kapitulation
+							has_global_flag = RUS_surrender_alone
 						}
 					}
 				}
@@ -695,7 +695,7 @@ country_event = {
 					}
 				}
 				HUN = {
-					set_country_flag = great_war_loser	#so romania take claims
+					# set_country_flag = great_war_loser	#so romania take claims
 					set_cosmetic_tag = HUN_republic
 					set_country_flag = HUN_republic
 					clr_country_flag = HUN_archkingdom
@@ -747,13 +747,17 @@ country_event = {
 			limit = {
 				is_core_of = HUN
 			}
-			transfer_state_to = HUN
+			HUN = {
+				safe_transfer_state_to = yes
+			}
 		}	
 		every_owned_state = {
 			limit = {
 				is_core_of = ITA
 			}
-			transfer_state_to = ITA
+			ITA = {
+				safe_transfer_state_to = yes
+			}
 		}			
 		every_state = {
 			limit = {
@@ -761,13 +765,13 @@ country_event = {
 			}
 			remove_claim_by = ROOT
 		}
-		HUN = {
-			every_enemy_country = {
-				PREV = {
-					white_peace = PREV #HUN is the loser
-				}	
-			}	
-		}
+		# HUN = {
+		# 	every_enemy_country = {
+		# 		PREV = {
+		# 			white_peace = PREV #HUN is the loser
+		# 		}	
+		# 	}	
+		# }
 		#if = { #ww1_poland.102 event is for that
 		#	limit = {
 		#		POL = {
@@ -786,6 +790,13 @@ country_event = {
 		##	}	
 		#}	
 		hidden_effect = {
+			remove_ideas = {
+				AUH_ww1_House_Habsburg_Lorraine
+				AUH_house_of_cards
+				AUH_determined_ausgleich
+				AUH_determined_ausgleich_2
+				AUH_karl_i
+			}
 			clr_country_flag = AUS_empire_flag
 			set_country_flag = AUS_republic_flag
 			every_state = {
@@ -801,11 +812,11 @@ country_event = {
 				name = AUS_german_communist_party
 				long_name = AUS_german_communist_party_long
 			}
-			set_party_name = {
-				ideology = neutrality
-				name = AUS_christian_social_party
-				long_name = AUS_christian_social_party_long
-			}
+			# set_party_name = {
+			# 	ideology = neutrality
+			# 	name = AUS_christian_social_party
+			# 	long_name = AUS_christian_social_party_long
+			# }
 			set_party_name = {
 				ideology = fascism
 				name = AUS_nazi_party #formed earlier
@@ -813,11 +824,14 @@ country_event = {
 			}
 			# provisional
 			set_politics = {
-				ruling_party = democratic
+				ruling_party = neutrality
+				name = AUS_state_council_party
+				long_name = AUS_state_council_party
 				elections_allowed = no
 			}
 			promote_character = AUS_karl_seitz
 			promote_character = AUS_wilhelm_miklas
+			promote_character = AUS_state_council
 			every_owned_state = {
 				limit = {
 					is_core_of = CZE
@@ -825,20 +839,42 @@ country_event = {
 				set_demilitarized_zone = yes
 			}
 		}
+		set_cosmetic_tag = AUR
 		# German-Austria
-		set_cosmetic_tag = AUR_german
-		set_country_flag = AUR_german
+		if = {
+			limit = {
+				is_subject = no
+				OR = {
+					is_in_faction_with = GER
+					has_war_together_with = GER
+				}			
+				GER = {
+					is_subject = no
+					NOT = {
+						has_government = communism
+					}
+				}
+			}
+			get_current_government_type = yes
+			GER = {
+				set_autonomy = {
+					target = ROOT
+					autonomy_state = autonomy_tgwr_unilateral_union
+					end_wars = no
+					end_civil_wars = no
+				}
+			}
+			restore_previous_government_type = yes
+		}
 		news_event = {
 			id = ww1_auh.18
 		}
 		hidden_effect = {
 			set_global_flag = AUH_collapse
 		}
-		ai_chance = {
-			factor = 100
-		}
 	}
 }
+
 
 # DEATH OF AUSTRIA - NEWS
 #################
@@ -846,14 +882,11 @@ news_event = {
 	id = ww1_auh.18
 	title = ww1_auh.18.t
 	desc = ww1_auh.18.d
-	picture = GFX_news_event_ger_civil_war
+	picture = GFX_news_event_auh_collapse
 	is_triggered_only = yes
 	major = yes
 	option = {
 		name = ww1_auh.18.a
-		ai_chance = {
-			factor = 100
-		}
 	}
 }
 
@@ -915,7 +948,7 @@ country_event = {
 	option = {
 		name = ww1_auh.24.a
 		ai_chance = {
-			factor = 100
+			base = 100
 		}
 		every_owned_state = {
 			limit = {
@@ -980,6 +1013,7 @@ country_event = {
 					communism = 17
 				}
 				add_ideas = AUH_ww1_House_Habsburg_Lorraine
+				add_ideas = ITA_under_enemy_hands
 			}
 		}
 		trigger = {
@@ -1040,7 +1074,7 @@ country_event = {
 	option = {
 		name = ww1_auh.25.a
 		ai_chance = {
-			factor = 100
+			base = 100
 		}
 		add_war_support = 0.02
 		add_political_power = -150
@@ -1160,7 +1194,7 @@ country_event = {
 	trigger = {
 		tag = AUS
 		is_subject = no
-		has_global_flag = great_war
+		is_great_war_ongoing = yes
 		has_war_with = FRA
 		has_stability < 0.75
 		has_war_support < 0.75
@@ -1194,7 +1228,6 @@ country_event = {
 		}
 		NOT = {
 			has_country_flag = austria_promised_autonomy
-			has_global_flag = great_war_ends
 			has_completed_focus = AUH_federalist_reform
 			has_completed_focus = AUH_the_status_of_croatia
 			has_subject = HUN
@@ -1210,7 +1243,7 @@ country_event = {
 		custom_effect_tooltip = ww1_auh.27.b.tt
 		set_country_flag = austria_promised_autonomy
 		add_war_support = 0.05
-		ai_chance = { factor = 100 }
+		ai_chance = { base = 100 }
 	}
 	option = {
 		name = ww1_auh.27.a
@@ -1238,7 +1271,7 @@ country_event = {
 			remove_core_of = ROOT
 		}
 		add_war_support = -0.30
-		ai_chance = { factor = 0 }
+		ai_chance = { base = 0 }
 	}
 }
 
@@ -1265,6 +1298,8 @@ country_event = {
 							state = 244
 							state = 513
 							state = 736
+							state = 1197
+							state = 1198
 							state = 1010
 						}
 					}
@@ -1274,23 +1309,27 @@ country_event = {
 					add_state_core = 115
 					add_state_core = 117
 					add_state_core = 156
+					add_state_core = 1217
+					add_state_core = 1218
 				}
 				TUS = {
 					add_state_core = 162
 				}
 				EMI = {
-					add_state_core = 833
+					add_state_core = 161
 				}
 				PAP = {
 					add_state_core = 2
 					add_state_core = 157
-					add_state_core = 161
+					add_state_core = 833
 					add_state_core = 835
 				}
 				SRD = {
 					add_state_core = 114
 					add_state_core = 158
+					add_state_core = 1216
 					add_state_claim = 735
+					add_state_claim = 1210
 					add_state_claim = 834
 					set_cosmetic_tag = SRD_PIE
 					set_capital = { state = 158 }
@@ -1319,6 +1358,8 @@ country_event = {
 				transfer_units_fraction = {
 					target = SRD
 					size = 0.5
+					target_organization = 1
+					source_organization = 1
 					stockpile_ratio = 0.5
 					army_ratio = 0.5
 					navy_ratio = 0.5
@@ -1327,6 +1368,8 @@ country_event = {
 				transfer_units_fraction = {
 					target = SIC
 					size = 1
+					target_organization = 1
+					source_organization = 1
 					stockpile_ratio = 1
 					army_ratio = 1
 					navy_ratio = 1
@@ -1496,7 +1539,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 100
+			base = 100
 		}
 	}
 }
@@ -1616,7 +1659,7 @@ country_event = {
 		is_subject = no
 		has_global_flag = great_war_ends
 		OR = {
-			has_global_flag = versallies_treaty
+			has_global_flag = versailles_treaty
 			has_global_flag = frankfurt_treaty
 		}
 		has_country_flag = great_war_winner
@@ -1651,6 +1694,9 @@ country_event = {
 			every_owned_state = {
 				limit = {
 					is_core_of = CZE
+					NOT = {
+						state = 1200
+					}
 				}
 				transfer_state_to = CZE
 			}
@@ -1892,7 +1938,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 100
+			base = 100
 		}
 	}
 }
@@ -2020,25 +2066,6 @@ country_event = {
 	}
 }
 
-# Mitteleuropa
-country_event = {
-	id = ww1_auh.41
-	title = ww1_auh.41.t
-	desc = ww1_auh.41.d
-	picture = GFX_report_event_germany_victory
-	is_triggered_only = yes
-	option = {
-		name = ww1_auh.41.a
-		effect_tooltip = {
-			give_guarantee = AUS
-		}
-		AUS = { country_event = ww1_auh.43 }
-	}
-	option = {
-		name = ww1_auh.41.b
-	}
-}
-
 # Austria-Hungary Undertakes National Reforms
 news_event = {
 	id = ww1_auh.42
@@ -2049,74 +2076,6 @@ news_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_auh.42.a
-	}
-}
-
-# Mitteleuropa yes
-country_event = {
-	id = ww1_auh.43
-	title = ww1_auh.41.t
-	desc = ww1_auh.43.d
-	picture = GFX_report_event_germany_victory
-	is_triggered_only = yes
-	option = {
-		name = ww1_auh.43.a
-		give_guarantee = FROM
-		FROM = { give_guarantee = PREV }
-		if = {
-			limit = { has_subject = UKR }
-			UKR = { give_military_access = FROM }
-		}
-		hidden_effect = {
-			add_ai_strategy = {
-				type = protect
-				id = GER
-				value = 200
-			}
-			GER = {
-				add_ai_strategy = {
-					type = protect
-					id = AUS
-					value = 200
-				}
-			}
-		}
-		ai_chance = {
-			factor = 100
-			modifier = {
-				factor = 0
-				has_opinion = {
-					target = FROM
-					value < 0
-				}
-			}
-		}
-	}
-	option = {
-		name = ww1_auh.43.b
-		FROM = { country_event = ww1_auh.44 }
-		ai_chance = {
-			base = 1
-			modifier = {
-				factor = 0
-				has_opinion = {
-					target = FROM
-					value > 0
-				}
-			}
-		}
-	}
-}
-
-# Mitteleuropa rejected
-country_event = {
-	id = ww1_auh.44
-	title = ww1_auh.44.t
-	desc = ww1_auh.44.d
-	picture = GFX_report_event_germany_victory
-	is_triggered_only = yes
-	option = {
-		name = ww1_auh.44.a
 	}
 }
 
@@ -2275,14 +2234,14 @@ country_event = {
 			type = annex_everything
 		}
 		ai_chance = {
-			factor = 95
+			base = 95
 		}
 	}
 	#Let them be free
 	option = {
 		name = ww1_auh.53.b
 		ai_chance = {
-			factor = 5
+			base = 5
 		}
 		add_stability = -0.15
 		add_political_power = -200
@@ -2338,7 +2297,7 @@ country_event = {
 		custom_effect_tooltip = AUH_ITA_high_chances_of_success
 		set_country_flag = AUH_ITA_trentino_proposal
 		ai_chance = {
-			factor = 50
+			base = 50
 			modifier = {
 				is_historical_focus_on = yes
 				factor = 0
@@ -2350,7 +2309,7 @@ country_event = {
 		name = ww1_auh.55.b
 		add_political_power = 50
 		ai_chance = {
-			factor = 50
+			base = 50
 			modifier = {
 				is_historical_focus_on = yes
 				add = 200
@@ -2391,7 +2350,7 @@ country_event = {
 		custom_effect_tooltip = AUH_unlock_military_focuses
 		add_stability = -0.05
 		ai_chance = {
-			factor = 10
+			base = 10
 			modifier = {
 				OR = {
 					has_country_flag = AUH_trialism
@@ -2420,7 +2379,7 @@ country_event = {
 		custom_effect_tooltip = AUH_unlock_military_focuses
 		set_country_flag = Franz_coronation_in_preparation
 		ai_chance = {
-			factor = 3
+			base = 3
 			modifier = {
 				is_historical_focus_on = yes
 				factor = 0
@@ -2554,13 +2513,13 @@ news_event = {
 	id = ww1_auh.61
 	title = ww1_auh.61.t
 	desc = ww1_auh.61.d
-	picture = EVENT_hoi4tgw_trialism
+	picture = GFX_news_event_hungary_aster_revolution
 	is_triggered_only = yes
 	major = yes
 	option = {
 		name = ww1_auh.61.a
 		ai_chance = {
-			factor = 100
+			base = 100
 		}
 	}
 }
@@ -2607,7 +2566,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 0
+			base = 0
 		}
 	}
 	
@@ -2621,7 +2580,72 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 1000
+			base = 1000
+			modifier = {
+				factor = 0
+				OR = {
+					has_game_rule = {
+						rule = AUH_ai_behavior 
+						option = CONRAD
+					}
+					has_country_flag = AUH_conrad_coup
+				}
+			}
+		}
+	}
+	option = {
+		trigger = {
+			has_character = AUH_conrad_von_hotzendorf
+			has_government = neutrality
+			NOT = {
+				has_country_leader = {
+					character = AUH_conrad_von_hotzendorf
+				}
+			}
+		}
+		name = ww1_auh.111.b
+		HUN = {
+			country_event = {
+				id = ww1_auh.64
+				hours = 48
+			}
+		}
+		news_event = {
+			id = kis_news.145
+			days = 1
+		}
+		add_war_support = 0.15
+		if = {
+			limit = {
+				has_country_leader = {
+					character = AUH_franz_joseph_i
+				}
+			}
+			add_ideas = AUH_franz_joseph_i
+			else_if = {
+				limit = {
+					has_country_leader = {
+						character = AUH_franz_ferdinand
+					}
+				}
+				add_ideas = AUH_franz_ferdinand
+			}	
+			else_if = {
+				limit = {
+					has_country_leader = {
+						character = AUH_karl_i
+					}
+				}
+				add_ideas = AUH_karl_i
+			}	
+		}
+		AUH_conrad_von_hotzendorf = {
+			promote_character = {
+				ideology = personalistic_dictatorship
+			}
+		}
+		ai_chance = {
+			base = 500
 		}
 	}
 }
@@ -2663,17 +2687,19 @@ country_event = {
 			threat = 10
 			name = AUH_hungarian_revolution
 		}
-		every_state = {
-			limit = {
-				is_controlled_by = HUN
+		HUN = {
+			every_owned_state = {
+				add_claim_by = AUS
 			}
-			add_claim_by = AUS
 		}
+		
 		hidden_effect = {
 			AUS = {
 				transfer_units_fraction = {
 					target = HUN
 					size = 0.25
+					target_organization = 1
+					source_organization = 1
 					army_ratio = 0.25
 					navy_ratio = 0.0
 					stockpile_ratio = 0.25
@@ -2729,16 +2755,16 @@ country_event = {
 					days = 4
 				}
 			}		
-			## bosnian revolution
+			# bosnian revolution
 			country_event = {
 				id = ww1_auh.67
 				days = 48
 			}
-			## ukranian revolution
-			country_event = {
-				id = ww1_auh.66
-				days = 68
-			}
+			# ## ukranian revolution
+			# country_event = {
+			# 	id = ww1_auh.66
+			# 	days = 68
+			# }
 		}
 		HUN = {
 			mark_focus_tree_layout_dirty = yes
@@ -2755,6 +2781,9 @@ country_event = {
 	desc = ww1_auh.65.d
 	picture = GFX_report_event_generic_usa_treaty
 	is_triggered_only = yes
+	trigger = {
+		has_war_with = HUN
+	}
 	option = {
 		name = ww1_auh.65.a	
 		hidden_effect = {
@@ -2772,14 +2801,20 @@ country_event = {
 					autonomous_state = autonomy_free
 				}
 			}
-			every_state = {
-				limit = {
-					is_owned_by = CRO
-				}
-				add_claim_by = AUS
-				add_claim_by = HUN
-			}
 			CRO = {
+				every_owned_state = {
+					if = {
+						limit = { 
+							region = 27
+						}
+						transfer_state_to = HUN
+						add_core_of = HUN
+						else = {
+							add_claim_by = AUS
+							add_claim_by = HUN
+						}
+					}
+				}	
 				give_military_access = HUN
 				add_named_threat = {
 					threat = 5
@@ -2787,6 +2822,7 @@ country_event = {
 				}
 				transfer_state = 109
 				transfer_state = 208
+				add_state_claim = 104
 				leave_faction = yes
 				clr_country_flag = monarchist_puppet
 				add_popularity = {
@@ -2842,6 +2878,17 @@ country_event = {
 				target = CRO
 				type = annex_everything
 			}
+			if = {
+				limit = { 
+					has_subject = BOS
+				}
+				BOS = {
+					add_to_war = {
+						targeted_alliance = AUS
+						enemy = CRO
+					}
+				}
+			}
 		}
 	}
 }
@@ -2849,99 +2896,100 @@ country_event = {
 ### 
 #	galician revolution
 ###
-country_event = {
-	id = ww1_auh.66
-	title = ww1_auh.66.t
-	desc = ww1_auh.66.d
-	picture = GFX_report_event_generic_usa_treaty
-	is_triggered_only = yes
-	trigger = {
-		AUS = {
-			any_owned_state = {
-				OR = {
-					state = 91
-					state = 89
-					state = 562
-				}
-			}
-		}
-	}
-	option = {
-		name = ww1_auh.65.a
-		AUS = {
-			every_owned_state = {
-				limit = {
-					OR = {
-						state = 91
-						state = 89
-						state = 562
-					}
-				}
-				transfer_state_to = WUK
-				add_claim_by = AUS			
-			}
-		}
-		WUK = {
-			add_named_threat = {
-				threat = 3
-				name = AUH_breakaway_state
-			}
-			set_country_flag = west_ukraine_from_austria_hungarian_civil_war
-			add_ideas = standing_alone
-			division_template = {
-				name = "Brygada Ludowa"
-				regiments = {
-					militia = {
-						x = 0
-						y = 0
-					}
-					militia = {
-						x = 0
-						y = 1
-					}
-					militia = {
-						x = 0
-						y = 2
-					}
-				}
-			}
-			91 = {
-				create_unit = {
-					division = "name = \"1. Brygada Ludowa\" division_template = \"Brygada Ludowa\" start_experience_factor = 0.2 start_equipment_factor = 0.5"
-					owner = WUK
-				}
-				create_unit = {
-					division = "name = \"2. Brygada Ludowa\" division_template = \"Brygada Ludowa\" start_experience_factor = 0.2 start_equipment_factor = 0.5"
-					owner = WUK
-				}
-				create_unit = {
-					division = "name = \"3. Brygada Ludowa\" division_template = \"Brygada Ludowa\" start_experience_factor = 0.1 start_equipment_factor = 0.5"
-					owner = WUK
-				}
-			}
-			89 = {
-				create_unit = {
-					division = "name = \"4. Brygada Ludowa\" division_template = \"Brygada Ludowa\" start_experience_factor = 0.2 start_equipment_factor = 0.5"
-					owner = WUK
-				}
-				create_unit = {
-					division = "name = \"5. Brygada Ludowa\" division_template = \"Brygada Ludowa\" start_experience_factor = 0.2 start_equipment_factor = 0.5"
-					owner = WUK
-				}
-				create_unit = {
-					division = "name = \"6. Brygada Ludowa\" division_template = \"Brygada Ludowa\" start_experience_factor = 0.1 start_equipment_factor = 0.5"
-					owner = WUK
-				}
-			}
-		}
-		AUS = {
-			declare_war_on = {
-				target = WUK
-				type = annex_everything
-			}
-		}
-	}
-}
+# country_event = {
+# 	id = ww1_auh.66
+# 	title = ww1_auh.66.t
+# 	desc = ww1_auh.66.d
+# 	picture = GFX_report_event_generic_usa_treaty
+# 	is_triggered_only = yes
+# 	trigger = {
+# 		AUS = {
+# 			has_war_with = HUN
+# 			any_owned_state = {
+# 				OR = {
+# 					state = 91
+# 					state = 89
+# 					state = 562
+# 				}
+# 			}
+# 		}
+# 	}
+# 	option = {
+# 		name = ww1_auh.65.a
+# 		AUS = {
+# 			every_owned_state = {
+# 				limit = {
+# 					OR = {
+# 						state = 91
+# 						state = 89
+# 						state = 562
+# 					}
+# 				}
+# 				transfer_state_to = WUK
+# 				add_claim_by = AUS			
+# 			}
+# 		}
+# 		WUK = {
+# 			add_named_threat = {
+# 				threat = 3
+# 				name = AUH_breakaway_state
+# 			}
+# 			set_country_flag = west_ukraine_from_austria_hungarian_civil_war
+# 			add_ideas = standing_alone
+# 			division_template = {
+# 				name = "Brygada Ludowa"
+# 				regiments = {
+# 					militia = {
+# 						x = 0
+# 						y = 0
+# 					}
+# 					militia = {
+# 						x = 0
+# 						y = 1
+# 					}
+# 					militia = {
+# 						x = 0
+# 						y = 2
+# 					}
+# 				}
+# 			}
+# 			91 = {
+# 				create_unit = {
+# 					division = "name = \"1. Brygada Ludowa\" division_template = \"Brygada Ludowa\" start_experience_factor = 0.2 start_equipment_factor = 0.5"
+# 					owner = WUK
+# 				}
+# 				create_unit = {
+# 					division = "name = \"2. Brygada Ludowa\" division_template = \"Brygada Ludowa\" start_experience_factor = 0.2 start_equipment_factor = 0.5"
+# 					owner = WUK
+# 				}
+# 				create_unit = {
+# 					division = "name = \"3. Brygada Ludowa\" division_template = \"Brygada Ludowa\" start_experience_factor = 0.1 start_equipment_factor = 0.5"
+# 					owner = WUK
+# 				}
+# 			}
+# 			89 = {
+# 				create_unit = {
+# 					division = "name = \"4. Brygada Ludowa\" division_template = \"Brygada Ludowa\" start_experience_factor = 0.2 start_equipment_factor = 0.5"
+# 					owner = WUK
+# 				}
+# 				create_unit = {
+# 					division = "name = \"5. Brygada Ludowa\" division_template = \"Brygada Ludowa\" start_experience_factor = 0.2 start_equipment_factor = 0.5"
+# 					owner = WUK
+# 				}
+# 				create_unit = {
+# 					division = "name = \"6. Brygada Ludowa\" division_template = \"Brygada Ludowa\" start_experience_factor = 0.1 start_equipment_factor = 0.5"
+# 					owner = WUK
+# 				}
+# 			}
+# 		}
+# 		AUS = {
+# 			declare_war_on = {
+# 				target = WUK
+# 				type = annex_everything
+# 			}
+# 		}
+# 	}
+# }
 
 ### 
 #	bosnian revolution
@@ -2952,22 +3000,34 @@ country_event = {
 	desc = ww1_auh.67.d
 	picture = GFX_report_event_generic_usa_treaty
 	is_triggered_only = yes
+	trigger = {
+		has_war_with = HUN
+		104 = {
+			is_owned_or_subject_trigger = yes
+		}
+	}
 	option = {
-		name = ww1_auh.67.a	
+		name = ww1_auh.67.a
 		AUS = {
 			release = BOS
-			end_puppet = BOS
+			set_autonomy = {
+				target = BOS
+				autonomy_state = autonomy_free
+				end_wars = yes
+			}
 		}
 		BOS = {
-			transfer_state = 104
-		}
-		every_state = {
-			limit = {
-				is_controlled_by = BOS
+			clear_all_relations = yes
+			drop_cosmetic_tag = yes
+			promote_character = BOS_vladimir_gacinovic
+			set_politics = {
+				ruling_party = fascism
+				elections_allowed = no
 			}
-			add_claim_by = AUS
-		}
-		BOS = {	
+			set_popularities = {
+				democratic = 40
+				fascism = 60
+			}
 			add_named_threat = {
 				threat = 2
 				name = AUH_breakaway_state
@@ -2975,31 +3035,34 @@ country_event = {
 			set_rule = {
 				can_join_factions = no
 			}
-			set_politics = {
-				ruling_party = democratic
-			}
 			division_template = {
-				name = "Narodna brigada"
+				name = "Bosanski pobunjenici"
+				is_locked = yes
 				regiments = {
-					militia = {
-						x = 0
-						y = 0
-					}
-					militia = {
-						x = 0
-						y = 1
-					}
-					militia = {
-						x = 0
-						y = 2
-					}
-				}
+					militia = { x = 0 y = 0 }
+					militia = { x = 0 y = 1 }
+					militia = { x = 0 y = 2 }
+				}	
+			}			
+			every_owned_state = {
+				add_claim_by = AUS
 			}
-			104 = {
-				create_unit = {
-					division = "name = \"1. Narodna brigada\" division_template = \"Narodna brigada\" start_experience_factor = 0.2 start_equipment_factor = 0.5"
-					owner = BOS
-				}
+		}
+		104 = {
+			create_unit = {
+				division = "name = \"Četnički odred\" division_template = \"Bosanski pobunjenici\" start_experience_factor = 0.5 start_equipment_factor = 0.5"
+				owner = BOS
+				allow_spawning_on_enemy_provs = yes
+			}
+			create_unit = {
+				division = "name = \"Odred Mlade Bosne\" division_template = \"Bosanski pobunjenici\" start_experience_factor = 0.5 start_equipment_factor = 0.5"
+				owner = BOS
+				allow_spawning_on_enemy_provs = yes
+			}
+			create_unit = {
+				division = "name = \"Podrinjski čentički odred\" division_template = \"Bosanski pobunjenici\" start_experience_factor = 0.5 start_equipment_factor = 0.5"
+				owner = BOS
+				allow_spawning_on_enemy_provs = yes
 			}
 		}
 		AUS = {
@@ -3040,13 +3103,18 @@ country_event = {
 		name = ww1_auh.68.a	
 		set_country_flag = SLO_rebellion_in_AUH_civil_war
 		HUN = {
-			release = SLO
-		}
-		every_state = {
-			limit = {
-				is_controlled_by = SLO
+			every_owned_state = {
+				limit = {
+					is_core_of = SLO
+					NOT = {
+						state = 664
+					}
+				}
+				remove_core_of = HUN
+				remove_claim_by = AUS
+				add_claim_by = HUN
+				transfer_state_to = SLO
 			}
-			add_claim_by = HUN
 		}
 		SLO = {
 			add_named_threat = {
@@ -3191,7 +3259,7 @@ country_event = {
 		}
 		set_country_flag = has_supported_the_AUH_civil_war
 		ai_chance = {
-			factor = 33
+			base = 33
 			modifier = {
 				has_game_rule = {
 					rule = AUH_civil_war_intervention
@@ -3222,7 +3290,7 @@ country_event = {
 		set_country_flag = has_supported_the_AUH_civil_war
 		set_country_flag = has_supported_the_AUH_civil_war_austrian_side
 		ai_chance = {
-			factor = 33
+			base = 33
 		}
 	}
 	##
@@ -3251,7 +3319,7 @@ country_event = {
 		set_country_flag = has_supported_the_AUH_civil_war_austrian_side
 		add_to_faction = AUS
 		ai_chance = {
-			factor = 33
+			base = 33
 			modifier = {
 				has_game_rule = {
 					rule = AUH_civil_war_intervention
@@ -3271,49 +3339,49 @@ country_event = {
 	##
 	# Eat Austria 
 	# Declare war on AUS and not on HUN 
-	##
-	option = {
-		name = ww1_auh.70.e
-		trigger = {
-			has_completed_focus = GER_backstab
-		}
-		news_event = {
-			id = ww1_auh.71
-		}
-		if = {
-			limit = {
-				is_in_faction_with = AUS
-			}
-			AUS = {
-				leave_faction = yes
-			}
-		}
-		HUN = {
-			remove_ideas = standing_alone
-		}
-		add_political_power = -250
-		add_stability = -0.10
-		add_war_support = -0.10
-		GER = {
-			declare_war_on = {
-				target = AUS
-				type = annex_everything
-			}
-		}
-		set_country_flag = has_supported_the_AUH_civil_war
-		set_country_flag = has_supported_the_AUH_civil_war_hungarian_side
-		add_state_claim = 153
-		add_state_claim = 152
-		add_state_claim = 4
-		add_state_claim = 39
-		add_state_claim = 244
-		add_state_claim = 736
-		add_state_claim = 1010
-		add_state_claim = 102
-		ai_chance = {
-			factor = 100
-		}
-	}
+	# ##
+	# option = {
+	# 	name = ww1_auh.70.e
+	# 	trigger = {
+	# 		has_completed_focus = GER_backstab
+	# 	}
+	# 	news_event = {
+	# 		id = ww1_auh.71
+	# 	}
+	# 	if = {
+	# 		limit = {
+	# 			is_in_faction_with = AUS
+	# 		}
+	# 		AUS = {
+	# 			leave_faction = yes
+	# 		}
+	# 	}
+	# 	HUN = {
+	# 		remove_ideas = standing_alone
+	# 	}
+	# 	add_political_power = -250
+	# 	add_stability = -0.10
+	# 	add_war_support = -0.10
+	# 	GER = {
+	# 		declare_war_on = {
+	# 			target = AUS
+	# 			type = annex_everything
+	# 		}
+	# 	}
+	# 	set_country_flag = has_supported_the_AUH_civil_war
+	# 	set_country_flag = has_supported_the_AUH_civil_war_hungarian_side
+	# 	add_state_claim = 153
+	# 	add_state_claim = 152
+	# 	add_state_claim = 4
+	# 	add_state_claim = 39
+	# 	add_state_claim = 244
+	# 	add_state_claim = 736
+	# 	add_state_claim = 1010
+	# 	add_state_claim = 102
+	# 	ai_chance = {
+	# 		factor = 100
+	# 	}
+	# }
 }
 
 ###
@@ -3323,13 +3391,13 @@ news_event = {
 	id = ww1_auh.71
 	title = ww1_auh.71.t
 	desc = ww1_auh.71.d
-	picture = EVENT_hoi4tgw_trialism
+	picture = GFX_news_event_german_soldiers
 	is_triggered_only = yes
 	major = yes
 	option = {
 		name = ww1_auh.71.a
 		ai_chance = {
-			factor = 100
+			base = 100
 		}
 	}
 }
@@ -3360,7 +3428,7 @@ country_event = {
 		}
 		set_country_flag = has_supported_the_AUH_civil_war
 		ai_chance = {
-			factor = 10
+			base = 10
 			modifier = {
 				has_game_rule = {
 					rule = AUH_civil_war_intervention
@@ -3398,7 +3466,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 50
+			base = 50
 			modifier = {
 				has_game_rule = {
 					rule = AUH_civil_war_intervention
@@ -3438,7 +3506,7 @@ country_event = {
 		set_country_flag = has_supported_the_AUH_civil_war
 		set_country_flag = has_supported_the_AUH_civil_war_austrian_side
 		ai_chance = {
-			factor = 20
+			base = 20
 			modifier = {
 				has_game_rule = {
 					rule = AUH_civil_war_intervention
@@ -3513,7 +3581,7 @@ country_event = {
 		}
 		set_country_flag = has_supported_the_AUH_civil_war_hungarian_side
 		ai_chance = {
-			factor = 33
+			base = 33
 			modifier = {
 				has_opinion = {
 					target = HUN
@@ -3575,7 +3643,7 @@ country_event = {
 		}
 		set_country_flag = has_supported_the_AUH_civil_war_austrian_side
 		ai_chance = {
-			factor = 33
+			base = 33
 			modifier = {
 				has_opinion = {
 					target = AUS
@@ -3616,7 +3684,7 @@ country_event = {
 		name = ww1_auh.74.c	
 		add_political_power = 75
 		ai_chance = {
-			factor = 5
+			base = 5
 			modifier = {
 				has_war_support < 0.15
 				add = 30
@@ -3699,7 +3767,7 @@ country_event = {
 		}
 		set_country_flag = has_supported_the_AUH_civil_war
 		ai_chance = {
-			factor = 20
+			base = 20
 			modifier = {
 				has_game_rule = {
 					rule = AUH_civil_war_intervention
@@ -3729,7 +3797,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 50
+			base = 50
 		}
 	}
 	##
@@ -3749,7 +3817,7 @@ country_event = {
 		set_country_flag = has_supported_the_AUH_civil_war
 		set_country_flag = SER_has_acted_against_HUN_interests
 		ai_chance = {
-			factor = 20
+			base = 20
 			modifier = {
 				HUN = {
 					has_war_with = GER
@@ -3809,7 +3877,7 @@ country_event = {
 	option = {
 		name = ww1_auh.78.a	
 		ai_chance = {
-			factor = 40
+			base = 40
 			modifier = {
 				surrender_progress > 0.30
 				add = 20
@@ -3847,7 +3915,7 @@ country_event = {
 	option = {
 		name = ww1_auh.78.b	
 		ai_chance = {
-			factor = 60
+			base = 60
 		}
 		effect_tooltip = {
 			SER = {
@@ -4016,8 +4084,10 @@ country_event = {
 	fire_only_once = yes
 	trigger = {
 		tag = AUS
+		has_global_flag = AUH_HUN_civil_war_ends
+		has_global_flag = AUH_won_against_hungary
 		AUS = {
-			is_puppet = no
+			is_subject = no
 			is_in_faction_with = GER
 			has_war = no
 			exists = yes
@@ -4027,38 +4097,49 @@ country_event = {
 		}
 		GER = {
 			has_country_flag = has_supported_the_AUH_civil_war_austrian_side
-		}
-		NOT = {
-			has_country_flag = AUH_HUN_civil_war_ends
-		}
-	}
-	option = {
-		name = ww1_auh.82.a	
-		set_country_flag = AUH_territory_rebalanced_after_german_intervention
-		set_global_flag = AUH_HUN_civil_war_ends
-		ai_chance = {
-			factor = 100
-		}
-		every_state = {
-			limit = { 
+			any_owned_state = {
+				NOT = {
+					is_core_of = PREV
+				}
 				OR = {
 					is_claimed_by = AUS
 					is_core_of = AUS
 				}
-				is_controlled_by_ROOT_or_ally = yes
 				OR = {
-					is_core_of = HUN
-					is_core_of = SLO
-					is_core_of = TRA
-					is_core_of = CRO
-					is_core_of = BOS
-					is_core_of = WUK
+					region = 22
+					region = 39
+					region = 27
+					region = 24
 				}
 			}
-			AUS = {
-				transfer_state = PREV
-			}
+		}	
+	}
+	option = {
+		name = ww1_auh.82.a	
+		set_country_flag = AUH_territory_rebalanced_after_german_intervention
+		ai_chance = {
+			base = 100
 		}
+		GER = {
+			every_owned_state = {
+				limit = { 
+					NOT = {
+						is_core_of = PREV
+					}
+					OR = {
+						is_claimed_by = AUS
+						is_core_of = AUS
+					}
+					OR = {
+						region = 22
+						region = 39
+						region = 27
+						region = 24
+					}
+				}
+				transfer_state_to = ROOT
+			}
+		}	
 	}
 }
 
@@ -4103,7 +4184,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 30
+			base = 30
 			modifier = {
 				AUS = {
 					is_in_faction = no
@@ -4164,7 +4245,7 @@ country_event = {
 			days = 2
 		}
 		ai_chance = {
-			factor = 70
+			base = 70
 			modifier = {
 				has_game_rule = {
 					rule = AUH_civil_war_intervention
@@ -4284,38 +4365,16 @@ country_event = {
 	picture = GFX_report_event_generic_usa_treaty
 	fire_only_once = yes
 	trigger = {
-		AUS = {
-			OR = {
-				exists = no
-				is_puppet = yes
-				NOT = {
-					AND = {
-						4 = {
-							is_owned_and_controlled_by = PREV
-						}
-						152 = {
-							is_owned_and_controlled_by = PREV
-						}
-						153 = {
-							is_owned_and_controlled_by = PREV
-						}
-					}
-				}
-			}
-			has_war = no
-		}
-		HUN = {
-			exists = yes
-			is_puppet = no
-			has_war = no
-		}
-		has_global_flag =  AUH_HUN_independence
+		tag = HUN
+		has_global_flag = AUH_civil_war
+		has_global_flag = AUH_HUN_civil_war_ends
+		has_global_flag = AUH_lose_against_hungary
+		is_subject = no
+		has_war = no
 		NOT = {
-			has_global_flag = AUH_HUN_civil_war_ends
+			has_global_flag = great_war_ends
+			has_global_flag = AUH_territory_rearranged_by_script
 		}
-	}
-	immediate = {
-		set_global_flag = AUH_HUN_civil_war_ends
 	}
 	##
 	# scripted integration
@@ -4323,34 +4382,45 @@ country_event = {
 	option = { 
 		name = ww1_auh.86.a	
 		ai_chance = {
-			factor = 100
+			base = 100
 		}
 		set_global_flag = AUH_territory_rearranged_by_script
-		HUN = {
-			remove_ideas = standing_alone
+		AUS = {
 			every_owned_state = {
 				limit = {
-					OR = {
-						is_core_of = SLO
-						is_core_of = TRA
-						is_core_of = UKR
-						is_core_of = WUK
-					}
-					is_core_of = HUN
+					region = 27
 				}
-				transfer_state_to = ROOT
+				transfer_state_to = HUN
 			}
 		}
-		CRO = {
-			transfer_state = 109
-			transfer_state = 208
-			transfer_state = 163
-			transfer_state = 103
-			transfer_state = 1006
+		HUN = {
+			remove_ideas = standing_alone
+		}
+		every_state = {
+			limit = {
+				OR = {
+					is_owned_by = AUS
+					is_owned_by = HUN
+				}
+				OR = {
+					state = 109
+					state = 208
+					state = 163
+					state = 103
+					state = 1006
+					state = 575
+				}
+			}
+			transfer_state_to = CRO
 		}
 		if = {
 			limit = {
-				owns_state = 104
+				104 = {
+					OR = {
+						is_owned_by = AUS
+						is_owned_by = HUN
+					}
+				}
 			}
 			BOS = {
 				transfer_state = 104
@@ -4358,110 +4428,207 @@ country_event = {
 		}
 		if = {
 			limit = {
-				575 = {
-					is_controlled_by_ROOT_or_subject = yes
+				244 = {
+					OR = {
+						is_owned_by = AUS
+						is_owned_by = HUN
+					}
 				}
 			}
-			#give it to CRO
-			CRO = {
-				transfer_state = 575
-			}
-		}
-		if = {
-			limit = {
-				NOT = {
-					has_war_with = HUN
+			160 = {
+				owner = {
+					transfer_state = 244
 				}
-			}
-			ITA = {
-				transfer_state = 244
-			}
+			}	
 		}
 		AUS = {
 			AUH_karl_i = {
-				add_country_leader_role = {
-					promote_leader = yes
-					country_leader = {
-						ideology = semi_constitutional_monarchy
-						traits = { legitimate_heir }
+				if = {
+					limit = { has_ideology = semi_constitutional_monarchy }
+					promote_character = semi_constitutional_monarchy
+				}
+				else = {
+					add_country_leader_role = {
+						promote_leader = yes
+						country_leader = {
+							ideology = semi_constitutional_monarchy
+							traits = {
+								blessed
+							}
+						}
 					}
-				}	
+				}
 			}
 			hidden_effect = {
-				load_oob = AUS_1918
+				#load_oob = AUS_1918
 				set_politics = {
 					ruling_party = neutrality
-					elections_allowed = no
+					name = AUS_neutrality_party
+					long_name = AUS_neutrality_party
+					elections_allowed = yes
 				}
+				clr_country_flag = AUS_republic_flag
+				set_cosmetic_tag = AUS
 				add_popularity = {
 					ideology = neutrality
 					popularity = 0.5
 				}
 			}
 		}
-		CZE = {
-			transfer_state = 9
-			transfer_state = 69
-			transfer_state = 74
-			transfer_state = 75
-			transfer_state = 72
-			hidden_effect = {
-				inherit_technology = AUS
-			}
+		hidden_effect = {
+			CZE = {
+				if = {
+					limit = { exists = no }
+					inherit_technology = AUS
+				}			
+			}	
 		}
-		RUS = {
-			transfer_state = 88
-			transfer_state = 237
-			transfer_state = 991
+		every_state = {
+			limit = {
+				OR = {
+					is_owned_by = AUS
+					is_owned_by = HUN
+				}
+				is_core_of = CZE
+			}
+			transfer_state_to = CZE
 		}
 		if = {
-			limit = {
-				HUN = {
-					owns_state = 562
+			limit = { 
+				RUS = {
+					exists = yes
+					owns_state = 90
+					controls_state = 90
 				}
 			}
-			WUK = {
-				transfer_state = 562
+			every_state = {
+				limit = {
+					OR = {
+						is_owned_by = AUS
+						is_owned_by = HUN
+					}
+					OR = {
+						state = 88
+						state = 237
+						state = 991
+					}
+				}
+				transfer_state_to = RUS
+			}
+			else_if = {
+				limit = {
+					NOT = { has_global_flag = GAL_POL_united }
+				}			
+				every_state = {
+					limit = {
+						OR = {
+							is_owned_by = AUS
+							is_owned_by = HUN
+						}
+						OR = {
+							state = 88
+							state = 237
+							state = 991
+						}
+						is_core_of = GAL
+					}
+					transfer_state_to = GAL
+				}
+				if = {
+					limit = {
+						country_exists = GAL
+					}
+					set_global_flag = galicia_released
+					hidden_effect = {
+						GAL = {
+							set_cosmetic_tag = GAL_liquidation_comitte
+							set_politics = {
+								ruling_party = neutrality
+								long_name = GAL_liquidation_comitte_party_long 
+								name = GAL_liquidation_comitte_party 
+								elections_allowed = no
+							}
+							set_popularities = {
+								democratic = 46
+								fascism = 0
+								communism = 8
+								neutrality = 46
+							}
+							POL_wincenty_witos = {
+								promote_character = authoritarian_democracy
+							}	
+						}
+					}
+				}
+			}
+			else = {
+				every_state = {
+					limit = {
+						OR = {
+							is_owned_by = AUS
+							is_owned_by = HUN
+						}
+						OR = {
+							state = 88
+							state = 237
+							state = 991
+						}
+					}
+					transfer_state_to = POL
+				}
 			}
 		}
-		if = {
+		every_state = {
 			limit = {
-				HUN = {
-					owns_state = 91
+				OR = {
+					is_owned_by = AUS
+					is_owned_by = HUN
 				}
+				is_core_of = WUK
+				region = 39
 			}
-			WUK = {
-				transfer_state = 91
-			}
-		}
-		if = {
-			limit = {
-				HUN = {
-					owns_state = 89
-				}
-			}
-			WUK = {
-				transfer_state = 89
-			}
+			transfer_state_to = WUK
 		}
 		89 = {
 			owner = {
 				transfer_state = 1007
 			}
 		}
-		ROM = {
-			transfer_state = 1007
+		79 = {
+			owner = {
+				transfer_state = 1007
+			}
 		}
 		if = {
 			limit = {
 				has_global_flag = SER_full_intervention_in_AUH_civil_war_in_HUN_side
 			}
-			SER = {
-				transfer_state = 575
-				transfer_state = 104
+			every_state = {
+				limit = {
+					OR = {
+						is_owned_by = AUS
+						is_owned_by = HUN
+						is_owned_by = CRO
+						is_owned_by = BOS
+					}
+					OR = {
+						state = 575
+						state = 104
+					}
+				}
+				transfer_state_to = SER
 			}
 			HUN = {
 				leave_faction = yes
+			}
+		}
+		HUN = {
+			every_owned_state = {
+				limit = {
+					region = 22
+					is_core_of = AUS
+				}
+				transfer_state_to = AUS
 			}
 		}
 	}
@@ -4469,7 +4636,7 @@ country_event = {
 	option = { 
 		name = ww1_auh.86.b
 		ai_chance = {
-			factor = 0
+			base = 0
 		}
 	}
 }
@@ -4486,31 +4653,26 @@ country_event = {
 	picture = GFX_report_event_generic_usa_treaty
 	trigger = {
 		tag = AUS
-		AUS = {
-			is_puppet = no
-			has_war = no
-			exists = yes
-			NOT = {
-				has_country_flag = AUH_territory_rebalanced_after_serbian_intervention
-			}
-			HUN = {
-				OR = {
-					exists = no
-					is_puppet = yes
-				}
-			}
+		has_global_flag = AUH_HUN_civil_war_ends
+		has_global_flag = AUH_won_against_hungary
+		is_subject = no
+		has_war = no
+		NOT = {
+			has_country_flag = AUH_territory_rebalanced_after_serbian_intervention
+			has_global_flag = AUH_lose_against_hungary
 		}
 		SER = {
 			has_country_flag = has_supported_the_AUH_civil_war
 			has_country_flag = SER_has_acted_against_HUN_interests
 		}
 	}
-	option = {
-		name = ww1_auh.87.a	
+	immediate = {
 		set_country_flag = AUH_territory_rebalanced_after_serbian_intervention
-		set_global_flag = AUH_HUN_civil_war_ends
+	}
+	option = {
+		name = ww1_auh.87.a		
 		ai_chance = {
-			factor = 100
+			base = 100
 		}
 		if = {
 			limit = {
@@ -4566,19 +4728,17 @@ country_event = {
 	fire_only_once = yes
 	trigger = {
 		tag = AUS
+		has_global_flag = AUH_HUN_civil_war_ends
+		has_global_flag = AUH_won_against_hungary
 		NOT = {
 			has_global_flag = AUH_choose_what_to_do_with_TRA
 		}
-		AUS = {
-			is_puppet = no
-			has_war = no
-			exists = yes
-			has_global_flag = AUH_HUN_civil_war_ends
-		}
+		is_subject = no
+		has_war = no
 		TRA = {
 			exists = yes
 			NOT = {
-				is_puppet_of = AUS
+				is_subject_of = ROOT
 			}
 		}
 	}
@@ -4605,7 +4765,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 100
+			base = 100
 		}
 	}
 	## transylvania can still exists
@@ -4614,7 +4774,7 @@ country_event = {
 		add_political_power = -100
 		add_stability = -0.10
 		ai_chance = {
-			factor = 5
+			base = 5
 		}
 	}
 }
@@ -4628,79 +4788,76 @@ country_event = {
 	desc = ww1_auh.89.d
 	picture = GFX_report_event_generic_usa_treaty
 	mean_time_to_happen = {
-		days = 40
+		days = 15
 	}
 	trigger = {
 		tag = AUS
+		has_global_flag = AUH_civil_war
 		has_global_flag = AUH_HUN_civil_war_ends
+		has_global_flag = AUH_territory_rearranged_by_script
 		is_subject = no
 		has_war = no
-		country_exists = HUN
-	}
-	fire_only_once = yes
-	immediate = {
-		hidden_effect = {
-			remove_ideas = standing_alone
-			every_other_country = {
-				limit = {
-					is_subject_of = ROOT
-					original_tag = HUN
-				}
-				every_owned_state = {
-					transfer_state_to = ROOT
-				}	
-			}
+		has_country_flag = AUS_empire_flag
+		NOT = {
+			has_government = communism
+			has_global_flag = AUH_lose_against_hungary
 		}
 	}
+	fire_only_once = yes
 	## HUN is under austrian integration BECOME THE AUSTRIAN EMPIRE
 	option = {
-		name = ww1_auh.89.a
-		trigger = {
-			NOT = {
-				has_cosmetic_tag = AUS_USGA
-			}
+		name = ww1_auh.89.a	
+		annex_country = {
+			target = HUN
+			transfer_troops = yes
 		}
 		every_owned_state = {
 			limit = {
-				is_core_of = HUN
+				region = 27
+				NOT = { is_core_of = ROOT }
 			}
 			add_dynamic_modifier = {
 				modifier = AUH_austrian_integration
 			}
 		}
-		every_other_country = {
-			limit = {
-				is_subject_of = ROOT
-				original_tag = HUN
+		if = {
+			limit = { 
+				NOT = {
+					has_cosmetic_tag = AUS_HRE
+					has_cosmetic_tag = AUS_USGA
+				}
 			}
-			every_owned_state = {
-				transfer_state_to = ROOT
+			set_cosmetic_tag = AUH_empire
+			set_country_flag = AUH_empire
+		}
+		hidden_effect = {
+			AUS = {
+				AUH_joseph_august_von_osterreich = {
+					set_nationality = AUS
+					set_character_name = AUH_joseph_august_von_osterreich
+				}
 			}
 		}
 		ai_chance = {
-			factor = 100
+			base = 100
 		}
 	}
-	## HUN is cored, stay the austria hungary
+	## Stay the austria hungary
 	option = {
 		name = ww1_auh.89.b
 		trigger = {
 			NOT = {
+				has_cosmetic_tag = AUS_USGA
 				# Conrad path :)
 				has_country_leader = {
 					character = AUH_conrad_von_hotzendorf
 					ruling_only = yes
 				}
 			}
-		}
-		every_state = {
-			limit = {
-				is_core_of = HUN
-			}
-			add_core_of = AUS
+			has_subject = HUN
 		}
 		ai_chance = {
-			factor = 50
+			base = 50
 		}
 	}
 }
@@ -4732,7 +4889,7 @@ country_event = {
 		}
 		set_country_flag = has_supported_the_AUH_civil_war
 		ai_chance = {
-			factor = 20
+			base = 20
 			modifier = {
 				has_game_rule = {
 					rule = AUH_civil_war_intervention
@@ -4770,7 +4927,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 50
+			base = 50
 		}
 	}
 	##
@@ -4796,7 +4953,7 @@ country_event = {
 		set_country_flag = has_supported_the_AUH_civil_war
 		set_country_flag = ROM_has_acted_against_HUN_interests
 		ai_chance = {
-			factor = 20
+			base = 20
 			modifier = {
 				HUN = {
 					has_war_with = GER
@@ -4860,7 +5017,7 @@ country_event = {
 	option = {
 		name = ww1_auh.92.a	
 		ai_chance = {
-			factor = 40
+			base = 40
 			modifier = {
 				surrender_progress > 0.30
 				add = 20
@@ -4913,7 +5070,7 @@ country_event = {
 	option = {
 		name = ww1_auh.92.b	
 		ai_chance = {
-			factor = 60
+			base = 60
 		}
 		ROM = {
 			add_manpower = -1
@@ -4995,15 +5152,28 @@ country_event = {
 		name = ww1_auh.95.a	
 		custom_effect_tooltip = AUH_handle_federalism
 		ai_chance = {
-			factor = 70
+			base = 70
 			modifier = {
 				has_country_flag = AUH_federalism
 				factor = 0
 			}
 		}
-		country_event = {
-			id = ww1_auh.96
-			days = 8
+		if = {
+			limit = {
+				HUN = { is_ai = no }
+			}
+			HUN = {
+				country_event = {
+					id = ww1_auh.96
+					days = 8
+				}
+			}
+		}
+		else = {
+			country_event = {
+				id = ww1_auh.96
+				days = 8
+			}
 		}
 		trigger = {
 			OR = {
@@ -5019,7 +5189,7 @@ country_event = {
 		name = ww1_auh.95.b
 		custom_effect_tooltip = AUH_bypass_federalism
 		ai_chance = {
-			factor = 30
+			base = 30
 			modifier = {
 				has_global_flag = AUH_separate_peace_in_ww1
 				factor = 10000
@@ -5047,58 +5217,112 @@ country_event = {
 country_event = {
 	id = ww1_auh.96
 	title = ww1_auh.96.t
-	desc = ww1_auh.96.d
+	desc = {
+		text = ww1_auh.96.d
+		trigger = {
+			tag = AUS
+		}
+	}
+	desc = {
+		text = ww1_auh.96.d_hun
+		trigger = {
+			tag = HUN
+		}
+	}
 	picture = GFX_report_event_generic_usa_treaty
 	immediate = {
-		# if the player has favored Hungary by the past, there is more chance to get a friendly hungary at the congress
-		set_variable = {
-			var = HUN_friendly_level
-			value = 10
-		}
 		if = {
 			limit = {
-				has_completed_focus = AUH_Tiszas_Silent_Coup
+				HUN = { is_ai = yes }
 			}
-			add_to_variable = {
-				var = HUN_friendly_level
-				value = 15
-			}
-		}
-		if = {
-			limit = {
-				has_completed_focus = AUH_integrate_slovakia
-			}
-			add_to_variable = {
+			# if the player has favored Hungary by the past, there is more chance to get a friendly hungary at the congress
+			set_variable = {
 				var = HUN_friendly_level
 				value = 10
 			}
-		}
-		if = {
-			limit = {
-				has_completed_focus = AUH_act_of_protection
-			}
-			add_to_variable = {
-				var = HUN_friendly_level
+			set_variable = {
+				var = HUN_hostile_level
 				value = 10
 			}
-		}
-		if = {
-			limit = {
-				has_completed_focus = AUH_magyarisation
-			}
-			add_to_variable = {
-				var = HUN_friendly_level
-				value = 15
-			}
-		}
-		hidden_effect = {
 			if = {
 				limit = {
-					NOT = {
-						has_completed_focus = AUH_crush_hungarian_opposition
-						has_completed_focus = AUH_hungarian_universal_franchise
-					}
+					has_completed_focus = AUH_Tiszas_Silent_Coup
 				}
+				add_to_variable = {
+					var = HUN_friendly_level
+					value = 15
+				}
+			}
+			else = {
+				add_to_variable = {
+					var = HUN_hostile_level
+					value = 10
+				}
+			}
+			if = {
+				limit = {
+					has_completed_focus = AUH_integrate_slovakia
+				}
+				add_to_variable = {
+					var = HUN_friendly_level
+					value = 10
+				}
+			}
+			else = {
+				add_to_variable = {
+					var = HUN_hostile_level
+					value = 10
+				}
+			}
+			if = {
+				limit = {
+					has_completed_focus = AUH_act_of_protection
+				}
+				add_to_variable = {
+					var = HUN_friendly_level
+					value = 10
+				}
+			}
+			else = {
+				add_to_variable = {
+					var = HUN_hostile_level
+					value = 10
+				}
+			}
+			if = {
+				limit = {
+					has_completed_focus = AUH_magyarisation
+				}
+				add_to_variable = {
+					var = HUN_friendly_level
+					value = 15
+				}
+			}
+			else = {
+				add_to_variable = {
+					var = HUN_hostile_level
+					value = 10
+				}
+			}
+			if = {
+				limit = {
+					has_completed_focus = AUH_crush_hungarian_opposition
+				}
+				subtract_from_variable = {
+					var = HUN_friendly_level
+					value = 15
+				}
+			}
+			if = {
+				limit = {
+					has_completed_focus = AUH_hungarian_universal_franchise
+				}
+				add_to_variable = {
+					var = HUN_hostile_level
+					value = 15
+				}
+			}
+			hidden_effect = {
 				random_list = {
 					HUN_friendly_level = {
 						set_country_flag = HUN_are_friendly
@@ -5106,14 +5330,20 @@ country_event = {
 					20 = {
 						set_country_flag = HUN_are_neutrals
 					}
-					20 = {
+					HUN_hostile_level = {
 						set_country_flag = HUN_are_not_friendly
 					}
 				}
-				else = {
-					set_country_flag = HUN_are_friendly
+				country_event = {
+					id = ww1_auh.97
+					days = 4
 				}
-			}	
+			}
+		}
+		else_if = {
+			limit = {
+				tag = AUS
+			}
 			country_event = {
 				id = ww1_auh.97
 				days = 4
@@ -5124,6 +5354,7 @@ country_event = {
 	option = {
 		name = looked_friendly
 		trigger = {
+			tag = AUS
 			has_country_flag = HUN_are_friendly
 		}
 		custom_effect_tooltip = they_looked_friendly
@@ -5135,6 +5366,7 @@ country_event = {
 	option = {
 		name = looked_distant
 		trigger = {
+			tag = AUS
 			has_country_flag = HUN_are_neutrals
 		}
 		add_to_variable = {
@@ -5147,10 +5379,50 @@ country_event = {
 	option = {
 		name =looked_cold
 		trigger = {
+			tag = AUS
 			has_country_flag = HUN_are_not_friendly
 		}
 		custom_effect_tooltip = they_looked_lifted
 		custom_effect_tooltip = you_should_have_completed_HUN_focuses_to_gain_their_support
+	}
+	option = {
+		name = ww1_auh.96.a
+		trigger = {
+			tag = HUN
+		}
+		FROM = {
+			set_country_flag = HUN_are_friendly
+			country_event = {
+				id = ww1_auh.96
+				hours = 3
+			}
+		}
+	}
+	option = {
+		name = ww1_auh.96.b
+		trigger = {
+			tag = HUN
+		}
+		FROM = {
+			set_country_flag = HUN_are_neutrals
+			country_event = {
+				id = ww1_auh.96
+				hours = 3
+			}
+		}
+	}
+	option = {
+		name = ww1_auh.96.c
+		trigger = {
+			tag = HUN
+		}
+		FROM = {
+			set_country_flag = HUN_are_not_friendly
+			country_event = {
+				id = ww1_auh.96
+				hours = 3
+			}
+		}
 	}
 }
 
@@ -5271,6 +5543,10 @@ country_event = {
 			var = GAL_friendly_level
 			value = 0
 		}
+		set_variable = {
+			var = GAL_hostile_level
+			value = 0
+		}
 		if = {
 			limit = {
 				has_completed_focus = AUH_invest_in_galicia
@@ -5278,6 +5554,12 @@ country_event = {
 			add_to_variable = {
 				var = GAL_friendly_level
 				value = 30
+			}
+		}
+		else = {
+			add_to_variable = {
+				var = GAL_hostile_level
+				value = 20
 			}
 		}
 		hidden_effect = {
@@ -5300,7 +5582,7 @@ country_event = {
 				20 = {
 					set_country_flag = GAL_are_neutrals
 				}
-				20 = {
+				GAL_hostile_level = {
 					set_country_flag = GAL_are_not_friendly
 				}
 			}
@@ -5508,8 +5790,7 @@ country_event = {
 
 
 #######
-# great congress organisation - Bosnia want the recognization of islam as state religion
-# bruh in 1909 already recognised
+# great congress organisation - Bosnia want the condominium merged into croatia-slavonia
 ##############
 country_event = {
 	id = ww1_auh.101
@@ -5525,6 +5806,7 @@ country_event = {
 			var= federalism_acceptance
 			value = 5
 		}
+		set_country_flag = AUH_illiryia_contain_BOS
 	}
 	#lol no
 	option = {
@@ -5664,6 +5946,15 @@ country_event = {
 	desc = ww1_auh.106.d
 	picture = GFX_report_event_generic_usa_treaty
 	is_triggered_only = yes
+	immediate = {
+		hidden_effect = {
+			set_global_flag = second_ausgleich_failed
+			news_event = {
+				id = interwar_news.24
+				hours = 3
+			}
+		}
+	}
 	option = {
 		name = ww1_auh.106.a
 		trigger = {
@@ -5682,7 +5973,7 @@ country_event = {
 		custom_effect_tooltip = ww1_auh.106.b.tt
 		set_country_flag = AUH_kaiserreich_federalism
 		ai_chance = {
-			factor = 30
+			base = 30
 			modifier = {
 				has_country_flag = AUH_federalism
 				factor = 10000
@@ -5711,7 +6002,7 @@ country_event = {
 			limit = {
 				owns_or_subject_of = yes
 				OR = {
-					is_core_of = BOS
+					# is_core_of = BOS
 					is_core_of = FIU
 					is_core_of = MNT #it is needed when they do this after the victory
 					state = 208
@@ -5737,6 +6028,22 @@ country_event = {
 				SLV = { set_country_flag = assimilated_to_austria }
 				add_core_of = CRO
 				transfer_state_to = CRO
+			}
+		}
+		if = {
+			limit = {
+				has_country_flag = AUH_illiryia_contain_BOS
+			}
+			BOS = {
+				set_country_flag = assimilated_to_austria
+			}
+			CRO = {
+				annex_country = {
+					target = BOS
+					transfer_troops = yes
+				}
+				transfer_state = 104
+				add_state_core = 104
 			}
 		}
 		HUN = {
@@ -5790,6 +6097,8 @@ country_event = {
 			transfer_units_fraction = {
 				target = HUN
 				size = 0.30
+				target_organization = 1
+				source_organization = 1
 				army_ratio = 0.30
 				navy_ratio = 0.15
 				stockpile_ratio = 0.30
@@ -5801,6 +6110,8 @@ country_event = {
 				transfer_units_fraction = {
 					target = HUN
 					size = 0.1
+					target_organization = 1
+					source_organization = 1
 					army_ratio = 0.10
 					navy_ratio = 0.10
 					stockpile_ratio = 0.10
@@ -5813,6 +6124,8 @@ country_event = {
 		transfer_units_fraction = {
 			target = CZE
 			size = 0.1
+			target_organization = 1
+			source_organization = 1
 			army_ratio = 0.15
 			navy_ratio = 0.0
 			stockpile_ratio = 0.10
@@ -5823,6 +6136,8 @@ country_event = {
 		transfer_units_fraction = {
 			target = CRO
 			size = 0.1
+			target_organization = 1
+			source_organization = 1
 			army_ratio = 0.10
 			navy_ratio = 0.0
 			stockpile_ratio = 0.07
@@ -5833,6 +6148,8 @@ country_event = {
 		transfer_units_fraction = {
 			target = GAL
 			size = 0.1
+			target_organization = 1
+			source_organization = 1
 			army_ratio = 0.10
 			navy_ratio = 0.0
 			stockpile_ratio = 0.1
@@ -5842,6 +6159,7 @@ country_event = {
 		}
 		every_state = {
 			limit = {
+				has_resistance = yes
 				owns_or_subject_of = yes
 			}
 			add_compliance = 50
@@ -5915,7 +6233,9 @@ country_event = {
 			}
 			if = {
 				limit = {
-					has_government = democratic
+					NOT = {
+						has_government = neutrality
+					}
 				}
 				# their democratic country leaders wont fit
 				every_other_country = {
@@ -5952,6 +6272,15 @@ country_event = {
 	desc = ww1_auh.107.d
 	picture = GFX_report_event_generic_usa_treaty
 	is_triggered_only = yes
+	immediate = {
+		hidden_effect = {
+			set_global_flag = second_ausgleich
+			news_event = {
+				id = interwar_news.24
+				hours = 3
+			}
+		}
+	}
 	option = {
 	 	name = ww1_auh.107.a
 		every_state = {
@@ -5965,8 +6294,11 @@ country_event = {
 					is_core_of = CRO
 					is_core_of = BOS
 					is_core_of = SLO
-				} 
-				is_owned_and_controlled_by = ROOT	 
+				}
+				NOT = {
+					is_core_of = ROOT
+				}
+				is_owned_or_subject_trigger = yes
 			}
 			add_core_of = ROOT
 		}
@@ -6059,7 +6391,7 @@ country_event = {
 	## erase them !!
 	option = {
 		ai_chance = {
-			factor = 100
+			base = 100
 		}
 		name = ww1_auh.109.a
 		add_political_power = -50
@@ -6107,7 +6439,7 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		ai_chance = {
-			factor = 100
+			base = 100
 		}
 		name = ww1_auh.110.a
 		add_stability = -0.05
@@ -6171,7 +6503,7 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		ai_chance = {
-			factor = 40
+			base = 40
 			modifier = {
 				factor = 0
 				OR = {
@@ -6211,7 +6543,7 @@ country_event = {
 			has_character = AUH_conrad_von_hotzendorf
 		}
 		ai_chance = {
-			factor = 60
+			base = 60
 		}
 		name = ww1_auh.111.b
 		news_event = {
@@ -6244,11 +6576,6 @@ country_event = {
 				ideology = personalistic_dictatorship
 			}
 		}
-		hidden_effect = {
-			country_event = {
-				id = generic.27
-			}
-		}
 	}
 }
 
@@ -6264,70 +6591,26 @@ country_event = {
 	picture = GFX_report_event_generic_usa_treaty
 	trigger = {
 		tag = AUS
-		AUS = {
-			is_puppet = no
-			has_war = no
-			exists = yes
-			has_global_flag = AUH_civil_war
-			NOT = {
-				has_country_flag = AUH_territory_rebalanced_after_civil_war
-			}
-		}
+		has_global_flag = AUH_civil_war
+		has_global_flag = AUH_HUN_civil_war_ends
+		has_global_flag = AUH_won_against_hungary
+		is_subject = no
+		has_war = no
 		NOT = {
+			has_global_flag = AUH_territory_rearranged_by_script
 			has_global_flag = AUH_lose_against_hungary
 		}
+	}
+	immediate = {
+		set_global_flag = AUH_territory_rearranged_by_script
 	}
 	mean_time_to_happen = {
 		days = 4
 	}
 	option = {
-		name = ww1_auh.112.a	
-		set_country_flag = AUH_territory_rebalanced_after_civil_war
-		set_global_flag = AUH_HUN_civil_war_ends
+		name = ww1_auh.112.a
 		ai_chance = {
-			factor = 100
-		}
-		every_state = {
-			limit = { 
-				OR = {
-					is_claimed_by = AUS
-					is_core_of = AUS
-				}
-				OR = {
-					is_core_of = HUN
-					is_core_of = SLO
-					is_core_of = TRA
-					is_core_of = CRO
-					is_core_of = BOS
-					is_core_of = WUK
-				}
-				NOT = {
-					AND = {
-						is_owned_and_controlled_by = ROM
-						is_core_of = ROM
-					}
-					AND = {
-						is_owned_and_controlled_by = SER
-						is_core_of = SER
-					}
-					AND = {
-						is_owned_and_controlled_by = RUS
-						is_core_of = RUS
-					}
-					AND = {
-						is_owned_and_controlled_by = ITA
-						is_core_of = ITA
-					}
-					AND = {
-						is_owned_and_controlled_by = WUK
-						is_core_of = WUK
-					}
-				}
-				
-			}
-			AUS = {
-				transfer_state = PREV
-			}
+			base = 100
 		}
 		if = {	## Romania has reclaimed TRA, we should gave them something
 			limit = {
@@ -6358,7 +6641,6 @@ country_event = {
 				transfer_state_to = SER
 			}
 		}
-
 		## avoid bordergore conflicts
 		if = {
 			limit = {
@@ -6378,14 +6660,6 @@ country_event = {
 			ROM = {
 				transfer_state = 82
 			}
-		}
-	}
-	option = {
-		name = ww1_auh.112.b	
-		set_country_flag = AUH_territory_rebalanced_after_civil_war
-		set_global_flag = AUH_HUN_civil_war_ends
-		ai_chance = {
-			factor = 0
 		}
 	}
 }
@@ -6468,7 +6742,7 @@ country_event = {
 		}
 		add_stability = 0.10
 		ai_chance = {
-			factor = 1
+			base = 1
 			modifier = {
 				factor = 0
 				OR = {
@@ -6484,17 +6758,40 @@ country_event = {
 	## Ferdinand/Karl must retire, all powers to conrad ! 
 	option = {
 		name = ww1_auh.114.b
-		if = {
-			limit = {
-				has_idea = AUH_franz_ferdinand
+		hidden_effect = {
+			if = {
+				limit = {
+					has_idea = AUH_franz_joseph_i
+				}
+				remove_ideas = AUH_franz_joseph_i
+				AUH_franz_joseph_i = {
+					promote_character = {
+						ideology = semi_constitutional_monarchy
+					}
+				}
 			}
-			remove_ideas = AUH_franz_ferdinand
-		}
-		if = {
-			limit = {
-				has_idea = AUH_karl_i
+			else_if = {
+				limit = {
+					has_idea = AUH_franz_ferdinand
+				}
+				remove_ideas = AUH_franz_ferdinand
+				AUH_franz_ferdinand = {
+					promote_character = {
+						ideology = semi_constitutional_monarchy
+					}
+				}
 			}
-			remove_ideas = AUH_karl_i
+			else_if = {
+				limit = {
+					has_idea = AUH_karl_i
+				}
+				remove_ideas = AUH_karl_i
+				AUH_karl_i = {
+					promote_character = {
+						ideology = semi_constitutional_monarchy
+					}
+				}
+			}
 		}
 		news_event = {
 			id = kis_news.146
@@ -6519,10 +6816,10 @@ country_event = {
 			name = AUH_conrad_junta_party
 			elections_allowed = no
 		}
-		set_cosmetic_tag = AUH_conrad
-		set_country_flag = AUH_conrad
+		set_cosmetic_tag = AUH_empire
+		set_country_flag = AUH_empire
 		ai_chance = {
-			factor = 100
+			base = 100
 		}
 		
 	}
@@ -6531,46 +6828,51 @@ country_event = {
 		name = ww1_auh.114.c
 		trigger = {
 			OR = {
+				has_character = AUH_franz_joseph_i
 				has_character = AUH_franz_ferdinand
 				has_character = AUH_karl_i
 			}	
-		}	
+		}
 		if = {
+			limit = {
+				has_idea = AUH_franz_joseph_i
+			}
+			remove_ideas = AUH_franz_joseph_i
+			AUH_franz_joseph_i = {
+				promote_character = {
+					ideology = semi_constitutional_monarchy
+				}
+			}
+		}
+		else_if = {
 			limit = {
 				has_idea = AUH_franz_ferdinand
 			}
 			remove_ideas = AUH_franz_ferdinand
-		}
-		if = {
-			limit = {
-				has_idea = AUH_karl_i
-			}
-			remove_ideas = AUH_karl_i
-		}
-		add_stability = 0.10
-		if = {
-			limit = {
-				has_character = AUH_franz_ferdinand	
-			}
 			AUH_franz_ferdinand = {
 				promote_character = {
 					ideology = semi_constitutional_monarchy
 				}
 			}
-			else = {
-				AUH_karl_i = {
-					promote_character = {
-						ideology = semi_constitutional_monarchy
-					}
+		}
+		else_if = {
+			limit = {
+				has_idea = AUH_karl_i
+			}
+			remove_ideas = AUH_karl_i
+			AUH_karl_i = {
+				promote_character = {
+					ideology = semi_constitutional_monarchy
 				}
-			}	
-		}	
+			}
+		}
+		add_stability = 0.10
 		
 		hidden_effect = { #collapse focus tree
 			mark_focus_tree_layout_dirty = yes
 		}
 		ai_chance = {
-			factor = 1
+			base = 1
 			modifier = {
 				factor = 0
 				OR = {
@@ -6645,8 +6947,13 @@ country_event = {
 			producer = AUS
 		}
 		add_equipment_to_stockpile = {
-			type = artillery_equipment
-			amount = 500
+			type = field_gun_equipment
+			amount = 400
+			producer = AUS
+		}
+		add_equipment_to_stockpile = {
+			type = howitzer_equipment
+			amount = 100
 			producer = AUS
 		}
 		set_country_flag = AUH_gathering_weapons
@@ -6655,7 +6962,7 @@ country_event = {
 
 
 #######
-# Hungary surrender to Austria-Hungary
+# Hungary surrender to Austria
 ##############
 country_event = {
 	id = ww1_auh.117
@@ -6663,13 +6970,44 @@ country_event = {
 	desc = ww1_auh.117.d
 	picture = GFX_report_event_gre_political_march
 	is_triggered_only = yes
+	immediate = {
+		set_global_flag = AUH_HUN_civil_war_ends
+		set_global_flag = AUH_won_against_hungary
+		set_global_flag = AUH_territory_rearranged_by_script
+	}
 	option = {
 		name = ww1_auh.117.a
-		every_country = {
-			limit = {
-				has_war_with = HUN
+		remove_ideas = standing_alone
+		set_autonomy = {
+			target = HUN
+			autonomous_state = autonomy_tgwr_real_union
+			end_wars = no
+		}
+		AUS = {
+			AUH_joseph_august_von_osterreich = {
+				set_nationality = HUN
+				set_character_name = HUN_joseph_august
+				promote_character = semi_constitutional_monarchy
 			}
-			white_peace = HUN
+		}
+		HUN = {
+			set_politics = {
+				ruling_party = neutrality
+				long_name = HUN_viceroy_council_party_long
+				name = HUN_viceroy_council_party
+				elections_allowed = no
+			}
+			hidden_effect = {
+				set_popularities = {
+					democratic = 53
+					neutrality = 46
+					fascism = 0
+					communism = 1
+				}
+				add_ideas = HUN_ausgleich
+				AUH_create_habsburg = yes
+				drop_cosmetic_tag = yes		
+			}					
 		}
 		if = {			# give us our lands !
 			limit = {
@@ -6677,12 +7015,12 @@ country_event = {
 					has_war_with = HUN
 				}
 			}
-			every_state = {
+			every_owned_state = {
 				limit = {
 					is_fully_controlled_by = ROM
 					is_core_of = ROM
 				}
-				set_state_flag = temp_ROM_gained_this
+				transfer_state_to = ROM
 			}
 		}
 		if = {			# give us our lands !
@@ -6691,32 +7029,58 @@ country_event = {
 					has_war_with = HUN
 				}
 			}
-			every_state = {
+			every_owned_state = {
 				limit = {
 					is_fully_controlled_by = SER
 					is_core_of = SER
 				}
-				set_state_flag = temp_SER_gained_this
+				transfer_state_to = SER
 			}
+		}	
+		HUN = {
+			remove_ideas = standing_alone
+			delete_unit_template_and_units = {
+				division_template = "Forradalmi Milícia"
+				disband = no
+			}
+			every_enemy_country = {
+				limit = {
+					has_war_together_with = AUS
+					NOT = {
+						tag = SLO
+						tag = TRA
+					}
+				}
+				white_peace = PREV
+				set_truce = {
+					target = PREV
+					days = 180
+				}
+			}		
 		}
-		every_state = {
-			limit = {
-				OR = {
-					is_owned_and_controlled_by = HUN
-					is_owned_and_controlled_by = CRO
-					is_owned_and_controlled_by = WUK
-					is_owned_and_controlled_by = TRA
+		AUS = {
+			every_enemy_country = {
+				limit = {
+					has_war_together_with = HUN
+					NOT = {
+						tag = WUK
+						tag = BOS
+						tag = CRO
+					}
 				}
-				NOT = {
-					has_state_flag = temp_ROM_gained_this
-				}
-				NOT = {
-					has_state_flag = temp_SER_gained_this
-				}
+				PREV = {
+					white_peace = PREV
+					set_truce = {
+						target = PREV
+						days = 180
+					}
+				}				
 			}
-			AUS = {
-				transfer_state = PREV
-			}
+			white_peace = HUN
+			set_truce = {
+				target = HUN
+				days = 180
+			}		
 		}
 	}
 }
@@ -6777,7 +7141,7 @@ country_event = {
 		}
 		news_event = ww1_franzferdinand.101
 		ai_chance = {
-			factor = 100
+			base = 100
 			modifier = {
 				has_war = yes
 				factor = 50
@@ -6810,7 +7174,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 10
+			base = 10
 			modifier = {
 				is_historical_focus_on = yes
 				factor = 0
@@ -6824,131 +7188,134 @@ country_event = {
 #######
 # hungarian army traitors fate
 ##############
-country_event = {
-	id = ww1_auh.120
-	title = ww1_auh.120.t
-	desc = ww1_auh.120.d
-	picture = GFX_report_event_gre_political_march
-	trigger = {
-		has_country_flag = AUH_HUN_civil_war_ends
-		NOT = {
-			has_country_flag = hungarian_army_fate_done
-		}
-	}
-	fire_only_once = yes
-	immediate = {
-		set_country_flag = hungarian_army_fate_done
-	}
-	option = {
-		name = ww1_auh.120.a	##they should be allowed to return to service
-		division_template = {
-			name = "Gyaloghadosztály"
-			is_locked = no
-			regiments = {
-				infantry = {
-					x = 0
-					y = 0 
-				}
-				infantry = {
-					x = 0
-					y = 1
-				}
-				infantry = {
-					x = 0
-					y = 2
-				}
-				infantry = {
-					x = 1
-					y = 0
-				}
-				infantry = {
-					x = 1
-					y = 1
-				}
-				infantry = {
-					x = 1
-					y = 2
-				}
-			}
-		}
-		division_template = {
-			name = "Lovasdandár"
-			is_locked = no
-			regiments = {
-				 cavalry = {
-					x = 0
-					y = 0 
-				}
-				cavalry = {
-					x = 0
-					y = 1
-				}
-				cavalry = {
-					x = 0
-					y = 2
-				}
-				cavalry = {
-					x = 1
-					y = 0
-				}
-				cavalry = {
-					x = 1
-					y = 1
-				}
-				cavalry = {
-					x = 1
-					y = 2
-				}
-			}
-		}
-		43 = {
-			create_unit = {
-				division = "name = \"1. Gyaloghadosztály\" division_template = \"Gyaloghadosztály\" start_experience_factor = 0.2 start_equipment_factor = 1"
-				owner = AUS
-			}
-			create_unit = {
-				division = "name = \"2. Gyaloghadosztály\" division_template = \"Gyaloghadosztály\" start_experience_factor = 0.2 start_equipment_factor = 1"
-				owner = AUS
-			}
-			create_unit = {
-				division = "name = \"3. Gyaloghadosztály\" division_template = \"Gyaloghadosztály\" start_experience_factor = 0.2 start_equipment_factor = 1"
-				owner = AUS
-			}
-			create_unit = {
-				division = "name = \"4. Gyaloghadosztály\" division_template = \"Gyaloghadosztály\" start_experience_factor = 0.2 start_equipment_factor = 1"
-				owner = AUS
-			}
-			create_unit = {
-				division = "name = \"5. Gyaloghadosztály\" division_template = \"Gyaloghadosztály\" start_experience_factor = 0.2 start_equipment_factor = 1"
-				owner = AUS
-			}
-			create_unit = {
-				division = "name = \"1. Lovasdandár\" division_template = \"Lovasdandár\" start_experience_factor = 0.2 start_equipment_factor = 1"
-				owner = AUS
-			}
-			create_unit = {
-				division = "name = \"2. Lovasdandár\" division_template = \"Lovasdandár\" start_experience_factor = 0.2 start_equipment_factor = 1"
-				owner = AUS
-			}
-		}
-		add_political_power = -100
-		add_stability = -0.05
-		add_equipment_to_stockpile = {
-			type = infantry_equipment
-			amount = 5000
-		}
+# country_event = {
+# 	id = ww1_auh.120
+# 	title = ww1_auh.120.t
+# 	desc = ww1_auh.120.d
+# 	picture = GFX_report_event_gre_political_march
+# 	trigger = {
+# 		tag = AUS
+# 		has_global_flag = AUH_HUN_civil_war_ends
+# 		has_subject = HUN
+# 		NOT = {
+# 			has_country_flag = hungarian_army_fate_done
+# 			has_global_flag = AUH_lose_against_hungary
+# 		}
+# 	}
+# 	fire_only_once = yes
+# 	immediate = {
+# 		set_country_flag = hungarian_army_fate_done
+# 	}
+# 	option = {
+# 		name = ww1_auh.120.a	##they should be allowed to return to service
+# 		division_template = {
+# 			name = "Gyaloghadosztály"
+# 			is_locked = no
+# 			regiments = {
+# 				infantry = {
+# 					x = 0
+# 					y = 0 
+# 				}
+# 				infantry = {
+# 					x = 0
+# 					y = 1
+# 				}
+# 				infantry = {
+# 					x = 0
+# 					y = 2
+# 				}
+# 				infantry = {
+# 					x = 1
+# 					y = 0
+# 				}
+# 				infantry = {
+# 					x = 1
+# 					y = 1
+# 				}
+# 				infantry = {
+# 					x = 1
+# 					y = 2
+# 				}
+# 			}
+# 		}
+# 		division_template = {
+# 			name = "Lovasdandár"
+# 			is_locked = no
+# 			regiments = {
+# 				 cavalry = {
+# 					x = 0
+# 					y = 0 
+# 				}
+# 				cavalry = {
+# 					x = 0
+# 					y = 1
+# 				}
+# 				cavalry = {
+# 					x = 0
+# 					y = 2
+# 				}
+# 				cavalry = {
+# 					x = 1
+# 					y = 0
+# 				}
+# 				cavalry = {
+# 					x = 1
+# 					y = 1
+# 				}
+# 				cavalry = {
+# 					x = 1
+# 					y = 2
+# 				}
+# 			}
+# 		}
+# 		43 = {
+# 			create_unit = {
+# 				division = "name = \"1. Gyaloghadosztály\" division_template = \"Gyaloghadosztály\" start_experience_factor = 0.2 start_equipment_factor = 1"
+# 				owner = AUS
+# 			}
+# 			create_unit = {
+# 				division = "name = \"2. Gyaloghadosztály\" division_template = \"Gyaloghadosztály\" start_experience_factor = 0.2 start_equipment_factor = 1"
+# 				owner = AUS
+# 			}
+# 			create_unit = {
+# 				division = "name = \"3. Gyaloghadosztály\" division_template = \"Gyaloghadosztály\" start_experience_factor = 0.2 start_equipment_factor = 1"
+# 				owner = AUS
+# 			}
+# 			create_unit = {
+# 				division = "name = \"4. Gyaloghadosztály\" division_template = \"Gyaloghadosztály\" start_experience_factor = 0.2 start_equipment_factor = 1"
+# 				owner = AUS
+# 			}
+# 			create_unit = {
+# 				division = "name = \"5. Gyaloghadosztály\" division_template = \"Gyaloghadosztály\" start_experience_factor = 0.2 start_equipment_factor = 1"
+# 				owner = AUS
+# 			}
+# 			create_unit = {
+# 				division = "name = \"1. Lovasdandár\" division_template = \"Lovasdandár\" start_experience_factor = 0.2 start_equipment_factor = 1"
+# 				owner = AUS
+# 			}
+# 			create_unit = {
+# 				division = "name = \"2. Lovasdandár\" division_template = \"Lovasdandár\" start_experience_factor = 0.2 start_equipment_factor = 1"
+# 				owner = AUS
+# 			}
+# 		}
+# 		add_political_power = -100
+# 		add_stability = -0.05
+# 		add_equipment_to_stockpile = {
+# 			type = infantry_equipment
+# 			amount = 5000
+# 		}
 		
-	}
-	option = {
-		name = ww1_auh.120.b	##they must pay the iron price
-		add_political_power = 100
-		add_stability = 0.05
-		add_equipment_to_stockpile = {
-			type = infantry_equipment
-			amount = 7500
-		}
-	}
-}
+# 	}
+# 	option = {
+# 		name = ww1_auh.120.b	##they must pay the iron price
+# 		add_political_power = 100
+# 		add_stability = 0.05
+# 		add_equipment_to_stockpile = {
+# 			type = infantry_equipment
+# 			amount = 7500
+# 		}
+# 	}
+# }
 
 #######
 # FOR ROMANIA -> AUS has installed a collaboration governement
@@ -6993,6 +7360,8 @@ country_event = {
 				owns_state = 44
 				owns_state = 803
 				owns_state = 871
+				owns_state = 1214
+				owns_state = 1215
 			}
 		}	
 		OR = {
@@ -7001,7 +7370,7 @@ country_event = {
 				has_country_flag = great_war_winner
 				OR = {
 					has_global_flag = frankfurt_treaty
-					has_global_flag = versallies_treaty
+					has_global_flag = versailles_treaty
 				}
 			}
 		}
@@ -7019,7 +7388,7 @@ country_event = {
 	option = {
 		name = ww1_auh.123.a #ask albanian liberation
 		ai_chance = {
-			factor = 70
+			base = 70
 		}
 		custom_effect_tooltip = historical_tt
 		give_guarantee = ALB
@@ -7029,6 +7398,8 @@ country_event = {
 					owns_state = 44
 					owns_state = 870
 					owns_state = 871
+					owns_state = 1214
+					owns_state = 1215
 				}
 				NOT = {
 					original_tag = ALB
@@ -7050,7 +7421,7 @@ country_event = {
 			country_exists = ALB
 		}
 		ai_chance = {
-			factor = 30
+			base = 30
 			modifier = {
 				factor = 0
 				has_game_rule = {
@@ -7069,7 +7440,7 @@ country_event = {
 	}
 	option = {
 		ai_chance = {
-			factor = 30
+			base = 30
 			modifier = {
 				factor = 0
 				has_game_rule = {
@@ -7127,17 +7498,11 @@ country_event = {
 					state = 803
 					state = 870
 					state = 871
+					state = 1214
+					state = 1215
 				}
 			}
 			transfer_state_to = ALB
-			# local greeks conflict | commented by le VRAI because greek rework will overwrite this
-			# if = {
-			# 	limit = { state = 803 }
-			# 	set_demilitarized_zone = yes
-			# 	add_dynamic_modifier = {
-			# 		modifier = ALB_greek_minority
-			# 	}
-			# }
 		}
 		FROM = {
 			hidden_effect = {
@@ -7271,23 +7636,12 @@ country_event = {
 	picture = GFX_report_event_karl_i_wedding
 	trigger = {
 		has_monarchy = yes
+		has_character = AUS_karl_i
 	}
 	is_triggered_only = yes
 	fire_only_once = yes
 	option = {
 		name = ww1_auh.127.a #good!
-		trigger = {
-			has_character = AUH_franz_ferdinand
-		}
-		AUH_franz_ferdinand = {
-			custom_effect_tooltip = AUH_ferdinand_is_very_happy
-		}
-	}
-	option = {
-		name = ww1_auh.127.a
-		trigger = {
-			NOT = { has_character = AUH_franz_ferdinand }
-		}
 	}
 }
 
@@ -7367,7 +7721,7 @@ country_event = {
 	option = {
 		name = ww1_auh.130.a #why not ?
 		ai_chance = {
-			factor = 70
+			base = 70
 			modifier = {
 				AUS = {
 					has_country_flag = AUH_karl_join_entente
@@ -7393,7 +7747,7 @@ country_event = {
 	}
 	option = {
 		ai_chance = {
-			factor = 20
+			base = 20
 		}
 		AUS = {
 			country_event = {
@@ -7406,7 +7760,7 @@ country_event = {
 	}
 	option = {
 		ai_chance = {
-			factor = 10
+			base = 10
 			# modifier = {
 			# 	AUS = {
 			# 		has_country_flag = AUH_karl_join_entente
@@ -7497,7 +7851,7 @@ country_event = {
 	option = {
 		name = ww1_auh.133.a #why not ?
 		ai_chance = {
-			factor = 70
+			base = 70
 		}
 		navy_experience = 10
 		add_doctrine_cost_reduction = {
@@ -7529,7 +7883,7 @@ country_event = {
 	}
 	option = {
 		ai_chance = {
-			factor = 30
+			base = 30
 		}
 		AUS = {
 			country_event = {
@@ -7603,13 +7957,13 @@ country_event = {
 		name = ww1_auh.138.a #trust franz, he is a pro
 		add_stability = -0.10
 		ai_chance = {
-			factor = 50
+			base = 50
 		}
 	}
 	option = {
 		name = ww1_auh.138.b #save for later
 		ai_chance = {
-			factor = 50
+			base = 50
 		}
 		set_country_flag = AUH_lobbies_have_no_more_support
 		clr_country_flag = AUH_corruption_for_factories
@@ -7675,7 +8029,7 @@ country_event = {
 	option = {
 		name = ww1_auh.140.a #ok
 		ai_chance = {
-			factor = 80
+			base = 80
 		}
 		#historical
 		add_popularity = {
@@ -7691,7 +8045,7 @@ country_event = {
 		name = ww1_auh.140.b
 		#for idiots
 		ai_chance = {
-			factor = 20
+			base = 20
 		}
 		add_timed_idea = {
 			idea = strikes_1
@@ -7796,7 +8150,7 @@ country_event = {
 		NOT = {
 			has_country_flag = oskar_potiorek_removed
 		}
-		has_global_flag = archduke_dead_serbia
+		has_global_flag = AUH_franz_ferdinand_killed_in_sarajevo
 		date > 1914.12.1	
 		has_war_with = SER
 		SER = {
@@ -7998,7 +8352,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 20
+			base = 20
 		}
 	}
 	option = {
@@ -8033,7 +8387,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 10
+			base = 10
 			modifier = {
 				factor = 0
 				is_historical_focus_on = yes
@@ -8052,10 +8406,7 @@ country_event = {
 	trigger = {
 		tag = AUS
 		OR = {
-			AND = {
-				has_global_flag = archduke_in_sarajevo
-				has_global_flag = AUH_franz_ferdinand_killed
-			}		
+			has_global_flag = AUH_franz_ferdinand_killed_in_sarajevo	
 			has_war_with = RUS
 		}
 		has_character = AUH_alfred_redl		
@@ -8208,7 +8559,7 @@ country_event = {
 	option = {
 		name = ww1_auh.161.a
 		ai_chance = {
-			factor = 70
+			base = 70
 			modifier = {
 				OR = {
 					has_country_flag = AUH_federalism
@@ -8232,7 +8583,7 @@ country_event = {
 	option = {
 		name = ww1_auh.161.b
 		ai_chance = {
-			factor = 30
+			base = 30
 			modifier = {
 				OR = {
 					has_country_flag = AUH_conrad_coup
@@ -8254,6 +8605,10 @@ country_event = {
 		hidden_effect = {
 			AUS = {
 				retire_character = AUH_franz_ferdinand 
+			}
+			news_event = {
+				id = ww1_auh.162
+				hours = 1
 			}
 		}
 		set_global_flag = AUH_franz_ferdinand_killed
@@ -8321,6 +8676,31 @@ news_event = {
 	major = yes
 	option = {
 		name = ww1_auh.162.a
+		trigger = {
+			OR = {
+				tag = AUS
+				is_subject_of = AUS
+			}
+		}
+	}
+	option = {
+		name = ww1_auh.162.b
+		trigger = {
+			NOT = {
+				tag = AUS
+				is_subject_of = AUS
+				tag = SER
+			}
+		}
+	}
+	option = {
+		name = ww1_auh.162.c
+		trigger = {
+			tag = SER
+			NOT = {
+				is_subject_of = AUS
+			}
+		}
 	}
 }
 
@@ -8330,14 +8710,16 @@ news_event = {
 	title = ww1_auh.146.t
 	desc = ww1_auh.146.d
 	is_triggered_only = yes
-	picture = EVENT_hoi4tgw_trialism
+	picture = GFX_news_event_auh_trialism
 	immediate = {
-		if = {
-			limit = {
-				tag = AUS
-			}
-			AUH_apply_trialism = yes
-		}
+		hidden_effect = {
+			if = {
+				limit = {
+					tag = AUS
+				}
+				AUH_apply_trialism = yes
+			}	
+		}		
 	}
 	option = {
 		name = ww1_auh.146.a
@@ -8436,7 +8818,7 @@ news_event = {
 }
 
 #######
-# Austria-Hungary surrenders to Hungary
+# Austria surrenders to Hungary
 ##############
 country_event = {
 	id = ww1_auh.149
@@ -8444,16 +8826,30 @@ country_event = {
 	desc = ww1_auh.149.d
 	picture = GFX_report_event_hungary_parliament
 	is_triggered_only = yes
+	immediate = {
+		set_global_flag = AUH_territory_rearranged_by_script
+	}
 	option = {
 		name = ww1_auh.149.a
+		set_global_flag = AUH_HUN_civil_war_ends
+		remove_ideas = standing_alone
+		delete_unit_template_and_units = {
+			division_template = "Forradalmi Milícia"
+			disband = no
+		}
 		if = {
 			limit = {
 				SER = {
 					has_war_with = AUS
 				}
 			}
-			every_owned_state = {
+			every_state = {
 				limit = {
+					OR = {
+						is_owned_by = FROM
+						is_owned_by = ROOT
+						is_owned_by = BOS
+					}
 					OR = {
 						state = 104
 						state = 575
@@ -8461,97 +8857,11 @@ country_event = {
 				}
 				transfer_state_to = SER
 			}
-		}
-		every_country = {
-			limit = {
-				OR = {
-					tag = FROM
-					is_in_faction_with = FROM
-					is_subject_of = FROM
-					tag = WUK
-					tag = CRO
-					tag = BOS
+			SER = {
+				annex_country = {
+					target = BOS
 				}
-				has_war_with = ROOT
-			}
-			every_owned_state = {
-				limit = {
-					is_core_of = ROOT
-				}
-				transfer_state_to = ROOT
-			}
-			every_owned_state = {
-				limit = {
-					is_controlled_by = ROOT
-					is_claimed_by = ROOT
-				}
-				transfer_state_to = ROOT
-			}
-			every_country = {
-				limit = {
-					has_war_with = AUS
-					OR = {
-						has_war_together_with = HUN
-						tag = HUN
-					}
-				}
-				white_peace = FROM
-				set_truce = {
-					target = FROM
-					days = 180
-				}
-			}
-			AUS = {
-				every_owned_state = {
-					limit = {
-						OR = {
-							is_core_of = WUK
-							state = 88
-							state = 237
-							state = 991
-							state = 1007
-						}
-						
-					}
-					transfer_state_to = WUK
-				}
-				transfer_units_fraction = {
-					target = WUK
-					size = 0.1
-					stockpile_ratio = 0.1
-					army_ratio = 0.1
-					navy_ratio = 0
-					air_ratio = 0
-				}
-			}
-			AUS = {
-				every_owned_state = {
-					limit = {
-						is_core_of = BOS
-					}
-					transfer_state_to = BOS
-				}
-			}
-			AUS = {
-				every_owned_state = {
-					limit = {
-						is_core_of = CRO
-					}
-					transfer_state_to = CRO
-				}
-			}
-			AUS = {
-				release = CZE
-				transfer_units_fraction = {
-					target = CZE
-					size = 0.25
-					stockpile_ratio = 0.25
-					army_ratio = 0.25
-					navy_ratio = 0
-					air_ratio = 0.25
-				}
-			}
-			
+			}	
 		}
 		every_state = {
 			limit = {
@@ -8560,13 +8870,55 @@ country_event = {
 					state = 875
 				}
 				region = 27
-				is_core_of = FROM
+				OR = {
+					is_core_of = FROM
+					is_claimed_by = FROM
+				}				
 			}
 			remove_core_of = FROM
+			remove_claim_by = FROM
+		}		
+		AUS = {
+			remove_ideas = standing_alone
+			every_enemy_country = {
+				limit = {
+					has_war_together_with = HUN
+					NOT = {
+						tag = WUK
+					}
+				}
+				white_peace = PREV
+				set_truce = {
+					target = PREV
+					days = 180
+				}
+			}		
+		}
+		HUN = {
+			every_enemy_country = {
+				limit = {
+					has_war_together_with = AUS
+					NOT = {
+						tag = SLO
+						tag = TRA
+					}
+				}
+				PREV = {
+					white_peace = PREV
+					set_truce = {
+						target = PREV
+						days = 180
+					}	
+				}			
+			}
+			white_peace = AUS
+			set_truce = {
+				target = AUS
+				days = 180
+			}		
 		}
 	}
 }
-
 
 # Historical : Hungarian revolts for food part 1 - women protests
 country_event = {
@@ -8807,6 +9159,7 @@ country_event = {
 	trigger = {
 		tag = AUS
 		has_war = yes
+		is_great_war_ongoing = yes
 		OR = {
 			has_idea = AUH_famine_effect_early
 			has_idea = AUH_famine_effect
@@ -8817,9 +9170,8 @@ country_event = {
 		has_country_flag = AUH_januarstreik_in_hungary
 		NOT = {
 			has_country_flag = AUH_end_of_the_line
-			has_global_flag = great_war_ends
 			has_global_flag = GER_capitulation
-			has_global_flag = FRA_capitulation
+			has_global_flag = ENT_capitulation
 		}
 	}
 	mean_time_to_happen = {
@@ -8920,7 +9272,7 @@ country_event = {
 						HUN = { is_subject_of = ROOT }
 					}
 				}
-				AUH_release_HUN = yes
+				AUH_release_HUN = yes		
 			}
 			else_if = {
 				limit = {
@@ -8976,6 +9328,8 @@ country_event = {
 		transfer_units_fraction= {
 			target = CZE
 			size = 0
+			target_organization = 1
+			source_organization = 1
 			stockpile_ratio = 0.30
 			army_ratio = 0.25
 			navy_ratio = 0.0
@@ -9029,6 +9383,8 @@ country_event = {
 			transfer_units_fraction= {
 				target = GAL
 				size = 0
+				target_organization = 1
+				source_organization = 1
 				stockpile_ratio = 0.2
 				army_ratio = 0.2
 				navy_ratio = 0.0
@@ -9096,12 +9452,16 @@ country_event = {
 					}
 					state = 109
 				}
-				transfer_state_to = CRO
+				CRO = {
+					safe_transfer_state_to = yes
+				}
 			}
 		}
 		transfer_units_fraction= {
 			target = CRO
 			size = 0
+			target_organization = 1
+			source_organization = 1
 			stockpile_ratio = 0.25
 			army_ratio = 0.25
 			navy_ratio = 0.2
@@ -9139,7 +9499,9 @@ country_event = {
 						state = 163
 					}
 				}
-				transfer_state_to = CRO
+				CRO = {
+					safe_transfer_state_to = yes
+				}
 			}
 		}
 		
@@ -9150,14 +9512,14 @@ country_event = {
 			release = CRO
 		}
 		ai_chance = {
-			factor = 100
+			base = 100
 		}
 	}
 	option = {
 		name = ww1_auh.13.b
 		CRO = { change_tag_from = PREV }
 		ai_chance = {
-			factor = 0
+			base = 0
 		}
 	}
 }
@@ -9402,6 +9764,12 @@ country_event = {
 		name = ww1_auh.179.a	#all options are on the table
 		set_country_flag = AUH_can_negotiate_with_france
 		custom_effect_tooltip = AUH_negociation_with_france
+		HUN = {
+			HUN_gyula_andrassy = {
+				set_nationality = AUS
+				set_character_name = AUH_gyula_andrassy
+			}
+		}
 	}
 }
 
@@ -9426,7 +9794,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 50
+			base = 50
 		}
 	}
 	option = {
@@ -9438,7 +9806,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 0
+			base = 0
 		}
 	}
 }
@@ -9483,7 +9851,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 50
+			base = 50
 		}
 	}
 	option = {
@@ -9497,7 +9865,7 @@ country_event = {
 			
 		}
 		ai_chance = {
-			factor = 5000
+			base = 5000
 			modifier = {
 				NOT = {
 					has_game_rule = {
@@ -9518,7 +9886,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 0
+			base = 0
 		}
 	}
 }
@@ -9578,7 +9946,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 50
+			base = 50
 		}
 	}
 	option = {
@@ -9590,7 +9958,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 0
+			base = 0
 		}
 	}
 }
@@ -9605,10 +9973,10 @@ country_event = {
 	option = {
 		name = ww1_auh.185.a	#accept the austrian proposal alsace lorraine in exchange of galicia
 		custom_effect_tooltip = historical_tt
-		custom_effect_tooltip = GER_AUH_FRA_alsace_for_galicia
+		custom_effect_tooltip = GER_AUH_FRA_alsace_lorraine_for_galicia
 		hidden_effect = {
 			GER = {
-				set_country_flag = GER_AUH_FRA_alsace_for_galicia_flag
+				set_country_flag = GER_AUH_FRA_alsace_lorraine_for_galicia_flag
 			}
 			AUS = {
 				country_event = {
@@ -9631,7 +9999,7 @@ country_event = {
 			tag = GER
 		}
 		ai_chance = {
-			factor = 50
+			base = 50
 		}
 	}
 	option = {
@@ -9663,17 +10031,17 @@ country_event = {
 			tag = GER
 		}
 		ai_chance = {
-			factor = 0
+			base = 0
 		}
 	}
 	#austrian reactions
 	option = {
 		name = ww1_auh.185.aa
-		custom_effect_tooltip = GER_AUH_FRA_alsace_for_galicia
+		custom_effect_tooltip = GER_AUH_FRA_alsace_lorraine_for_galicia
 		trigger = {
 			tag = AUS
 			GER = {
-				has_country_flag = GER_AUH_FRA_alsace_for_galicia_flag
+				has_country_flag = GER_AUH_FRA_alsace_lorraine_for_galicia_flag
 			}
 		}
 	}
@@ -9744,7 +10112,7 @@ country_event = {
 			tag = GER
 		}
 		ai_chance = {
-			factor = 50
+			base = 50
 		}
 	}
 	#austrian reactions
@@ -9776,7 +10144,7 @@ country_event = {
 		if = {
 			limit = {
 				GER = {
-					has_country_flag = GER_AUH_FRA_alsace_for_galicia_flag
+					has_country_flag = GER_AUH_FRA_alsace_lorraine_for_galicia_flag
 				}
 			}
 			custom_effect_tooltip = GER_AUH_FRA_galicia_deal_resume
@@ -9806,7 +10174,7 @@ country_event = {
 			tag = GER
 		}
 		ai_chance = {
-			factor = 50
+			base = 50
 		}
 	}
 	#austrian reactions
@@ -9817,7 +10185,7 @@ country_event = {
 		if = {
 			limit = {
 				GER = {
-					has_country_flag = GER_AUH_FRA_alsace_for_galicia_flag
+					has_country_flag = GER_AUH_FRA_alsace_lorraine_for_galicia_flag
 				}
 			}
 			custom_effect_tooltip = GER_AUH_FRA_galicia_deal_resume
@@ -9861,7 +10229,7 @@ country_event = {
 			tag = GER
 		}
 		ai_chance = {
-			factor = 50
+			base = 50
 		}
 	}
 	option = {
@@ -9886,7 +10254,7 @@ country_event = {
 			tag = GER
 		}
 		ai_chance = {
-			factor = 50
+			base = 50
 		}
 	}
 	#austrian reactions
@@ -9944,7 +10312,7 @@ country_event = {
 			tag = GER
 		}
 		ai_chance = {
-			factor = 50
+			base = 50
 		}
 	}
 	#austrian reactions
@@ -10004,7 +10372,7 @@ country_event = {
 			tag = AUS
 		}
 		ai_chance = {
-			factor = 50
+			base = 50
 		}
 	}
 	#german reactions
@@ -10074,7 +10442,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 500
+			base = 500
 		}
 	}
 	option = {
@@ -10082,7 +10450,7 @@ country_event = {
 		custom_effect_tooltip = GER_AUH_conditions
 		GER_negotiations_with_FRA_displayer = yes
 		ai_chance = {
-			factor = 1
+			base = 1
 		}
 	}
 }
@@ -10109,7 +10477,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 50
+			base = 50
 			modifier = {
 				has_game_rule = {
 					rule = sixtus_affair
@@ -10135,7 +10503,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 1
+			base = 1
 			modifier = {
 				has_game_rule = {
 					rule = sixtus_affair
@@ -10164,7 +10532,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 1
+			base = 1
 			modifier = {
 				has_game_rule = {
 					rule = sixtus_affair
@@ -10261,7 +10629,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 50
+			base = 50
 		}
 	}
 	option = {
@@ -10315,7 +10683,7 @@ country_event = {
 			days = 2
 		}
 		ai_chance = {
-			factor = 50
+			base = 50
 			modifier = {
 				has_game_rule = {
 					rule = sixtus_affair
@@ -10365,14 +10733,14 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 500
+			base = 500
 		}
 	}
 	option = {
 		name = ww1_auh.198.b
 		add_political_power = -50
 		ai_chance = {
-			factor = 1
+			base = 1
 		}
 	}
 }
@@ -10395,7 +10763,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 500
+			base = 500
 		}
 	}
 	option = {
@@ -10403,7 +10771,7 @@ country_event = {
 		add_political_power = -50
 		add_war_support = -0.05
 		ai_chance = {
-			factor = 1
+			base = 1
 		}
 	}
 }
@@ -10483,7 +10851,7 @@ country_event = {
 		custom_effect_tooltip = historical_tt
 		add_war_support = 0.025
 		ai_chance = {
-			factor = 50
+			base = 50
 		}
 	}
 	option = {
@@ -10493,7 +10861,7 @@ country_event = {
 			retire_character = AUH_ottokar_czernin
 		}
 		ai_chance = {
-			factor = 2	#come on, its fun
+			base = 2	#come on, its fun
 		}
 	}
 	option = {
@@ -10505,17 +10873,17 @@ country_event = {
 		}
 		news_event = ww1_auh.203
 		ai_chance = {
-			factor = 0
+			base = 0
 		}
 	}
 }
 
-#aHistorical, charles abdicates
+#Historical, charles abdicates
 news_event = {
 	id = ww1_auh.203
 	title = ww1_auh.203.t
 	desc = ww1_auh.203.d
-	picture = GFX_news_event_generic_sign_treaty1
+	picture = GFX_news_event_karl_abdication
 	is_triggered_only = yes
 	option = {
 		trigger = {
@@ -10553,13 +10921,7 @@ country_event = {
 		has_global_flag = great_war_ends
 		has_country_flag = great_war_winner
 		has_global_flag = interbellum
-		OR = {
-			has_idea = GER_idea_wilhelm_ii
-			has_country_leader = {
-				character = GER_wilhelm_ii
-				ruling_only = yes
-			}
-		}
+		is_GER_a_monarchy = yes
 		has_country_flag = you_can_save_austria
 		NOT = {
 			has_global_flag = brothers_war
@@ -10591,7 +10953,13 @@ country_event = {
 			base = 100
 			modifier = {
 				add = 100
-				has_cosmetic_tag = GER_HRE
+				OR = {
+					has_cosmetic_tag = GER_HRE
+					AUS = {
+						is_subject_of = ROOT
+						has_autonomy_state = autonomy_tgwr_unilateral_union
+					}
+				}			
 			}
 		}
 		add_political_power = -100
@@ -10610,10 +10978,10 @@ country_event = {
 				}
 				ROOT = {
 					transfer_navy = {
-						target = ROOT
+						target = PREV
 					}
 					annex_country = {
-						target = ROOT
+						target = PREV
 						transfer_troops = yes
 					}
 					every_state = {
@@ -10654,10 +11022,7 @@ country_event = {
 		custom_effect_tooltip = agree_effect_tooltip
 		effect_tooltip = {
 			AUS = {
-				annex_country = {
-					target = AUR
-					transfer_troops = yes
-				}
+				set_cosmetic_tag = AUS_semi_constitutional_monarchy
 			}
 		}
 		custom_effect_tooltip = disagree_effect_tooltip
@@ -10670,7 +11035,7 @@ country_event = {
 		hidden_effect = {
 			AUR = {
 				country_event = {
-					id = ww1_auh.214
+					id = ww1_auh.221
 					hours = 3
 				}
 			}
@@ -10700,7 +11065,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 150
+			base = 150
 		}
 	}
 	option = {
@@ -10712,7 +11077,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 1
+			base = 1
 		}
 	}
 }
@@ -10737,7 +11102,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 150
+			base = 150
 			modifier = {
 				has_game_rule = {
 					rule = sixtus_affair
@@ -10758,7 +11123,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 50
+			base = 50
 			modifier = {
 				has_game_rule = {
 					rule = sixtus_affair
@@ -10778,7 +11143,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 1
+			base = 1
 		}
 	}
 }
@@ -10808,7 +11173,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 100
+			base = 100
 			modifier = {
 				has_game_rule = {
 					rule = sixtus_affair
@@ -10834,7 +11199,7 @@ country_event = {
 			days = 2
 		}
 		ai_chance = {
-			factor = 1
+			base = 1
 		}
 	}
 }
@@ -10871,42 +11236,68 @@ country_event = {
 			limit = {
 				tag = AUS
 			}
-			ITA = {	#miam
-				hidden_effect = {
-					if = {
-						limit = {
-							GER = {
-								has_country_flag = ITA_london_pact_full_flag
-							}
+			if = {
+					limit = {
+						GER = {
+							has_country_flag = ITA_london_pact_full_flag
 						}
-						transfer_state = 244
-						transfer_state = 1006
-						transfer_state = 163
-						transfer_state = 736
-						transfer_state = 1010
-						transfer_state = 39
 					}
-					if = {
+					every_state = {
 						limit = {
-							GER = {
-								has_country_flag = ITA_london_pact_weak_flag
+							is_owned_or_subject_trigger = yes
+							OR = {
+								state = 244
+								state = 1006
+								state = 163
+								state = 736
+								state = 1197
+								state = 1198
+								state = 1010
+								state = 39
 							}
 						}
-						transfer_state = 244
-						transfer_state = 1006
-						transfer_state = 163
-						transfer_state = 736
-						transfer_state = 1010
+						transfer_state_to = ITA
 					}
-					if = {
+				}	
+				else_if = {
+					limit = {
+						GER = {
+							has_country_flag = ITA_london_pact_weak_flag
+						}
+					}
+					every_state = {
 						limit = {
-							GER = {
-								has_country_flag = ITA_london_pact_very_weak
+							is_owned_or_subject_trigger = yes
+							OR = {
+								state = 244
+								state = 1006
+								state = 163
+								state = 736
+								state = 1197
+								state = 1198
+								state = 1010
 							}
 						}
-						transfer_state = 244
-						transfer_state = 1006
-						transfer_state = 163
+						transfer_state_to = ITA
+					}
+				}
+				else_if = {
+					limit = {
+						GER = {
+							has_country_flag = ITA_london_pact_very_weak
+						}
+					}
+					every_state = {
+						limit = {
+							is_owned_or_subject_trigger = yes
+							OR = {
+								state = 244
+								state = 1006
+								state = 163
+								state = 1198
+							}
+						}
+						transfer_state_to = ITA
 					}
 				}
 				SER = {
@@ -10915,6 +11306,8 @@ country_event = {
 							has_war_with = AUS
 						}
 						transfer_state = 44
+						transfer_state = 1214
+						transfer_state = 1215
 						105 = { #Montenegro
 							owner = {
 								transfer_state = 870
@@ -10963,7 +11356,6 @@ country_event = {
 						}
 					}
 				}
-			}
 			AUS = {
 				leave_faction = yes
 				add_ideas = neutrality_idea
@@ -11010,7 +11402,7 @@ country_event = {
 		}
 		
 		ai_chance = {
-			factor = 1
+			base = 1
 		}
 	}
 }
@@ -11054,7 +11446,7 @@ news_event = {
 	option = {
 		name = ww1_auh.209.a
 		ai_chance = {
-			factor = 100
+			base = 100
 		}
 		trigger = {
 			NOT = {
@@ -11072,7 +11464,7 @@ news_event = {
 			}
 		}
 		ai_chance = {
-			factor = 100
+			base = 100
 		}
 	}
 }
@@ -11175,7 +11567,7 @@ country_event = {
 		}
 		GER = { add_to_faction = ROM}
 		ai_chance = {
-			factor = 30
+			base = 30
 		}
 	}
 	option = {
@@ -11184,7 +11576,7 @@ country_event = {
 			country_event = ww1_germany.173
 		}
 		ai_chance = {
-			factor = 70
+			base = 70
 		}	
 	}
 	
@@ -11476,6 +11868,8 @@ country_event = {
 		transfer_units_fraction= {
 			target = HUN
 			size = 0.35
+			target_organization = 1
+			source_organization = 1
 			navy_ratio = 0
 			keep_unit_leaders_trigger = {
 				always = yes
@@ -11573,9 +11967,86 @@ country_event = {
 				freedom_level = 0.8
 			}
 		}
-		restore_previous_government_type = yes
-		set_cosmetic_tag = AUH
+		set_cosmetic_tag = AUS
 		clr_country_flag = AUS_republic_flag
+		restore_previous_government_type = yes
+		if = {
+			limit = {
+				NOT = {
+					has_global_flag =  AUH_franz_joseph_i_retired
+				}
+				has_character = AUH_franz_joseph_i
+			}
+			AUH_franz_joseph_i = {
+				if = {
+					limit = { has_ideology = semi_constitutional_monarchy }
+					promote_character = semi_constitutional_monarchy
+				}
+				else = {
+					add_country_leader_role = {
+						promote_leader = yes
+						country_leader = {
+							ideology = semi_constitutional_monarchy
+							traits = {
+								oldschool_kaiser
+							}
+						}
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					has_global_flag = AUH_franz_ferdinand_killed
+				}
+				AUH_karl_i = {
+					if = {
+						limit = { has_ideology = semi_constitutional_monarchy }
+						promote_character = semi_constitutional_monarchy
+					}
+					else = {
+						add_country_leader_role = {
+							promote_leader = yes
+							country_leader = {
+								ideology = semi_constitutional_monarchy
+								traits = {
+									blessed
+								}
+							}
+						}
+					}
+				}
+				else = {
+					AUH_franz_ferdinand = {
+						if = {
+							limit = { has_ideology = semi_constitutional_monarchy }
+							promote_character = semi_constitutional_monarchy
+						}
+						else = {
+							add_country_leader_role = {
+								promote_leader = yes
+								country_leader = {
+									ideology = semi_constitutional_monarchy
+									traits = {
+										true_personality_amidst_the_inanity
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}	
+		hidden_effect = {
+			set_politics = {
+				ruling_party = neutrality
+				name = AUS_neutrality_party
+				long_name = AUS_neutrality_party
+			}
+			add_popularity = {
+				ideology = neutrality
+				popularity = 0.3
+			}
+		}
 	}
 	option = {
 		name = ww1_auh.221.b
@@ -11594,7 +12065,7 @@ news_event = {
 	id = ww1_auh.222
 	title = ww1_auh.222.t
 	desc = ww1_auh.222.d
-	picture = GFX_news_event_franz_joseph
+	picture = GFX_news_event_franz_joseph_abdicates
 	is_triggered_only = yes
 	option = {
 		name = ww1_auh.222.a
@@ -11692,6 +12163,8 @@ country_event = {
 		transfer_units_fraction= {
 			target = HUN
 			size = 0.35
+			target_organization = 1
+			source_organization = 1
 			navy_ratio = 0
 			keep_unit_leaders_trigger = {
 				always = yes

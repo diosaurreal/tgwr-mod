@@ -260,11 +260,8 @@ GER_rush_on_BEL = {
 		OR = {	## be sure to stay on planing all long
 			has_war_with = BEL
 			has_active_mission = european_crisis_mission
-			has_global_flag = AUH_franz_ferdinand_killed
-			OR = {
-				has_idea = race_to_the_sea
-				has_idea = schlieffenmoltke
-			}
+			has_global_flag = crisis_in_progress
+			GER_schlieffen_plan_is_ongoing = yes
 			AND = {
 				is_historical_focus_on = yes
 				date > 1914.5.5 #go earlier to be sure to be ready
@@ -278,8 +275,7 @@ GER_rush_on_BEL = {
 			surrender_progress > 0.10
 			# schlieffen failed
 			AND = {
-				NOT = { has_idea = schlieffenmoltke }
-				NOT = { has_idea = race_to_the_sea }
+				GER_schlieffen_plan_is_ongoing = yes
 				date > 1914.11.11
 			}
 		}
@@ -352,20 +348,15 @@ GER_slowy_beat_france = {
 	}
 	enable = {
 		original_tag = GER
-		AND = {
-			has_war_with = FRA
-			AND = {
-				NOT = { has_idea = schlieffenmoltke }
-				NOT = { has_idea = race_to_the_sea }
-				date > 1914.11.11
+		has_war_with = FRA
+		GER_schlieffen_plan_is_ongoing = no
+		date > 1914.11.11
+		OR = {
+			BEL = {
+				has_capitulated = yes
 			}
-			OR = {
-				BEL = {
-					has_capitulated = yes
-				}
-				NOT = {
-					has_war_with = BEL
-				}
+			NOT = {
+				has_war_with = BEL
 			}
 		}
 		NOT = {
@@ -396,7 +387,7 @@ GER_slowy_beat_russia = {
 		OR = {	## be sure to stay on planing all long
 			has_war_with = RUS
 			has_active_mission = european_crisis_mission
-			has_global_flag = AUH_franz_ferdinand_killed
+			has_global_flag = crisis_in_progress
 		}
 		NOT = {
 			RUS = {
@@ -425,7 +416,7 @@ GER_slowy_beat_russia = {
 	ai_strategy = {
 		type = front_unit_request
 		tag = FRA
-		value = 30	#very hardline, dont forget France
+		value = 50	#very hardline, dont forget France
 	}
 
 }
@@ -436,6 +427,7 @@ GER_cp_dont_help_jbs = {
 			original_tag = JBS
 			original_tag = AMR
 			original_tag = RWL
+			original_tag = SOM
 		}
 	}
 	enable = {
@@ -456,6 +448,11 @@ GER_cp_dont_help_jbs = {
 	ai_strategy = {
 		type = dont_defend_ally_borders
 		id = RWL
+		value = 10000
+	}
+	ai_strategy = {
+		type = dont_defend_ally_borders
+		id = SOM
 		value = 10000
 	}
 }
@@ -511,17 +508,22 @@ GER_france_cant_stay_in_germany = {
 		}
 		OR = {
 			NOT = {
-				50 = {
+				986 = {
 					is_fully_controlled_by = GER
 				}
 			}
 			NOT = {
-				42 = {
+				343 = {
 					is_fully_controlled_by = GER
 				}
 			}
 			NOT = {
 				869 = {
+					is_fully_controlled_by = GER
+				}
+			}
+			NOT = {
+				989 = {
 					is_fully_controlled_by = GER
 				}
 			}
@@ -727,7 +729,7 @@ GER_dont_help_TUR = {
 	}
 	enable = {
 		is_in_faction_with = TUR
-		has_global_flag = great_war
+		is_great_war_ongoing = yes
 		TUR = {
 			surrender_progress < 0.10
 		}
@@ -735,9 +737,6 @@ GER_dont_help_TUR = {
 			has_war_with = ROM
 			has_war_with = RUS
 			has_war_with = SOV
-		}
-		NOT = {
-			has_global_flag = great_war_ends
 		}
 	}
 	abort_when_not_enabled = yes
@@ -791,7 +790,7 @@ GER_dont_fight_australia = {
 		OR = {
 			has_war_with = AST
 			has_global_flag = great_war
-			has_global_flag = AUH_franz_ferdinand_killed
+			has_global_flag = crisis_in_progress
 			always = yes
 		}
 		NOT = {
@@ -823,7 +822,7 @@ GER_USA_is_joining_low_prio_on_SOV = {
 		}
 		OR = {
 			has_war_with = USA
-			has_completed_focus = GER_zimmermann_depesche
+			# has_completed_focus = GER_zimmermann_depesche
 		}
 		has_war_with = FRA
 		has_war_with = ENG
@@ -840,7 +839,7 @@ GER_USA_is_joining_low_prio_on_SOV = {
 		value = -40
 	}
 
-	#hidenburg line !!
+	#Hindenburg line !!
 	ai_strategy = {
 		type = build_building
 		id = bunker  # Type of building
@@ -966,7 +965,7 @@ GER_ignore_turnip_winter_effect = {
 		tag = GER
 	}
 	enable = {
-		has_idea = ger_famine
+		has_idea = GER_famine
 	}
 	abort_when_not_enabled = yes
 	ai_strategy = {
@@ -981,13 +980,13 @@ GER_big_army_before_ww1 = {
 	}
 
 	enable = {
-		has_war = no
-		not = {
+		NOT = {
 			has_global_flag = great_war_ends
 		}
 		has_army_manpower = {
 			size < 3000000
 		}
+		has_war = no #no stockpile problems
 	}
 	abort_when_not_enabled = yes
 
@@ -1009,8 +1008,18 @@ GER_max_army_size = {
 	}
 
 	enable = {
-		has_army_manpower = {
-			size > 3000000
+		OR = {
+			has_army_manpower = {
+				size > 3000000
+			}
+			AND = { #you need to save equipment to fight against them both
+				has_war_with = RUS
+				has_war_with = FRA
+				stockpile_ratio = {	## 5% of the armies equipment must be in reserves
+					archetype = infantry_equipment
+					ratio < 0.01
+				}
+			}
 		}
 	}
 	abort_when_not_enabled = yes
@@ -1018,7 +1027,7 @@ GER_max_army_size = {
 	ai_strategy = {
 		type = build_army	#limit it a bit, to avoid germany making 4M army
 		id = infantry
-		value = 190
+		value = -190
 	}
 }
 
@@ -1146,7 +1155,7 @@ GER_unit_production = {
 	ai_strategy = {
 		type = role_ratio
 		id = garrison
-		value = 13
+		value = 1
 	}
 
 	ai_strategy = {
@@ -1182,7 +1191,7 @@ GER_unit_production = {
 	ai_strategy = {
 		type = role_ratio
 		id = infantry
-		value = 70 #88 to 70
+		value = 82 #88 to 70
 	}
 ###################################################
 	#Air unit factors, road to 100
@@ -1302,58 +1311,61 @@ GER_unit_production = {
 
 }
 
-GER_invade_communist_britain_if_you_can = {
-	enable = {	
-		is_in_faction_with = GER
-		has_global_flag = great_war_ends
-		GER = {
-			naval_strength_ratio = {
-				tag = ENG 
-				  ratio > 0.5
-			  }
-		}	
-		NOT = {
-			has_war_with = RUS
-			has_war_with = FRA
-		}	
-	}
-	abort = { 
-		GER = {
-			naval_strength_ratio = {
-				tag = ENG 
-				  ratio < 0.4
-			  }
-		}	
-	}
-	ai_strategy = {
-        type = invasion_unit_request
-        country_trigger = { tag = ENG }
-        value = 500
-    }
+# GER_invade_communist_britain_if_you_can = {
+# 	enable = {	
+# 		is_in_faction_with = GER
+# 		has_global_flag = great_war_ends
+# 		GER = {
+# 			naval_strength_ratio = {
+# 				tag = ENG 
+# 				  ratio > 0.5
+# 			  }
+# 		}	
+# 		NOT = {
+# 			has_war_with = RUS
+# 			has_war_with = FRA
+# 		}	
+# 	}
+# 	abort = { 
+# 		GER = {
+# 			naval_strength_ratio = {
+# 				tag = ENG 
+# 				  ratio < 0.4
+# 			  }
+# 		}	
+# 	}
+# 	ai_strategy = {
+#         type = invasion_unit_request
+#         country_trigger = { tag = ENG }
+#         value = 500
+#     }
 
-	ai_strategy = {
-		type = invade
-		id = ENG
-		value = 1000
-	}
+# 	ai_strategy = {
+# 		type = invade
+# 		id = ENG
+# 		value = 1000
+# 	}
 
 	
-	ai_strategy = {
-		type = consider_weak
-		id = ENG
-		value = 75
-	}
+# 	ai_strategy = {
+# 		type = consider_weak
+# 		id = ENG
+# 		value = 75
+# 	}
 	
-	ai_strategy = {
-		type = naval_invasion_supremacy_weight
-		value = 40
-	}
+# 	ai_strategy = {
+# 		type = naval_invasion_supremacy_weight
+# 		value = 40
+# 	}
 
-}
+# }
 
 GER_early_template_design = {
-	enable = {	
+	allowed = {
 		original_tag = GER		
+	}
+	enable = {	
+		always = yes	
 	}
 	abort = { 
 		date > 1920.1.1
@@ -1385,11 +1397,13 @@ GER_early_template_design = {
 }
 
 GER_area_priority = {
-	enable = {
+	allowed = {
 		original_tag = GER
 	}
-	abort = { 
-		
+	enable = {
+		always = yes
+	}
+	abort = {
 		has_global_flag = great_war_ends
 	}
 	ai_strategy = {
@@ -1504,10 +1518,13 @@ axis_stay_away_from_the_royal_navy = {
 }
 
 GER_naval_role_ratios_maximum_kaiser = {
-	enable = {
-		has_dlc = "Man the Guns"
+	allowed = {		
 		original_tag = GER
-		has_completed_focus = GER_naval_supremacy
+		has_dlc = "Man the Guns"
+	}
+	enable = {	
+		# has_completed_focus = GER_naval_supremacy
+		has_completed_focus = GER_expansion_of_shipyards
 	}
 	abort_when_not_enabled = yes
 
@@ -1567,10 +1584,15 @@ GER_naval_role_ratios_maximum_kaiser = {
 }
 
 GER_historical_submarine_warfare_early = {
-	enable = {
+	allowed = {
 		original_tag = GER
+	}
+	enable = {
 		is_historical_focus_on = yes
-		has_war = yes
+		OR = {
+			has_war = yes
+			has_idea = GER_submarine_production_focus
+		}
 		date < 1915.5.5
 	}
 	abort_when_not_enabled = yes
@@ -1593,8 +1615,10 @@ GER_historical_submarine_warfare_early = {
 }
 
 GER_historical_submarine_warfare_mid = {
-	enable = {
+	allowed = {
 		original_tag = GER
+	}
+	enable = {	
 		is_historical_focus_on = yes
 		has_war = yes
 		date > 1915.5.5
@@ -1620,8 +1644,10 @@ GER_historical_submarine_warfare_mid = {
 }
 
 GER_historical_submarine_warfare_late = {
-	enable = {
+	allowed = {
 		original_tag = GER
+	}
+	enable = {
 		is_historical_focus_on = yes
 		has_war = yes
 		date > 1917.5.5
@@ -1650,9 +1676,11 @@ GER_historical_submarine_warfare_late = {
 
 
 GER_naval_role_ratios_historical = {
-	enable = {
-		has_dlc = "Man the Guns"
+	allowed = {
 		original_tag = GER
+		has_dlc = "Man the Guns"
+	}
+	enable = {
 		is_historical_focus_on = yes
 	}
 	abort_when_not_enabled = yes
@@ -1767,7 +1795,10 @@ GER_ignore_colonies = {
 		original_tag = GER
 	}
 	enable = {
-		always = yes
+		NOT = {
+			has_global_flag = interbellum
+			has_country_flag = great_war_winner
+		}
 	}
 	abort_when_not_enabled = yes
 
@@ -2018,8 +2049,754 @@ GER_prepare_for_france_in_morocco = {
 		states = {
 			887
 			290
+			1137
 			1093
 		}
 	}
 }
+
+GER_industrial_ai_smartness_1910_1911_1912_1913_1914 = {
+	allowed = {
+		tag = GER
+	}
+	enable = {
+		NOT = {
+			has_global_flag = great_war_ends
+		}
+		date < 1914.1.1
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = equipment_market_spend_factories
+		value = -999  # dont buy at game start
+	}
+	ai_strategy = {
+		type = intelligence_agency_usable_factories
+		value = -2
+	}
+	ai_strategy = {
+		type = build_building
+		id = rail_way
+		value = -9999
+	}
+	ai_strategy = {
+		type = building_target
+		id = industrial_complex
+		value = 75
+	}
+	ai_strategy = {
+		type = building_target
+		id = arms_factory
+		value = 60
+	}
+	ai_strategy = {
+		type = building_target
+		id = dockyard
+		value = 15
+	}
+}
+GER_support_NWA = {
+	allowed = {
+		OR = {
+			original_tag = GER
+			original_tag = UBD
+		}		
+	}
+	enable = {
+		NWA = {
+			has_war = yes
+		}
+		NOT = {
+			has_war_with = NWA
+			has_war_with_major = yes
+			has_country_flag = great_war_loser
+		}
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = send_volunteers_desire
+		id = NWA
+		value = 200
+	}
+	ai_strategy = {
+		type = support
+		id = NWA
+		value = 50
+	}
+	ai_strategy = {
+		type = send_lend_lease_desire
+		id = NWA 
+		value = 400
+	}
+}
+#Bundesrat
+# GER_invest_in_prussia = {
+# 	allowed = {
+# 		tag = GER	
+# 	}
+# 	enable = {
+# 		has_active_mission = GER_investment_in_prussia
+# 	}
+# 	abort_when_not_enabled = yes
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 64
+# 		value = 100
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 42
+# 		value = 90
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 869
+# 		value = 80
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 873
+# 		value = 70
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 1185
+# 		value = 60
+# 	}
+# }
+# GER_invest_in_prussia_infrastructure = {
+# 	allowed = {
+# 		tag = GER	
+# 	}
+# 	enable = {
+# 		has_active_mission = GER_investment_in_prussia_infrastructure
+# 	}
+# 	abort_when_not_enabled = yes
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 64
+# 		value = 100
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 42
+# 		value = 90
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 869
+# 		value = 80
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 873
+# 		value = 70
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 1185
+# 		value = 60
+# 	}
+# }
+# GER_invest_in_bavaria = {
+# 	allowed = {
+# 		tag = GER	
+# 	}
+# 	enable = {
+# 		has_active_mission = GER_investment_in_bavaria
+# 	}
+# 	abort_when_not_enabled = yes
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 52
+# 		value = 100
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 53
+# 		value = 90
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 54
+# 		value = 80
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 988
+# 		value = 70
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 989
+# 		value = 60
+# 	}
+# }
+# GER_invest_in_bavaria_infrastructure = {
+# 	allowed = {
+# 		tag = GER	
+# 	}
+# 	enable = {
+# 		has_active_mission = GER_investment_in_bavaria_infrastructure
+# 	}
+# 	abort_when_not_enabled = yes
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = infrastructure
+# 		target = 52
+# 		value = 100
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = infrastructure
+# 		target = 53
+# 		value = 90
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = infrastructure
+# 		target = 54
+# 		value = 80
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = infrastructure
+# 		target = 988
+# 		value = 70
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = infrastructure
+# 		target = 989
+# 		value = 60
+# 	}
+# }
+# GER_invest_in_saxony = {
+# 	allowed = {
+# 		tag = GER	
+# 	}
+# 	enable = {
+# 		has_active_mission = GER_investment_in_saxony
+# 	}
+# 	abort_when_not_enabled = yes
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 65
+# 		value = 100
+# 	}
+# }
+# GER_invest_in_saxony_infrastructure = {
+# 	allowed = {
+# 		tag = GER	
+# 	}
+# 	enable = {
+# 		has_active_mission = GER_investment_in_saxony_infrastructure
+# 	}
+# 	abort_when_not_enabled = yes
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 65
+# 		value = 100
+# 	}
+# }
+# GER_invest_in_wurttemberg = {
+# 	allowed = {
+# 		tag = GER	
+# 	}
+# 	enable = {
+# 		has_active_mission = GER_investment_in_wurttemberg
+# 	}
+# 	abort_when_not_enabled = yes
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 50
+# 		value = 100
+# 	}
+# }
+# GER_invest_in_wurttemberg_infrastructure = {
+# 	allowed = {
+# 		tag = GER	
+# 	}
+# 	enable = {
+# 		has_active_mission = GER_investment_in_wurttemberg_infrastructure
+# 	}
+# 	abort_when_not_enabled = yes
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = infrastructure
+# 		target = 50
+# 		value = 100
+# 	}
+# }
+# GER_invest_in_baden = {
+# 	allowed = {
+# 		tag = GER	
+# 	}
+# 	enable = {
+# 		has_active_mission = GER_investment_in_baden
+# 	}
+# 	abort_when_not_enabled = yes
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 986
+# 		value = 100
+# 	}
+# }
+# GER_invest_in_baden_infrastructure = {
+# 	allowed = {
+# 		tag = GER	
+# 	}
+# 	enable = {
+# 		has_active_mission = GER_investment_in_baden_infrastructure
+# 	}
+# 	abort_when_not_enabled = yes
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 986
+# 		value = 100
+# 	}
+# }
+# GER_invest_in_hesse = {
+# 	allowed = {
+# 		tag = GER	
+# 	}
+# 	enable = {
+# 		has_active_mission = GER_investment_in_hesse
+# 	}
+# 	abort_when_not_enabled = yes
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 1181
+# 		value = 100
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 1188
+# 		value = 100
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 1189
+# 		value = 100
+# 	}
+# }
+# GER_invest_in_hesse_infrastructure = {
+# 	allowed = {
+# 		tag = GER	
+# 	}
+# 	enable = {
+# 		has_active_mission = GER_investment_in_hesse_infrastructure
+# 	}
+# 	abort_when_not_enabled = yes
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = infrastructure
+# 		target = 1181
+# 		value = 100
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = infrastructure
+# 		target = 1188
+# 		value = 100
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = infrastructure
+# 		target = 1189
+# 		value = 100
+# 	}
+# }
+# GER_invest_in_mecklenburg = {
+# 	allowed = {
+# 		tag = GER	
+# 	}
+# 	enable = {
+# 		has_active_mission = GER_investment_in_mecklenburg
+# 	}
+# 	abort_when_not_enabled = yes
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 61
+# 		value = 100
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 1164
+# 		value = 90
+# 	}
+# }
+# GER_invest_in_mecklenburg_infrastructure = {
+# 	allowed = {
+# 		tag = GER	
+# 	}
+# 	enable = {
+# 		has_active_mission = GER_investment_in_mecklenburg_infrastructure
+# 	}
+# 	abort_when_not_enabled = yes
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = infrastructure
+# 		target = 61
+# 		value = 100
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = infrastructure
+# 		target = 1164
+# 		value = 90
+# 	}
+# }
+# GER_invest_in_brunswick = {
+# 	allowed = {
+# 		tag = GER	
+# 	}
+# 	enable = {
+# 		has_active_mission = GER_investment_in_brunswick
+# 	}
+# 	abort_when_not_enabled = yes
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 1168
+# 		value = 100
+# 	}
+# }
+# GER_invest_in_brunswick_infrastructure = {
+# 	allowed = {
+# 		tag = GER	
+# 	}
+# 	enable = {
+# 		has_active_mission = GER_investment_in_brunswick_infrastructure
+# 	}
+# 	abort_when_not_enabled = yes
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = infrastructure
+# 		target = 1168
+# 		value = 100
+# 	}
+# }
+# GER_invest_in_alsace_lorraine = {
+# 	allowed = {
+# 		tag = GER	
+# 	}
+# 	enable = {
+# 		has_active_mission = GER_investment_in_alsace_lorraine
+# 	}
+# 	abort_when_not_enabled = yes
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 28
+# 		value = 100
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 1107
+# 		value = 90
+# 	}
+# }
+# GER_invest_in_alsace_lorraine_infrastructure = {
+# 	allowed = {
+# 		tag = GER	
+# 	}
+# 	enable = {
+# 		has_active_mission = GER_investment_in_alsace_lorraine_infrastructure
+# 	}
+# 	abort_when_not_enabled = yes
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = infrastructure
+# 		target = 28
+# 		value = 100
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = infrastructure
+# 		target = 1107
+# 		value = 90
+# 	}
+# }
+# GER_invest_in_thuringia = {
+# 	allowed = {
+# 		tag = GER	
+# 	}
+# 	enable = {
+# 		has_active_mission = GER_investment_in_thuringia
+# 	}
+# 	abort_when_not_enabled = yes
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 60
+# 		value = 100
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 1176
+# 		value = 90
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 1173
+# 		value = 80
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 1178
+# 		value = 70
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 1174
+# 		value = 60
+# 	}
+# }
+# GER_invest_in_thuringia_infrastructure = {
+# 	allowed = {
+# 		tag = GER	
+# 	}
+# 	enable = {
+# 		has_active_mission = GER_investment_in_thuringia_infrastructure
+# 	}
+# 	abort_when_not_enabled = yes
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = infrastructure
+# 		target = 60
+# 		value = 100
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = infrastructure
+# 		target = 1176
+# 		value = 90
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = infrastructure
+# 		target = 1173
+# 		value = 80
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = infrastructure
+# 		target = 1178
+# 		value = 70
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = infrastructure
+# 		target = 1174
+# 		value = 60
+# 	}
+# }
+# GER_invest_in_minor_states = {
+# 	allowed = {
+# 		tag = GER	
+# 	}
+# 	enable = {
+# 		has_active_mission = GER_investment_in_minor_states
+# 	}
+# 	abort_when_not_enabled = yes
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 56
+# 		value = 100
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 1169
+# 		value = 90
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 1171
+# 		value = 80
+# 	}
+# }
+# GER_invest_in_minor_states_infrastructure = {
+# 	allowed = {
+# 		tag = GER	
+# 	}
+# 	enable = {
+# 		has_active_mission = GER_investment_in_minor_states_infrastructure
+# 	}
+# 	abort_when_not_enabled = yes
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = infrastructure
+# 		target = 56
+# 		value = 100
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = infrastructure
+# 		target = 1169
+# 		value = 90
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = infrastructure
+# 		target = 1171
+# 		value = 80
+# 	}
+# }
+# GER_invest_in_free_cities = {
+# 	allowed = {
+# 		tag = GER	
+# 	}
+# 	enable = {
+# 		has_active_mission = GER_investment_in_free_cities
+# 	}
+# 	abort_when_not_enabled = yes
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 1165
+# 		value = 100
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 1163
+# 		value = 90
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 1166
+# 		value = 80
+# 	}
+# }
+# GER_invest_in_free_cities_infrastructure = {
+# 	allowed = {
+# 		tag = GER	
+# 	}
+# 	enable = {
+# 		has_active_mission = GER_investment_in_free_cities_infrastructure
+# 	}
+# 	abort_when_not_enabled = yes
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 1165
+# 		value = 100
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 1163
+# 		value = 90
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 1166
+# 		value = 80
+# 	}
+# }
+# GER_invest_in_austria = {
+# 	allowed = {
+# 		tag = GER	
+# 	}
+# 	enable = {
+# 		has_active_mission = GER_investment_in_austria
+# 	}
+# 	abort_when_not_enabled = yes
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 4
+# 		value = 100
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 152
+# 		value = 90
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 1194
+# 		value = 80
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = industrial_complex
+# 		target = 153
+# 		value = 70
+# 	}
+# }
+# GER_invest_in_austria_infrastructure = {
+# 	allowed = {
+# 		tag = GER	
+# 	}
+# 	enable = {
+# 		has_active_mission = GER_investment_in_austria_infrastructure
+# 	}
+# 	abort_when_not_enabled = yes
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = infrastructure
+# 		target = 4
+# 		value = 100
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = infrastructure
+# 		target = 152
+# 		value = 90
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = infrastructure
+# 		target = 1194
+# 		value = 80
+# 	}
+# 	ai_strategy = {
+# 		type = build_building
+# 		id = infrastructure
+# 		target = 153
+# 		value = 70
+# 	}
+# }
+
+
+
 

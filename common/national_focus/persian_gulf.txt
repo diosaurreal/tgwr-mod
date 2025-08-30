@@ -11,6 +11,7 @@ focus_tree = {
 				original_tag = UAE
 				original_tag = KUW
 				original_tag = ARB
+				original_tag = BLC
 			}
 		}
 	}
@@ -21,8 +22,8 @@ focus_tree = {
 	shared_focus = GULF_establish_control_over_the_economy
 
 	continuous_focus_position = {
-		x = 200
-		y = 700
+		x = 100
+		y = 1000
 	}
 }	
 
@@ -32,6 +33,12 @@ shared_focus = {
 	cost = 10
 	x = 3
 	y = 0
+	search_filters = {
+		FOCUS_FILTER_INDUSTRY
+		FOCUS_FILTER_HISTORICAL
+		FOCUS_FILTER_INTERNAL_AFFAIRS
+		FOCUS_FILTER_POLITICAL
+	}
 	ai_will_do = {
 		factor = 1
 	}
@@ -69,7 +76,13 @@ shared_focus = {
 		trigger = { original_tag = UAE }
 		value = GFX_army_focus_uae
 	}
-	
+	icon = {
+		value = GFX_goal_generic_small_arms
+	}
+	search_filters = {
+		FOCUS_FILTER_HISTORICAL
+		FOCUS_FILTER_ARMY_XP
+	}
 	cost = 10
 	relative_position_id =  GULF_establish_control_over_the_economy
 	x = 7
@@ -90,6 +103,9 @@ shared_focus = {
 	relative_position_id =  GULF_establish_control_over_the_economy
 	x = 6
 	y = 1
+	search_filters = {
+		FOCUS_FILTER_INDUSTRY
+	}
 	prerequisite = {
 		focus =  GULF_establish_control_over_the_economy
 	}
@@ -103,6 +119,7 @@ shared_focus = {
 		ENG={
 			has_subject = ROOT
 		}
+		has_war = yes
 	}
 	completion_reward = {
 		random_owned_controlled_state = {
@@ -147,6 +164,10 @@ shared_focus = {
 	completion_reward = {
 		navy_experience = 25
 	}
+	search_filters = {
+		FOCUS_FILTER_NAVY_XP
+		FOCUS_FILTER_HISTORICAL
+	}
 }
 shared_focus = {
 	id =  GULF_expand_the_merchant_fleet
@@ -155,6 +176,9 @@ shared_focus = {
 	relative_position_id =  GULF_establish_control_over_the_economy
 	x = 9
 	y = 2
+	search_filters = {
+		FOCUS_FILTER_NAVY_XP
+	}
 	prerequisite = {
 		focus =  GULF_our_ships
 	}
@@ -166,6 +190,7 @@ shared_focus = {
 		any_owned_state = {
 			is_coastal = yes
 		}
+		has_tech = engine_tech_1
 	}
 	completion_reward = {
 		add_equipment_to_stockpile = { type = convoy_1 amount = 20 producer = MSC }
@@ -178,19 +203,39 @@ shared_focus = {
 	relative_position_id =  GULF_establish_control_over_the_economy
 	x = 8
 	y = 3
+	search_filters = {
+		FOCUS_FILTER_NAVY_XP
+		FOCUS_FILTER_INTERNATIONAL_TRADE
+	}
 	prerequisite = {
 		focus =  GULF_our_ships
+	}
+	mutually_exclusive = {
+		focus = GULF_secret_ottoman_deal
 	}
 	ai_will_do = {
 		factor = 1
 	}
 	available = {
 		any_owned_state = { is_coastal = yes }
-		NOT = { has_war_with = ENG }
+		OR = {
+			is_subject_of = ENG
+			is_in_faction_with = ENG
+		}
 	}
 	completion_reward = {
 		if = {
-			limit = { has_dlc = "Man the Guns" }
+			limit = {
+				is_subject_of = ENG
+			 }
+			 add_autonomy_score = {
+				value = -100
+			}
+		}
+		if = {
+			limit = { 
+				has_dlc = "Man the Guns" 
+			}
 			create_ship = {
 				type = ship_hull_light_1
 				equipment_variant = "TB 81 Class"
@@ -201,7 +246,9 @@ shared_focus = {
 		else = {
 			create_ship = {
 				type = destroyer_1
-				creator = "ENG"
+				equipment_variant = "TB 81 Class"
+				name = "TB 81 Class"
+				creator = ENG
 			}
 		}
 	}
@@ -213,8 +260,12 @@ shared_focus = {
 	relative_position_id =  GULF_establish_control_over_the_economy
 	x = 9
 	y = 4
+	search_filters = {
+		FOCUS_FILTER_NAVY_XP
+	}
 	prerequisite = {
 		focus =  GULF_expand_the_merchant_fleet
+		focus = GULF_ask_for_british_destroyers
 	}
 	ai_will_do = {
 		factor = 1
@@ -248,25 +299,41 @@ shared_focus = {
 }
 shared_focus = {
 	id =  GULF_secret_ottoman_deal
-	icon = GFX_focus_generic_mountain_artillery
+	icon = GFX_focus_TUR_taking_over_defense_of_the_gulf
 	cost = 10
 	relative_position_id =  GULF_establish_control_over_the_economy
 	x = 6
 	y = 3
+	search_filters = {
+		FOCUS_FILTER_RESEARCH
+		FOCUS_FILTER_POLITICAL
+		FOCUS_FILTER_INTERNATIONAL_TRADE
+		FOCUS_FILTER_ARMY_XP
+	}
 	prerequisite = {
 		focus =  GULF_weapons_factory
+	}
+	mutually_exclusive = {
+		focus = GULF_ask_for_british_destroyers
 	}
 	ai_will_do = {
 		factor = 1
 	}
-	available = { is_subject_of = ENG }
+	available = { 
+		TUR = {
+			OR = {
+				has_war_with = ENG
+				has_country_flag = great_war_winner
+			}
+		}
+	 }
 	completion_reward = {
 		army_experience = 25
 		add_tech_bonus = {
 			name = GULF_secret_ottoman_deal
 			bonus = 1
 			uses = 1
-			category = artillery
+			category = cat_artillery
 		}
 		add_opinion_modifier = {
 			target = TUR
@@ -282,12 +349,65 @@ shared_focus = {
 	}
 }
 shared_focus = {
+	id = GULF_join_jihad
+	icon = GFX_focus_PER_islamic_solidarity
+	cost = 10
+	relative_position_id = GULF_secret_ottoman_deal
+	x = 0
+	y = 2
+	search_filters = {
+		FOCUS_FILTER_POLITICAL
+		FOCUS_FILTER_INTERNAL_AFFAIRS
+	}
+	prerequisite = {
+		focus = GULF_secret_ottoman_deal
+	}
+	available = {
+		TUR = {
+			has_country_flag = TUR_jihad_declared
+		}
+		has_war_support > 0.6
+	}
+	completion_reward = {
+		ENG = {
+			end_puppet = ROOT
+		}
+		if = {
+			limit = {
+				TUR = {
+					has_war_with = ENG
+				}
+			 }
+			 add_to_war = {
+				targeted_alliance = TUR
+				enemy = ENG
+			}
+		}
+		if = {
+			limit = {
+				TUR = {
+					has_war_with = GER
+				}
+			 }
+			 add_to_war = {
+				targeted_alliance = TUR
+				enemy = GER
+			}
+		}
+	}
+}
+shared_focus = {
 	id =  GULF_war_plans
 	icon = GFX_focus_planning_bonus
 	cost = 10
 	relative_position_id =  GULF_establish_control_over_the_economy
 	x = 7
 	y = 2
+	search_filters = {
+		FOCUS_FILTER_ARMY_XP
+		FOCUS_FILTER_HISTORICAL
+		FOCUS_FILTER_RESEARCH
+	}
 	prerequisite = {
 		focus =  GULF_army_focus
 	}
@@ -307,40 +427,13 @@ shared_focus = {
 	}
 }
 shared_focus = {
-	id =  GULF_military_airfield
-	icon = GFX_goal_generic_air_fighter
-	cost = 10
-	relative_position_id =  GULF_establish_control_over_the_economy
-	x = 7
-	y = 4
-	prerequisite = {
-		focus =  GULF_war_plans
-	}
-	prerequisite = {
-		focus =  GULF_secret_ottoman_deal
-	}
-	prerequisite = {
-		focus =  GULF_ask_for_british_destroyers
-	}
-	ai_will_do = {
-		factor = 1
-	}
-	available = { NOT = { has_war_with = ENG } }
-	completion_reward = {
-		air_experience = 25
-		random_owned_controlled_state = {
-			add_building_construction = {
-				type = air_base
-				level = 1
-				instant_build = yes
-			}
-		}
-	}
-}
-shared_focus = {
 	id =  GULF_prospect_oil
 	icon = GFX_focus_generic_resource_extraction
 	cost = 10
+	search_filters = {
+		FOCUS_FILTER_INDUSTRY
+		FOCUS_FILTER_INTERNAL_AFFAIRS
+	}
 	prerequisite = {
 		focus =  GULF_establish_control_over_the_economy
 	}
@@ -369,6 +462,10 @@ shared_focus = {
 	id =  GULF_lay_modern_railways
 	icon = GFX_focus_Generic_Develop_Rail_Network
 	cost = 10
+	search_filters = {
+		FOCUS_FILTER_INDUSTRY
+		FOCUS_FILTER_INTERNAL_AFFAIRS
+	}
 	prerequisite = {
 		focus =  GULF_prospect_oil
 	}
@@ -461,6 +558,10 @@ shared_focus = {
 	id =  GULF_industrialize_capital
 	icon = GFX_focus_ENG_Legacy_Of_Industrial_Revolution
 	cost = 10
+	search_filters = {
+		FOCUS_FILTER_INDUSTRY
+		FOCUS_FILTER_INTERNAL_AFFAIRS
+	}
 	prerequisite = {
 		focus =  GULF_prospect_oil
 	}
@@ -490,6 +591,10 @@ shared_focus = {
 	id =  GULF_a_modern_economy
 	icon = GFX_focus_generic_money_deal
 	cost = 10
+	search_filters = {
+		FOCUS_FILTER_INDUSTRY
+		FOCUS_FILTER_INTERNAL_AFFAIRS
+	}
 	relative_position_id =  GULF_establish_control_over_the_economy
 	prerequisite = {
 		focus =  GULF_industrialize_capital
@@ -524,6 +629,11 @@ shared_focus = {
 	id =  GULF_stick_agriculture_fishing
 	icon = GFX_focus_agrarian_soldiers
 	cost = 5
+	search_filters = {
+		FOCUS_FILTER_INDUSTRY
+		FOCUS_FILTER_HISTORICAL
+		FOCUS_FILTER_INTERNAL_AFFAIRS
+	}
 	prerequisite = {
 		focus =  GULF_establish_control_over_the_economy
 	}
@@ -540,6 +650,11 @@ shared_focus = {
 }
 shared_focus = {
 	id =  GULF_better_fishing_farming_tactics
+	search_filters = {
+		FOCUS_FILTER_INDUSTRY
+		FOCUS_FILTER_HISTORICAL
+		FOCUS_FILTER_INTERNAL_AFFAIRS
+	}
 	icon = {
 		trigger = { NOT = { any_owned_state = { is_coastal = yes } } }
 		value = GFX_focus_generic_farmland
@@ -570,6 +685,11 @@ shared_focus = {
 	id =  GULF_pearl_tax
 	icon = GFX_goal_generic_positive_trade_relations
 	cost = 10
+	search_filters = {
+		FOCUS_FILTER_INDUSTRY
+		FOCUS_FILTER_HISTORICAL
+		FOCUS_FILTER_INTERNAL_AFFAIRS
+	}
 	prerequisite = {
 		focus =  GULF_stick_agriculture_fishing
 	}
@@ -589,6 +709,11 @@ shared_focus = {
 	id =  GULF_land_reorganization
 	icon = GFX_focus_generic_land_reclamation
 	cost = 10
+	search_filters = {
+		FOCUS_FILTER_INDUSTRY
+		FOCUS_FILTER_HISTORICAL
+		FOCUS_FILTER_INTERNAL_AFFAIRS
+	}
 	prerequisite = {
 		focus =  GULF_pearl_tax
 	}
@@ -609,11 +734,19 @@ shared_focus = {
 	id =  GULF_import_foreign_tractors
 	icon = GFX_focus_mex_privatisation
 	cost = 10
+	search_filters = {
+		FOCUS_FILTER_INDUSTRY
+		FOCUS_FILTER_HISTORICAL
+		FOCUS_FILTER_INTERNAL_AFFAIRS
+	}
 	prerequisite = {
 		focus =  GULF_pearl_tax
 	}
 	prerequisite = {
 		focus =  GULF_land_reorganization
+	}
+	available = {
+		has_war = no
 	}
 	relative_position_id =  GULF_establish_control_over_the_economy
 	x = 5
@@ -627,6 +760,11 @@ shared_focus = {
 	id =  GULF_agricultural_economy
 	icon = GFX_focus_generic_wheat
 	cost = 10
+	search_filters = {
+		FOCUS_FILTER_INDUSTRY
+		FOCUS_FILTER_HISTORICAL
+		FOCUS_FILTER_INTERNAL_AFFAIRS
+	}
 	prerequisite = {
 		focus =  GULF_land_reorganization
 	}
@@ -644,6 +782,11 @@ shared_focus = {
 	id =  GULF_british_investments
 	icon = GFX_bag_of_money
 	cost = 10
+	search_filters = {
+		FOCUS_FILTER_INDUSTRY
+		FOCUS_FILTER_INTERNAL_AFFAIRS
+		FOCUS_FILTER_INTERNATIONAL_TRADE
+	}
 	prerequisite = {
 		focus =  GULF_prospect_oil
 	}
@@ -663,6 +806,10 @@ shared_focus = {
 	id =  GULF_modernize_islamic_school
 	icon = GFX_TUR_Islamic_Education
 	cost = 10
+	search_filters = {
+		FOCUS_FILTER_RESEARCH
+		FOCUS_FILTER_INTERNAL_AFFAIRS
+	}
 	prerequisite = {
 		focus =  GULF_british_investments
 		focus =  GULF_better_fishing_farming_tactics
@@ -678,6 +825,10 @@ shared_focus = {
 	id =  GULF_free_clinics
 	icon = GFX_islamic_healthcare
 	cost = 10
+	search_filters = {
+		FOCUS_FILTER_INDUSTRY
+		FOCUS_FILTER_INTERNAL_AFFAIRS
+	}
 	prerequisite = {
 		focus =  GULF_british_investments
 	}
@@ -710,6 +861,10 @@ shared_focus = {
 	id =  GULF_country_miracle
 	icon = GFX_focus_generic_money
 	cost = 10
+	search_filters = {
+		FOCUS_FILTER_INDUSTRY
+		FOCUS_FILTER_INTERNAL_AFFAIRS
+	}
 	prerequisite = {
 		focus =  GULF_modernize_islamic_school
 	}

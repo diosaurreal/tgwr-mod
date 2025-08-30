@@ -162,6 +162,26 @@ country_event = {
 	desc = ww1_luxembourg.5.d
 	is_triggered_only = yes
 	fire_only_once = yes
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					has_capitulated = yes
+					is_in_faction = no
+					is_subject = no
+				}
+				get_current_government_type = yes
+				FROM = {
+					set_autonomy = {
+						target = ROOT
+						autonomous_state = autonomy_integrated_puppet
+					}
+				}
+				restore_previous_government_type = yes
+				set_global_flag = luxembourg_submitted
+			}		
+		}	
+	}	
 	option = {
 		name = ww1_luxembourg.5.a
 		custom_effect_tooltip = historical_tt
@@ -169,28 +189,47 @@ country_event = {
 		add_stability = -0.15
 		hidden_effect = {
 			set_global_flag = luxembourg_submitted
-			8 = {
-				teleport_armies = {
-					limit = {
-						has_war_with = FROM
-					}
-					to_state = 17
+			# 8 = {
+			# 	teleport_armies = {
+			# 		limit = {
+			# 			has_war_with = FROM
+			# 		}
+			# 		to_state = 17
+			# 	}
+			# 	set_state_controller_to = ROOT
+			# }
+			
+		}
+		if = {
+			limit = {
+				NOT = {
+					is_subject_of = FROM
 				}
-				set_state_controller_to = ROOT
 			}
 			get_current_government_type = yes
+			FROM = {
+				set_autonomy = {
+					target = ROOT
+					autonomous_state = autonomy_integrated_puppet
+				}
+			}			restore_previous_government_type = yes
+			
 		}
-		FROM = {
-			set_autonomy = {
-				target = ROOT
-				autonomous_state = autonomy_integrated_puppet
+		add_ideas = LUX_occupation
+		hidden_effect = {		
+			set_state_controller = capital
+			add_ideas = {
+				disarmed_nation
+				civilian_economy
 			}
-		}
-		hidden_effect = {
-			restore_previous_government_type = yes
-			add_ideas = LUX_occupation
-			add_ideas = disarmed_nation
-			add_ideas = civilian_economy
+			if = {
+				limit = {
+					NOT = {
+						has_idea = GER_customs_union
+					}
+				}
+				add_ideas = GER_customs_union
+			}
 		}
 		if = {
 			limit = {
@@ -210,6 +249,12 @@ country_event = {
 		name = ww1_luxembourg.5.b
 		add_political_power = -100
 		add_war_support = 0.02
+		remove_ideas = LUX_london_treaty
+		trigger = {
+			NOT = {
+				is_subject_of = FROM
+			}
+		}
 		ai_chance = {
 			base = 10
 			modifier = {

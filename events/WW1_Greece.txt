@@ -34,7 +34,7 @@ country_event = {
 		GRE_constantine_i = {
 			promote_character = semi_constitutional_monarchy
 			set_character_name = GRE_constantine_i
-		}		
+		}
 		remove_ideas = GRE_idea_george_i
 		if = {
 			limit = {
@@ -45,6 +45,11 @@ country_event = {
 				}
 			}
 			add_ideas = GRE_idea_constantine		
+		}
+		if = {
+			limit = { has_government = neutrality }
+			activate_advisor = GRE_dimitrios_gounaris
+			set_can_be_fired_in_advisor_role = { character = GRE_dimitrios_gounaris value = no }
 		}
 		add_stability = -0.10
 		hidden_effect = {
@@ -109,7 +114,7 @@ country_event = {
 				}
 				support = {
 					engineer = { x = 0 y = 0 }  
-					artillery = { x = 0 y = 1 }
+					field_gun = { x = 0 y = 1 }
 				}
 			}
 			add_ai_strategy = {
@@ -166,6 +171,7 @@ country_event = {
 					}
 				}			
 				transfer_state_to = FRA
+				add_contested_owner = FROM
 				set_border_war = yes
 				hidden_effect = {
 					set_state_flag = french_salonika					
@@ -634,7 +640,12 @@ country_event = {
 
 	fire_only_once = yes
 	is_triggered_only = yes
-	
+	immediate = {
+		hidden_effect = {
+			complete_national_focus	= GRE_dragoumis_resignation
+			set_country_flag = GRE_dragoumis_resignation
+		}
+	}
 	option = {
 		name = ww1_greece.26.a
 		custom_effect_tooltip = GRE_appoint_venizelos_tooltip
@@ -642,72 +653,72 @@ country_event = {
 			ruling_party = democratic
 			elections_allowed = yes
 		}
-		hidden_effect = {
-			complete_national_focus	= GRE_dragoumis_resignation
-			complete_national_focus	= GRE_appoint_venizelos
-		}
+		set_country_flag = GRE_appoint_venizelos
+		hidden_effect = { complete_national_focus = GRE_appoint_venizelos }
 		ai_chance = {
-			factor = 20
+			base = 30
 			modifier = {
-				is_historical_focus_on = yes
-				factor = 100
-			}
-			modifier = {
-				OR = {
-					has_game_rule = {
-						rule = GRE_OPERATION_RODI_AI_BEHAVIOR
-						option = RODI_OR_WAR
-					}
-					has_game_rule = {
-						rule = GRE_AI_BEHAVIOR
-						option = METAXAS
-					}
-				}
 				factor = 0
-			}
-		}
-		trigger = {
-			OR = {
-				is_ai = no
-				NOT = {
-					has_game_rule = {
-						rule = GRE_OPERATION_RODI_AI_BEHAVIOR
-						option = RODI_OR_WAR
-					}
+				OR = {
+					has_country_flag = GRE_AI_RANDOM_METAXAS
 					has_game_rule = {
 						rule = GRE_AI_BEHAVIOR
 						option = METAXAS
 					}
-				}
+					has_country_flag = GRE_AI_RANDOM_NEUTRALITY_MONARCHIST
+					has_game_rule = {
+						rule = GRE_AI_BEHAVIOR
+						option = NEUTRALITY_MONARCHIST
+					}
+					has_country_flag = GRE_AI_RANDOM_CENTRAL_POWERS
+					has_game_rule = {
+						rule = GRE_AI_BEHAVIOR
+						option = CENTRAL_POWERS
+					}
+					AND = {
+						is_historical_focus_on = no
+						has_game_rule = {
+							rule = GRE_ai_behavior
+							option = DEFAULT
+						}
+						has_game_rule = {
+							rule = GRE_OPERATION_RODI_AI_BEHAVIOR
+							option = RODI_OR_WAR
+						}
+					}
+				}			
 			}
-		}																		
+		}																	
 	}
 	option = {
 		name = ww1_greece.26.b
 		custom_effect_tooltip = GRE_appoint_gounaris_tooltip
 		promote_character = GRE_dimitrios_gounaris
-		hidden_effect = {
-			complete_national_focus	= GRE_dragoumis_resignation
-			complete_national_focus	= GRE_appoint_gounaris
-		}
+		set_country_flag = GRE_appoint_gounaris
+		hidden_effect = { complete_national_focus = GRE_appoint_gounaris }
 		ai_chance = {
-			factor = 20
+			base = 20
 			modifier = {
-				is_historical_focus_on = yes
 				factor = 0
-			}
-			modifier = {
 				OR = {
-					has_game_rule = {
-						rule = GRE_OPERATION_RODI_AI_BEHAVIOR
-						option = RODI_OR_WAR
+					AND = {
+						is_historical_focus_on = yes
+						has_game_rule = {
+							rule = GRE_ai_behavior
+							option = DEFAULT
+						}
 					}
+					has_country_flag = GRE_AI_RANDOM_HISTORICAL
+					has_game_rule = {
+						rule = GRE_ai_behavior
+						option = DEFAULT
+					}
+					has_country_flag = GRE_AI_RANDOM_SOCIALIST
 					has_game_rule = {
 						rule = GRE_AI_BEHAVIOR
-						option = METAXAS
+						option = SOCIALIST
 					}
 				}
-				factor = 100
 			}
 		}																			
 	}	
@@ -1186,21 +1197,18 @@ country_event = {
 	picture = GFX_report_event_gre_italian_troops
 	fire_only_once = yes
 	is_triggered_only = yes
+	trigger = {
+		ALB = {
+			owns_state = 871
+		}
+	}
 	
 	option = {
 		name = ww1_greece.35.a
-		add_political_power = -200
+		add_command_power = -20
 		transfer_state = 871
 		ai_chance = {
 			factor = 100
-			modifier = {
-				factor = 0
-				has_war = yes
-			}
-			modifier = {
-				factor = 0
-				is_historical_focus_on = yes
-			}
 		}
 	}			
 }
@@ -1369,8 +1377,7 @@ country_event = {
 		tag = GRE
 		owns_state = 184
 		date > 1916.5.1
-		has_global_flag = great_war
-		NOT = { has_global_flag = great_war_ends }
+		is_great_war_ongoing = yes
 		is_in_faction = no
 		has_war = no
 		has_idea = GRE_idea_national_schism
@@ -1421,8 +1428,7 @@ country_event = {
 		tag = GRE
 		owns_state = 184
 		date > 1916.8.1
-		has_global_flag = great_war
-		NOT = { has_global_flag = great_war_ends }
+		is_great_war_ongoing = yes
 		is_in_faction = no
 		has_war = no
 		has_idea = GRE_idea_national_schism
@@ -1436,8 +1442,9 @@ country_event = {
 		name = ww1_greece.47.a
 		BUL = {
 			transfer_state = 184
-			country_event = ww1_greece.48
+			hidden_effect = { country_event = ww1_greece.48 }
 		}
+		add_contested_owner = 184
 		add_stability = -0.10
 		set_country_flag = surrender_of_eastern_macedonia
 	}
@@ -1496,56 +1503,33 @@ country_event = {
 	picture = GFX_report_event_constantine
 	is_triggered_only = yes
 	fire_only_once = yes
-	trigger = {
-		any_other_country = {
-			tag = GRE
-			exists = yes
-		}
-	}
-	immediate = {
+	option = {
+		name = ww1_greece.50.a
+		add_stability = 0.15
 		hidden_effect = {
-			GRE = {
-				every_character = {
-					set_nationality = THE
+			GRM = {
+				every_character = { set_nationality = THE }
+				every_state = {
+					limit = { is_core_of = PREV }
+					remove_core_of = PREV
+					add_core_of = THE
 				}
 				every_state = {
-					remove_core_of = GRE
-					remove_claim_by = GRE
+					limit = { is_claimed_by = PREV }
+					remove_claim_by = GRM
 				}
-				transfer_navy = {
-					target = THE
-				}
+				transfer_navy = { target = THE }
 				transfer_units_fraction= {
 					target = THE
 					size = 1
-					keep_unit_leaders_trigger = {
-						always = yes
-					}
+					target_organization = 1
+					source_organization = 1
 				}
-				clr_country_flag = empty_focus
+				GRE = { annex_country = { target = PREV transfer_troops = yes } }
+				clr_country_flag = GRE_monarchist_mainland_flag
+				reserve_dynamic_country = no
 			}
-			annex_country = { target = GRE transfer_troops = yes }
-			set_party_name = {
-				ideology = democratic
-				long_name = GRE_liberal_party_long
-				name = GRE_liberal_party
-			}
-			set_party_name = {
-				ideology = fascism
-				long_name = GRE_epistratoi_party_long
-				name = GRE_epistratoi_party
-			}
-			promote_character = GRE_ioannis_metaxas
-			set_party_name = {
-				ideology = neutrality
-				long_name = GRE_neutrality_house_party
-				name = GRE_neutrality_house_party
-			}
-			promote_character = GRE_avraam_benaroya
 			clr_country_flag = GRE_national_defense_flag
-			set_cosmetic_tag = GRE
-			promote_character = GRE_alexander
-			add_ideas = GRE_idea_national_schism3
 			GRE_alexandros_zaimis = {
 				remove_country_leader_role = {
 					ideology = conservatism
@@ -1556,30 +1540,40 @@ country_event = {
 					ideology = semi_constitutional_monarchy
 				}
 			}
-			add_ideas = GRE_idea_national_schism3
 			remove_ideas = {
 				GRE_idea_national_schism
 				GRE_idea_dual_power
-				gre_royalist_port_blocked2
 				GRE_idea_national_schism
 				GRE_idea_national_schism2
 				GRE_idea_national_schism2b
 				GRE_idea_national_schism4
 			}
-			set_capital = { state = 898 }
-		}
-	}
-	option = {
-		name = ww1_greece.50.a
-		add_stability = 0.15
-		effect_tooltip = {
-			set_party_name = {
-				ideology = democratic
-				long_name = GRE_liberal_party_long
-				name = GRE_liberal_party
+			if = {
+				limit = { has_idea = gre_royalist_port_blocked2 } #to not trigger on_remove effect 
+				remove_ideas = gre_royalist_port_blocked2
 			}
-			add_ideas = GRE_idea_national_schism3
+			unlock_national_focus = GRE_force_the_king_to_abdicate
 		}
+		set_capital = { state = 898 }
+		set_party_name = {
+			ideology = democratic
+			long_name = GRE_liberal_party_long
+			name = GRE_liberal_party
+		}
+		set_party_name = {
+			ideology = fascism
+			long_name = GRE_epistratoi_party_long
+			name = GRE_epistratoi_party
+		}
+		promote_character = GRE_ioannis_metaxas
+		set_party_name = {
+			ideology = neutrality
+			long_name = GRE_neutrality_house_party
+			name = GRE_neutrality_house_party
+		}
+		set_cosmetic_tag = GRE
+		promote_character = GRE_alexander
+		add_ideas = GRE_idea_national_schism3
     }
 }
 ###German Air Raid on Thessaloniki
@@ -1600,9 +1594,7 @@ country_event = {
 	}
 	option = {
 		name = ww1_greece.51.a
-		345 = {
-			damage_building = { type = infrastructure damage = 1 }
-		}
+		345 = { damage_building = { type = infrastructure damage = 1 } }
 		add_stability = -0.02
 	}
 }
@@ -1619,9 +1611,7 @@ country_event = {
 	}
 	option = {
 		name = ww1_greece.52.a
-		345 = {
-			damage_building = { type = infrastructure damage = 2 }
-		}
+		345 = { damage_building = { type = infrastructure damage = 2 } }
 		add_stability = -0.05
 	}
 }
@@ -1641,7 +1631,7 @@ news_event = {
 				tag = GER
 				is_in_faction_with = GER
 				has_war_with = THE
-				tag = GRE
+				tag = GRM
 			}
 		}
 		if = {
@@ -1718,41 +1708,26 @@ country_event = {
 	is_triggered_only = yes
 	option = {	## debt reduction
 		name = ww1_greece.60.a
-		custom_effect_tooltip = GRE_IFC_minus_5_tt
+		custom_effect_tooltip = GRE_IFC_minus_10_tt
 		subtract_from_variable = {
 			var = GRE_IFC_var
-			value = 0.05
+			value = 0.1
 		}
 		if = {
-			limit = {
-				check_variable = { GRE_IFC_var < 0 }
-			}
-			multiply_temp_variable = {
-				GRE_IFC_var = 0
-			}						
+			limit = { check_variable = { GRE_IFC_var < 0 } }
+			multiply_temp_variable = { GRE_IFC_var = 0 }						
 		}
 	}
 	option = {	## extend loan
 		name = ww1_greece.60.b
-		hidden_effect = {
-			remove_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier }			
-		}
-		add_dynamic_modifier = { modifier = GRE_IFC_2_dynamic_modifier }
+		custom_effect_tooltip = ww1_greece.60.tt1
+		set_variable = { GRE_IFC_production_speed_buildings_factor = 0.1 }
 	}
 	option = {	## extend loan
 		name = ww1_greece.60.c
-		898 = {
-			add_resource = {
-				type = steel
-				amount = 12
-			}
-		}
-		898 = {
-			add_resource = {
-				type = chromium
-				amount = 4
-			}
-		}
+		custom_effect_tooltip = ww1_greece.60.tt2
+		set_variable = { GRE_IFC_country_resource_steel = 12 }
+		set_variable = { GRE_IFC_country_resource_chromium = 4 }
 	}
 }
 
@@ -1766,7 +1741,7 @@ country_event = {
 	option = {	## cool
 		name = ww1_greece.61.a
 		FROM = {
-			custom_effect_tooltip = GRE_IFC_minus_5_tt
+			custom_effect_tooltip = GRE_IFC_minus_10_tt
 			give_resource_rights = {
 				receiver = ROOT
 				state = 345
@@ -1897,7 +1872,9 @@ country_event = {
 		GRE = {
 			random_owned_controlled_state = {
 				limit = {
-					ROOT = { has_full_control_of_state = PREV }
+					is_fully_controlled_by = ROOT
+					impassable = no
+					is_core_of = ROOT
 				}
 				add_extra_state_shared_building_slots = 1
 				add_building_construction = {
@@ -1956,11 +1933,9 @@ country_event = {
 			base = 50
 			modifier = {
 				factor = 100
-				is_historical_focus_on = yes
+				has_government = democratic
 				GRE = {
-					has_country_leader = {
-						character = GRE_eleftherios_venizelos
-					}
+					GRE_has_venizelist_government = yes
 				}
 			}
 		}
@@ -2016,79 +1991,77 @@ country_event = {
 	}	
 }
 #British investment events - British officials attend Greek national showcase to lure investors
-country_event = {
-	id = ww1_greece.69
-	title = ww1_greece.69.t
-	desc = ww1_greece.69.desc
-	picture = GFX_report_event_gre_athens
+# country_event = {
+# 	id = ww1_greece.69
+# 	title = ww1_greece.69.t
+# 	desc = ww1_greece.69.desc
+# 	picture = GFX_report_event_gre_athens
 
-	is_triggered_only = yes
+# 	is_triggered_only = yes
 	
-	option = {
-		name = ww1_greece.69.a 
-		ai_chance = {
-			base = 50
-			modifier = {
-				factor = 100
-				is_historical_focus_on = yes
-				GRE = {
-					has_country_leader = {
-						character = GRE_eleftherios_venizelos
-					}
-				}
-			}
-		}
-		add_timed_idea = {
-			idea = GRE_small_investment
-			days = 45
-		}
-		hidden_effect = {
-			GRE = { 
-				add_to_variable = {
-					var = GRE_british_influence_over_greek_government
-					value = 10
-				}
-			}
-			GRE = {
-				country_event = { id = ww1_greece.176 days = 2 }
-			}
-		}
-	}
-	option = {
-		name = ww1_greece.69.b 
-		ai_chance = {
-			base = 5
-			modifier = {
-				factor = 10
-				num_of_available_civilian_factories < 2
-			}
-		}
-		GRE = { 
-			country_event = { id = ww1_greece.177 days = 2 }
-		}
-	}
-	option = {
-		name = ww1_greece.69.c 
-		ai_chance = {
-			base = 0.1
-			modifier = {
-				factor = 25
-				has_opinion = {
-					target = GRE
-					value < -50
-				}
-			}
-		}
-		GRE = {
-			country_event = { id = ww1_greece.178 days = 2 }
-		}
-		hidden_effect = {
-			GRE = {
-				set_country_flag = GRE_britain_rebuffed
-			}
-		}
-	}	
-}
+# 	option = {
+# 		name = ww1_greece.69.a 
+# 		ai_chance = {
+# 			base = 50
+# 			modifier = {
+# 				factor = 100
+# 				has_government = democratic
+# 				GRE = {
+# 					GRE_has_venizelist_government = yes
+# 				}
+# 			}
+# 		}
+# 		add_timed_idea = {
+# 			idea = GRE_small_investment
+# 			days = 45
+# 		}
+# 		hidden_effect = {
+# 			GRE = { 
+# 				add_to_variable = {
+# 					var = GRE_british_influence_over_greek_government
+# 					value = 10
+# 				}
+# 			}
+# 			GRE = {
+# 				country_event = { id = ww1_greece.70 days = 2 }
+# 			}
+# 		}
+# 	}
+# 	option = {
+# 		name = ww1_greece.69.b 
+# 		ai_chance = {
+# 			base = 5
+# 			modifier = {
+# 				factor = 10
+# 				num_of_available_civilian_factories < 2
+# 			}
+# 		}
+# 		GRE = { 
+# 			country_event = { id = ww1_greece.71 days = 2 }
+# 		}
+# 	}
+# 	option = {
+# 		name = ww1_greece.69.c 
+# 		ai_chance = {
+# 			base = 0.1
+# 			modifier = {
+# 				factor = 25
+# 				has_opinion = {
+# 					target = GRE
+# 					value < -50
+# 				}
+# 			}
+# 		}
+# 		GRE = {
+# 			country_event = { id = ww1_greece.72 days = 2 }
+# 		}
+# 		hidden_effect = {
+# 			GRE = {
+# 				set_country_flag = GRE_britain_rebuffed
+# 			}
+# 		}
+# 	}	
+# }
 #British investment events - the British invest!
 country_event = {
 	id = ww1_greece.70
@@ -2108,7 +2081,9 @@ country_event = {
 		GRE = {
 			random_owned_controlled_state = {
 				limit = {
-					ROOT = { has_full_control_of_state = PREV }
+					is_fully_controlled_by = ROOT
+					impassable = no
+					is_core_of = ROOT
 				}
 				add_extra_state_shared_building_slots = 1
 				add_building_construction = {
@@ -2164,11 +2139,9 @@ country_event = {
 			base = 50
 			modifier = {
 				factor = 100
-				is_historical_focus_on = yes
+				has_government = democratic
 				GRE = {
-					has_country_leader = {
-						character = GRE_eleftherios_venizelos
-					}
+					GRE_has_venizelist_government = yes
 				}
 			}
 		}
@@ -2242,7 +2215,9 @@ country_event = {
 		GRE = {
 			random_owned_controlled_state = {
 				limit = {
-					ROOT = { has_full_control_of_state = PREV }
+					is_fully_controlled_by = ROOT
+					impassable = no
+					is_core_of = ROOT
 				}
 				add_extra_state_shared_building_slots = 1
 				add_building_construction = {
@@ -2372,7 +2347,9 @@ country_event = {
 		GRE = {
 			random_owned_controlled_state = {
 				limit = {
-					ROOT = { has_full_control_of_state = PREV }
+					is_fully_controlled_by = ROOT
+					impassable = no
+					is_core_of = ROOT
 				}
 				add_extra_state_shared_building_slots = 1
 				add_building_construction = {
@@ -2425,10 +2402,10 @@ country_event = {
 	option = {
 		name = ww1_greece.81.a
 		add_stability = 0.05
-		custom_effect_tooltip = GRE_IFC_minus_5_tt
+		custom_effect_tooltip = GRE_IFC_minus_10_tt
 		subtract_from_variable = {
 			var = GRE_IFC_var
-			value = 0.05
+			value = 0.1
 		}
 	}  
 }
@@ -2444,10 +2421,10 @@ country_event = {
 	option = {
 		name = ww1_greece.82.a
 		add_stability = -0.1
-		custom_effect_tooltip = GRE_IFC_plus_2_tt
+		custom_effect_tooltip = GRE_IFC_plus_5_tt
 		add_to_variable = {
 			var = GRE_IFC_var
-			value = 0.02
+			value = 0.05
 		}
 	}  
 }
@@ -2461,22 +2438,18 @@ country_event = {
 	is_triggered_only = yes
 
 	option = {
-		name = ww1_greece.83.a	
+		name = ww1_greece.83.a
+		GRE_update_political_turmoil_tooltip = yes
 		custom_effect_tooltip = GRE_stability_pp_plus_2_tt
-		add_to_variable = {
-			var = GRE_stability_var
-			value = 0.02
+		add_to_variable = { GRE_stability_var = 0.02 }
+		add_to_variable = { GRE_pp_var = 0.02 }
+		hidden_effect = {
+			remove_dynamic_modifier = { modifier = GRE_political_turmoil_dynamic_modifier }
+			add_dynamic_modifier = { modifier = GRE_political_normality_dynamic_modifier }
 		}
-		add_to_variable = {
-			var = GRE_pp_var
-			value = 0.02
-		}
-		GRE_update_political_turmoil_dynamic_modifier = yes
 		hidden_effect = {
 			if = {
-				limit = {
-					has_completed_focus = GRE_appoint_gounaris
-				}
+				limit = { has_completed_focus = GRE_appoint_gounaris }
 				set_politics = {
 					ruling_party = neutrality
 					last_election = "1911.11.1" 
@@ -2485,9 +2458,7 @@ country_event = {
 				}
 			}
 			if = {
-				limit = {
-					has_completed_focus = GRE_appoint_venizelos
-				}
+				limit = { has_completed_focus = GRE_appoint_venizelos }
 				set_politics = {
 					ruling_party = democratic
 					last_election = "1911.11.1" 
@@ -2877,13 +2848,15 @@ country_event = {
 	desc = ww1_greece.89.d
 	picture = GFX_report_event_national_schism
 	is_triggered_only = yes
+	trigger = {
+		has_idea = GRE_idea_national_schism2
+	}
 	option = {
 		name = ww1_greece.89.a
 		swap_ideas = {
 			remove_idea = GRE_idea_national_schism2
 			add_idea = GRE_idea_national_schism
-		}
-		
+		}		
 	}
 }
 
@@ -2997,11 +2970,11 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_greece.93.a
-		FRA = {
+		activate_mission = GRE_retreat_from_new_territories
+		hidden_effect = {
+			FRA = { set_country_flag = GRE_FRA_expansion_of_macedonian_front }
 			set_country_flag = GRE_FRA_expansion_of_macedonian_front
 		}
-		set_country_flag = GRE_FRA_expansion_of_macedonian_front
-		custom_effect_tooltip = GRE_FRA_expansion_tooltip
 	}
 }
 ###Thebes Earthquake 
@@ -3160,22 +3133,37 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_greece.100.a
-		GRE = {
-			add_timed_idea = {
-				idea = gre_royalist_port_blocked
-				days = 180
-			}
+		add_timed_idea = {
+			idea = gre_royalist_port_blocked
+			days = 180
 		}
 		add_equipment_to_stockpile = {
 			type = convoy
 			amount = -50
 		}
 		add_war_support = 0.15
-		GER = {
+		FROM = {
+			send_embargo = ROOT
 			add_opinion_modifier = {
 				target = ROOT
-				modifier = large_increase
+				modifier = large_decrease
 			}
+			add_opinion_modifier = {
+				target = ROOT
+				modifier = embargo
+			}
+		}
+		every_other_country = {
+			limit = {
+				is_in_faction_with = FROM
+				is_european_tag = yes
+				is_major = yes
+			}
+			send_embargo = ROOT
+		}
+		add_opinion_modifier = {
+			target = FROM
+			modifier = large_decrease
 		}
 		every_country = {
 			limit = {
@@ -3252,32 +3240,65 @@ country_event = {
 		add_stability = -0.02
 		add_manpower = -100
 		promote_character = GRE_avraam_benaroya
-			set_party_name = { 
-				ideology = communism
-				long_name = GRE_federacion_party_long
-				name = GRE_federacion_party
+		set_party_name = { 
+			ideology = communism
+			long_name = GRE_federacion_party_long
+			name = GRE_federacion_party
+		}
+		set_country_flag = gre_federacion_kicked
+		custom_effect_tooltip = GRE_federacion_tooltip
+		add_popularity = {
+			ideology = communism
+			popularity = -0.05
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				OR = {
+					has_country_flag = GRE_AI_RANDOM_SOCIALIST
+					has_game_rule = {
+						rule = GRE_AI_BEHAVIOR
+						option = SOCIALIST
+					}
+				}
 			}
-			set_country_flag = gre_federacion_kicked
-			custom_effect_tooltip = GRE_federacion_tooltip
-			add_popularity = {
-				ideology = communism
-				popularity = -0.05
-			}
-	    }
+		}
+	}
 	option = {
 		name = ww1_greece.102.b
 		add_stability = 0.02
 		promote_character = GRE_avraam_benaroya
-			set_party_name = { 
-				ideology = communism
-				long_name = GRE_federacion_party_long
-				name = GRE_federacion_party
-			}
-			add_popularity = {
-				ideology = communism
-				popularity = 0.05
+		set_party_name = { 
+			ideology = communism
+			long_name = GRE_federacion_party_long
+			name = GRE_federacion_party
+		}
+		add_popularity = {
+			ideology = communism
+			popularity = 0.05
+		}
+		ai_chance = {
+			base = 20
+			modifier = {
+				factor = 0
+				OR = {
+					AND = {
+						is_historical_focus_on = yes
+						has_game_rule = {
+							rule = GRE_ai_behavior
+							option = DEFAULT
+						}
+					}
+					has_country_flag = GRE_AI_RANDOM_HISTORICAL
+					has_game_rule = {
+						rule = GRE_ai_behavior
+						option = DEFAULT
+					}
+				}
 			}
 		}
+	}
 }
 ###French hand over occupied territory
 country_event = {
@@ -3296,7 +3317,7 @@ country_event = {
 		has_war = no
 		OR = {
             has_global_flag = frankfurt_treaty
-            has_global_flag = versallies_treaty
+            has_global_flag = versailles_treaty
         }
 		has_completed_focus = GRE_limited_neutrality
 		any_state = {
@@ -3356,7 +3377,7 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_greece.105.a
-		GRE = {
+		FROM = {
 			country_event = {
 				id = ww1_greece.106
 				days = 2
@@ -3369,7 +3390,7 @@ country_event = {
 	}
 	option = {
 		name = ww1_greece.105.b
-		GRE = {
+		FROM = {
 			country_event = {
 				id = ww1_greece.107
 				days = 2
@@ -3391,9 +3412,8 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_greece.106.a
-		every_state = {
+		every_owned_state = {
 			limit = {
-				is_owned_by = GRE
 				OR = {
 					is_claimed_by = BUL
 					is_core_of = BUL
@@ -3401,31 +3421,28 @@ country_event = {
 			}
 			remove_claim_by = BUL
 			remove_core_of = BUL
-		}
-		every_state = {
-			limit = {
-				is_owned_by = BUL
-				OR = {
-					is_claimed_by = GRE
-					is_core_of = GRE
-				}
-			}
-			remove_claim_by = GRE
-			remove_core_of = GRE
-		}
+		}	
 		BUL ={
+			every_owned_state = {
+				limit = {
+					OR = {
+						is_claimed_by = ROOT
+						is_core_of = ROOT
+					}
+				}
+				remove_claim_by = ROOT
+				remove_core_of = ROOT
+			}
 			diplomatic_relation = {
-				country = GRE
+				country = ROOT
 				relation = non_aggression_pact
 				active = yes
 			}
 		}
-		GRE = {
-			diplomatic_relation = {
-				country = BUL
-				relation = non_aggression_pact
-				active = yes
-			}
+		diplomatic_relation = {
+			country = BUL
+			relation = non_aggression_pact
+			active = yes
 		}
 	}
 }
@@ -3819,61 +3836,9 @@ country_event = {
 			id = GRE_venizelos_constantine
 			value = -0.10
 		}
-		set_country_flag = battle_of_influence
+		custom_effect_tooltip = GRE_missions_to_increase_monarchist_support
 		set_country_flag = battle_of_influence_royalist_side
-		custom_effect_tooltip = escape_line
-		custom_effect_tooltip = GRE_missions_to_increase_royalists_support
-		custom_effect_tooltip = GRE_almost_civil_war
-		hidden_effect = {
-			every_owned_state = {
-				limit = {
-					is_core_of = GRE
-				}
-				set_state_flag = GRE_constantine_support_1
-			}
-			set_country_flag = battle_of_influence
-			every_state = {
-				limit = {
-					OR = {
-						state = 731
-						state = 345
-						state = 184
-						state = 790
-						state = 974
-						state = 975
-						state = 182
-						state = 187
-					}
-				}
-				set_variable = { var = GRE_garrison_control value = 4 }
-			}
-			339 = {
-				set_variable = { var = GRE_garrison_control value = 3 }
-			}
-			803 = {
-				set_variable = { var = GRE_garrison_control value = 2 }
-			}
-			every_state = {
-				limit = {
-					OR = {
-						state = 186
-						state = 47
-						state = 900
-						state = 47
-						state = 185
-						state = 758
-						state = 826
-					}
-				}
-				set_variable = { var = GRE_garrison_control value = -2 }
-			}
-			898 = {
-				set_variable = { var = GRE_garrison_control value = -3 }
-			}
-			186 = {
-				set_variable = { var = GRE_garrison_control value = -2 }
-			}
-		}
+		GRE_national_schism_effect = yes
 	}
 }
 ## Greco Serbian Alliance of 1913
@@ -4046,6 +4011,7 @@ country_event = {
     trigger = {
 		tag = GRE
 		date > 1914.6.18
+		TUR = { has_completed_focus = TUR_greek_deportations }
 	}
 	option = {
 		name = ww1_greece.129.a
@@ -4102,11 +4068,30 @@ country_event = {
 		remove_power_balance = {
 			id = GRE_venizelos_constantine
 		}
-		remove_mission = trigger_civil_war_now_royalist
+		remove_mission = GRE_escalating_schism
 		set_country_flag = GRE_venizelos_died
 		clr_country_flag = battle_of_influence
 		clr_country_flag = battle_of_influence_royalist_side
 		add_stability = 0.05
+		hidden_effect = {
+			GRE_alexandros_zaimis = {
+				if = {
+					limit = { has_ideology = conservatism }
+					promote_character = conservatism
+				}
+				else = {
+					add_country_leader_role = {
+						promote_leader = yes
+						country_leader = { ideology = conservatism }
+					}
+				}
+			}
+			set_party_name = {
+				ideology = democratic
+				long_name = GRE_neohellenic_party_long
+				name = GRE_neohellenic_party
+			}
+		}
 	}
 }
 ##venizelos avorted
@@ -4120,7 +4105,7 @@ country_event = {
 	option = {
 		name = ww1_greece.132.a
 		add_days_mission_timeout = {
-			mission = trigger_civil_war_now_royalist
+			mission = GRE_escalating_schism
 			days = -360
 		}
 		add_stability = -0.10
@@ -4151,7 +4136,7 @@ country_event = {
 	option = {
 		name = ww1_greece.133.a
 		add_days_mission_timeout = {
-			mission = trigger_civil_war_now_royalist
+			mission = GRE_escalating_schism
 			days = -50
 		}
 		add_power_balance_value = {
@@ -4186,7 +4171,7 @@ country_event = {
 	option = {
 		name = ww1_greece.134.a
 		add_days_mission_timeout = {
-			mission = trigger_civil_war_now_royalist
+			mission = GRE_escalating_schism
 			days = -25
 		}
 		add_equipment_to_stockpile = {
@@ -4491,7 +4476,7 @@ country_event = {
 			}
 		}
 		hidden_effect = {
-			GRE = {
+			FROM = {
 				country_event = {
 					id = ww1_greece.145
 					days = 2
@@ -4513,9 +4498,17 @@ country_event = {
 	option = {
 		name = ww1_greece.145.a
         add_stability = -0.05
-        declare_war_on = {
-			target = BUL
-			type = puppet_wargoal_focus
+		every_country = {
+			limit = {
+				original_tag = BUL
+				has_government = communism
+			}
+			ROOT = {
+				add_to_war = {
+					targeted_alliance = PREV
+					enemy = BUL
+				}
+			}
 		}
 	}
 	#Send Equipment
@@ -4542,7 +4535,7 @@ country_event = {
 	picture = ww1_bulgaria_4
     trigger = {
 		tag = SER
-		GRE = {
+		FROM = {
 			has_war_with = BUL
 			has_government = communism
 		}
@@ -4563,7 +4556,7 @@ country_event = {
 			limit = {
 				BUL = {
 					NOT = {
-						is_in_faction_with = GRE
+						is_in_faction_with = FROM
 					}
 				}
 			}
@@ -4645,16 +4638,16 @@ country_event = {
 		add_stability = 0.05
         BUL = {
 			transfer_state = 184
-			add_opinion_modifier = { target = GRE modifier = huge_increase }
+			add_opinion_modifier = { target = FROM modifier = huge_increase }
 			add_ai_strategy = {
 				type = alliance
-				id = GRE
+				id = FROM
 				value = 200
-				}
+			}
 		}
 		if = {
 			limit = {
-				GRE = {
+				FROM = {
 					owns_state =  757 
 					owns_state =  200 
 				}
@@ -4664,8 +4657,9 @@ country_event = {
 				transfer_state = 200
 			}
 		}
-		GRE = { add_to_faction = BUL 
-		add_opinion_modifier = { target = BUL modifier = huge_increase }
+		FROM = { 
+			add_to_faction = BUL 
+			add_opinion_modifier = { target = BUL modifier = huge_increase }
 	    }
 		ai_chance = {
 			factor = 20 
@@ -4680,7 +4674,7 @@ country_event = {
 	#Deny
 	option = {
 		name = ww1_greece.148.b
-		GRE = {
+		FROM = {
 			country_event = {
 				id = ww1_greece.149
 			}
@@ -4723,7 +4717,7 @@ country_event = {
 	#Accept
 	option = {
 		name = ww1_greece.150.a
-		GRE = {
+		FROM = {
 			transfer_state = 164
 			transfer_state = 899
 			country_event = {
@@ -4742,7 +4736,7 @@ country_event = {
 				factor = 90
 				ITA = {
 					has_opinion = {
-						target = GRE
+						target = FROM
 						value > 75
 					}
 				}
@@ -4752,7 +4746,7 @@ country_event = {
 	#Deny
 	option = {
 		name = ww1_greece.150.b
-		GRE = {
+		FROM = {
 			country_event = {
 				id = ww1_greece.152
 			}
@@ -4763,7 +4757,7 @@ country_event = {
 				factor = 10
 				ITA = {
 					has_opinion = {
-						target = GRE
+						target = FROM
 						value < 75
 					}
 				}
@@ -4784,17 +4778,11 @@ country_event = {
 		name = ww1_greece.151.a
 		add_stability = 0.05
 		if = {
-			limit = {
-				OR = {
-					has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier }
-					has_dynamic_modifier = { modifier = GRE_IFC_2_dynamic_modifier }
-					has_dynamic_modifier = { modifier = GRE_IFC_3_dynamic_modifier }
-				}
-			}
-			custom_effect_tooltip = GRE_IFC_plus_5_tt
+			limit = { has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } }
+			custom_effect_tooltip = GRE_IFC_plus_10_tt
 			add_to_variable = {
 				var = GRE_IFC_var
-				value = 0.05
+				value = 0.1
 			}
 		}
 	}
@@ -4825,7 +4813,7 @@ country_event = {
 	#Accept
 	option = {
 		name = ww1_greece.153.a
-		GRE = {
+		FROM = {
 			transfer_state = 183
 			country_event = {
 				id = ww1_greece.154
@@ -4843,7 +4831,7 @@ country_event = {
 				factor = 90
 				ENG = {
 					has_opinion = {
-						target = GRE
+						target = FROM
 						value > 75
 					}
 				}
@@ -4853,7 +4841,7 @@ country_event = {
 	#Deny
 	option = {
 		name = ww1_greece.153.b
-		GRE = {
+		FROM = {
 			country_event = {
 				id = ww1_greece.155
 			}
@@ -4864,7 +4852,7 @@ country_event = {
 				factor = 10
 				ENG = {
 					has_opinion = {
-						target = GRE
+						target = FROM
 						value < 75
 					}
 				}
@@ -4885,17 +4873,11 @@ country_event = {
 		name = ww1_greece.154.a
 		add_stability = 0.05
 		if = {
-			limit = {
-				OR = {
-					has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier }
-					has_dynamic_modifier = { modifier = GRE_IFC_2_dynamic_modifier }
-					has_dynamic_modifier = { modifier = GRE_IFC_3_dynamic_modifier }
-				}
-			}
-			custom_effect_tooltip = GRE_IFC_plus_5_tt
+			limit = { has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } }
+			custom_effect_tooltip = GRE_IFC_plus_10_tt
 			add_to_variable = {
 				var = GRE_IFC_var
-				value = 0.05
+				value = 0.1
 			}
 		}
 	}
@@ -5501,7 +5483,20 @@ country_event = {
 		ai_chance = {
 			factor = 50
 			modifier = {
-				is_historical_focus_on = yes
+				OR = {
+					AND = {
+						is_historical_focus_on = yes
+						has_game_rule = {
+							rule = GRE_ai_behavior
+							option = DEFAULT
+						}
+					}
+					has_country_flag = GRE_AI_RANDOM_HISTORICAL
+					has_game_rule = {
+						rule = GRE_ai_behavior
+						option = DEFAULT
+					}
+				}
 				factor = 100
 			}
 		}
@@ -5583,21 +5578,35 @@ country_event = {
 			base = 100
 			modifier = {
 				factor = 0
-				GRE = {
-					is_subject = yes
-					has_war_with = GRE
-				}
-				has_opinion = {
-					target = GRE
-					value < -25
-				}
+				OR = {
+					FROM = {
+						OR = {
+							AND = {
+								is_subject = yes
+								NOT = {
+									is_subject_of = ROOT
+								}
+							}							
+							has_civil_war = yes
+						}
+					}
+					has_opinion = {
+						target = FROM
+						value < -25
+					}			
+				}		
 			}		
 		}
-		GRE = { country_event = {id = ww1_greece.180 days = 2} } ###decline
+		FROM = { country_event = {id = ww1_greece.180 days = 2} } ###decline
 	}
 	option = {
 		name = ww1_greece.175.b
-		GRE = { country_event = {id = ww1_greece.179 days = 2} } ###accept
+		FROM = { 
+			effect_tooltip = {
+				add_ideas = GER_mitteleuropa_member
+			}
+			country_event = {id = ww1_greece.179 days = 2} ###accept
+		} 
 	}	
 }
 country_event = {
@@ -5622,7 +5631,7 @@ country_event = {
 
 	option = {
 		name = ww1_greece.180.a
-		add_to_tech_sharing_group = german_research
+		add_ideas = GER_mitteleuropa_member
 	}
 }
 
@@ -5638,25 +5647,21 @@ country_event = {
         name =  ww1_greece.181.a
 		if = {
 			limit = {
-				ITA = {
-					owns_state = 164
-				}
+				owns_state = 164
 			}
 			164 = {
-				transfer_state_to = GRE
+				transfer_state_to = FROM
 			}
 		}
 		add_opinion_modifier = { 
-			target = GRE 
+			target = FROM 
 			modifier = small_increase 
 		}
 		custom_effect_tooltip = escape_line
 		custom_effect_tooltip = GRE_ITA_arrangement_about_albania
 		set_country_flag = GRE_ITA_arrangement_about_albania_flag
-		GRE = {
-			set_country_flag = GRE_ITA_arrangement_about_albania_flag
-		}
 		FROM = {
+			set_country_flag = GRE_ITA_arrangement_about_albania_flag
 			country_event = {
 				id = ww1_greece.182
 				days = 2
@@ -5670,7 +5675,7 @@ country_event = {
     option = {
         name =  ww1_greece.181.b
 		add_opinion_modifier = { 
-			target = GRE 
+			target = FROM 
 			modifier = medium_decrease 
 		}
 		FROM = {
@@ -5694,19 +5699,14 @@ country_event = {
 		if = {
 			limit = {
 				NOT = {
-					GRE = {
-						owns_state = 803
-					}
-				}
-				
+					owns_state = 803
+				}				
 			}
 			803 = {
-				add_claim_by = GRE
-			}
-			164 = {
-				transfer_state_to = GRE
-			}
+				add_claim_by = ROOT
+			}			
 		}
+		transfer_state = 164
     }
 }
 
@@ -5735,7 +5735,20 @@ country_event = {
 		ai_chance = {
 			base = 25
 			modifier = {
-				is_historical_focus_on = yes
+				OR = {
+					AND = {
+						is_historical_focus_on = yes
+						has_game_rule = {
+							rule = GRE_ai_behavior
+							option = DEFAULT
+						}
+					}
+					has_country_flag = GRE_AI_RANDOM_HISTORICAL
+					has_game_rule = {
+						rule = GRE_ai_behavior
+						option = DEFAULT
+					}
+				}
 				factor = 0
 			}
 		}
@@ -5747,7 +5760,20 @@ country_event = {
 		ai_chance = {
 			factor = 25
 			modifier = {
-				is_historical_focus_on = yes
+				OR = {
+					AND = {
+						is_historical_focus_on = yes
+						has_game_rule = {
+							rule = GRE_ai_behavior
+							option = DEFAULT
+						}
+					}
+					has_country_flag = GRE_AI_RANDOM_HISTORICAL
+					has_game_rule = {
+						rule = GRE_ai_behavior
+						option = DEFAULT
+					}
+				}
 				factor = 0
 			}
 		}
@@ -5819,7 +5845,7 @@ country_event = {
 			}
 			if = {
 				limit = {
-					is_owned_and_controlled_by = ROOT
+					NOT = { is_owned_and_controlled_by = ROOT }
 				}
 				transfer_state_to = FROM
 			}
@@ -6417,8 +6443,8 @@ country_event = {
 			factor = 100
 		}
 		name = ww1_greece.212.a
-		send_embargo = GRE
-		add_opinion_modifier = { target = GRE modifier = large_decrease }
+		send_embargo = FROM
+		add_opinion_modifier = { target = FROM modifier = large_decrease }
 		every_owned_state = {
 			limit = {
                 OR = {
@@ -6430,7 +6456,7 @@ country_event = {
 					state = 861
 				}
 			}
-			transfer_state_to = GRE
+			transfer_state_to = FROM
 		}
 	}
 	option = {
@@ -6450,7 +6476,7 @@ country_event = {
 					state = 861
 				}
 			}
-			transfer_state_to = GRE
+			transfer_state_to = FROM
 		}
 	}
 }
@@ -6468,7 +6494,7 @@ country_event = {
 			factor = 100
 		}
 		name = ww1_greece.213.a
-		GRE = {
+		FROM = {
 			country_event = {
 				id = ww1_greece.214
 				days = 1
@@ -6481,13 +6507,13 @@ country_event = {
 		ai_chance = {
 			factor = 0
 		}
-		GRE = {
+		FROM = {
 			country_event = {
 				id = ww1_greece.215
 				days = 1
 			}
 		}
-		add_opinion_modifier = { target = GRE modifier = large_decrease }    
+		add_opinion_modifier = { target = FROM modifier = large_decrease }    
 	}
 }
 ###Constantinople Controller demands international zone
@@ -6567,7 +6593,7 @@ country_event = {
 					state = 861
 				}
 			}
-			transfer_state_to = GRE
+			transfer_state_to = FROM
 		}
 		every_state = {
 			limit = {
@@ -6582,7 +6608,7 @@ country_event = {
 			set_demilitarized_zone = yes
 		}
 		diplomatic_relation = {
-			country = GRE
+			country = FROM
 			relation = docking_rights
 			active = yes
 		}
@@ -6683,6 +6709,7 @@ country_event = {
 			has_country_flag = GRE_ITA_arrangement_about_albania_flag
 		}
 		date > 1923.7.24
+		owns_state = 164
 		899 = {
 			is_owned_and_controlled_by = ITA
 		}
@@ -6771,7 +6798,7 @@ country_event = {
 		hidden_effect = {
 			ITA = {
 				country_event = {
-					id = ww1_greece.223
+					id = ww1_greece.224
 					days = 2
 				}
 			}
@@ -6788,20 +6815,21 @@ country_event = {
     is_triggered_only = yes
 	option = {
 		name = ww1_greece.224.a
+		trigger = {
+			FROM = {
+				owns_state = 187
+			}
+		}
 		187 = {
 			transfer_state_to = ITA
 		}
 		hidden_effect = {
 			GRE = {
-                country_event = ww1_greece.225
+                country_event = { id = ww1_greece.225 days = 2 }
 			}
 		}
 		ai_chance = {
 			factor = 50
-			modifier = {
-				factor = 100
-				is_historical_focus_on = yes
-			}
 		}
 	}
 	option = {
@@ -6809,6 +6837,13 @@ country_event = {
 		add_political_power = 50
 		ai_chance = {
 			factor = 50
+			modifier = {
+				factor = 0
+				OR = {
+					is_historical_focus_on = yes
+					has_government = fascism
+				}
+			}
 		}
 	}
 }
@@ -6823,7 +6858,6 @@ country_event = {
 	option = {
 		name = ww1_greece.225.a
 		187 = {
-			transfer_state_to = GRE
 			damage_building = {
 				type = infrastructure
 				damage = 1
@@ -6843,16 +6877,12 @@ country_event = {
 			ITA = {
 				country_event = {
 					id = ww1_greece.226
-					days = 1
+					days = 25
 				}
 			}
 		}
 		ai_chance = {
-			factor = 50
-			modifier = {
-				factor = 100
-				is_historical_focus_on = yes
-			}
+			factor = 50			
 		}
 	}
 	option = {
@@ -6860,6 +6890,10 @@ country_event = {
 		add_stability = -0.3
 		ai_chance = {
 			factor = 1
+			modifier = {
+				factor = 0
+				is_historical_focus_on = yes
+			}
 		}
 	}
 }
@@ -6871,20 +6905,19 @@ country_event = {
 	picture = GFX_report_event_italians_corfu
 	fire_only_once = yes
     is_triggered_only = yes
+	trigger = {
+		owns_state = 187
+	}
 	option = {
 		name = ww1_greece.226.a
+		187 = {
+			transfer_state_to = GRE
+		}
 		add_stability = 0.05
 		ITA = {
 			add_timed_idea = {
 				idea = gre_corfu_money
 				days = 120
-			}
-		}
-		ai_chance = {
-			factor = 50
-			modifier = {
-				factor = 100
-				is_historical_focus_on = yes
 			}
 		}
 	}
@@ -7056,17 +7089,36 @@ country_event = {
 	}
 	option = {
 		name = ww1_greece.235.a
+		if = {
+			limit = {
+				has_dlc = "Man the Guns"
+			}
 			create_ship = {
-			type = ship_hull_light_1
-			equipment_variant = "Antalya Class"
-			creator = TUR
-			name = "Tatoi"
+				type = ship_hull_light_0
+				equipment_variant = "Antalya Class"
+				creator = TUR
+				name = "Tatoi"
+			}
+			create_ship = {
+				type = ship_hull_light_0
+				equipment_variant = "Antalya Class"
+				creator = TUR
+				name = "Nikopolis"
+			}
 		}
-		create_ship = {
-			type = ship_hull_light_1
-			equipment_variant = "Antalya Class"
-			creator = TUR
-			name = "Nikopolis"
+		else = {
+			create_ship = {
+				type = destroyer_1
+				equipment_variant = "Antalya Class"
+				creator = TUR
+				name = "Tatoi"
+			}
+			create_ship = {
+				type = destroyer_1
+				equipment_variant = "Antalya Class"
+				creator = TUR
+				name = "Nikopolis"
+			}			
 		}
 		TUR = {
 			destroy_ships = {
@@ -7249,15 +7301,11 @@ country_event = {
 	desc = ww1_greece.240.d
 	picture = GFX_report_event_lefkada_earthquake
 	fire_only_once = yes
-	mean_time_to_happen = {
-		days = 1
-	}
+	mean_time_to_happen = { days = 1 }
 	trigger = {
 		tag = GRE
 		date > 1914.11.27
-		GRE = {
-		owns_state = 47
-		}
+		GRE = { owns_state = 47 }
 	}
 	option = {
 		name = ww1_greece.240.a
@@ -7457,6 +7505,1038 @@ country_event = {
 				long_name = GRE_liberal_party_long
 				name = GRE_liberal_party
 			}
+		}
+	}
+}
+
+###expanding influence for schism
+country_event = {
+	id = ww1_greece.248
+	title = ww1_greece.248.t
+	desc = ww1_greece.248.d
+	trigger = { has_civil_war = no }
+	is_triggered_only = yes
+	hidden = yes
+	immediate = {
+		random_list = {
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					OR = {
+						345 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
+						is_historical_focus_on = yes
+					}
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					345 = { check_variable = { var = GRE_garrison_control value = 4 compare = equals } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					NOT = { has_country_flag = SPA_secure_the_northern_garrisons_flag }
+				}
+				modifier = {
+					factor = 10
+					345 = { has_state_flag = GRE_national_schism_recently_chosen }
+				}
+				modifier = {
+					factor = 20
+					has_completed_focus = GRE_commit_to_neutrality
+					is_historical_focus_on = yes
+				}
+				modifier = {
+					factor = 0
+					345 = { NOT = { is_owned_and_controlled_by = ROOT } }
+				}
+				activate_mission = GRE_expand_influence_in_the_thessaloniki_garrison_mission
+			}
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					OR = {
+						731 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
+						is_historical_focus_on = yes
+					}
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					731 = { check_variable = { var = GRE_garrison_control value = 4 compare = equals } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					NOT = { has_country_flag = SPA_secure_the_northern_garrisons_flag }
+				}
+				modifier = {
+					factor = 10
+					731 = { has_state_flag = GRE_national_schism_recently_chosen }
+				}
+				modifier = {
+					factor = 20
+					has_completed_focus = GRE_commit_to_neutrality
+					is_historical_focus_on = yes
+				}
+				modifier = {
+					factor = 0
+					731 = { NOT = { is_owned_and_controlled_by = ROOT } }
+				}
+				activate_mission = GRE_expand_influence_in_the_central_macedonia_garrison_mission
+			}
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					OR = {
+						184 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
+						is_historical_focus_on = yes
+					}
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					184 = { check_variable = { var = GRE_garrison_control value = 4 compare = equals } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					NOT = { has_country_flag = SPA_secure_the_northern_garrisons_flag }
+				}
+				modifier = {
+					factor = 10
+					184 = { has_state_flag = GRE_national_schism_recently_chosen }
+				}
+				modifier = {
+					factor = 20
+					has_completed_focus = GRE_commit_to_neutrality
+					is_historical_focus_on = yes
+				}
+				modifier = {
+					factor = 0
+					184 = { NOT = { is_owned_and_controlled_by = ROOT } }
+				}
+				activate_mission = GRE_expand_influence_in_the_eastern_macedonia_garrison_mission
+			}
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					OR = {
+						790 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
+						is_historical_focus_on = yes
+					}
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					790 = { check_variable = { var = GRE_garrison_control value = 4 compare = equals } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					NOT = { has_country_flag = SPA_secure_the_northern_garrisons_flag }
+				}
+				modifier = {
+					factor = 10
+					790 = { has_state_flag = GRE_national_schism_recently_chosen }
+				}
+				modifier = {
+					factor = 20
+					has_completed_focus = GRE_commit_to_neutrality
+					is_historical_focus_on = yes
+				}
+				modifier = {
+					factor = 0
+					790 = { NOT = { is_owned_and_controlled_by = ROOT } }
+				}
+				activate_mission = GRE_expand_influence_in_the_aegean_islands_garrison_mission
+			}
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					OR = {
+						975 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
+						is_historical_focus_on = yes
+					}
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					975 = { check_variable = { var = GRE_garrison_control value = 4 compare = equals } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					NOT = { has_country_flag = SPA_secure_the_northern_garrisons_flag }
+				}
+				modifier = {
+					factor = 10
+					975 = { has_state_flag = GRE_national_schism_recently_chosen }
+				}
+				modifier = {
+					factor = 20
+					has_completed_focus = GRE_commit_to_neutrality
+					is_historical_focus_on = yes
+				}
+				modifier = {
+					factor = 0
+					975 = { NOT = { is_owned_and_controlled_by = ROOT } }
+				}
+				activate_mission = GRE_expand_influence_in_the_ikaria_garrison_mission
+			}
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					OR = {
+						974 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
+						is_historical_focus_on = yes
+					}
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					974 = { check_variable = { var = GRE_garrison_control value = 4 compare = equals } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					NOT = { has_country_flag = SPA_secure_the_northern_garrisons_flag }
+				}
+				modifier = {
+					factor = 10
+					974 = { has_state_flag = GRE_national_schism_recently_chosen }
+				}
+				modifier = {
+					factor = 20
+					has_completed_focus = GRE_commit_to_neutrality
+					is_historical_focus_on = yes
+				}
+				modifier = {
+					factor = 0
+					974 = { NOT = { is_owned_and_controlled_by = ROOT } }
+				}
+				activate_mission = GRE_expand_influence_in_the_samos_garrison_mission
+			}
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					OR = {
+						182 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
+						is_historical_focus_on = yes
+					}
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					182 = { check_variable = { var = GRE_garrison_control value = 4 compare = equals } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					NOT = { has_country_flag = SPA_secure_the_northern_garrisons_flag }
+				}
+				modifier = {
+					factor = 10
+					182 = { has_state_flag = GRE_national_schism_recently_chosen }
+				}
+				modifier = {
+					factor = 20
+					has_completed_focus = GRE_commit_to_neutrality
+					is_historical_focus_on = yes
+				}
+				modifier = {
+					factor = 0
+					182 = { NOT = { is_owned_and_controlled_by = ROOT } }
+				}
+				activate_mission = GRE_expand_influence_in_the_crete_garrison_mission
+			}
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					OR = {
+						757 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
+						is_historical_focus_on = yes
+					}
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					757 = { check_variable = { var = GRE_garrison_control value = 4 compare = equals } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					NOT = { has_country_flag = SPA_secure_the_northern_garrisons_flag }
+				}
+				modifier = {
+					factor = 10
+					757 = { has_state_flag = GRE_national_schism_recently_chosen }
+				}
+				modifier = {
+					factor = 20
+					has_completed_focus = GRE_commit_to_neutrality
+					is_historical_focus_on = yes
+				}
+				modifier = {
+					factor = 0
+					757 = { NOT = { is_owned_and_controlled_by = ROOT } }
+				}
+				activate_mission = GRE_expand_influence_in_the_western_thrace_garrison_mission
+			}
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					OR = {
+						200 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
+						is_historical_focus_on = yes
+					}
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					200 = { check_variable = { var = GRE_garrison_control value = 4 compare = equals } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					NOT = { has_country_flag = SPA_secure_the_northern_garrisons_flag }
+				}
+				modifier = {
+					factor = 10
+					200 = { has_state_flag = GRE_national_schism_recently_chosen }
+				}
+				modifier = {
+					factor = 20
+					has_completed_focus = GRE_commit_to_neutrality
+					is_historical_focus_on = yes
+				}
+				modifier = {
+					factor = 0
+					200 = { NOT = { is_owned_and_controlled_by = ROOT } }
+				}
+				activate_mission = GRE_expand_influence_in_the_meric_garrison_mission
+			}
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					OR = {
+						756 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
+						is_historical_focus_on = yes
+					}
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					756 = { check_variable = { var = GRE_garrison_control value = 4 compare = equals } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					NOT = { has_country_flag = SPA_secure_the_northern_garrisons_flag }
+				}
+				modifier = {
+					factor = 10
+					756 = { has_state_flag = GRE_national_schism_recently_chosen }
+				}
+				modifier = {
+					factor = 20
+					has_completed_focus = GRE_commit_to_neutrality
+					is_historical_focus_on = yes
+				}
+				modifier = {
+					factor = 0
+					756 = { NOT = { is_owned_and_controlled_by = ROOT } }
+				}
+				activate_mission = GRE_expand_influence_in_the_eastern_thrace_garrison_mission
+			}
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					OR = {
+						341 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
+						is_historical_focus_on = yes
+					}
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					341 = { check_variable = { var = GRE_garrison_control value = 4 compare = equals } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					NOT = { has_country_flag = SPA_secure_the_northern_garrisons_flag }
+				}
+				modifier = {
+					factor = 10
+					341 = { has_state_flag = GRE_national_schism_recently_chosen }
+				}
+				modifier = {
+					factor = 20
+					has_completed_focus = GRE_commit_to_neutrality
+					is_historical_focus_on = yes
+				}
+				modifier = {
+					factor = 0
+					341 = { NOT = { is_owned_and_controlled_by = ROOT } }
+				}
+				activate_mission = GRE_expand_influence_in_the_tekirdag_garrison_mission
+			}
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					OR = {
+						860 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
+						is_historical_focus_on = yes
+					}
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					860 = { check_variable = { var = GRE_garrison_control value = 4 compare = equals } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					NOT = { has_country_flag = SPA_secure_the_northern_garrisons_flag }
+				}
+				modifier = {
+					factor = 10
+					860 = { has_state_flag = GRE_national_schism_recently_chosen }
+				}
+				modifier = {
+					factor = 20
+					has_completed_focus = GRE_commit_to_neutrality
+					is_historical_focus_on = yes
+				}
+				modifier = {
+					factor = 0
+					860 = { NOT = { is_owned_and_controlled_by = ROOT } }
+				}
+				activate_mission = GRE_expand_influence_in_the_galipoli_garrison_mission
+			}
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					OR = {
+						1018 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
+						is_historical_focus_on = yes
+					}
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					1018 = { check_variable = { var = GRE_garrison_control value = 4 compare = equals } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					NOT = { has_country_flag = SPA_secure_the_northern_garrisons_flag }
+				}
+				modifier = {
+					factor = 10
+					1018 = { has_state_flag = GRE_national_schism_recently_chosen }
+				}
+				modifier = {
+					factor = 20
+					has_completed_focus = GRE_commit_to_neutrality
+					is_historical_focus_on = yes
+				}
+				modifier = {
+					factor = 0
+					1018 = { NOT = { is_owned_and_controlled_by = ROOT } }
+				}
+				activate_mission = GRE_expand_influence_in_the_catalca_garrison_mission
+			}
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					OR = {
+						339 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
+						is_historical_focus_on = yes
+					}
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					339 = { check_variable = { var = GRE_garrison_control value = 4 compare = equals } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					NOT = { has_country_flag = SPA_secure_the_northern_garrisons_flag }
+				}
+				modifier = {
+					factor = 10
+					339 = { has_state_flag = GRE_national_schism_recently_chosen }
+				}
+				modifier = {
+					factor = 20
+					has_completed_focus = GRE_commit_to_neutrality
+					is_historical_focus_on = yes
+				}
+				modifier = {
+					factor = 0
+					339 = { NOT = { is_owned_and_controlled_by = ROOT } }
+				}
+				activate_mission = GRE_expand_influence_in_the_smyrna_garrison_mission
+			}
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					OR = {
+						164 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
+						is_historical_focus_on = yes
+					}
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					164 = { check_variable = { var = GRE_garrison_control value = 4 compare = equals } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					NOT = { has_country_flag = SPA_secure_the_northern_garrisons_flag }
+				}
+				modifier = {
+					factor = 10
+					164 = { has_state_flag = GRE_national_schism_recently_chosen }
+				}
+				modifier = {
+					factor = 20
+					has_completed_focus = GRE_commit_to_neutrality
+					is_historical_focus_on = yes
+				}
+				modifier = {
+					factor = 0
+					164 = { NOT = { is_owned_and_controlled_by = ROOT } }
+				}
+				activate_mission = GRE_expand_influence_in_the_dodecanese_garrison_mission
+			}
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					OR = {
+						899 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
+						is_historical_focus_on = yes
+					}
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					899 = { check_variable = { var = GRE_garrison_control value = 4 compare = equals } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					NOT = { has_country_flag = SPA_secure_the_northern_garrisons_flag }
+				}
+				modifier = {
+					factor = 10
+					899 = { has_state_flag = GRE_national_schism_recently_chosen }
+				}
+				modifier = {
+					factor = 20
+					has_completed_focus = GRE_commit_to_neutrality
+					is_historical_focus_on = yes
+				}
+				modifier = {
+					factor = 0
+					899 = { NOT = { is_owned_and_controlled_by = ROOT } }
+				}
+				activate_mission = GRE_expand_influence_in_the_rodos_garrison_mission
+			}
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					OR = {
+						183 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
+						is_historical_focus_on = yes
+					}
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					183 = { check_variable = { var = GRE_garrison_control value = 4 compare = equals } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					NOT = { has_country_flag = SPA_secure_the_northern_garrisons_flag }
+				}
+				modifier = {
+					factor = 10
+					183 = { has_state_flag = GRE_national_schism_recently_chosen }
+				}
+				modifier = {
+					factor = 20
+					has_completed_focus = GRE_commit_to_neutrality
+					is_historical_focus_on = yes
+				}
+				modifier = {
+					factor = 0
+					183 = { NOT = { is_owned_and_controlled_by = ROOT } }
+				}
+				activate_mission = GRE_expand_influence_in_the_cyprus_garrison_mission
+			}
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					898 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					898 = { check_variable = { var = GRE_garrison_control value = 4 compare = equals } }
+				}
+				modifier = {
+					factor = 10
+					898 = { has_state_flag = GRE_national_schism_recently_chosen }
+				}
+				modifier = {
+					factor = 10
+					has_completed_focus = GRE_negotiations_with_entente
+					is_historical_focus_on = yes
+				}
+				modifier = {
+					factor = 0
+					898 = { NOT = { is_owned_and_controlled_by = ROOT } }
+				}
+				activate_mission = GRE_expand_influence_in_the_athens_garrison_mission
+			}
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					47 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					47 = { check_variable = { var = GRE_garrison_control value = 4 compare = equals } }
+				}
+				modifier = {
+					factor = 10
+					47 = { has_state_flag = GRE_national_schism_recently_chosen }
+				}
+				modifier = {
+					factor = 10
+					has_completed_focus = GRE_negotiations_with_entente
+					is_historical_focus_on = yes
+				}
+				modifier = {
+					factor = 0
+					47 = { NOT = { is_owned_and_controlled_by = ROOT } }
+				}
+				activate_mission = GRE_expand_influence_in_the_sterea_ellada_garrison_mission
+			}
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					185 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					185 = { check_variable = { var = GRE_garrison_control value = 4 compare = equals } }
+				}
+				modifier = {
+					factor = 10
+					185 = { has_state_flag = GRE_national_schism_recently_chosen }
+				}
+				modifier = {
+					factor = 10
+					has_completed_focus = GRE_negotiations_with_entente
+					is_historical_focus_on = yes
+				}
+				modifier = {
+					factor = 0
+					185 = { NOT = { is_owned_and_controlled_by = ROOT } }
+				}
+				activate_mission = GRE_expand_influence_in_the_thessaly_garrison_mission
+			}
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					826 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					826 = { check_variable = { var = GRE_garrison_control value = 4 compare = equals } }
+				}
+				modifier = {
+					factor = 10
+					826 = { has_state_flag = GRE_national_schism_recently_chosen }
+				}
+				modifier = {
+					factor = 10
+					has_completed_focus = GRE_negotiations_with_entente
+					is_historical_focus_on = yes
+				}
+				modifier = {
+					factor = 0
+					826 = { NOT = { is_owned_and_controlled_by = ROOT } }
+				}
+				activate_mission = GRE_expand_influence_in_the_olympos_garrison_mission
+			}
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					758 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					758 = { check_variable = { var = GRE_garrison_control value = 4 compare = equals } }
+				}
+				modifier = {
+					factor = 10
+					758 = { has_state_flag = GRE_national_schism_recently_chosen }
+				}
+				modifier = {
+					factor = 10
+					has_completed_focus = GRE_negotiations_with_entente
+					is_historical_focus_on = yes
+				}
+				modifier = {
+					factor = 0
+					758 = { NOT = { is_owned_and_controlled_by = ROOT } }
+				}
+				activate_mission = GRE_expand_influence_in_the_ioannina_garrison_mission
+			}
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					187 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					187 = { check_variable = { var = GRE_garrison_control value = 4 compare = equals } }
+				}
+				modifier = {
+					factor = 10
+					187 = { has_state_flag = GRE_national_schism_recently_chosen }
+				}
+				modifier = {
+					factor = 10
+					has_completed_focus = GRE_negotiations_with_entente
+					is_historical_focus_on = yes
+				}
+				modifier = {
+					factor = 0
+					187 = { NOT = { is_owned_and_controlled_by = ROOT } }
+				}
+				activate_mission = GRE_expand_influence_in_the_kerkyra_garrison_mission
+			}
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					803 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					803 = { check_variable = { var = GRE_garrison_control value = 4 compare = equals } }
+				}
+				modifier = {
+					factor = 10
+					803 = { has_state_flag = GRE_national_schism_recently_chosen }
+				}
+				modifier = {
+					factor = 10
+					has_completed_focus = GRE_negotiations_with_entente
+					is_historical_focus_on = yes
+				}
+				modifier = {
+					factor = 0
+					803 = { NOT = { is_owned_and_controlled_by = ROOT } }
+				}
+				activate_mission = GRE_expand_influence_in_the_northern_epirus_garrison_mission
+			}
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					900 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					900 = { check_variable = { var = GRE_garrison_control value = 4 compare = equals } }
+				}
+				modifier = {
+					factor = 10
+					900 = { has_state_flag = GRE_national_schism_recently_chosen }
+				}
+				modifier = {
+					factor = 10
+					has_completed_focus = GRE_negotiations_with_entente
+					is_historical_focus_on = yes
+				}
+				modifier = {
+					factor = 0
+					900 = { NOT = { is_owned_and_controlled_by = ROOT } }
+				}
+				activate_mission = GRE_expand_influence_in_the_cyclades_garrison_mission
+			}
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					347 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					347 = { check_variable = { var = GRE_garrison_control value = 4 compare = equals } }
+				}
+				modifier = {
+					factor = 10
+					347 = { has_state_flag = GRE_national_schism_recently_chosen }
+				}
+				modifier = {
+					factor = 10
+					has_completed_focus = GRE_negotiations_with_entente
+					is_historical_focus_on = yes
+				}
+				modifier = {
+					factor = 0
+					347 = { NOT = { is_owned_and_controlled_by = ROOT } }
+				}
+				activate_mission = GRE_expand_influence_in_the_konstantiniyye_garrison_mission
+			}
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					825 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					825 = { check_variable = { var = GRE_garrison_control value = 4 compare = equals } }
+				}
+				modifier = {
+					factor = 10
+					825 = { has_state_flag = GRE_national_schism_recently_chosen }
+				}
+				modifier = {
+					factor = 10
+					has_completed_focus = GRE_negotiations_with_entente
+					is_historical_focus_on = yes
+				}
+				modifier = {
+					factor = 0
+					825 = { NOT = { is_owned_and_controlled_by = ROOT } }
+				}
+				activate_mission = GRE_expand_influence_in_the_bandirma_garrison_mission
+			}
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					861 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					861 = { check_variable = { var = GRE_garrison_control value = 4 compare = equals } }
+				}
+				modifier = {
+					factor = 10
+					861 = { has_state_flag = GRE_national_schism_recently_chosen }
+				}
+				modifier = {
+					factor = 10
+					has_completed_focus = GRE_negotiations_with_entente
+					is_historical_focus_on = yes
+				}
+				modifier = {
+					factor = 0
+					861 = { NOT = { is_owned_and_controlled_by = ROOT } }
+				}
+				activate_mission = GRE_expand_influence_in_the_biga_garrison_mission
+			}
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					824 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					824 = { check_variable = { var = GRE_garrison_control value = 4 compare = equals } }
+				}
+				modifier = {
+					factor = 10
+					824 = { has_state_flag = GRE_national_schism_recently_chosen }
+				}
+				modifier = {
+					factor = 10
+					has_completed_focus = GRE_negotiations_with_entente
+					is_historical_focus_on = yes
+				}
+				modifier = {
+					factor = 0
+					824 = { NOT = { is_owned_and_controlled_by = ROOT } }
+				}
+				activate_mission = GRE_expand_influence_in_the_aydin_garrison_mission
+			}
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					342 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					342 = { check_variable = { var = GRE_garrison_control value = 4 compare = equals } }
+				}
+				modifier = {
+					factor = 10
+					342 = { has_state_flag = GRE_national_schism_recently_chosen }
+				}
+				modifier = {
+					factor = 10
+					has_completed_focus = GRE_negotiations_with_entente
+					is_historical_focus_on = yes
+				}
+				modifier = {
+					factor = 0
+					342 = { NOT = { is_owned_and_controlled_by = ROOT } }
+				}
+				activate_mission = GRE_expand_influence_in_the_mentese_garrison_mission
+			}
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					is_historical_focus_on = no
+					any_owned_state = { check_variable = { var = GRE_garrison_control value = 2 compare = greater_than_or_equals } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
+					is_historical_focus_on = yes
+					OR = {
+						any_owned_state = {
+							NOT = { state = 345 }
+							NOT = { state = 184 }
+							NOT = { state = 731 }
+							NOT = { state = 790 }
+							NOT = { state = 974 }
+							NOT = { state = 975 }
+							NOT = { state = 182 }
+							check_variable = { var = GRE_garrison_control value = 2 compare = greater_than_or_equals }
+						}
+						186 = { check_variable = { var = GRE_garrison_control value = 3 compare = greater_than_or_equals } }
+					}
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					is_historical_focus_on = no
+					any_owned_state = { check_variable = { var = GRE_garrison_control value = 4 compare = less_than } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					is_historical_focus_on = yes
+					any_owned_state = {
+						OR = {
+							state = 345
+							state = 184
+							state = 731
+							state = 790
+							state = 974
+							state = 975
+							state = 182
+						}
+						check_variable = { var = GRE_garrison_control value = 4 compare = less_than }
+					}
+				}
+				modifier = { # Preventing potential error log and logic breaking due to all options in the random list returning 0.
+					add = 0.01
+					always = yes
+				}
+				country_event = { id = ww1_greece.248 days = 1 random_days = 9 }
+			}
+		}
+	}	              
+}
+###Conversion of the Hagia Sophia
+country_event = {
+	id = ww1_greece.249
+	title = ww1_greece.249.t
+	desc = ww1_greece.249.d
+	picture = GFX_report_event_hagia_sophia
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_greece.249.a
+		add_stability = -0.02
+		add_popularity = {
+			ideology = root
+			popularity = -0.05
+		}
+		347 = {
+			add_resistance = -10
+			add_compliance = 15
+		}
+	}
+	option = {
+		name = ww1_greece.249.b
+		add_political_power = -75
+		add_stability = 0.05
+		add_popularity = {
+			ideology = root
+			popularity = 0.05
+		}
+			347 = {
+			add_resistance = 10
+			add_compliance = -15
+		}
+	}
+	option = {
+		name = ww1_greece.249.c
+		add_political_power = -35
+		add_stability = 0.02
+			add_popularity = {
+			ideology = root
+			popularity = 0.02
+
+		}
+			347 = {
+			add_resistance = -5
+			add_compliance = 10
 		}
 	}
 }

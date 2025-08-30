@@ -11,6 +11,7 @@ country_event = {
 		has_country_leader = {
 			character = AUS_karl_seitz
 		}
+		has_global_flag = great_war_ends
 	}
 	fire_only_once = yes
 	mean_time_to_happen = {
@@ -23,8 +24,8 @@ country_event = {
 			text = {
 				set_politics = {
 					ruling_party = democratic
-					long_name = AUS_independent_party
-					name = AUS_independent_party
+					name = AUS_christian_social_party
+				long_name = AUS_christian_social_party_long
 					last_election = "[CURRENT_DATE]"
 					election_frequency = 48
 					elections_allowed = yes
@@ -310,61 +311,54 @@ country_event = {
 	}
 }
 
-#Backstab Germany Austrian collapse
+# Klagenfurt Captured
 country_event = {
 	id = ww1_austria.8
 	title = ww1_austria.8.t
 	desc = ww1_austria.8.d
 	picture = GFX_report_event_ger_civil_war
-
 	trigger = {
-		original_tag = GER
-		has_global_flag = interbellum
-		has_country_flag = great_war_loser
-		has_completed_focus = GER_backstab
-		NOT = { country_exists = AUS }
-		NOT = { country_exists = AUR }
-		any_owned_state = {
-			is_core_of = AUR
+		OR = {
+			tag = CRO
+			tag = SER
 		}
-		HUN = {
+		is_subject = no
+		has_country_flag = great_war_winner
+		102 = {
+			is_owned_or_subject_trigger = yes
+		}
+		1196 = {
+			is_owned_or_subject_trigger = yes
+		}
+		has_capitulated = no
+		AUR = {
+			owns_state = 1192
+			owns_state = 1193
+			is_neighbor_of_subject = yes
+			has_country_flag = great_war_loser
+			has_civil_war = no
 			NOT = {
-				has_country_flag = hungarian_revanchism
+				has_war_with = ROOT
 			}
+		}
+		has_global_flag = great_war_ends
+		NOT = {
+			has_global_flag = saint_germain_treaty
 		}
 	}
 	fire_only_once = yes
-	mean_time_to_happen = { days = 43 }
-
-	immediate = {
-		hidden_effect = {
-			every_owned_state = {
-				limit = {
-					OR = {
-						is_core_of = AUS
-						is_core_of = SLV
-						state = 244
-					}
-				}
-				AUS = {
-					transfer_state = PREV
-				}
-				remove_core_of = ROOT
-			}
-		}	
-	}
-	#ok
 	option = {
 		name = ww1_austria.8.a
-		ai_chance = { factor = 100 }
-		# news_event = { id = ww1_austria.100 }
-	}
-	#play as austria
-	option = {
-		name = ww1_austria.8.b
-		ai_chance = { factor = 0 }
-		# news_event = { id = ww1_austria.100 }
-		AUR = { change_tag_from = ROOT }
+		1192 = {
+			transfer_state_to = ROOT
+			set_state_flag = saint_germain_treaty
+			add_contested_owner = AUR
+		}
+		1193 = {
+			transfer_state_to = ROOT
+			set_state_flag = saint_germain_treaty
+			add_contested_owner = AUR
+		}
 	}
 }
 
@@ -550,16 +544,351 @@ country_event = {
 		is_subject = no
 		has_country_flag = great_war_winner
 		owns_state = 39
+		has_capitulated = no
 		AUR = {
-			owns_state = 153
+			any_owned_state = {
+				OR = {
+					state = 153
+					state = 1195
+				}
+			}
 			is_neighbor_of = ROOT
 			has_country_flag = great_war_loser
+			has_civil_war = no
+			NOT = {
+				has_war_with = ROOT
+			}
 		}
 		has_global_flag = great_war_ends
+		NOT = {
+			has_global_flag = saint_germain_treaty
+		}
 	}
 	fire_only_once = yes
 	option = {
 		name = event_generic_ok
-		transfer_state = 153
+		every_state = {
+			limit = {
+				is_owned_and_controlled_by = AUR
+				OR = {
+					state = 153
+					state = 1195
+				}
+			}
+			transfer_state_to = ROOT
+			add_contested_owner = AUR
+			set_state_flag = saint_germain_treaty
+		}
+	}
+}
+
+#Dissolution of the State Council
+country_event = {
+	id = ww1_austria.12
+	title = ww1_austria.12.t
+	desc = ww1_austria.12.d
+	picture = GFX_report_event_generic_parliament
+	trigger = {
+		tag = AUR
+		has_country_leader = {
+			character = AUS_state_council
+		}
+		has_global_flag = great_war_ends
+		has_war = no
+	}
+	fire_only_once = yes
+	mean_time_to_happen = {
+		months = 4
+	}
+	option = {
+		name = ww1_austria.12.a
+		promote_character = AUS_karl_seitz
+		meta_effect = {
+			text = {
+				set_politics = {
+					ruling_party = democratic
+					long_name = AUS_democratic_party_long
+					name = AUS_democratic_party
+					last_election = "[CURRENT_DATE]"
+					election_frequency = 48
+					elections_allowed = yes
+				}
+			}
+			CURRENT_DATE = "[?global.date.GetDateStringNoHour]"
+		}
+		hidden_effect = {
+			set_party_name = {
+				ideology = neutrality
+				name = AUS_christian_social_party
+				long_name = AUS_christian_social_party_long
+			}
+			promote_character = AUS_wilhelm_miklas
+		}
+	}
+}
+
+# Treaty of Saint-Germain-en-Laye
+###################################
+country_event = {
+	id = ww1_austria.13
+	title = ww1_austria.13.t
+	desc = ww1_austria.13.d
+	picture = GFX_report_event_generic_read_write
+	fire_only_once = yes
+	#is_triggered_only = yes
+	trigger = {
+		tag = AUS
+		has_war = no
+		has_country_flag = great_war_loser
+		GER = {
+			has_country_flag = great_war_loser
+		}
+	}
+	mean_time_to_happen = {
+		months = 10
+	}
+	option = {
+		name = ww1_austria.13.a
+		ai_chance = {
+			factor = 100
+		}
+		#custom_effect_tooltip = historical_tt
+		set_global_flag = saint_germain_treaty
+		if = {
+			limit = {
+				is_subject_of = GER
+				has_autonomy_state = autonomy_tgwr_unilateral_union
+			}
+			OVERLORD = {
+				end_puppet = ROOT
+			}
+		}
+		every_state = {
+			limit = {
+				is_core_of = ROOT
+				NOT = {
+					is_owned_by = ROOT
+				}
+				OR = {
+					state = 69
+					state = 1200
+					state = 74
+					state = 1199
+					state = 992
+					state = 993
+				}
+			}
+			remove_core_of = ROOT
+		}
+		AUH_eduard_von_bohmermolli = {
+			set_nationality = CZE
+		}
+		
+		every_state = {
+			limit = {
+				has_state_flag = saint_germain_treaty
+			}
+			clr_state_flag = saint_germain_treaty
+			remove_contested_owner = ROOT
+			transfer_state_to = ROOT
+		}
+	}
+}
+
+# Voralberg Referendum?
+country_event = {
+	id = ww1_austria.14
+	title = ww1_austria.14.t
+	desc = ww1_austria.14.d
+	picture = GFX_report_event_generic_parliament
+	fire_only_once = yes
+	trigger = {
+		tag = AUR
+		owns_state = 1195
+		has_country_flag = great_war_loser
+		has_war = no
+		SWI = {
+			is_subject = no
+			owns_state = 151
+			has_war = no
+			NOT = {
+				has_country_flag = great_war_loser
+			}
+		}
+	}
+	mean_time_to_happen = {
+		months = 1
+	}
+	option = {
+		name = ww1_austria.14.a
+		hidden_effect = {
+			SWI = {
+				country_event = {
+					id = ww1_austria.15
+					days = 10
+				}
+			}
+		}
+	}
+}
+
+# Voralberg Referendum?
+country_event = {
+	id = ww1_austria.15
+	title = ww1_austria.15.t
+	desc = ww1_austria.15.d
+	picture = GFX_report_event_generic_parliament
+	is_triggered_only = yes
+	option = {
+		name = ww1_austria.15.a
+		custom_effect_tooltip = historical_tt
+		ai_chance = {
+			base = 100
+		}
+	}
+	option = {
+		name = ww1_austria.15.b
+		add_stability = -0.1
+		add_political_power = -100
+		add_state_core = 1195
+		transfer_state = 1195
+		if = {
+			limit = {
+				1000 = { is_owned_by = LIE }
+			}
+			LIE = {
+				country_event = {
+					id = ww1_liechtenstein.9
+					hours = 10
+				}
+			}
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				is_historical_focus_on = yes
+			}
+			modifier = {
+				factor = 10
+				has_country_flag = great_war_winner
+			}
+		}
+	}
+}
+
+# Austria Navy is no more
+country_event = {
+	id = ww1_austria.16
+	title = ww1_austria.16.t
+	desc = ww1_austria.16.d
+	picture = GFX_report_event_destroyers
+	fire_only_once = yes
+	trigger = {
+		tag = AUS
+		#lost
+		has_war = no
+		is_subject = no
+		is_great_war_ongoing = no
+		has_country_flag = great_war_loser
+		#no port
+		NOT = {
+			has_built = {
+				type = naval_base
+				value < 1
+			}
+			any_subject_country = {
+				has_built = {
+					type = naval_base
+					value < 1
+				}
+			}
+		}
+		#has navy
+		has_navy_size = {
+			size > 0
+		}
+		#reciver is valid
+		OR = {
+			1198 = {
+				owner = {
+					has_country_flag = great_war_winner
+				}
+			}
+			any_other_country = {
+				is_major = yes
+				has_country_flag = great_war_winner
+				capital_scope = {
+					is_on_continent = europe
+				}
+				has_built = {
+					type = naval_base
+					value > 0
+				}
+			}
+		}
+	}
+	option = {
+		name = ww1_austria.16.a
+		1198 = {
+			owner = {
+				if = {
+					limit = {
+						has_country_flag = great_war_winner
+					}
+					ROOT = {
+						transfer_navy = {
+							target = PREV
+						}
+					}
+					hidden_effect = {
+						country_event = ww1_austria.17
+					}
+				}
+				else = {
+					random_country = {
+						limit = {
+							is_major = yes
+							has_country_flag = great_war_winner
+							capital_scope = {
+								is_on_continent = europe
+							}
+							has_built = {
+								type = naval_base
+								value > 0
+							}
+						}
+						ROOT = {
+							transfer_navy = {
+								target = PREV
+							}
+						}
+						hidden_effect = {
+							country_event = ww1_austria.17
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+# We have recieved Austrian warships
+country_event = {
+	id = ww1_austria.17
+	title = ww1_austria.17.t
+	desc = ww1_austria.17.d
+	picture = GFX_report_event_destroyers
+	fire_only_once = yes
+	is_triggered_only = yes
+	option = {
+		name = ww1_austria.17.a
+		effect_tooltip = {
+			FROM = {
+				transfer_navy = {
+					target = ROOT
+				}
+			}
+		}
 	}
 }

@@ -1,6 +1,6 @@
 ﻿add_namespace = ww1_belorussia
-# BELORUSSIAN INDEPENDENCE
-######################
+
+# Soviet Republic of Belorussia
 country_event = {
 	title = ww1_belorussia.1.t
 	desc = ww1_belorussia.1.d
@@ -23,6 +23,7 @@ country_event = {
 	}
 	option = {
 		name = ww1_belorussia.1.b
+		trigger = { BLR = { is_ai = yes } }
 		annex_country = { target = BLR }
 		add_political_power = -100
 		ai_chance = { 
@@ -34,6 +35,7 @@ country_event = {
 		}
 	}
 }
+
 # FIGHT AGAINST BOLSHEVISM
 ######################
 country_event = {
@@ -71,6 +73,7 @@ country_event = {
 		ai_chance = { factor = 25 }
 	}
 }
+
 # FATE OF BELARUS
 ######################
 country_event = {
@@ -95,10 +98,11 @@ country_event = {
 		ai_chance = { factor = 20 }
 	}
 	option = {
-		name = ww1_belorussia.2.b
+		name = ww1_belorussia.3.b
 		add_stability = -0.10
-		trigger = { 
-			GER = { 
+		trigger = {
+			GER = {
+				exists = yes 
 				has_government = neutrality 
 				has_country_flag = great_war_winner 
 			} 
@@ -107,23 +111,27 @@ country_event = {
 		ai_chance = { factor = 30 }
 	}
 	option = {
-		name = ww1_belorussia.2.c
+		name = ww1_belorussia.3.c
 		add_stability = -0.10
 		trigger = { 
-			RUS = { 
+			RUS = {
 				exists = yes 
 				OR = {
 					has_country_flag = great_war_winner
 					SOV = { exists = no }
-					tag = SOV
+					AND = {
+						tag = SOV
+						has_government = democratic
+					}
 					has_war_with = SOV
 				}
-			} 
+			}
 		}
 		RUS = { country_event = ww1_belorussia.5 }
 		ai_chance = { factor = 25 }
 	}
 }
+
 # GERMAN ANSWER
 ######################
 country_event = {
@@ -136,9 +144,9 @@ country_event = {
 	
 	option = {
 		name = ww1_belorussia.4.a
-		puppet = BLR
+		puppet = FROM
 		hidden_effect = {
-			BLR = {
+			FROM = {
 				set_politics = {
 					ruling_party = neutrality
 					last_election = "1908.11.1"
@@ -165,13 +173,13 @@ country_event = {
 								}
 							}
 						}
-						GER = {
+						ROOT = {
 							GER_albert_wilhelm_heinrich = {
 								set_character_name = BLR_genrikh
 								set_nationality = BLR
 							}
 						}
-					}	
+					}
 					else = {
 						BLR_uladzimir = {
 							add_country_leader_role = {
@@ -181,7 +189,7 @@ country_event = {
 								}
 							}
 						}
-						GER = {
+						ROOT = {
 							retire_character = GER_albert_wilhelm_heinrich
 						}
 					}
@@ -197,12 +205,23 @@ country_event = {
 	}
 	option = {
 		name = ww1_belorussia.4.b
-		give_guarantee = BLR
-		BLR = { add_stability = 0.1 }
+		give_guarantee = FROM
+		FROM = { add_stability = 0.1 }
 		ai_chance = { factor = 5 }
 	}
+	option = {
+		name = ww1_belorussia.4.c
+		FROM = {
+			add_opinion_modifier = {
+				target = ROOT
+				modifier = refused_help
+			}
+		}
+		ai_chance = { base = 0 }
+	}
 }
-# GERMAN ANSWER
+
+# RUSSIAN ANSWER
 ######################
 country_event = {
 	title = ww1_belorussia.5.t
@@ -214,9 +233,9 @@ country_event = {
 	
 	option = {
 		name = ww1_belorussia.5.a
-		puppet = BLR
+		puppet = FROM
 		hidden_effect = {
-			BLR = {
+			FROM = {
 				set_politics = {
 					ruling_party = neutrality
 					last_election = "1908.11.1"
@@ -239,11 +258,22 @@ country_event = {
 	}
 	option = {
 		name = ww1_belorussia.5.b
-		give_guarantee = BLR
-		BLR = { add_stability = 0.1 }
+		give_guarantee = FROM
+		FROM = { add_stability = 0.1 }
 		ai_chance = { factor = 5 }
 	}
+	option = {
+		name = ww1_belorussia.4.c
+		FROM = {
+			add_opinion_modifier = {
+				target = ROOT
+				modifier = refused_help
+			}
+		}
+		ai_chance = { base = 0 }
+	}
 }
+
 # DEATH OF HEINRICH
 ######################
 country_event = {
@@ -334,6 +364,7 @@ country_event = {
 		original_tag = BLR
 		has_cosmetic_tag = BLR_WHR
 		has_global_flag = GER_capitulation
+		GER = { has_country_flag = great_war_loser }
 	}
 	mean_time_to_happen = { days = 10 }
 	option = {
@@ -344,6 +375,20 @@ country_event = {
 				OVERLORD = { has_country_flag = great_war_loser }
 			}
 			OVERLORD = { end_puppet = ROOT }
+		}
+		if = {
+			limit = {
+				is_subject = no
+				faction_leader = {
+					has_country_flag = great_war_loser
+				}
+			}
+			leave_faction = yes
+		}
+		clr_country_flag = released_by_germany
+		if = {
+			limit = { has_idea = GER_idea_german_military_advisors }
+			remove_ideas = GER_idea_german_military_advisors
 		}
 		drop_cosmetic_tag = yes
 		meta_effect = {
@@ -383,11 +428,125 @@ country_event = {
 	option = {
 		name = ww1_belorussia.8.b
 		trigger = { is_ai = no }
+		if = {
+			limit = {
+				is_subject = yes
+				OVERLORD = { has_country_flag = great_war_loser }
+			}
+			OVERLORD = { end_puppet = ROOT }
+		}
+		if = {
+			limit = {
+				is_subject = no
+				faction_leader = {
+					has_country_flag = great_war_loser
+				}
+			}
+			leave_faction = yes
+		}
+		clr_country_flag = released_by_germany
+		if = {
+			limit = { has_idea = GER_idea_german_military_advisors }
+			remove_ideas = GER_idea_german_military_advisors
+		}
 		add_stability = -0.10
 		add_political_power = -170
 		add_popularity = {
 			ideology = communism
 			popularity = 0.15
+		}
+	}
+}
+
+# Belarusian People's Republic Proclaimed
+news_event = {
+	id = ww1_belorussia.9
+	title = ww1_belorussia.9.t
+	desc = {
+		text = ww1_belorussia.9.d
+		trigger = {
+			BLR = { exists = yes }
+		}
+	}
+	desc = {
+		text = ww1_belorussia.9.e
+		trigger = {
+			BLR = { exists = no }
+		}
+	}
+	picture = GFX_news_event_belarusian_pr
+	major = yes
+	trigger = {
+		NOT = {
+			has_global_flag = belarusian_pr_news
+		}
+		has_global_flag = russian_revolution
+		OR = {
+			BLR = {
+				exists = yes
+				is_subject = no
+				OR = {
+					has_government = democratic
+					has_government = neutrality
+				}
+				NOT = { has_cosmetic_tag = BLR_WHR }
+			}
+			AND = {
+				BLR = {
+					exists = no
+				}
+				206 = {
+					controller = {
+						OR = {
+							tag = GER
+							is_ally_with = GER
+						}
+					}
+				}
+				has_global_flag = brest_litovsk_finished
+			}
+		}
+	}
+	mean_time_to_happen = {
+		days = 0
+	}
+	immediate = {
+		hidden_effect = {
+			set_global_flag = belarusian_pr_news
+		}
+	}
+	option = {
+		name = ww1_belorussia.9.a
+		trigger = {
+			tag = BLR
+		}
+	}
+	option = {
+		name = ww1_belorussia.9.b
+		trigger = {
+			NOT = { tag = BLR }
+			OR = {
+				tag = GER
+				is_ally_with = GER
+				tag = RUS
+				is_ally_with = RUS
+				tag = SOV
+				is_ally_with = SOV
+			}
+		}
+	}
+	option = {
+		name = ww1_belorussia.9.c
+		trigger = {
+			NOT = {
+				tag = BLR
+				tag = GER
+				is_ally_with = GER
+				tag = RUS
+				is_ally_with = RUS
+				tag = SOV
+				is_ally_with = SOV
+			}
 		}
 	}
 }
