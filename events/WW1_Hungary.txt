@@ -1,5 +1,6 @@
 add_namespace = ww1_hungary
 add_namespace = ww1_hungary_auh
+add_namespace = ww1_hun_revolution
 
 ## 1910 hungarian elections
 country_event = {
@@ -7,12 +8,6 @@ country_event = {
 	title = ww1_auh.58.t
 	desc = ww1_auh.58.d
 	picture = GFX_report_event_election_vote
-	trigger = {
-		date < 1910.7.1
-		NOT = {
-			has_country_flag = HUN_1910_elections_done
-		}
-	}
 	is_triggered_only = yes
 	immediate = {
 		set_country_flag = HUN_1910_elections_done
@@ -20,27 +15,10 @@ country_event = {
 	##the national work party is elected
 	option = {
 		name = ww1_auh.58.a
-		#custom_effect_tooltip = AUH_the_kaiser_will_appoint_the_prime_minister
 		set_country_flag = HUN_1910_elections_NMP
-		if = {
-			limit = {
-				has_completed_focus = HUN_unite_F48P
-			}
-			add_political_power = -100
-			else_if = {
-				limit = {
-					has_completed_focus = HUN_merge_liberal_parties
-				}
-				remove_ideas = HUN_minority_government
-			}
-		}	
-		
+		set_country_flag = HUN_national_work_party_yes	
 		set_global_flag = HUN_national_work_party_elected
-		# country_event = {
-		# 	id = ww1_hungary_auh.2
-		# 	hours = 100	
-		# 	days = 30
-		# }
+		complete_national_focus = HUN_national_work_party
 		if = {
 			limit = {
 				is_subject = yes
@@ -76,29 +54,8 @@ country_event = {
 	##Party of Independence and '48 is elected
 	option = {
 		name = ww1_auh.58.b
-		trigger = {
-			has_completed_focus = HUN_unite_F48P
-		}
 		set_country_flag = HUN_1910_elections_F48P
-		#custom_effect_tooltip = AUH_the_kaiser_will_appoint_the_prime_minister
-		if = {
-			limit = {
-				has_idea = HUN_minority_government
-			}
-			swap_ideas = {
-				remove_idea = HUN_minority_government
-				add_idea = HUN_minority_government2
-			}
-		}
-		# set_global_flag = HUN_want_independence
-		mark_focus_tree_layout_dirty = yes
-		# hidden_effect = {
-		# 	country_event = {
-		# 		id = ww1_hungary_auh.2
-		# 		hours = 100	
-		# 		days = 30
-		# 	}
-		# }
+		complete_national_focus = HUN_mend_the_rapture
 		if = {
 			limit = {
 				is_subject = yes
@@ -836,6 +793,728 @@ country_event = {
 		name = ww1_hungary.9.a
 		add_stability = -0.05
 		add_political_power = -45
+	}
+}
+
+#Aster Revolution Event
+country_event = {
+	id = ww1_hungary.10
+	title = ww1_hungary.10.t
+	desc = ww1_hungary.10.d
+	is_triggered_only = yes
+	picture = GFX_report_event_aster_revolution
+	immediate = {
+		hidden_effect = {
+			complete_national_focus = HUN_from_the_ashes
+			complete_national_focus = HUN_pandemonious_rebirth
+		}
+	}
+	option = {
+		name = ww1_hungary.10.a
+		add_political_power = 50
+	}
+}
+
+#Dezso Kolossvary failure
+country_event = {
+	id = ww1_hungary.11
+	title = ww1_hungary.11.t
+	desc = ww1_hungary.11.d
+	picture = GFX_report_event_korpskommandant
+	mean_time_to_happen = {
+		days = 5
+	}
+	trigger = {
+		HUN = {
+			is_subject_of = AUS
+			has_war_with = RUS
+		}
+		RUS = {
+			controls_state = 91
+		}
+	}
+	immediate = {
+		retire_character = HUN_dezso_kolossvary
+	}
+	option = {
+		name = ww1_hungary.11.a
+		add_war_support = -0.05
+	}
+}
+
+#Austria offers a deal
+country_event = {
+	id = ww1_hun_revolution.1
+	title = ww1_hun_revolution.1.t
+	desc = ww1_hun_revolution.1.d
+	is_triggered_only = yes
+	picture = GFX_report_event_generic_read_write
+	#No
+	option = {
+		name = ww1_hun_revolution.1.a
+		ai_chance = {
+			factor = 0
+		}
+		HUN = {
+			leave_faction = yes
+		}
+		AUS = {
+			country_event = {
+				id = ww1_hun_revolution.2
+				days = 1
+			}
+		}
+	}
+	#ok
+	option = {
+		name = ww1_hun_revolution.1.b
+		ai_chance = {
+			factor = 0
+		}
+		add_ideas = AUH_ww1_House_Habsburg_Lorraine
+		AUS = {
+			country_event = {
+				id = ww1_hun_revolution.3
+				days = 1
+			}
+		}
+		set_global_flag = HUN_AUS_deal
+		if = {
+			limit = {
+				NOT = {
+					has_global_flag = AUH_franz_joseph_i_retired
+				}
+			 }
+			 add_ideas = {
+				HUN_franz_joseph_i
+			 }
+		}
+	}
+}
+
+#Event for Austria--Hungary rejects the proposal!
+country_event = {
+	id = ww1_hun_revolution.2
+	title = ww1_hun_revolution.2.t
+	desc = ww1_hun_revolution.2.d
+	is_triggered_only = yes
+	picture = GFX_report_event_generic_read_write
+	#So is is treason
+	option = {
+		name = ww1_hun_revolution.2.a
+		ai_chance = {
+			factor = 50
+			modifier = {
+				OR = {
+					has_country_leader = AUH_franz_ferdinand
+					has_country_leader = AUH_conrad_von_hotzendorf
+				}
+				add = 100
+			}
+		}
+		hidden_effect = {
+			every_state = {
+				limit = {
+					is_controlled_by = HUN
+				}
+				add_claim_by = AUS
+			}
+			AUS = {
+				transfer_units_fraction = {
+					target = HUN
+					size = 0.05
+					army_ratio = 0.05
+					navy_ratio = 0.0
+					stockpile_ratio = 0.05
+					keep_unit_leaders_trigger = {
+						always = yes
+					}
+				}
+			}
+			AUS = {
+				# set_rule = {
+				# 	can_join_factions = no
+				# }
+				set_major = yes
+				declare_war_on = {
+					target = HUN
+					type = annex_everything
+				}
+				leave_faction = yes
+			}
+			AUS = {
+				if = {
+					limit = {
+						HUN = {
+							has_completed_focus = AUH_assure_croatian_support
+						}
+					}
+					## croatian revolution
+					country_event = {
+						id = ww1_auh.65
+						days = 4
+					}
+				}		
+				## bosnian revolution
+				country_event = {
+					id = ww1_auh.67
+					days = 48
+				}
+				## ukranian revolution
+				country_event = {
+					id = ww1_auh.66
+					days = 68
+				}
+				## Romania Chooses What to Do
+				ROM = {
+					country_event = { 
+						id = ww1_auh.90
+						days = 53
+					}
+				}
+				## Italy chooses what to do
+				ITA = {
+					country_event = {
+						id = ww1_auh.72
+						days = 8
+					}
+				}
+				## Serbia Chooses what to do
+				SER = {
+					country_event = {
+						id = ww1_auh.76
+						days = 30
+					}
+				}
+				## Germany chooses what to do
+				GER = {
+					country_event = {
+						id = ww1_auh.70
+						days = 5
+					}
+				}
+				## Adverse Effects for Russia
+				RUS = {
+					country_event = {
+						id = ww1_hun_revolution.11
+						days = 12
+					}
+				}
+				513 = {
+					remove_core_of = HUN
+					start_resistance = yes
+					add_claim_by = HUN
+				}
+			}
+			HUN = {
+				mark_focus_tree_layout_dirty = yes
+			}
+		}
+	}
+	#Give Up
+	option = {
+		name = ww1_hun_revolution.2.b
+		ai_chance = {
+			factor = 5
+		}
+		add_stability = -0.15
+		add_war_support = -0.15
+		custom_effect_tooltip = ww1_hun_revolution.2.b.tt
+		hidden_effect = {
+			if = {
+				limit = { 
+					has_stability < 0.45
+				}
+				## ukranian revolution
+				country_event = {
+					id = ww1_auh.66
+					days = 68
+				}
+				country_event = {
+					id = ww1_auh.67
+				}
+			}
+		}
+	}
+}
+
+#Event for Austria-Hungary accepts the proposal
+country_event = {
+	id = ww1_hun_revolution.3
+	title = ww1_hun_revolution.3.t
+	desc = ww1_hun_revolution.3.d
+	is_triggered_only = yes
+	picture = GFX_report_event_generic_read_write
+	immediate = {
+		HUN = {
+			give_guarantee = AUS
+		}
+		AUS = {
+			give_guarantee = HUN
+		}
+	}
+	#Oh Goody!
+	option = {
+		name = w1_hun_revolution.3.a
+	}
+}
+
+#Romania Demands Everything South of Mures 
+country_event = {
+	id = ww1_hun_revolution.4
+	title = ww1_hun_revolution.4.t
+	desc = ww1_hun_revolution.4.d
+	is_triggered_only = yes
+	fire_only_once = yes
+	picture = GFX_report_event_generic_read_write
+	#Fine You Bastards!
+	option = {
+		name = ww1_hun_revolution.4.a
+		ai_chance = {
+			factor = 15
+			modifier = {
+				has_war_support < 0.6
+				add = 100
+			}
+		}
+		ROM = {
+			transfer_state = 778
+			transfer_state = 84
+			transfer_state = 778
+		}
+		if = {
+			limit = { 
+				HUN = {
+					owns_state = 82
+				}
+			}
+			ROM = {
+				transfer_state = 82
+			}
+		}
+		if = {
+			limit = { 
+				HUN = {
+					owns_state = 764
+				}
+			}
+			ROM = {
+				transfer_state = 764
+			}
+		}
+	}
+	#Screw You!
+	option = {
+		name = ww1_hun_revolution.4.b
+		ai_chance = {
+			factor = 15
+			modifier = {
+				has_war_support > 0.75
+				add = 100
+			}
+		}
+		ROM = {
+			country_event = {
+				id = ww1_auh.94
+				days = 1	
+			}
+		}
+	}
+}
+## Hungary Demands Arbitration - - Event for Russia
+country_event = {
+	id = ww1_hun_revolution.5
+	title = ww1_hun_revolution.5.t
+	desc = ww1_hun_revolution.5.d
+	is_triggered_only = yes
+	fire_only_once = yes
+	picture = GFX_report_event_generic_read_write
+
+	#Not our damn problem
+	option = {
+		name = ww1_hun_revolution.5.a
+		ai_chance = {
+			factor = 0
+			modifier = {
+				has_game_rule = {
+					rule = AUH_civil_war_intervention
+					option = FAVOR_AUSTRIA
+				}
+				add = 9999
+			}
+		}
+		HUN = {
+			country_event = {
+				id = ww1_hun_revolution.6
+				days = 1
+			}
+		}
+	}
+	#Demand Only Hungarian independence
+	option = {
+		name = ww1_hun_revolution.5.b
+		ai_chance = {
+			factor = 25
+			modifier = {
+				has_game_rule = {
+					rule = AUH_civil_war_intervention
+					option = FAVOR_HUNGARY
+				}
+				factor = 100
+			}
+		}
+	}
+	#Dismantle Austria!
+	option = {
+		ai_chance = {
+			factor = 0
+			modifier = {
+				has_game_rule = {
+					rule = AUH_civil_war_intervention
+					option = FAVOR_HUNGARY
+				}
+				factor = 100
+			}
+		}
+	}
+}
+## Russia Declines - - Event for Hungary
+country_event = {
+	id = ww1_hun_revolution.6
+	title = ww1_hun_revolution.6.t
+	desc = ww1_hun_revolution.6.d
+	is_triggered_only = yes
+	fire_only_once = yes
+	picture = GFX_report_event_generic_read_write
+	#Bruh
+	option = {
+		name = ww1_hun_revolution.6.a
+		add_opinion_modifier = {
+			target = RUS
+			modifier = small_decrease
+		}
+	}
+}
+## Germany demands that Hungary accepts a deal ##
+country_event = {
+	id = ww1_hun_revolution.7
+	title = ww1_hun_revolution.7.t
+	desc = ww1_hun_revolution.7.d
+	is_triggered_only = yes
+	fire_only_once = yes
+	picture = GFX_report_event_generic_read_write
+	#Ok Fine!
+	option = {
+		name = ww1_hun_revolution.7.a
+		ai_chance = {
+			factor = 50
+			modifier = {
+				HUN = {
+					surrender_progress > 0.3
+				}
+				add = 30
+			}
+		}
+		add_ideas = HUN_treaty_of_berlin
+		add_stability = -0.05
+		add_war_support = -0.15
+		GER = {
+			country_event = {
+				id = ww1_hun_revolution.9
+				days = 2
+			}
+		}
+		hidden_effect = {
+			white_peace = AUS
+		}
+	}
+	#Fuck Off
+	option = {
+		name = ww1_hun_revolution.7.b
+		ai_chance = {
+			factor = 10
+			modifier = {
+				AUS = {
+					surrender_progress > 0.15
+				}
+				add = 100
+			}
+		}
+		add_war_support = 0.05
+		GER = {
+			country_event = {
+				id = ww1_hun_revolution.12
+				days = 1
+			}
+		}
+	}
+}
+## Germany Requests Hungary Honor the Berlin Treaty ##
+country_event = {
+	id = ww1_hun_revolution.8
+	title = ww1_hun_revolution.8.t
+	desc = ww1_hun_revolution.8.d
+	fire_only_once = yes
+	picture = GFX_report_event_generic_read_write
+	mean_time_to_happen = {
+		days = 1
+	}
+	trigger = {
+		has_idea = HUN_treaty_of_berlin
+		GER = {
+			has_war_with = RUS
+		}
+	}
+	#Sure
+	option = {
+		name = ww1_hun_revolution.8.a
+		ai_chance = {
+			factor = 1
+			modifier = {
+				has_war_support > 0.75
+				add = 25
+			}
+		}
+		hidden_effect = {
+			GER = {
+				add_to_faction = HUN
+				add_to_war = {
+					targeted_alliance = HUN
+					enemy = RUS
+				}
+			}
+		}
+	}
+	#Freak off
+	option = {
+		name = ww1_hun_revolution.8.b
+		ai_chance = {
+			factor = 10
+		}
+		remove_ideas = HUN_treaty_of_berlin
+		GER = {
+			add_opinion_modifier = {
+				target = HUN
+				modifier = large_decrease
+			}
+		}
+	}
+}
+#Hungary Accepts Our Offer - - Event for Germany
+country_event = {
+	id = ww1_hun_revolution.9
+	title = ww1_hun_revolution.9.t
+	desc = ww1_hun_revolution.9.d
+	is_triggered_only = yes
+	fire_only_once = yes
+	picture = GFX_report_event_generic_read_write
+	#A wise decision
+	option = {
+		name = ww1_hun_revolution.9.a
+		hidden_effect = {
+			GER = {
+				add_opinion_modifier = {
+					target = HUN
+					modifier = medium_increase
+				}
+			}
+			HUN = {
+				add_opinion_modifier = {
+					target = GER
+					modifier = medium_increase
+				}
+			}
+			news_event = ww1_hun_revolution.10
+		}
+	}
+}
+#Germany Arbitrates the Hungarian Revolution - - World Event
+news_event = {
+	id = ww1_hun_revolution.10
+	title = ww1_hun_revolution.10.t
+	desc = ww1_hun_revolution.10.d
+	is_triggered_only = yes
+	major = yes
+	picture = EVENT_hoi4tgw_trialism
+	immediate = {
+		hidden_effect = {
+			GER = {
+				add_to_faction = AUS
+			}
+		}
+	}
+	#World Response
+	option = {
+		name = ww1_hun_revolution.10.a
+		trigger = {
+			NOT = {
+				original_tag = AUS
+				original_tag = GER
+				original_tag = HUN
+				original_tag = RUS
+			}
+		}
+	}
+	#Austria Response
+	option = {
+		name = ww1_hun_revolution.10.b
+		trigger = {
+			original_tag = AUS
+		}
+	}
+	#GER Response
+	option = {
+		name = ww1_hun_revolution.10.c
+		trigger = {
+			original_tag = GER
+		}
+	}
+	#HUN Response
+	option = {
+		name = ww1_hun_revolution.10.e
+		trigger = {
+			original_tag = HUN
+		}
+	}
+	#RUS Response
+	option = {
+		name = ww1_hun_revolution.10.f
+		trigger = {
+			original_tag = RUS
+		}
+	}
+}
+## Adverse Affects from the Hungarian Revolution - - Event for Russia
+country_event = {
+	id = ww1_hun_revolution.11
+	title = ww1_hun_revolution.11.t
+	desc = ww1_hun_revolution.11.d
+	is_triggered_only = yes
+	fire_only_once = yes
+	picture = GFX_report_event_generic_read_write
+	#God Dang
+	option = {
+		name = ww1_hun_revolution.11.a
+		add_stability = -0.035
+		add_popularity = {
+			ideology = democratic
+			popularity = 0.05
+		}
+	}
+}
+## Hungary rejects our arbitration - - event for Germany
+country_event = {
+	id = ww1_hun_revolution.12
+	title = ww1_hun_revolution.12.t
+	desc = ww1_hun_revolution.12.d
+	is_triggered_only = yes
+	fire_only_once = yes
+	picture = GFX_report_event_generic_read_write
+	#Unwise!
+	option = {
+		name = ww1_hun_revolution.12.a
+		ai_chance = {
+			factor = 50
+			modifier = {
+				AUS = {
+					surrender_progress > 0.05
+				}
+				add = 100
+			}
+		}
+		add_to_faction = AUS
+		hidden_effect = {
+			AUS = {
+				add_to_war = {
+					targeted_alliance = GER
+					enemy = HUN
+				}
+			}
+		}
+	}
+	#Well we tried
+	option = {
+		name = ww1_hun_revolution.12.b
+		ai_chance = {
+			factor = 10
+			modifier = {
+				HUN = {
+					surrender_progress > 0.3
+				}
+				add = 50
+			}
+		}
+	}
+}
+## Austria Mission to win timeout event OR Surrender
+country_event = {
+	id = ww1_hun_revolution.13
+	title = ww1_hun_revolution.13.t
+	desc = ww1_hun_revolution.13.d
+	is_triggered_only = yes
+	fire_only_once = yes
+	immediate = {
+		hidden_effect = {
+			set_global_flag = AUH_HUN_civil_war_ends
+			mark_focus_tree_layout_dirty = yes
+			set_autonomy = {
+				target = HUN
+				autonomous_state = autonomy_free
+				end_wars = yes
+				end_civil_wars = no
+			}
+			white_peace = CRO
+			if = {
+				limit = {
+					AUS = {
+						is_in_faction_with = GER
+					}
+				 }
+				 every_country = {
+					limit = {
+						is_in_faction_with = GER
+					}
+					white_peace = HUN
+					white_peace = CRO
+					white_peace = BNT
+				}
+			}
+			if = {
+				limit = { 
+					HUN = {
+						has_country_flag = HUN_concession_to_serbia_flag
+					}
+				}
+				white_peace = SER
+				SER = {
+					transfer_state = 104
+					transfer_state = 575
+				}
+			}
+		}
+	}
+	option = {
+		name = ww1_hun_revolution.13.a
+		white_peace = HUN
+		hidden_effect = {
+			every_state = {
+				limit = {
+					is_owned_by = HUN
+				}
+				remove_claim_by = AUS
+			}
+			if = {
+				limit = { 
+					country_exists = CRO
+				}
+				every_owned_state = {
+					limit = {
+						is_core_of = CRO
+					}
+					transfer_state_to = CRO
+				}
+			}
+		}
 	}
 }
 
