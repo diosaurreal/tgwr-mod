@@ -1,0 +1,3244 @@
+#	Example:
+# 
+#	example_dynamic_modifier = {
+#		icon = "GFX_idea_unknown" # optional, will show up in guis if icon is specified
+#		enable = { always = yes } #optional, the modifier won't apply if not enabled
+#		remove_trigger = { always = no } #optional, will remove the modifier if true
+#
+#		# list of modifiers
+#		fuel_cost = 321
+#		max_fuel = var_max_fuel # will be taken from a variable
+#	}
+#
+#
+#	In a script file:
+#
+#	effect = {
+#		add_dynamic_modifier = {
+#			modifier = example_dynamic_modifier
+#			scope = GER # optional, if you specify this your dynamic modifier scoped to this scope (root is the effect scope)
+#			days = 14 # optional, will be removed after this many days passes
+#		}
+#	}
+#
+#	can be added to countries, states or unit leaders
+#	will only updated daily, unless forced by force_update_dynamic_modifier effect
+
+mobilisation_penalty_modifier = {
+	#negative values
+	army_org_factor = mobilisation_penalty_var
+	army_morale_factor = mobilisation_penalty_var
+	industrial_capacity_factory = mobilisation_penalty_var
+	command_power_gain_mult = mobilisation_penalty_var # Penalties for overhead
+	mobilization_speed = mobilisation_penalty_var 
+
+	#positive values
+	training_time_factor = mobilisation_penalty_var_positive
+	supply_consumption_factor = mobilisation_penalty_var_positive
+	
+}
+
+generic_local_investments = {
+	enable = { 
+		CONTROLLER = {
+			tag = OWNER
+		}	
+	}
+	icon = GFX_modifiers_generic_military_industry
+
+	state_production_speed_buildings_factor = 0.1
+}
+
+FRA_autonomous_region = {
+	enable = { 
+		CONTROLLER = {
+			original_tag = FRA
+		}	
+	}
+	remove_trigger = {
+		owner = {
+			NOT = {
+				original_tag = FRA
+			}
+		}
+	}
+	icon = GFX_modifiers_ITA_established_mafia
+
+	state_production_speed_buildings_factor = -0.25
+	recruitable_population_factor = -0.25
+	local_resources_factor = -0.25
+}
+
+FRA_UPR_activism = {
+	enable = { 
+		CONTROLLER = {
+			original_tag = FRA
+		}	
+	}
+	remove_trigger = {
+		owner = {
+			NOT = {
+				original_tag = FRA
+			}
+		}
+	}
+	icon = GFX_modifiers_ITA_established_mafia
+	recruitable_population_factor = -0.50
+}
+
+turanism_support = {
+	enable = {
+		CONTROLLER = {
+			original_tag = TUR
+		}	
+	}
+	remove_trigger = { 
+		is_core_of = TUR
+	}
+	icon = GFX_modifiers_tur_pan_turkic_propaganda
+	
+	non_core_manpower = 0.25
+	compliance_growth = 0.1
+	resistance_growth = -0.15
+}
+per_russian_sphere = {
+	enable = {
+		CONTROLLER = {
+			tag = PER
+			NOT = {
+				has_war_with = RUS
+			}	
+		}	
+	}
+	remove_trigger = { 
+		OR = {
+			NOT = { is_owned_by = PER }	
+			has_russian_civil_war = yes
+		}
+	}
+	icon = GFX_modifiers_PER_foreign_sphere
+
+	state_production_speed_buildings_factor = 0.10
+	state_resources_factor = -0.15
+	local_factories = -0.15
+}
+per_british_sphere = {
+	enable = {
+		CONTROLLER = {
+			tag = PER
+			NOT = {
+				has_war_with = ENG
+			}	
+		}	
+	}
+	remove_trigger = { 
+		OR = {
+			NOT = { is_owned_by = PER }
+			ENG = { has_civil_war = yes }
+		}
+	}
+	icon = GFX_modifiers_PER_foreign_sphere
+	
+	state_production_speed_buildings_factor = 0.10
+	state_resources_factor = -0.15
+	local_factories = -0.15
+}
+per_paramilitary_gendarmerie = {
+	enable = {
+		CONTROLLER = {
+			original_tag = PER	
+		}	
+	}
+	remove_trigger = { 
+		OR = {
+			NOT = { is_owned_by = PER }
+			PER = { has_civil_war = yes }
+		}
+	}
+	icon = GFX_modifiers_state_manpower
+	
+	local_org_regain = -0.05
+	army_speed_factor = -0.20
+	army_attack_factor = -0.10
+	army_defence_factor = -0.10
+	disable_strategic_redeployment_for_controller = 1
+}
+auh_assimilated_cisleitania = {
+	enable = {
+		CONTROLLER = {
+			original_tag = AUS	
+		}	
+	}
+	remove_trigger = {
+		NOT = { is_owned_by = AUS } 
+	}
+	icon = GFX_modifiers_foreign_sphere
+	
+	non_core_manpower = 0.35
+	compliance_growth = 0.20
+	resistance_growth = -0.20
+	resistance_decay = 0.20
+}
+chi_rebellious_warlord = {
+	enable = {
+		OR = {
+			is_controlled_by = CHI
+			is_controlled_by = QIN
+		}	
+	}
+	remove_trigger = { 
+		NOT = { is_owned_by = CHI }
+		NOT = { is_owned_by = QIN }
+	}
+	icon = GFX_modifiers_state_manpower
+	
+	local_org_regain = -0.05
+	army_speed_factor_for_controller = -0.10
+	state_production_speed_buildings_factor = -0.10
+	state_resources_factor = -0.50
+	local_factories = -0.50
+}
+TUR_minorities = {
+	enable = { always = yes }
+
+	icon = GFX_idea_TUR_minorities
+
+	stability_factor = mtth:TUR_minorities_stability
+	war_support_factor = mtth:TUR_minorities_war_support
+	political_power_factor = mtth:TUR_minorities_political_power
+}
+TUR_armenian_minority = {
+	enable = { always = yes }
+
+	icon = GFX_modifiers_TUR_armenian_minority
+
+	recruitable_population_factor = var:TUR_ottoman_recruitable_population_factor
+	local_intel_to_enemies = var:TUR_ottoman_local_intel_to_enemies
+	resistance_target = var:TUR_ottoman_resistance_target
+	state_production_speed_buildings_factor = var:TUR_ottoman_state_production_speed_buildings_factor
+	army_defence_factor = var:TUR_ottoman_army_defence_factor
+	local_supplies_for_controller = var:TUR_ottoman_local_supplies_for_controller
+	required_garrison_factor = var:TUR_ottoman_required_garrison_factor
+	resistance_growth = var:TUR_ottoman_resistance_growth
+	local_resources_factor = var:TUR_ottoman_local_resources_factor
+	army_speed_factor_for_controller = var:TUR_ottoman_army_speed_factor_for_controller
+	local_factory_sabotage = var:TUR_ottoman_local_factory_sabotage
+	local_building_slots_factor = var:TUR_ottoman_local_building_slots_factor
+	attrition = var:TUR_ottoman_attrition
+	compliance_growth = var:TUR_ottoman_compliance_growth
+	resistance_decay = var:TUR_ottoman_resistance_decay
+}
+TUR_arab_minority = {
+	enable = { always = yes }
+	icon = GFX_modifiers_TUR_arab_minority
+
+	recruitable_population_factor = var:TUR_ottoman_recruitable_population_factor
+	local_intel_to_enemies = var:TUR_ottoman_local_intel_to_enemies
+	resistance_target = var:TUR_ottoman_resistance_target
+	state_production_speed_buildings_factor = var:TUR_ottoman_state_production_speed_buildings_factor
+	army_defence_factor = var:TUR_ottoman_army_defence_factor
+	local_supplies_for_controller = var:TUR_ottoman_local_supplies_for_controller
+	required_garrison_factor = var:TUR_ottoman_required_garrison_factor
+	resistance_growth = var:TUR_ottoman_resistance_growth
+	local_resources_factor = var:TUR_ottoman_local_resources_factor
+	army_speed_factor_for_controller = var:TUR_ottoman_army_speed_factor_for_controller
+	local_factory_sabotage = var:TUR_ottoman_local_factory_sabotage
+	local_building_slots_factor = var:TUR_ottoman_local_building_slots_factor
+	attrition = var:TUR_ottoman_attrition
+	compliance_growth = var:TUR_ottoman_compliance_growth
+	resistance_decay = var:TUR_ottoman_resistance_decay
+}
+TUR_greek_minority = {
+	enable = { always = yes }
+
+	icon = GFX_modifiers_TUR_greek_minority
+
+	recruitable_population_factor = var:TUR_ottoman_recruitable_population_factor
+	local_intel_to_enemies = var:TUR_ottoman_local_intel_to_enemies
+	resistance_target = var:TUR_ottoman_resistance_target
+	state_production_speed_buildings_factor = var:TUR_ottoman_state_production_speed_buildings_factor
+	army_defence_factor = var:TUR_ottoman_army_defence_factor
+	local_supplies_for_controller = var:TUR_ottoman_local_supplies_for_controller
+	required_garrison_factor = var:TUR_ottoman_required_garrison_factor
+	resistance_growth = var:TUR_ottoman_resistance_growth
+	local_resources_factor = var:TUR_ottoman_local_resources_factor
+	army_speed_factor_for_controller = var:TUR_ottoman_army_speed_factor_for_controller
+	local_factory_sabotage = var:TUR_ottoman_local_factory_sabotage
+	local_building_slots_factor = var:TUR_ottoman_local_building_slots_factor
+	attrition = var:TUR_ottoman_attrition
+	compliance_growth = var:TUR_ottoman_compliance_growth
+	resistance_decay = var:TUR_ottoman_resistance_decay
+}
+TUR_southslav_minority = {
+	enable = { always = yes }
+
+	icon = GFX_modifiers_TUR_southslav_minority
+
+	recruitable_population_factor = var:TUR_ottoman_recruitable_population_factor
+	local_intel_to_enemies = var:TUR_ottoman_local_intel_to_enemies
+	resistance_target = var:TUR_ottoman_resistance_target
+	state_production_speed_buildings_factor = var:TUR_ottoman_state_production_speed_buildings_factor
+	army_defence_factor = var:TUR_ottoman_army_defence_factor
+	local_supplies_for_controller = var:TUR_ottoman_local_supplies_for_controller
+	required_garrison_factor = var:TUR_ottoman_required_garrison_factor
+	resistance_growth = var:TUR_ottoman_resistance_growth
+	local_resources_factor = var:TUR_ottoman_local_resources_factor
+	army_speed_factor_for_controller = var:TUR_ottoman_army_speed_factor_for_controller
+	local_factory_sabotage = var:TUR_ottoman_local_factory_sabotage
+	local_building_slots_factor = var:TUR_ottoman_local_building_slots_factor
+	attrition = var:TUR_ottoman_attrition
+	compliance_growth = var:TUR_ottoman_compliance_growth
+	resistance_decay = var:TUR_ottoman_resistance_decay
+}
+TUR_albanian_minority = {
+	enable = { always = yes }
+
+	icon = GFX_modifiers_TUR_albanian_minority
+
+	recruitable_population_factor = var:TUR_ottoman_recruitable_population_factor
+	local_intel_to_enemies = var:TUR_ottoman_local_intel_to_enemies
+	resistance_target = var:TUR_ottoman_resistance_target
+	state_production_speed_buildings_factor = var:TUR_ottoman_state_production_speed_buildings_factor
+	army_defence_factor = var:TUR_ottoman_army_defence_factor
+	local_supplies_for_controller = var:TUR_ottoman_local_supplies_for_controller
+	required_garrison_factor = var:TUR_ottoman_required_garrison_factor
+	resistance_growth = var:TUR_ottoman_resistance_growth
+	local_resources_factor = var:TUR_ottoman_local_resources_factor
+	army_speed_factor_for_controller = var:TUR_ottoman_army_speed_factor_for_controller
+	local_factory_sabotage = var:TUR_ottoman_local_factory_sabotage
+	local_building_slots_factor = var:TUR_ottoman_local_building_slots_factor
+	attrition = var:TUR_ottoman_attrition
+	compliance_growth = var:TUR_ottoman_compliance_growth
+	resistance_decay = var:TUR_ottoman_resistance_decay
+}
+TUR_kurd_minority = {
+	enable = { always = yes }
+
+	icon = GFX_modifiers_TUR_kurd_minority
+
+	recruitable_population_factor = var:TUR_ottoman_recruitable_population_factor
+	local_intel_to_enemies = var:TUR_ottoman_local_intel_to_enemies
+	resistance_target = var:TUR_ottoman_resistance_target
+	state_production_speed_buildings_factor = var:TUR_ottoman_state_production_speed_buildings_factor
+	army_defence_factor = var:TUR_ottoman_army_defence_factor
+	local_supplies_for_controller = var:TUR_ottoman_local_supplies_for_controller
+	required_garrison_factor = var:TUR_ottoman_required_garrison_factor
+	resistance_growth = var:TUR_ottoman_resistance_growth
+	local_resources_factor = var:TUR_ottoman_local_resources_factor
+	army_speed_factor_for_controller = var:TUR_ottoman_army_speed_factor_for_controller
+	local_factory_sabotage = var:TUR_ottoman_local_factory_sabotage
+	local_building_slots_factor = var:TUR_ottoman_local_building_slots_factor
+	attrition = var:TUR_ottoman_attrition
+	compliance_growth = var:TUR_ottoman_compliance_growth
+	resistance_decay = var:TUR_ottoman_resistance_decay
+}
+TUR_georgian_minority = {
+	enable = { always = yes }
+
+	icon = GFX_modifiers_TUR_georgian_minority
+
+	recruitable_population_factor = var:TUR_ottoman_recruitable_population_factor
+	local_intel_to_enemies = var:TUR_ottoman_local_intel_to_enemies
+	resistance_target = var:TUR_ottoman_resistance_target
+	state_production_speed_buildings_factor = var:TUR_ottoman_state_production_speed_buildings_factor
+	army_defence_factor = var:TUR_ottoman_army_defence_factor
+	local_supplies_for_controller = var:TUR_ottoman_local_supplies_for_controller
+	required_garrison_factor = var:TUR_ottoman_required_garrison_factor
+	resistance_growth = var:TUR_ottoman_resistance_growth
+	local_resources_factor = var:TUR_ottoman_local_resources_factor
+	army_speed_factor_for_controller = var:TUR_ottoman_army_speed_factor_for_controller
+	local_factory_sabotage = var:TUR_ottoman_local_factory_sabotage
+	local_building_slots_factor = var:TUR_ottoman_local_building_slots_factor
+	attrition = var:TUR_ottoman_attrition
+	compliance_growth = var:TUR_ottoman_compliance_growth
+	resistance_decay = var:TUR_ottoman_resistance_decay
+}
+TUR_romanian_minority = {
+	enable = { always = yes }
+
+	icon = GFX_modifiers_TUR_romanian_minority
+
+	recruitable_population_factor = var:TUR_ottoman_recruitable_population_factor
+	local_intel_to_enemies = var:TUR_ottoman_local_intel_to_enemies
+	resistance_target = var:TUR_ottoman_resistance_target
+	state_production_speed_buildings_factor = var:TUR_ottoman_state_production_speed_buildings_factor
+	army_defence_factor = var:TUR_ottoman_army_defence_factor
+	local_supplies_for_controller = var:TUR_ottoman_local_supplies_for_controller
+	required_garrison_factor = var:TUR_ottoman_required_garrison_factor
+	resistance_growth = var:TUR_ottoman_resistance_growth
+	local_resources_factor = var:TUR_ottoman_local_resources_factor
+	army_speed_factor_for_controller = var:TUR_ottoman_army_speed_factor_for_controller
+	local_factory_sabotage = var:TUR_ottoman_local_factory_sabotage
+	local_building_slots_factor = var:TUR_ottoman_local_building_slots_factor
+	attrition = var:TUR_ottoman_attrition
+	compliance_growth = var:TUR_ottoman_compliance_growth
+	resistance_decay = var:TUR_ottoman_resistance_decay
+}
+TUR_assyrian_minority = {
+	enable = { always = yes }
+
+	icon = GFX_modifiers_TUR_assyrian_minority
+
+	recruitable_population_factor = var:TUR_ottoman_recruitable_population_factor
+	local_intel_to_enemies = var:TUR_ottoman_local_intel_to_enemies
+	resistance_target = var:TUR_ottoman_resistance_target
+	state_production_speed_buildings_factor = var:TUR_ottoman_state_production_speed_buildings_factor
+	army_defence_factor = var:TUR_ottoman_army_defence_factor
+	local_supplies_for_controller = var:TUR_ottoman_local_supplies_for_controller
+	required_garrison_factor = var:TUR_ottoman_required_garrison_factor
+	resistance_growth = var:TUR_ottoman_resistance_growth
+	local_resources_factor = var:TUR_ottoman_local_resources_factor
+	army_speed_factor_for_controller = var:TUR_ottoman_army_speed_factor_for_controller
+	local_factory_sabotage = var:TUR_ottoman_local_factory_sabotage
+	local_building_slots_factor = var:TUR_ottoman_local_building_slots_factor
+	attrition = var:TUR_ottoman_attrition
+	compliance_growth = var:TUR_ottoman_compliance_growth
+	resistance_decay = var:TUR_ottoman_resistance_decay
+}
+TUR_turkish_minority = {
+	enable = { always = yes }
+
+	icon = GFX_modifiers_TUR_turkish_minority
+
+	recruitable_population_factor = var:TUR_ottoman_recruitable_population_factor
+	local_intel_to_enemies = var:TUR_ottoman_local_intel_to_enemies
+	resistance_target = var:TUR_ottoman_resistance_target
+	state_production_speed_buildings_factor = var:TUR_ottoman_state_production_speed_buildings_factor
+	army_defence_factor = var:TUR_ottoman_army_defence_factor
+	local_supplies_for_controller = var:TUR_ottoman_local_supplies_for_controller
+	required_garrison_factor = var:TUR_ottoman_required_garrison_factor
+	resistance_growth = var:TUR_ottoman_resistance_growth
+	local_resources_factor = var:TUR_ottoman_local_resources_factor
+	army_speed_factor_for_controller = var:TUR_ottoman_army_speed_factor_for_controller
+	local_factory_sabotage = var:TUR_ottoman_local_factory_sabotage
+	local_building_slots_factor = var:TUR_ottoman_local_building_slots_factor
+	attrition = var:TUR_ottoman_attrition
+	compliance_growth = var:TUR_ottoman_compliance_growth
+	resistance_decay = var:TUR_ottoman_resistance_decay
+	local_factories = var:TUR_ottoman_local_factories
+}
+TUR_autonomous_region = {
+	enable = { always = yes  }
+	
+	icon = GFX_decision_generic_autonomy
+	
+	local_resources_factor = var:TUR_ottoman_autonomy_local_resources_factor
+	local_factories = var:TUR_ottoman_autonomy_local_factories
+	resistance_target = var:TUR_ottoman_autonomy_resistance_target
+	recruitable_population_factor = var:TUR_ottoman_autonomy_recruitable_population_factor
+}
+TUR_socialist_economy = {
+	enable = { always = yes }
+
+	icon = GFX_modifiers_TUR_socialist_economy
+	
+	stability_factor = var:TUR_stability_factor
+	state_production_speed_buildings_factor = var:TUR_socialist_production_speed_buildings_factor
+	consumer_goods_factor = var:TUR_socialist_consumer_goods_factor
+	global_building_slots_factor = var:TUR_socialist_global_building_slots_factor
+	industrial_capacity_dockyard = var:TUR_socialist_industrial_capacity_dockyard
+	industrial_capacity_factory = var:TUR_socialist_industrial_capacity_factory
+	industry_repair_factor = var:TUR_socialist_industry_repair_factor
+	line_change_production_efficiency_factor = var:TUR_socialist_line_change_production_efficiency_factor
+	supply_node_range = var:TUR_socialist_supply_node_range
+	research_speed_factor = var:TUR_research_speed_factor
+	production_speed_industrial_complex_factor = var:TUR_production_speed_industrial_complex_factor
+	production_speed_infrastructure_factor = var:TUR_production_speed_infrastructure_factor
+	production_speed_arms_factory_factor = var:TUR_production_speed_arms_factory_factor
+	production_speed_dockyard_factor = var:TUR_production_dockyard_factory_factor
+	production_factory_efficiency_gain_factor = var:TUR_production_factory_efficiency_gain_factor
+	production_factory_max_efficiency_factor = var:TUR_production_factory_max_efficiency_factor
+	production_factory_start_efficiency_factor = var:TUR_production_factory_start_efficiency_factor
+	production_lack_of_resource_penalty_factor = var:TUR_production_lack_of_resource_penalty_factor
+	refit_ic_cost = var:TUR_refit_ic_cost
+	refit_speed = var:TUR_refit_speed
+	local_resources_factor = var:TUR_local_resources_factor
+	min_export = var:TUR_socialist_min_export
+	supply_consumption_factor = var:TUR_socialist_supply_consumption_factor
+}
+TUR_OPDA = {
+	enable = { original_tag = TUR }
+	
+	consumer_goods_factor = var:opda_consumer_goods
+	civilian_intel_to_others = var:opda_civilian_intel_to_others
+	min_export = var:opda_resources_to_market
+	political_power_cost = var:opda_political_power_cost
+	improve_relations_maintain_cost_factor = -0.1
+}
+AUH_corruption = {
+	enable = { original_tag = AUS }
+	consumer_goods_expected_value = var:AUH_corruption_var
+}
+AUH_OSB_debts = {
+	enable = { original_tag = AUS }
+	consumer_goods_expected_value = var:AUH_OSB_var
+}
+SIB_gold_reserve_dynamic_modifier = {
+	icon = GFX_idea_SPR_seize_the_gold_reserves
+	enable = { original_tag = RUS }
+	consumer_goods_expected_value = var:SIB_gold_reserve_var
+}
+SPR_independence_movements = {
+	enable = { 
+		controller = {
+			original_tag = SPR
+		}
+	}
+	remove_trigger = {
+		owner = {
+			NOT = {
+				original_tag = SPR
+			}
+		}
+	}
+
+	icon = GFX_modifiers_AUH_local_independentism
+	
+	recruitable_population_factor = -0.35
+	local_building_slots_factor = -0.25
+	state_resources_factor = -0.35
+	state_production_speed_buildings_factor = -0.5
+}
+GRE_IFC_dynamic_modifier = {
+	icon = GFX_idea_gre_debt_to_the_ifc
+	enable = { original_tag = GRE }
+	consumer_goods_factor = var:GRE_IFC_var
+	country_resource_steel = GRE_IFC_country_resource_steel
+	country_resource_chromium = GRE_IFC_country_resource_chromium
+	production_speed_buildings_factor = GRE_IFC_production_speed_buildings_factor
+	production_speed_industrial_complex_factor = GRE_IFC_production_speed_industrial_complex_factor
+	production_speed_arms_factory_factor = GRE_IFC_production_speed_arms_factory_factor
+	industrial_capacity_factory = GRE_IFC_industrial_capacity_factory
+	industrial_capacity_dockyard = GRE_IFC_industrial_capacity_dockyard
+}
+GRE_political_turmoil_dynamic_modifier = {
+	icon = GFX_idea_GRE_goudi
+    enable = { original_tag = GRE }
+	stability_factor = var:GRE_stability_var
+	political_power_factor = var:GRE_pp_var
+}
+GRE_political_normality_dynamic_modifier = {
+	icon = GFX_idea_generic_pp_unity_bonus
+    enable = { original_tag = GRE }
+	stability_factor = var:GRE_stability_var
+	political_power_factor = var:GRE_pp_var
+}
+GRE_agrarian_society_dynamic_modifier = {
+	icon = GFX_idea_GRE_agrarian_society
+    enable = { 
+		is_greek_nation = yes
+	}
+	production_factory_max_efficiency_factor = var:GRE_efficiency_cap_var
+	production_factory_efficiency_gain_factor = var:GRE_efficiency_growth_var
+	state_production_speed_buildings_factor = var:GRE_construction_speed_var
+	industrial_capacity_factory = var:GRE_factory_output_var
+	production_speed_arms_factory_factor = var:GRE_military_construction_speed_var
+}
+GRE_farmer_focused_culture_dynamic_modifier = {
+	icon = GFX_idea_gre_agricultural_communes2
+    enable = { 
+		is_greek_nation = yes
+	}
+	production_factory_max_efficiency_factor = var:GRE_efficiency_cap_var
+	production_factory_efficiency_gain_factor = var:GRE_efficiency_growth_var
+	state_production_speed_buildings_factor = var:GRE_construction_speed_var
+	industrial_capacity_factory = var:GRE_factory_output_var
+	production_speed_arms_factory_factor = var:GRE_military_construction_speed_var
+	
+	consumer_goods_factor = -0.05
+	political_power_factor = 0.05
+}
+GRE_balanced_approach_dynamic_modifier = {
+	icon = GFX_idea_gre_agricultural_communes2
+    enable = { 
+		is_greek_nation = yes
+	}
+	production_factory_max_efficiency_factor = var:GRE_efficiency_cap_var
+	production_factory_efficiency_gain_factor = var:GRE_efficiency_growth_var
+	state_production_speed_buildings_factor = var:GRE_construction_speed_var
+	industrial_capacity_factory = var:GRE_factory_output_var
+	production_speed_arms_factory_factor = var:GRE_military_construction_speed_var
+	
+	political_power_factor = 0.02
+	production_speed_industrial_complex_factor = 0.1
+}
+GRE_industrializing_society_dynamic_modifier = {
+	icon = GFX_idea_man_five_year_plan_industry
+    enable = { 
+		is_greek_nation = yes
+	}
+	production_factory_max_efficiency_factor = var:GRE_efficiency_cap_var
+	production_factory_efficiency_gain_factor = var:GRE_efficiency_growth_var
+	state_production_speed_buildings_factor = var:GRE_construction_speed_var
+	industrial_capacity_factory = var:GRE_factory_output_var
+	production_speed_arms_factory_factor = var:GRE_military_construction_speed_var
+	
+	line_change_production_efficiency_factor = 0.15
+}
+bel_integrating_congo = {
+	enable = { is_controlled_by = BEL }
+	remove_trigger = {
+		NOT = {
+			is_owned_by = BEL
+		}	
+	}
+	icon = GFX_modifiers_state_manpower
+	
+	non_core_manpower = 0.1
+	compliance_growth = 0.05
+	resistance_growth = -0.1
+}
+TUR_turkish_revolts = {
+	enable = { always = yes }
+	remove_trigger = {
+		has_country_flag = TUR_national_movement_tag
+	}
+
+	icon = GFX_modifiers_TUR_turkish_revolts
+
+	resistance_growth = 0.15
+	resistance_decay = -0.15
+	required_garrison_factor = 0.15
+	compliance_growth = -0.15
+	local_resources_factor = -0.15
+}
+TUR_turkish_revolts2 = {
+	enable = { always = yes }
+	remove_trigger = {
+		has_country_flag = TUR_national_movement_tag
+	}
+
+	icon = GFX_modifiers_TUR_turkish_revolts
+
+	resistance_growth = 0.10
+	resistance_decay = -0.10
+	required_garrison_factor = 0.10
+	compliance_growth = -0.10
+	local_resources_factor = -0.10
+}
+TUR_turkish_support = {
+	enable = { always = yes }
+	remove_trigger = {
+		NOT = { has_country_flag = TUR_national_movement_tag }
+	}
+
+	icon = GFX_modifiers_TUR_turkish_revolts
+
+	recruitable_population_factor = 0.15
+	state_production_speed_buildings_factor = 0.15
+	local_resources_factor = 0.15
+}
+AUH_austrian_integration = {
+	enable = { 
+		NOT = {
+			is_core_of = ROOT
+		}
+	}
+	remove_trigger = {
+		is_core_of = ROOT
+	}
+	icon = GFX_autonomy_tgwr_crownland_icon
+	local_factories = 0.50
+	local_resources = 0.50
+	local_manpower = 0.50
+}
+AUH_condominium_of_bosnia_and_herzegovina = {
+	enable = { 
+		always = yes
+		NOT = {
+			is_core_of = ROOT
+		}
+	}
+	remove_trigger = {
+		is_core_of = ROOT
+	}
+	icon = GFX_modifiers_AUH_condominium
+	local_factories = 0.50
+	local_resources = 0.50
+	local_manpower = 0.50
+}
+AUH_hungarian_integration = {
+	enable = { 
+		always = yes
+		NOT = {
+			is_core_of = ROOT
+		}
+	}
+	remove_trigger = {
+		is_core_of = ROOT
+	}
+	icon = GFX_modifiers_AUH_hungarian_integration
+	local_factories = 0.50
+	local_resources = 0.50
+	local_manpower = 0.50
+}
+AUH_slovaks_suppression = {
+	enable = { 
+		always = yes
+		NOT = {
+			is_core_of = ROOT
+		}
+	}
+	remove_trigger = {
+		is_core_of = ROOT
+	}
+	icon = GFX_modifiers_AUH_slovaks_suppression
+	local_factories = 0.25
+	local_resources = 0.25
+	local_manpower = -1
+}
+
+AUH_local_independentism = {
+	enable = { 
+		always = yes
+		NOT = {
+			is_core_of = ROOT
+		}
+	}
+	remove_trigger = {
+		is_core_of = ROOT
+		resistance > 25
+	}
+	icon = GFX_modifiers_AUH_local_independentism
+	resistance_growth = 0.25
+	required_garrison_factor = 0.50
+	local_manpower = -0.50
+	resistance_decay = -0.50
+}
+SER_local_loyalty_assured = {
+	enable = { 
+		always = yes
+		is_core_of = ROOT
+	}
+	remove_trigger = {
+		NOT = {
+			is_core_of = ROOT
+		}
+	}
+	icon = GFX_modifiers_state_manpower
+	local_supplies = 0.10
+	local_manpower = 0.10
+}
+GRE_serbians_in_corfu = {
+	enable = { always = yes }
+
+	icon = GFX_modifiers_TUR_southslav_minority
+
+	army_speed_factor_for_controller = -0.5
+	attrition_for_controller = 0.6
+	army_strength_factor = -0.5
+}
+
+GRE_thessalia_supported_farmers = {
+    enable = { always = yes }
+
+	icon = GFX_modifiers_SOV_civilian_labor_in_defense
+
+	conscription_factor = 0.15
+}
+
+TUR_islamist_revolt = {
+	enable = { always = yes  }
+	icon = GFX_modifiers_TUR_islamist_revolt
+
+	resistance_damage_to_garrison = 0.15
+	resistance_activity = 0.2
+	resistance_growth = 0.5
+	resistance_target = 0.8
+	compliance_growth = -0.1
+}
+
+TUR_unity_of_the_islamic_world = {
+	enable = { always = yes  }
+	icon = GFX_modifiers_TUR_unity_of_the_islamic_world
+
+	stability_factor = var:TUR_islamic_unity_stability
+}
+
+TUR_packing_for_the_siege = {
+	enable = { always = yes  }
+	remove_trigger = {
+		OR = {
+			has_global_flag = great_war_ends
+			has_global_flag = mudros_armistice
+			controller = {
+				OR = {
+					original_tag = TUR
+					is_ally_with = TUR
+				}
+			}
+		}
+	}
+	icon = GFX_modifiers_generic_military_plans
+	attacker_modifier = yes
+
+	local_supplies = 0.15
+	attrition = -0.15
+}
+
+TUR_pushing_for_rome = {
+	enable = { always = yes  }
+	icon = GFX_modifiers_generic_military_plans
+	remove_trigger = {
+		OR = {
+			has_global_flag = great_war_ends
+			has_global_flag = mudros_armistice
+			controller = {
+				OR = {
+					original_tag = TUR
+					is_ally_with = TUR
+				}
+			}
+		}
+	}
+	attacker_modifier = yes
+
+	army_speed_factor = 0.15
+	breakthrough_factor = 0.15
+}
+
+TUR_ottoman_claimed_state = {
+	enable = { always = yes  }
+	remove_trigger = {
+		OR = {
+			has_global_flag = versallies_treaty
+			has_global_flag = frankfurt_treaty
+		}
+	}
+	icon = GFX_modifiers_TUR_ottoman_claimed_state
+	
+	custom_modifier_tooltip = TUR_ottoman_claimed_state_tt
+}
+
+TUR_schelendorfs_plan_modifier = {
+	enable = { always = yes  }
+	remove_trigger = {
+		OR = {
+			has_global_flag = great_war_ends
+			has_global_flag = mudros_armistice
+			controller = {
+				OR = {
+					original_tag = TUR
+					is_ally_with = TUR
+				}
+			}
+		}
+	}
+	icon = GFX_modifiers_generic_military_plans
+	attacker_modifier = yes
+
+	army_speed_factor = 0.15
+	army_attack_factor = 0.15
+	attrition = -0.15
+	acclimatization_cold_climate_gain_factor = 0.15
+}
+
+TUR_hafiz_hakkis_plan_modifier = {
+	enable = { always = yes }
+	remove_trigger = {
+		OR = {
+			has_global_flag = great_war_ends
+			has_global_flag = mudros_armistice
+			controller = {
+				OR = {
+					original_tag = TUR
+					is_ally_with = TUR
+				}
+			}
+		}
+	}
+	icon = GFX_modifiers_generic_military_plans
+	attacker_modifier = yes
+
+	naval_invasion_penalty = -0.30
+	breakthrough_factor = 0.15
+	local_org_regain = 0.15
+	local_supplies = 0.15
+}
+
+TUR_reorganizing_in_aleppo = {
+	enable = { always = yes  }
+	icon = GFX_modifiers_generic_military_plans
+
+	local_org_regain = 0.30
+	local_supplies = 0.15
+	army_defence_factor = 0.1
+}
+
+TUR_last_stance_in_baghdad = {
+	enable = { always = yes  }
+	icon = GFX_modifiers_generic_military_plans
+
+	local_supplies = 0.15
+	army_defence_factor = 0.15
+	dig_in_speed_factor = 0.25
+	max_dig_in_factor = 0.15
+}
+
+TUR_holding_dardanelles = {
+	enable = { always = yes  }
+	icon = GFX_modifiers_generic_military_plans
+
+	army_defence_factor = 0.30
+	dig_in_speed_factor = 0.25
+	max_dig_in_factor = 0.30
+}
+
+TUR_azerbaijani_cooperation = {
+	enable = { always = yes  }
+	remove_trigger = {
+		OR = {
+			OWNER = { has_war_with = AZR }
+			is_core_of = TUR
+			TUR = {
+				has_country_flag = TUR_azerbaijani_cooperation_no_more
+			}
+		}
+	}
+	icon = GFX_modifiers_TUR_azerbaijani_cooperation
+
+	resistance_target = -0.05
+	required_garrison_factor = -0.1
+	compliance_gain = 0.1
+	starting_compliance = 0.3
+}
+
+TUR_ottoman_nationalism = {
+	enable = { always = yes }
+
+	icon = GFX_idea_TUR_ottoman_nationalism
+
+	political_power_gain = mtth:TUR_ottoman_nationalist_political_power
+	custom_modifier_tooltip = TUR_ottoman_nationalism_tt
+}
+
+TUR_strategic_artillery_deployment = {
+	enable = { always = yes  }
+	icon = GFX_modifiers_strategic_artillery_deployment
+
+	breakthrough_factor = 0.15
+	army_defence_factor = 0.15
+}
+
+TUR_massacre_on_christian = {
+	enable = { always = yes  }
+	remove_trigger = {
+		controller = {
+			NOT = {
+				tag = TUR
+				tag = KUR
+			}
+		}
+	}
+	icon = GFX_modifiers_TUR_massacre_on_christian
+
+	weekly_manpower = -50
+	attrition = 0.05
+}
+
+TUR_poverty_in_state = {
+	enable = { always = yes  }
+	icon = GFX_modifiers_SOV_civilian_labor_in_defense
+
+	state_production_speed_buildings_factor = -0.15
+	industry_free_repair_factor = -0.15
+	mobilization_speed = -0.8
+}
+
+TUR_overpopulated_state = {
+	enable = { always = yes  }
+	icon = GFX_modifiers_SOV_civilian_labor_in_defense
+
+	attrition_for_controller = 0.05
+	compliance_growth = -0.3
+	local_supplies = -0.05
+}
+
+TUR_egyptian_opposition = {
+	enable = { always = yes  }
+	icon = GFX_modifiers_TUR_egyptian_opposition
+
+	resistance_target = 0.15
+	resistance_growth = 0.50
+}
+
+TUR_millet_system = {
+	enable = { always = yes }
+
+	icon = GFX_idea_TUR_millet_system
+
+	consumer_goods_factor = mtth:TUR_millet_system_consumer_goods
+	custom_modifier_tooltip = TUR_millet_system_tt
+}
+
+TUR_centralization_of_the_empire = {
+	enable = { always = yes }
+
+	icon = GFX_idea_TUR_centralization_of_the_empire
+
+	political_power_gain = mtth:TUR_centralization_of_the_empire_political_power
+	recruitable_population_factor = mtth:TUR_centralization_of_the_empire_political_power
+	command_power_gain_mult = mtth:TUR_centralization_of_the_empire_political_power
+	custom_modifier_tooltip = TUR_centralization_of_the_empire_tt
+}
+
+TUR_collapse_of_trade_infrastructure = {
+	enable = { always = yes  }
+	icon = GFX_modifiers_SOV_civilian_labor_in_defense
+
+	state_production_speed_buildings_factor = -0.30
+	industry_repair_factor = -0.15
+	local_resources_factor = -0.15
+}
+
+TUR_mass_looting = {
+	enable = { always = yes  }
+	icon = GFX_modifiers_SOV_civilian_labor_in_defense
+
+	mobilization_speed = -0.30
+	state_production_speed_buildings_factor = -0.05
+}
+
+TUR_violence_in_state = {
+	enable = { always = yes  }
+	icon = GFX_modifiers_TUR_massacre_on_christian
+
+	weekly_manpower = -5
+	attrition = 0.03
+}
+
+TUR_dead_economic_activity = {
+	enable = { always = yes  }
+	icon = GFX_modifiers_SOV_civilian_labor_in_defense
+
+	state_production_speed_buildings_factor = -0.03
+	industry_free_repair_factor = -0.05
+	local_resources_factor = -0.05
+}
+
+TUR_breakdown_of_economic_infrastructure = {
+	enable = { always = yes  }
+	icon = GFX_modifiers_SOV_civilian_labor_in_defense
+
+	state_production_speed_buildings_factor = -0.5
+	industry_repair_factor = -0.3
+}
+
+TUR_purification_of_the_empire = {
+	enable = { always = yes }
+	remove_trigger = {
+		has_country_flag = great_war_loser
+	}
+
+	icon = GFX_idea_TUR_purification_of_the_empire
+
+	resistance_activity = mtth:TUR_purification_of_the_empire_political_power2
+	resistance_damage_to_garrison = mtth:TUR_purification_of_the_empire_political_power2
+	production_speed_arms_factory_factor = mtth:TUR_purification_of_the_empire_political_power
+	recruitable_population_factor = mtth:TUR_purification_of_the_empire_political_power
+	command_power_gain_mult = mtth:TUR_purification_of_the_empire_political_power
+	custom_modifier_tooltip = TUR_purification_of_the_empire_tt
+}
+
+TUR_integrated_economy = {
+	enable = { always = yes }
+
+	icon = GFX_idea_TUR_integrated_economy
+
+	production_factory_efficiency_gain_factor = mtth:TUR_integrated_economy_mmth
+	production_factory_max_efficiency_factor = mtth:TUR_integrated_economy_mmth
+	line_change_production_efficiency_factor = mtth:TUR_integrated_economy_mmth
+	custom_modifier_tooltip = TUR_integrated_economy_tt
+}
+
+TUR_massacre_of_minorities = {
+	enable = { always = yes  }
+	icon = GFX_modifiers_TUR_massacre_on_christian
+
+	weekly_manpower = -150
+}
+
+TUR_breakdown_of_economic_infrastructure_2 = {
+	enable = { always = yes  }
+	icon = GFX_modifiers_SOV_civilian_labor_in_defense
+
+	state_production_speed_buildings_factor = -0.05
+	industry_repair_factor = -0.05
+}
+
+TUR_local_cooperation_with_the_enemy = {
+	enable = { is_controlled_by = TUR }
+	remove_trigger = {
+		NOT = {
+			is_controlled_by = TUR
+		}
+	}
+	icon = GFX_modifiers_TUR_local_cooperation_with_the_enemy
+
+	army_defence_factor = -0.05
+	enemy_operative_detection_chance_factor_over_occupied_tag = -0.15
+}
+
+TUR_organized_worker_rallies = {
+	enable = { always = yes  }
+	icon = GFX_modifiers_SOV_factory_worker_militias
+
+	local_factory_sabotage = 0.15
+	state_production_speed_buildings_factor = -0.1
+}
+
+TUR_ceeasefire_with_imro = {
+	enable = { always = yes  }
+	icon = GFX_modifiers_bul_macedonian_revolutionaries
+
+	state_resources_factor = -0.1
+	local_factories = -0.1
+}
+
+TUR_eased_working_times = {
+	enable = { always = yes  }
+	icon = GFX_modifiers_sabotaged_resource
+
+	local_resources_factor = -0.3
+	state_production_speed_buildings_factor = -0.3
+}
+
+TUR_migration_into_cities = {
+	enable = { always = yes  }
+	icon = GFX_modifiers_into_factories
+
+	state_resources_factor = -0.5
+	local_supply_impact_factor = 0.15
+}
+
+TUR_undergoing_land_reforms = {
+	enable = { always = yes  }
+	icon = GFX_modifiers_SOV_civilian_labor_in_defense
+
+	local_building_slots_factor = -0.25
+	state_production_speed_buildings_factor = -0.15
+}
+
+TUR_better_worker_conditions = {
+	enable = { always = yes  }
+	icon = GFX_modifiers_SOV_civilian_labor_in_defense
+
+	state_production_speed_buildings_factor = -0.50
+}
+
+TUR_creating_new_jobs = {
+	enable = { always = yes  }
+	icon = GFX_modifiers_into_factories
+
+	state_production_speed_buildings_factor = -0.15
+	local_manpower = -0.25
+}
+
+TUR_integrating_economy = {
+	enable = { always = yes  }
+	icon = GFX_modifiers_SOV_civilian_labor_in_defense
+
+	local_building_slots_factor = -0.15
+	state_production_speed_buildings_factor = -0.25
+}
+SER_under_military_rule = {
+	enable = { always = yes  }
+	icon = GFX_modifiers_state_manpower
+
+	local_building_slots_factor = -0.2
+	state_production_speed_buildings_factor = -0.2
+	local_resources_factor = -0.2
+	local_manpower = -0.2
+}
+SER_serbian_exile = {
+	enable = {
+		controller = {
+			NOT = { has_war_with = SER }
+		}
+	}
+	remove_trigger = {
+		owner = {
+			has_war_with = SER
+		}
+	}
+	icon = GFX_modifiers_state_manpower
+	local_building_slots_factor = 0.2
+	compliance_gain = 0.2
+	resistance_target = -0.4
+	local_non_core_manpower = 0.7
+	local_manpower = 0.2
+}
+ALB_greek_minority = {
+    enable = {
+		is_core_of = controller
+		controller = {
+			NOT = {
+				original_tag = GRE
+				original_tag = EPR
+			}
+		}
+	}
+	icon = GFX_modifiers_TUR_greek_minority
+
+	recruitable_population_factor = -0.5
+	local_resources_factor = -0.5
+	local_factories = -0.5
+}
+
+unequal_treaties_dm = {
+	enable = { always = yes }
+
+	min_export = var:unequal_treaties_resources_to_market
+	consumer_goods_factor = var:unequal_treaties_consumer_goods
+	research_speed_factor = var:unequal_treaties_research_speed
+	production_speed_industrial_complex_factor = var:unequal_treaties_civilian_factory
+	production_speed_arms_factory_factor = var:unequal_treaties_military_factory
+	production_speed_dockyard_factor = var:unequal_treaties_dockyard
+	production_speed_infrastructure_factor = var:unequal_treaties_infrastructure
+}
+# qing_court_opp_dm = {
+# 	enable = { has_idea = QIN_idea_court_opposition }
+# 	political_power_factor = court_opp_pp_factor
+# }
+
+GRE_integration_efforts = {
+	enable = { controller = { original_tag = GRE } }
+	remove_trigger = { ROOT = { is_core_of = ROOT.controller } }
+	icon = GFX_modifiers_SOV_civilian_labor_in_defense
+	compliance_gain = 0.15
+	non_core_manpower = 0.3
+	custom_modifier_tooltip = will_be_removed_once_is_a_core
+}
+
+GRE_support_to_entente = {
+	enable = {
+		is_fully_controlled_by = CONTROLLER	#dont give the bonus to any enemy
+		CONTROLLER = {
+			NOT = {
+				any_enemy_country = {
+					original_tag = GRE
+				}
+			}
+			OR = {
+				tag = FRA
+				is_in_faction_with = FRA
+				original_tag = GRE
+				has_war_together_with = GRE
+				has_war_together_with = FRA
+			}
+		}
+		NOT = {
+			has_global_flag = great_war_ends
+		}
+	}
+	remove_trigger = {
+		CONTROLLER = {
+			OR = {
+				any_enemy_country = {
+					original_tag = GRE
+				}
+				has_global_flag = great_war_ends
+			}
+		}
+	}
+	icon = GFX_modifiers_state_manpower
+	resistance_target = -0.5
+	compliance_growth = 0.5
+	dig_in_speed_factor = 0.25
+	max_dig_in_factor = 0.15
+
+	local_supplies_for_controller = 0.5
+	attrition_for_controller = -0.5
+}
+
+GRE_reinforced_local_administration = {
+	enable = { controller = { original_tag = GRE } }
+	remove_trigger = { ROOT = { is_core_of = ROOT.controller } }
+	icon = GFX_modifier_reinforced_administration
+	state_resources_factor = 0.25
+	local_factories = 0.25
+	resistance_decay = 0.15
+	custom_modifier_tooltip = will_be_removed_once_is_a_core
+}
+
+GRE_pontic_nationalism = {
+	remove_trigger = {
+		ROOT = {
+			OR = {
+				NOT = { is_core_of = PON }
+				is_owned_by = PON
+			}
+		}
+	}
+	icon = GFX_modifiers_TUR_greek_minority
+	recruitable_population_factor = -0.10
+	local_supplies_for_controller = -0.1
+	attrition_for_controller = 0.1
+}
+sahel_local_famine = {
+	enable = { always = yes }
+	icon = GFX_modifiers_RAJ_famine_state
+	recruitable_population_factor = -0.25
+	local_supplies_for_controller = -0.25
+	attrition_for_controller = 0.25
+	resistance_target = 0.5
+	compliance_growth = -0.5
+}
+generic_local_famine = {
+	enable = { always = yes }
+	icon = GFX_modifiers_RAJ_famine_state
+	recruitable_population_factor = -0.25
+	local_supplies_for_controller = -0.25
+	attrition_for_controller = 0.25
+	resistance_target = 0.5
+	compliance_growth = -0.5
+}
+
+ALB_ICC_support = {
+	enable = {
+		controller = {
+			original_tag = ALB
+		}
+	}
+	remove_trigger = {
+		OWNER = {
+			NOT = {
+				original_tag = ALB
+			}			
+		}
+	}
+	icon = GFX_decision_eng_trade_unions_demand
+	state_production_speed_buildings_factor = 0.25
+}
+
+ALB_rural_chaos = {
+	enable = {
+		controller = {
+			original_tag = ALB
+		}
+	}
+	remove_trigger = {
+		OWNER = {
+			NOT = {
+				original_tag = ALB
+			}			
+		}
+	}
+	icon = GFX_modifiers_tur_traditionalist_insurgency
+	local_intel_to_enemies = 0.40
+	local_factory_sabotage = 0.40
+	local_manpower = -0.50
+	local_supplies_for_controller = -0.90
+}
+
+FRA_volta_bani_war = {
+	enable = {
+		CONTROLLER = {
+			NOT = {
+				original_tag = VOL
+			}
+		}
+	}
+	remove_trigger = {
+		OWNER = {
+			original_tag = VOL
+		}
+	}
+	icon = GFX_modifiers_tur_traditionalist_insurgency
+	recruitable_population_factor = -0.75
+	local_supplies_for_controller = -0.75
+	attrition_for_controller = 0.75
+	resistance_target = 0.75
+	compliance_growth = -0.75
+	required_garrison_factor = 2
+}
+
+FRA_volta_insurrection = {
+	enable = {
+		CONTROLLER = {
+			NOT = {
+				original_tag = VOL
+			}
+		}
+	}
+	remove_trigger = {
+		OWNER = {
+			original_tag = VOL
+		}
+	}
+	icon = GFX_modifiers_tur_traditionalist_insurgency
+	recruitable_population_factor = -1
+	local_supplies_for_controller = -1
+	attrition_for_controller = 1
+	resistance_target = 1
+	compliance_growth = -1
+}
+
+FRA_french_integration = {
+	enable = { 
+		CONTROLLER = {
+			OR = {
+				tag = FRA
+				is_subject_of = FRA
+				is_in_faction_with = FRA
+			}
+		}
+	}
+	remove_trigger = {
+		OR = {
+			OWNER = {
+				NOT = {
+					original_tag = FRA
+					is_subject_of = FRA
+				}
+			}
+			is_core_of = ROOT
+		}
+	}
+	icon = GFX_modifiers_generic_construction
+	compliance_growth = 0.25
+	local_resources = 0.25
+	local_manpower = 0.25
+}
+
+FRA_french_algeria = {
+	enable = { 
+		CONTROLLER = {
+			original_tag = FRA
+		}
+	}
+	remove_trigger = {
+		OR = {
+			OWNER = {
+				NOT = {
+					original_tag = FRA
+				}
+			}
+			is_core_of = ROOT
+		}
+	}
+	icon = GFX_decision_eng_trade_unions_support
+	local_factories = 0.75
+	local_resources = 0.65
+	local_manpower = 0.10
+	required_garrison_factor = -1
+}
+
+FRA_french_algeria2 = {
+	enable = { 
+		CONTROLLER = {
+			original_tag = FRA
+		}
+	}
+	remove_trigger = {
+		OR = {
+			OWNER = {
+				NOT = {
+					original_tag = FRA
+				}
+			}
+			is_core_of = ROOT
+		}
+	}
+	icon = GFX_decision_eng_trade_unions_support
+	local_factories = 0.75
+	local_resources = 0.65
+	local_manpower = 0.25
+	required_garrison_factor = -1
+}
+
+generic_tribal_slavery = {
+	enable = { 
+		always = yes
+	}
+	remove_trigger = {
+		always = no
+	}
+	icon = GFX_modifiers_generic_slavery
+	local_factories = 0.10
+	local_resources = 0.10
+	local_manpower = -0.25
+	compliance_growth = -0.25
+	resistance_growth = 0.25
+}
+
+generic_lack_of_civil_administrators = {
+	enable = { 
+		always = yes
+	}
+	remove_trigger = {
+		always = no
+	}
+	icon = GFX_modifiers_ITA_mafia_on_the_rise
+	local_factories = -0.40
+	local_resources = -0.40
+	compliance_growth = -0.5
+}
+
+FRA_french_integration_weak = {
+	enable = { 
+		CONTROLLER = {
+			OR = {
+				tag = FRA
+				is_subject_of = FRA
+				is_in_faction_with = FRA
+			}
+		}
+	}
+	remove_trigger = {
+		OR = {
+			OWNER = {
+				NOT = {
+					original_tag = FRA
+					is_subject_of = FRA
+				}
+			}
+			is_core_of = ROOT
+		}
+	}
+	icon = GFX_modifiers_generic_construction
+	local_factories = 0.10
+	local_resources = 0.10
+	local_manpower = 0.10
+	compliance_gain = 0.10
+}
+
+FRA_french_exploitation = {
+	enable = { 
+		CONTROLLER = {
+			OR = {
+				tag = FRA
+				is_subject_of = FRA
+				is_in_faction_with = FRA
+			}
+		}
+	}
+	remove_trigger = {
+		OR = {
+			OWNER = {
+				NOT = {
+					original_tag = FRA
+					is_subject_of = FRA
+				}
+			}
+			is_core_of = ROOT
+		}
+	}
+	icon = GFX_modifiers_generic_construction
+	local_factories = 0.20
+	local_resources = 0.25
+	compliance_gain = -0.25
+}
+
+FRA_french_local_investments = {
+	enable = { 
+		CONTROLLER = {
+			OR = {
+				tag = FRA
+				is_subject_of = FRA
+				is_in_faction_with = FRA
+			}
+		}
+	}
+	remove_trigger = {
+		OWNER = {
+			NOT = {
+				tag = FRA
+				is_subject_of = FRA
+				is_in_faction_with = FRA
+			}
+		}
+	}
+	icon = GFX_modifiers_generic_construction
+	state_production_speed_buildings_factor = 0.15
+}
+
+FRA_french_local_investments_exploitation = {
+	enable = { 
+		CONTROLLER = {
+			OR = {
+				tag = FRA
+				is_subject_of = FRA
+				is_in_faction_with = FRA
+			}
+		}
+	}
+	remove_trigger = {
+		OWNER = {
+			NOT = {
+				tag = FRA
+				is_subject_of = FRA
+				is_in_faction_with = FRA
+			}
+		}
+	}
+	icon = GFX_modifiers_generic_construction
+	state_production_speed_buildings_factor = 0.05
+	local_resources_factor = 0.15
+}
+
+FRA_reinforced_military_presence = {
+	enable = { 
+		CONTROLLER = {
+			OR = {
+				tag = FRA
+				is_subject_of = FRA
+				is_in_faction_with = FRA
+			}
+		}
+	}
+	remove_trigger = {
+		OWNER = {
+			NOT = {
+				tag = FRA
+				is_subject_of = FRA
+				is_in_faction_with = FRA
+			}
+		}
+	}
+	icon = GFX_modifiers_generic_military_plans
+	resistance_damage_to_garrison = -0.33
+	resistance_decay = 0.33
+}
+
+FRA_french_local_investments_non_UEII = {
+	enable = { 
+		CONTROLLER = {
+			OR = {
+				tag = FRA
+				is_subject_of = FRA
+				is_in_faction_with = FRA
+			}
+		}
+	}
+	remove_trigger = {
+		OWNER = {
+			NOT = {
+				tag = FRA
+				is_subject_of = FRA
+				is_in_faction_with = FRA
+			}
+		}
+	}
+	icon = GFX_modifiers_generic_construction
+	state_production_speed_buildings_factor = 0.15
+}
+
+TUN_italian_minority = {
+	enable = { 
+		CONTROLLER = {
+			NOT = {
+				original_tag = ITA
+			}	
+		}
+	}
+	remove_trigger = {
+		OWNER = {
+			original_tag = ITA
+		}
+	}
+	icon = GFX_modifiers_generic_immigration_promoted
+	state_production_speed_buildings_factor = 0.05
+	recruitable_population_factor = -0.1
+	local_intel_to_enemies = 0.25
+	local_supplies_for_controller = 0.05
+	local_resources_factor = 0.1
+}
+
+generic_local_investments = {
+	enable = { 
+		always = yes
+	}
+	icon = GFX_modifiers_generic_construction
+	state_production_speed_buildings_factor = 0.15
+}
+
+aland_dmz_modifier = {
+	enable = { always = yes }
+
+	icon = GFX_modifiers_demilitarize_zone
+	land_bunker_effectiveness_factor = -1
+	coastal_bunker_effectiveness_factor = -1
+	state_production_speed_bunker_factor = -1
+	state_production_speed_coastal_bunker_factor = -1
+}
+
+FRA_anti_french_resistance = {
+	enable = {
+		CONTROLLER = {
+			OR = {
+				tag = FRA
+				is_subject_of = FRA
+				is_in_faction_with = FRA
+			}
+		}
+	}
+	remove_trigger = {
+		OR = {
+			is_core_of = OWNER
+			owner = {
+				NOT = {
+					tag = FRA
+					is_subject_of = FRA
+					is_in_faction_with = FRA
+				}
+			}
+		}	
+	}
+	icon = GFX_modifiers_generic_resistance
+	recruitable_population_factor = -0.25
+	local_supplies_for_controller = -0.25
+	attrition_for_controller = 0.25
+	resistance_target = 0.50
+	compliance_growth = -0.50
+	required_garrison_factor = 1
+}
+
+FRA_anti_french_resistance_mid = {
+	enable = {
+		CONTROLLER = {
+			OR = {
+				tag = FRA
+				is_subject_of = FRA
+				is_in_faction_with = FRA
+			}
+		}
+	}
+	remove_trigger = {
+		OR = {
+			is_core_of = OWNER
+			owner = {
+				NOT = {
+					tag = FRA
+					is_subject_of = FRA
+					is_in_faction_with = FRA
+				}
+			}
+		}	
+	}
+	icon = GFX_modifiers_generic_resistance
+	recruitable_population_factor = -0.25
+	local_supplies_for_controller = -0.25
+	attrition_for_controller = 0.25
+	resistance_target = 0.25
+	compliance_growth = -0.25
+	required_garrison_factor = 0.5
+}
+
+FRA_colonial_conscription = {
+	enable = {
+		CONTROLLER = {
+			OR = {
+				tag = FRA
+				is_subject_of = FRA
+				is_in_faction_with = FRA
+			}
+		}
+	}
+	remove_trigger = {
+		OR = {
+			is_core_of = OWNER
+			owner = {
+				NOT = {
+					tag = FRA
+					is_subject_of = FRA
+					is_in_faction_with = FRA
+				}
+			}
+		}	
+	}
+	icon = GFX_modifiers_generic_construction
+	local_factories = 0.35
+	recruitable_population_factor = 0.25
+	local_supplies_for_controller = 0.10
+	resistance_target = -0.20
+	compliance_growth = -0.20
+}
+
+FRA_grand_couronnee_defensive_line = {
+	enable = {
+		CONTROLLER = {
+			OR = {
+				tag = FRA
+				is_subject_of = FRA
+				is_in_faction_with = FRA
+			}
+		}
+	}
+	remove_trigger = {
+		owner = {
+			NOT = {
+				tag = FRA
+				is_subject_of = FRA
+				is_in_faction_with = FRA
+			}
+		}
+	}
+	icon = GFX_modifiers_generic_bunker_build_speed
+	land_bunker_effectiveness_factor = 0.30
+	coastal_bunker_effectiveness_factor = 0.30
+}
+
+FRA_michel_defensive_plan = {
+	enable = {
+		CONTROLLER = {
+			OR = {
+				tag = FRA
+				is_subject_of = FRA
+				is_in_faction_with = FRA
+			}
+		}
+	}
+	remove_trigger = {
+		OR = {
+			has_global_flag = great_war_ends
+			owner = {
+				NOT = {
+					tag = FRA
+					is_subject_of = FRA
+					is_in_faction_with = FRA
+				}
+			}
+		}
+	}
+	icon = GFX_modifiers_generic_defense
+	land_bunker_effectiveness_factor = 0.25
+	coastal_bunker_effectiveness_factor = 0.25
+	state_production_speed_bunker_factor = 0.25
+	state_production_speed_coastal_bunker_factor = 0.25
+}
+
+FRA_voie_sacree_modifier = {
+	enable = {
+		CONTROLLER = {
+			OR = {
+				tag = FRA
+				is_subject_of = FRA
+				is_in_faction_with = FRA
+			}
+		}
+	}
+	remove_trigger = {
+		OR = {
+			has_global_flag = great_war_ends
+			owner = {
+				NOT = {
+					tag = FRA
+					is_subject_of = FRA
+					is_in_faction_with = FRA
+				}
+			}
+		}
+	}
+	icon = GFX_modifiers_generic_supply
+	local_supplies_for_controller = 0.20
+}
+
+FRA_joffre_offensive_plan = {
+	enable = {
+		CONTROLLER = {
+			OR = {
+				tag = FRA
+				is_subject_of = FRA
+				is_in_faction_with = FRA
+			}
+		}
+	}
+	remove_trigger = {
+		OR = {
+			has_global_flag = great_war_ends
+			owner = {
+				NOT = {
+					tag = FRA
+					is_subject_of = FRA
+					is_in_faction_with = FRA
+				}
+			}
+		}
+		
+		
+	}
+	icon = GFX_modifiers_generic_military_plans
+	army_attack_factor = 0.10
+	local_supplies_for_controller = 0.10
+	army_speed_factor_for_controller = 0.10
+}
+
+MOR_integration_efforts = {
+	enable = {
+		controller = {
+			original_tag = MOR
+		}
+	}
+	remove_trigger = {
+		OR = {
+			OWNER = {
+				NOT = {
+					original_tag = MOR
+				}			
+			}
+			is_core_of = owner
+		}	
+	}
+	icon = GFX_decision_generic_disband_irregulars
+	compliance_growth = 0.3
+	non_core_manpower = 0.3
+}
+
+IND_integration_efforts = {
+	enable = {
+		controller = {
+			original_tag = IND
+		}
+	}
+	remove_trigger = {
+		OR = {
+			OWNER = {
+				NOT = {
+					original_tag = IND
+				}			
+			}
+			is_core_of = owner
+		}	
+	}
+	icon = GFX_modifiers_generic_construction
+	compliance_growth = 0.3
+	non_core_manpower = 0.3
+}
+
+tuaregs_revolt = {
+	enable = {
+		CONTROLLER = {
+			NOT = {
+				original_tag = NGR
+			}
+		}
+	}
+	remove_trigger = {
+		owner = {
+			original_tag = NGR
+		}
+	}
+	icon = GFX_modifiers_tur_traditionalist_insurgency
+	recruitable_population_factor = -0.75
+	local_supplies_for_controller = -0.75
+	attrition_for_controller = 0.75
+	resistance_target = 0.75
+	compliance_growth = -0.75
+	required_garrison_factor = 2
+}
+ROM_national_opposition = { 
+	enable = { always = yes }
+	remove_trigger = {
+		NOT = {
+			OR = {
+				has_country_leader = {
+					character = ROM_petre_p_carp
+				}
+				has_country_leader = {
+					character = ROM_lupu_kostaki
+				}
+			}
+		}
+	}
+	icon = GFX_idea_EST_democratic_opposition
+	political_power_gain = ROM_national_opposition_political_power
+	stability_factor = ROM_national_opposition_stability
+}
+ROM_romanian_economy_idea = { 
+	enable = { always = yes }
+	icon = GFX_idea_SOV_third_five_year_plan_military
+	industrial_capacity_factory = ROM_factory_output
+	production_speed_arms_factory_factor = ROM_mil_build_speed
+	production_speed_buildings_factor = ROM_build_speed
+	consumer_goods_factor = ROM_consumer_goods
+	global_building_slots_factor = ROM_building_slots
+	stability_factor = ROM_eco_stability
+	political_power_cost = ROM_eco_pp_cost
+	production_factory_efficiency_gain_factor = ROM_eco_production_e
+	production_speed_bunker_factor = ROM_production_speed_bunker_army
+	research_speed_factor = ROM_research_speed
+	industrial_capacity_dockyard = ROM_eco_docs
+	min_export = ROM_min_export_var
+}
+ROM_romanian_army_idea = {
+	enable = { always = yes }
+	icon = GFX_idea_tfv_can_conscription_crisis
+	army_org_factor = ROM_army_org
+	army_org_regain = ROM_army_regain
+	army_speed_factor = ROM_army_speed
+	army_defence_factor = ROM_army_defense
+	equipment_capture_factor = ROM_stealing 
+	experience_gain_army = ROM_army_xp
+	supply_consumption_factor = ROM_army_supply
+}
+ROM_occupation_costs = {
+	enable = { always = yes }
+	icon = GFX_idea_generic_economic_crisis
+	consumer_goods_factor = ROM_occupation_consumer
+	political_power_gain = ROM_occupation_pp_cost
+}
+ROM_hungarian_opposition = {
+	enable = { 
+		is_controlled_by = ROM
+	}
+	remove_trigger = {
+		OR = {
+			OWNER = {
+				NOT = {
+					original_tag = ROM
+				}			
+			}
+			is_core_of = owner
+		}	
+	}
+	icon = GFX_modifiers_SOV_invaders_must_die
+	resistance_growth = 0.25
+	resistance_target = 0.35
+	resistance_damage_to_garrison = 0.4
+}
+ROM_hungarian_opposition_weakened = {
+	enable = { 
+		is_controlled_by = ROM
+	}
+	remove_trigger = {
+		OR = {
+			OWNER = {
+				NOT = {
+					original_tag = ROM
+				}			
+			}
+			is_core_of = owner
+		}	
+	}
+	icon = GFX_modifiers_SOV_invaders_must_die
+	resistance_growth = 0.2
+	resistance_target = 0.2
+	resistance_damage_to_garrison = 0.3
+}
+ROM_suppressed_hungarians = {
+	enable = { 
+		is_controlled_by = ROM
+	}
+	remove_trigger = {
+		NOT = {
+			is_owned_by = ROM
+		}
+	}
+	icon = GFX_decision_oppression
+	local_manpower = -0.25
+	resistance_growth = -0.15
+}
+ROM_szekelyfold_autonomy_lower = {
+	enable = { 
+		is_controlled_by = ROM
+	}
+	remove_trigger = {
+		NOT = {
+			is_owned_by = ROM
+		}
+	}
+	icon = GFX_decision_eng_trade_unions_support
+	local_manpower = -0.3
+	compliance_growth = 0.1
+}
+ROM_szekelyfold_autonomy = {
+	enable = { 
+		is_controlled_by = ROM
+	}
+	remove_trigger = {
+		NOT = {
+			is_owned_by = ROM
+		}
+	}
+	icon = GFX_decision_eng_trade_unions_support
+	local_manpower = -0.4
+	compliance_growth = 0.15
+}
+ROM_szekelyfold_autonomy_higher = {
+	enable = { 
+		is_controlled_by = ROM
+	}
+	remove_trigger = {
+		NOT = {
+			is_owned_by = ROM
+		}
+	}
+	icon = GFX_decision_eng_trade_unions_support
+	local_manpower = -0.5
+	compliance_growth = 0.2
+}
+ROM_armistice_of_focsani_dobrogea_de_nord = {
+	enable = { 
+		is_controlled_by = ROM
+	}
+	remove_trigger = {
+		NOT = {
+			is_owned_by = ROM
+		}
+	}
+	icon = GFX_modifiers_conscription_exemptions_granted
+	local_manpower = -1
+	local_resources = -1
+	local_factories = -1
+}
+ROM_khotyn_uprising = {
+	enable = { 
+		is_controlled_by = ROM
+	}
+	remove_trigger = {
+		OR = {
+			OWNER = {
+				NOT = {
+					original_tag = ROM
+				}			
+			}
+			is_core_of = owner
+		}	
+	}
+	icon = GFX_modifiers_generic_resistance
+	resistance_growth = 0.3
+	resistance_target = 0.3
+	resistance_damage_to_garrison = 0.75
+}	
+SAU_Urban_influence_dynamic_modifier = { 
+	enable = { always = yes }
+	icon = GFX_idea_ETH_taxed_nobility
+	consumer_goods_factor = SAU_Urban_invetments
+	min_export = SAU_Urban_resources_to_market
+	political_power_cost = SAU_Urban_political_power
+}
+SAU_Tribal_influence_dynamic_modifier = { 
+	enable = { always = yes }
+	icon = GFX_idea_ETH_chitet_law
+	local_supplies = SAU_logistics
+	army_morale_factor = SAU_army
+	state_production_speed_buildings_factor = SAU_modernization
+}
+RUS_armistice_effect = {
+	enable = {
+		OWNER = {
+			OR = {
+				has_idea = RUS_idea_armistice_cp
+				has_idea = RUS_idea_armistice_rus
+			}
+		}
+	}
+	remove_trigger = {
+		OWNER = {
+			NOT = {
+				has_idea = RUS_idea_armistice_cp
+				has_idea = RUS_idea_armistice_rus
+			}
+			
+		}
+	}
+	icon = GFX_modifiers_SOV_civilian_labor_in_defense
+	army_speed_factor_for_controller = -10000
+	enemy_army_speed_factor = -10000
+	local_org_regain = -10000
+	disable_strategic_redeployment = 1
+}
+HUN_demarcation_line = {
+	enable = {
+		OR = {
+			is_controlled_by = ROM
+			is_controlled_by = HUN
+		}
+	}
+	remove_trigger = {
+		OWNER = {
+			NOT = {
+				original_tag = ROM
+				original_tag = HUN
+			}
+		}
+	}
+	icon = GFX_modifiers_SOV_civilian_labor_in_defense
+	enemy_army_speed_factor = -10000
+	local_org_regain = -10000
+	disable_strategic_redeployment = 1
+}
+#GER_famine
+AUH_famine_effect = {
+	enable = { 
+		always = yes
+	}
+	remove_trigger = {
+		has_war = no
+	}
+	icon = GFX_idea_ENG_the_war_to_end_all_wars
+	weekly_manpower = var:famine_manpower
+
+	army_org_factor = var:famine_army_org
+	supply_consumption_factor =  var:famine_consumption_factor
+	army_attack_factor = var:famine_army_org
+	monthly_population = var:famine_manpower_growth
+
+
+	stability_weekly = var:famine_stability
+	war_support_weekly = var:famine_war_support
+
+	#stability_weekly_factor = -0.0030
+	#war_support_weekly = -0.0250
+}
+
+SRA_cossack_land_rights = {
+	enable = {
+		CONTROLLER = {
+			tag = SRA
+		}
+	}
+	remove_trigger = {
+		OWNER = {
+			NOT = {
+				AND = {
+					tag = SRA
+					has_war_with = SRA
+				}				
+			}	
+		}
+	}
+	icon = GFX_privilege_grant_autonomy
+	recruitable_population_factor = -0.10
+	local_factories = -0.10
+	local_resources = -0.10
+	local_supplies = -0.15
+}
+
+GER_agricultural_incentives = {
+	enable = { 
+		CONTROLLER = {
+			OR = {
+				original_tag = GER
+				is_subject_of = GER
+				is_in_faction_with = GER
+			}
+		}
+	}
+	remove_trigger = {
+		OR = {
+			has_global_flag = interbellum
+			OWNER = {
+				NOT = {
+					original_tag = GER
+					is_subject_of = GER
+					is_in_faction_with = GER
+				}
+			}
+		}	
+	}
+	icon = GFX_modifiers_generic_construction
+	state_production_speed_infrastructure_factor = 0.15
+}
+
+GER_new_major_railway_connection = {
+	enable = { 
+		CONTROLLER = {
+			OR = {
+				original_tag = GER
+				is_subject_of = GER
+				is_in_faction_with = GER
+			}
+		}
+	}
+	remove_trigger = {
+		OR = {
+			has_global_flag = interbellum
+			OWNER = {
+				NOT = {
+					original_tag = GER
+					is_subject_of = GER
+					is_in_faction_with = GER
+				}
+			}
+		}	
+	}
+	icon = GFX_modifiers_generic_construction
+	production_speed_buildings_factor = 0.15
+}
+
+GER_productional_efficiency = {
+	enable = { 
+		CONTROLLER = {
+			OR = {
+				original_tag = GER
+				is_subject_of = GER
+				is_in_faction_with = GER
+			}
+		}
+	}
+	remove_trigger = {
+		OR = {
+			has_global_flag = interbellum
+			OWNER = {
+				NOT = {
+					original_tag = GER
+					is_subject_of = GER
+					is_in_faction_with = GER
+				}
+			}
+		}	
+	}
+	icon = GFX_modifiers_generic_construction
+	compliance_gain = -0.01
+	compliance_growth = -0.05
+	resistance_decay = -0.15
+	resistance_growth = 0.15
+	resistance_target = 0.1
+	local_factory_sabotage = 0.25
+	enemy_army_speed_factor = 0.15
+	army_speed_factor_for_controller = -0.05
+	local_building_slots_factor = 0.5
+	state_resources_factor = 0.25
+	production_speed_buildings_factor = 0.25
+	local_non_core_manpower = -0.05
+}
+
+GER_german_migration = {
+	enable = { 
+		CONTROLLER = {
+			OR = {
+				original_tag = GER
+				is_subject_of = GER
+				is_in_faction_with = GER
+			}
+		}
+	}
+	remove_trigger = {
+		OR = {
+			has_global_flag = interbellum
+			is_core_of = OWNER
+			OWNER = {
+				NOT = {
+					original_tag = GER
+					is_subject_of = GER
+					is_in_faction_with = GER
+				}
+			}
+		}	
+	}
+	icon = GFX_modifiers_generic_construction
+	compliance_gain = 0.02
+	compliance_growth = 0.05
+	resistance_decay = 0.15
+	resistance_growth = -0.15
+	resistance_target = -0.1
+	local_factory_sabotage = -0.2
+	enemy_army_speed_factor = -0.15
+	local_supplies_for_controller = 0.1
+	local_building_slots_factor = -0.1
+	state_resources_factor = -0.15
+	local_non_core_manpower = 0.05
+}
+
+GER_germanisation = {
+	enable = { 
+		CONTROLLER = {
+			OR = {
+				original_tag = GER
+				is_subject_of = GER
+				is_in_faction_with = GER
+			}
+		}
+	}
+	remove_trigger = {
+		OR = {
+			has_global_flag = interbellum
+			# is_core_of = OWNER
+			OWNER = {
+				NOT = {
+					original_tag = GER
+					is_subject_of = GER
+					is_in_faction_with = GER
+				}
+			}
+		}	
+	}
+	icon = GFX_modifier_GER_eagle
+	# compliance_growth = 0.1
+	# resistance_growth = -0.1
+	local_building_slots_factor = -0.5
+	local_manpower = -0.6
+	monthly_population = 0.3
+	state_resources_factor = -0.6
+}
+GER_extended_germanisation = {
+	enable = { 
+		CONTROLLER = {
+			OR = {
+				original_tag = GER
+				is_subject_of = GER
+				is_in_faction_with = GER
+			}
+		}
+	}
+	remove_trigger = {
+		OR = {
+			has_global_flag = interbellum
+			# is_core_of = OWNER
+			OWNER = {
+				NOT = {
+					original_tag = GER
+					is_subject_of = GER
+					is_in_faction_with = GER
+				}
+			}
+		}	
+	}
+	icon = GFX_modifier_GER_eagle
+	# compliance_growth = -0.05
+	# resistance_growth = 0.05
+	local_building_slots_factor = -0.25
+	local_manpower = -0.3
+	monthly_population = 0.5
+	state_resources_factor = -0.3
+}
+
+GER_enhanced_conscription = {
+	enable = { 
+		CONTROLLER = {
+			OR = {
+				original_tag = GER
+				is_subject_of = GER
+				is_in_faction_with = GER
+			}
+		}
+	}
+	remove_trigger = {
+		OR = {
+			has_global_flag = interbellum
+			# is_core_of = OWNER
+			OWNER = {
+				NOT = {
+					original_tag = GER
+					is_subject_of = GER
+					is_in_faction_with = GER
+				}
+			}
+		}	
+	}
+	icon = GFX_modifiers_state_manpower
+	local_manpower = 0.75
+	# resistance_growth = 0.15
+}
+
+GER_ohl_command = {
+	enable = { always = yes }
+	remove_trigger = {
+		has_global_flag = versallies_treaty
+	}
+	icon = GFX_idea_GER_idea_OHL
+	supply_consumption_factor =  ohl_army_supply
+	production_speed_arms_factory_factor = ohl_mil_construction_speed
+	political_power_gain = ohl_political_power_gain
+	war_support_factor = ohl_war_support
+	stability_factor = ohl_war_support
+	mobilization_speed = ohl_mob_speed
+	planning_speed = ohl_planning_speed
+	max_planning_factor = ohl_max_planning
+	army_speed_factor = ohl_army_speed
+	army_core_defence_factor  = ohl_core_defence
+	power_balance_daily = 0.001
+}
+
+GER_mobilisation_of_morale = {
+	enable = { always = yes }
+	icon = ger_rebuild_the_nation
+	army_morale_factor = GER_morale_morale
+	army_org_regain	= GER_morale_org_regain
+	political_power_cost = GER_morale_pp_cost
+	war_support_factor = GER_morale_ws
+}
+
+GER_konige_im_luftrevier = {
+	enable = { always = yes }
+	remove_trigger = {
+		has_global_flag = great_war_ends
+	}
+	icon = GFX_idea_air_support_focus
+	air_attack_factor = GER_luftrevier_air_attack
+	air_defence_factor = GER_luftrevier_air_defense
+	air_agility_factor = GER_luftrevier_air_agility
+	air_range_factor = GER_luftrevier_air_range
+	ground_attack_factor = GER_luftrevier_ground_attack
+	air_bombing_targetting = GER_luftrevier_air_bombing_targetting
+	air_doctrine_cost_factor = GER_luftrevier_air_doctrine_cost
+	air_weather_penalty = GER_luftrevier_air_weather_penalty
+	air_night_penalty = GER_luftrevier_air_night_penalty
+	#air_detection = GER_luftrevier_air_detection
+	air_mission_efficiency = GER_luftrevier_air_mission_efficiency
+	air_superiority_efficiency = GER_luftrevier_air_superiority_efficiency
+	air_intercept_efficiency = GER_luftrevier_air_intercept_efficiency
+	air_cas_efficiency = GER_luftrevier_air_cas_efficiency
+	air_strategic_bomber_bombing_factor = GER_luftrevier_air_strategic_bomber_bombing_factor
+	experience_gain_air = GER_luftrevier_experience_gain_air
+	experience_gain_air_factor = GER_luftrevier_experience_gain_air_factor
+	air_ace_generation_chance_factor = GER_luftrevier_air_ace_generation_chance
+	air_accidents_factor = GER_luftrevier_air_accidents_factor
+	country_resource_rubber = 10
+}
+
+GER_social_reforms = {
+	enable = {
+		always = yes
+	}
+	icon = GFX_idea_generic_scales
+	# Political
+	stability_factor = GER_social_reforms_stability_factor
+	political_power_factor = GER_social_reforms_political_power_factor
+	monthly_population = GER_social_reforms_monthly_population
+	conscription_factor = GER_social_reforms_conscription_factor
+	war_support_factor = GER_social_reforms_war_support_factor
+	democratic_drift = GER_social_reforms_democratic_drift
+	neutrality_drift = GER_social_reforms_neutrality_drift
+	fascism_drift = GER_social_reforms_fascism_drift
+	resistance_activity = GER_social_reforms_resistance_activity
+	compliance_growth = GER_social_reforms_compliance_growth
+	# Economic
+	consumer_goods_factor = GER_social_reforms_consumer_goods_factor
+	production_speed_buildings_factor = GER_social_reforms_production_speed_buildings_factor
+	production_factory_max_efficiency_factor = GER_social_reforms_production_factory_max_efficiency_factor
+	industrial_capacity_factory = GER_social_reforms_industrial_capacity_factory
+	production_speed_industrial_complex_factor = GER_social_reforms_production_speed_industrial_complex_factor
+}
+
+SAU_Hejazi_opposition = {
+	enable = { 
+		CONTROLLER = {
+			original_tag = SAU
+		}
+	}
+	remove_trigger = {
+		OWNER = {
+			NOT = {
+				original_tag = SAU
+			}
+		}
+	}
+	icon = GFX_modifiers_TUR_arab_minority
+
+	recruitable_population_factor = -0.1
+	army_defence_factor = -0.1
+	local_supplies_for_controller = -0.1
+	resistance_growth = -0.1
+}
+
+strong_military_curfew = {
+	enable = {
+		is_controlled_by = OWNER
+	}
+	icon = GFX_civil_war_modifier
+
+	recruitable_population_factor = -0.8
+	resistance_growth = -0.75
+	state_production_speed_buildings_factor = -0.8
+	local_factories = -0.8
+	local_intel_to_enemies = -0.75
+}
+
+TUN_protected_sacred_places = {
+	enable = {
+		CONTROLLER = {
+			original_tag = TUN
+		}
+	}
+	remove_trigger = {
+		OWNER = {
+			NOT = {
+				original_tag = TUN
+			}
+		}
+	}
+	icon = GFX_modifiers_RAJ_mughal_influence
+
+	recruitable_population_factor = 0.1
+	army_defence_factor = 0.1
+	local_supplies_for_controller = 0.1
+	resistance_growth = -0.1
+}
+
+GEO_transcaucasia_modifier = {
+	enable = {
+		CONTROLLER = {
+			OR = {
+				has_cosmetic_tag = GEO_TSCN
+				has_cosmetic_tag = GEO_TSCN_commissariat
+				has_cosmetic_tag = GEO_TSCN_committee
+				has_cosmetic_tag = GEO_TSCN_communism
+			}
+		}
+	}
+	remove_trigger = {
+		owner = {
+			NOT = {
+				has_cosmetic_tag = GEO_TSCN
+				has_cosmetic_tag = GEO_TSCN_commissariat
+				has_cosmetic_tag = GEO_TSCN_committee
+				has_cosmetic_tag = GEO_TSCN_communism
+			}
+		}
+	}
+
+	icon = GFX_decision_generic_autonomy
+	
+	local_non_core_manpower = 0.50
+	resistance_growth = -0.30
+	compliance_gain = 0.10
+}
+
+mongolian_banners_modifier = {
+	enable = { always = yes }
+	remove_trigger = {
+		OR = {
+			NOT = { is_core_of = OWNER }
+			owner = { is_china_or_warlord_no_tt = no }
+		}
+	}
+	icon = GFX_decision_generic_cavalry
+
+	recruitable_population_factor = -0.50
+	local_resources_factor = -0.20
+	local_factories = -0.2
+	# resistance_growth = -0.30
+	# compliance_gain = 0.10
+}
+
+qinghai_modifier = {
+	enable = { always = yes }
+	remove_trigger = {
+		OR = {
+			NOT = { is_core_of = OWNER }
+			owner = { is_china_or_warlord_no_tt = no }
+		}
+	}
+	icon = GFX_decision_generic_disband_irregulars
+
+	recruitable_population_factor = -0.20
+	local_resources_factor = -0.10
+	local_factories = -0.1
+	# resistance_growth = -0.30
+	# compliance_gain = 0.10
+}
+
+xinjiang_modifier = {
+	enable = { always = yes }
+	remove_trigger = { 
+		OR = {
+			NOT = { is_core_of = OWNER }
+			owner = { is_china_or_warlord_no_tt = no }
+		}
+	}
+	icon = GFX_decision_faction_tur_traditionalist
+
+	recruitable_population_factor = -0.50
+	local_resources_factor = -0.20
+	local_factories = -0.2
+	# resistance_growth = -0.30
+	# compliance_gain = 0.10
+}
+
+kumul_modifier = {
+	enable = { always = yes }
+	remove_trigger = { 
+		OR = {
+			NOT = { is_core_of = OWNER }
+			owner = { is_china_or_warlord_no_tt = no }
+			AND = {
+				owner = {
+					NOT = { original_tag = KUM }
+				}
+				has_state_flag = kumul_abolished
+			}
+		}
+	}
+	icon = GFX_decision_eng_ally_imperialist_coup
+
+	recruitable_population_factor = -0.70
+	local_resources_factor = -0.40
+	local_building_slots_factor = -0.5
+	local_factories = -0.5
+	# resistance_growth = -0.30
+	# compliance_gain = 0.10
+}
+
+manchu_modifier = {
+	enable = { always = yes }
+	remove_trigger = { 
+		OR = {
+			NOT = { is_core_of = OWNER }
+			owner = { is_china_or_warlord_no_tt = no }
+			owner = { is_qing_monarchy = yes }
+		}
+	}
+	icon = GFX_decision_generic_disband_irregulars
+
+	recruitable_population_factor = -0.10
+	local_resources_factor = -0.05
+}
+
+gando_modifier = {
+	enable = { always = yes }
+	remove_trigger = { 
+		OR = {
+			NOT = { is_core_of = OWNER }
+			owner = { is_china_or_warlord_no_tt = no }
+		}
+	}
+	icon = GFX_decision_POL_looming_peasants_strike
+
+	recruitable_population_factor = -0.80
+	local_resources_factor = -0.80
+	local_building_slots_factor = -0.80
+	local_factories = -0.80
+	# resistance_growth = -0.30
+	# compliance_gain = 0.10
+}
+
+xinan_modifier = {
+	enable = { always = yes }
+	remove_trigger = {
+		OR = {
+			NOT = { is_core_of = OWNER }
+			owner = { is_china_or_warlord_no_tt = no }
+		}
+	}
+	icon = GFX_decision_generic_disband_irregulars
+
+	recruitable_population_factor = -0.15
+}
+
+concessions_modifier = {
+	enable = { always = yes }
+	remove_trigger = { 
+		OR = {
+			is_core_of = OWNER
+			owner = { is_china_or_warlord_no_tt = yes }
+		}
+	}
+	icon = GFX_decision_eng_trade_unions_support
+
+	recruitable_population_factor = 0.10
+	local_factories = 0.50
+	local_resources = 0.50
+	resistance_growth = -0.30
+	compliance_gain = 0.10
+}
+
+PUPPET_FRA_french_judiciary_system = {
+	enable = { 
+		controller = {
+			OR = {
+				tag = FRA
+				is_subject_of = FRA
+				is_in_faction_with = FRA
+			}
+		}
+	}
+	remove_trigger = { 
+		OWNER = {
+			NOT = {
+				is_subject_of = FRA
+			}
+		}		
+	}
+	icon = GFX_decision_SOV_place_hq
+	recruitable_population_factor = 0.1
+	local_supplies_for_controller = 0.1
+	resistance_growth = -0.10
+}
+
+GER_movement_war = {
+	enable = { always = yes }
+	remove_trigger = { 
+		CONTROLLER = {
+			has_war_with = BEL
+		}
+	}
+	icon = GFX_modifiers_state_manpower
+	enemy_army_speed_factor = 0.25
+	max_dig_in_factor = -0.75
+	dig_in_speed_factor = -0.50
+	land_bunker_effectiveness_factor = -0.30
+	river_crossing_factor = -0.50
+	terrain_penalty_reduction = 0.4
+}
+
+GER_schliffen_preparations = {
+	enable = {
+		CONTROLLER = {
+			original_tag = GER
+		}
+	}
+	remove_trigger = { 
+		owner = {
+			NOT = {
+				original_tag = GER
+			}
+		}
+	}
+	icon = GFX_modifiers_state_manpower
+	local_supplies_for_controller = 1
+	attrition_for_controller = -0.5
+}
+
+neutrality_party_popularity = {
+	enable = { always = yes }
+
+	stability_factor = mtth:neutrality_party_popularity_var
+}
+
+democratic_party_popularity = {
+	enable = { always = yes }
+
+	stability_factor = mtth:democratic_party_popularity_var
+}
+
+
+communism_party_popularity = {
+	enable = { always = yes }
+
+	stability_factor = mtth:communism_party_popularity_var
+}
+
+
+fascism_party_popularity = {
+	enable = { always = yes }
+
+	stability_factor = mtth:fascism_party_popularity_var
+}
+
+appeased_trade_unions = {
+	enable = { 
+		always = yes
+	}
+	remove_trigger = {
+		CONTROLLER = {
+			communism > 0.1
+		}
+	}
+	icon = GFX_modifiers_generic_construction
+	state_production_speed_buildings_factor = 0.10
+	local_intel_to_enemies = -0.2
+}
+BUL_turkish_minority = {
+	enable = {
+		CONTROLLER = {
+			original_tag = BUL
+		}
+	}
+	remove_trigger = {
+		OR = {
+			OWNER = {
+				NOT = {
+					original_tag = BUL
+				}			
+			}
+			NOT = {
+				has_country_flag = BUL_tur_minority
+			}
+		}	
+	}
+	icon = GFX_modifiers_TUR_turkish_minority
+	local_manpower = -0.30
+	state_production_speed_buildings_factor = -0.15
+}
+
+BUL_small_turk_minority = {
+	enable = {
+		CONTROLLER = {
+			original_tag = BUL
+		}
+	}
+	remove_trigger = {
+		OR = {
+			OWNER = {
+				NOT = {
+					original_tag = BUL
+				}			
+			}
+			NOT = {
+				has_country_flag = BUL_tur_minority
+			}
+		}
+		
+	}
+	icon = GFX_modifiers_TUR_turkish_minority
+	local_manpower = -0.1
+	state_production_speed_buildings_factor = -0.1
+}
+
+BUL_aggrivated_greeks = {
+	enable = {
+		CONTROLLER = {
+			original_tag = BUL
+		}
+	}
+	remove_trigger = {
+		OR = {
+			OWNER = {
+				NOT = {
+					original_tag = BUL
+				}			
+			}
+			NOT = {
+				has_country_flag = BUL_mad_greeks
+			}
+		}
+		
+	}
+	icon = GFX_modifiers_TUR_greek_minority
+	local_manpower = -0.08
+	state_production_speed_buildings_factor = -0.05
+}
+
+BUL_romanian_minority = {
+	enable = {
+		CONTROLLER = {
+			original_tag = BUL
+		}
+	}
+	remove_trigger = {
+		OR = {
+			OWNER = {
+				NOT = {
+					original_tag = BUL
+				}			
+			}
+			NOT = {
+				has_country_flag = BUL_rom_minority
+			}
+		}
+		
+	}
+	icon = GFX_modifiers_TUR_romanian_minority
+	local_manpower = -0.25
+	state_production_speed_buildings_factor = -0.1
+}
+
+BUL_prussia_of_the_balkans = { #when adding new dynamic modifiers, make sure you fully close and reload the game to test them, or else they wont show
+	enable = { always = yes }
+	icon = GFX_idea_tfv_can_conscription_crisis
+	war_support_factor = BUL_army_ws #these are all the modifiers and variables
+	army_org_factor = BUL_army_org #(modifier) = (variable name)
+	army_attack_factor = BUL_army_attack
+	experience_gain_army = BUl_army_xp
+	army_morale_factor = BUL_army_recovery
+	ai_focus_aggressive_factor = BUL_army_ai_aggressive
+}
+BUL_peasantry = {
+	enable = { always = yes }
+	icon = POL_looming_peasants_strike
+	communism_drift = BUL_soc_drift
+	democratic_drift = BUL_dem_drift
+	monthly_population = BUL_peasants_fing
+	research_speed_factor = BUL_dumb_peasants
+	stability_factor = BUL_peasant_stab
+	consumer_goods_factor = BUL_peasant_consumer
+}
+BUL_exarchate = {
+	enable = { always = yes }
+	icon = YUG_orthodox_church_support
+	neutrality_acceptance = BUL_church_authority_support
+	research_speed_factor = BUL_church_edu
+	stability_factor = BUL_church_stab
+	war_support_factor = BUL_church_ws
+}
+BUL_agrarian_economy = {
+	enable = { always = yes }
+	icon = GFX_idea_GRE_agrarian_society
+	state_production_speed_buildings_factor = BUL_agr_build_speed
+	production_factory_efficiency_gain_factor = BUL_agr_production_effecieny
+	production_factory_max_efficiency_factor = BUL_agr_factory_max
+	industrial_capacity_factory = BUL_agr_bad_factories
+	consumer_goods_factor = BUL_agr_goud_factor
+	supply_consumption_factor = BUL_agr_army_eats
+	local_factories = BUL_agr_local_factories
+	unit_cavalry_design_cost_factor = BUL_agr_war_horse
+	attrition = BUL_agr_attriton
+}
+BUL_mufti_institution = {
+	enable = { always = yes }
+	stability_factor = BUL_mufti_stab
+	war_support_factor = BUL_mufti_ws
+	political_power_factor = BUL_mufti_pp
+	compliance_growth = BUL_mufti_compliance
+}
+
+IND_low_nationalist_agitation_modifier = {
+	enable = { always = yes } 
+	
+	icon = GFX_modifiers_COG_katanga_separatism
+
+	remove_trigger = {
+		ROOT = { is_owned_and_controlled_by = VIN } # ROOT refers to the state on which the modifier is added
+	}
+
+	compliance_growth = -0.05
+	local_manpower = -0.05
+	local_factory_sabotage = 0.1
+	local_intel_to_enemies = 0.1
+	resistance_target = 0.1
+}
+
+IND_medium_nationalist_agitation_modifier = {
+	enable = { always = yes } 
+	
+	icon = GFX_modifiers_COG_katanga_separatism
+
+	remove_trigger = {
+		ROOT = { is_owned_and_controlled_by = VIN } # ROOT refers to the state on which the modifier is added
+	}
+
+	compliance_growth = -0.10
+	local_manpower = -0.1
+	local_factory_sabotage = 0.15
+	local_intel_to_enemies = 0.2
+	resistance_target = 0.2
+}
+
+IND_high_nationalist_agitation_modifier = {
+	enable = { always = yes } 
+	
+	icon = GFX_modifiers_COG_katanga_separatism
+
+	remove_trigger = {
+		ROOT = { is_owned_and_controlled_by = VIN } # ROOT refers to the state on which the modifier is added
+	}
+
+	compliance_growth = -0.15
+	local_manpower = -0.15
+	local_factory_sabotage = 0.25
+	local_intel_to_enemies = 0.3
+	resistance_target = 0.3
+}
+
+BEL_belgian_resistance_modifier = {
+	enable = { always = yes } 
+	
+	icon = GFX_modifiers_AUH_local_independentism
+
+	remove_trigger = {
+		NOT = {
+			ROOT = { is_controlled_by = GER }
+			ROOT = { is_controlled_by = FRA }
+		}
+	}
+
+	compliance_growth = -0.25
+	local_manpower = -0.15
+	local_factory_sabotage = 0.10
+	local_intel_to_enemies = 0.3
+	resistance_target = 0.10
+}
+MOR_reformed_tertib = {
+	enable = { 
+		CONTROLLER = {
+			OR = {
+				tag = MOR
+				is_subject_of = MOR
+				is_in_faction_with = MOR
+			}
+		}
+	}
+	remove_trigger = {
+		owner = {
+			NOT = {
+				tag = MOR
+				is_subject_of = MOR
+				is_in_faction_with = MOR
+			}
+		}
+	}
+	icon = GFX_modifiers_generic_construction
+	state_production_speed_buildings_factor = 0.05
+	local_resources_factor = 0.15
+}
+
+MOR_authorized_nzala = {
+	enable = { 
+		CONTROLLER = {
+			OR = {
+				tag = MOR
+				is_subject_of = MOR
+				is_in_faction_with = MOR
+			}
+		}
+	}
+	remove_trigger = {
+		owner = {
+			NOT = {
+				tag = MOR
+				is_subject_of = MOR
+				is_in_faction_with = MOR
+			}
+		}
+	}
+	icon = GFX_modifiers_generic_construction
+	state_production_speed_buildings_factor = -0.05
+	local_resources_factor = -0.15
+	local_manpower = -0.15
+	resistance_target = -0.3
+}
+
+LBA_tribal_resistance = {
+	enable = {
+		impassable = no
+		NOT = {
+			is_core_of = controller
+			is_controlled_by = LBA
+			is_controlled_by = TUR
+			is_controlled_by = TRP
+		}
+	}
+	remove_trigger = {
+		OR = {
+			impassable = yes
+			is_core_of = controller
+			is_controlled_by = LBA
+			is_controlled_by = TUR
+			is_controlled_by = TRP
+		}		
+	}
+	icon = GFX_modifiers_tur_traditionalist_sedition
+	recruitable_population_factor = -0.25
+	local_supplies_for_controller = -0.25
+	resistance_target = 0.15
+	resistance_growth = 0.25
+	compliance_growth = -0.35
+	local_intel_to_enemies = 0.4
+	required_garrison_factor = 0.35
+	army_speed_factor_for_controller = -0.05
+}
+
+LBA_intensified_guerrila = {
+	enable = { 
+		CONTROLLER = {
+			NOT = {
+				tag = LBA
+			}	
+		}
+	}
+	remove_trigger = {
+		OR = {
+			is_core_of = OWNER
+			is_owned_by = LBA
+			OWNER = {
+				NOT = {
+					has_border_war_with = LBA
+				}
+			}
+		}
+	}
+	icon = GFX_modifiers_tur_traditionalist_insurgency
+	local_supplies_for_controller = -0.65
+	resistance_damage_to_garrison = 0.25
+	resistance_growth = 0.4
+	disable_strategic_redeployment_for_controller = 1
+	local_org_regain = -0.25
+}
+
+CAN_integrating_the_frontier_dyn = {
+	enable = { 
+		CONTROLLER = {
+			tag = CAN	
+		}
+	}
+	remove_trigger = {
+		owner = {
+			NOT = {
+				tag = CAN
+			}
+		}
+	}
+	icon = GFX_modifiers_state_manpower
+	recruitable_population_factor = 0.15
+}
+
+GER_french_opposition = {
+	enable = { 
+		CONTROLLER = {
+			NOT = {
+				original_tag = FRA
+				original_tag = ALS
+			}
+		}
+	}
+	remove_trigger = {
+		owner = {
+			NOT = {
+				original_tag = GER
+			}
+		}
+	}
+	icon = GFX_modifiers_state_strikes
+	recruitable_population_factor = -0.15
+	local_intel_to_enemies = 0.15
+	state_resources_factor = -0.15
+}
+
+GER_Reichsland_elsass_lothringen = {
+	enable = { 
+		CONTROLLER = {
+			original_tag = GER
+		}
+	}
+	remove_trigger = {
+		OR = {
+			is_core_of = OWNER
+			owner = {
+				NOT = {
+					original_tag = GER
+				}
+			}
+		}		
+	}
+	icon = GFX_modifier_GER_eagle
+	recruitable_population_factor = 0.5
+	local_building_slots_factor = 0.5
+	state_resources_factor = 0.5
+}
+
+GER_kra_extraction_drive = {
+	remove_trigger = {
+		owner = {
+			NOT = {
+				original_tag = GER
+			}
+			has_war = no
+		}
+	}
+	icon = GFX_modifiers_increased_metal_production
+	state_resources_factor = 0.3
+}
+
+GER_mitteleuropa_germany = {
+	enable = { always = yes }
+	remove_trigger = {
+		OR = {
+			exists = no
+			is_subject = yes
+			has_government = communism
+		}
+	}
+	icon = GFX_idea_GER_mitteleuropa
+	political_power_gain = GER_mitteleuropa_bonus
+}
+
+GER_effects_of_rapid_urbanization = {
+	enable = { always = yes }
+	remove_trigger = {
+		owner = {
+			NOT = {
+				original_tag = GER
+			}
+		}
+	}
+	icon = GFX_decision_gre_paying_ifc_debt #TBD, someone do this
+
+	local_building_slots = -1
+	state_resources_factor = -0.15
+	recruitable_population_factor = -0.1
+	# NEEDS TWEAKING (SHALL)
+	# Civ Construction Boost or something would be good
+}

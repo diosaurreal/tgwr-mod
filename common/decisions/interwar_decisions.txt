@@ -1,0 +1,434 @@
+economy_decisions = {
+	
+}
+decision_great_depression = {
+	borrow_300_from_jewish_bankers = {
+		icon = hol_attract_foreign_investors
+		allowed = {
+			always = yes
+		}
+		available = {
+			has_war = no
+			has_political_power < 50
+		}
+
+		visible = {
+			has_idea = idea_great_depression
+		}
+		fire_only_once = yes
+		complete_effect = {
+			add_political_power = 300
+			set_country_flag = borrow_300_from_jewish_bankers
+			hidden_effect = { add_timed_idea = { idea = idea_credit_trap days = 720 } }
+		}
+		ai_will_do = {
+			factor = 0
+		}
+	}
+	expel_the_jewry = {
+		icon = generic_break_treaty
+		visible = {
+			has_idea = idea_credit_trap
+		}
+		allowed = {
+			always = yes
+		}
+		available = {
+			has_idea = idea_credit_trap
+		}
+		cost = 300
+		days_remove = 10
+		remove_effect = {
+			set_country_flag = expel_the_jewry
+			remove_ideas = idea_credit_trap
+		}
+		fire_only_once = yes
+		ai_will_do = {
+			factor = 0
+		}
+	}
+}
+interwar_decisions = {
+	mission_interwar_demobilization = {
+		icon = ger_mefo_bills
+		allowed = { always = yes }
+		available = {
+			OR = {
+				has_war = yes
+				NOT = { has_idea = interwar_recovery }
+				NOT = { has_global_flag = interbellum }
+				has_global_flag = great_depression
+				if = {
+					limit = { is_major = yes }
+					num_of_military_factories < 20
+				}
+				if = {
+					limit = { is_major = no }
+					num_of_military_factories < 10
+				}
+			}
+		}
+		activation = {
+			has_global_flag = interbellum
+			has_war = no
+			has_idea = interwar_recovery
+			if = {
+				limit = { is_major = yes }
+				num_of_military_factories > 20
+			}
+			if = {
+				limit = { is_major = no }
+				num_of_military_factories > 10
+			}
+			NOT = { has_global_flag = great_depression }
+		}
+		days_mission_timeout = 120
+		#days_remove = 1
+		is_good = yes
+		fire_only_once = yes #cycled
+		timeout_effect = {
+			random_owned_controlled_state = {
+				limit = { arms_factory > 0 }
+				remove_building = {
+					type = arms_factory
+					level = 1
+				}
+				add_building_construction = {
+					type = industrial_complex
+					level = 1
+					instant_build = yes
+				}
+			}
+			if = {
+				limit = {
+					num_of_available_naval_factories > 30
+				}
+				random_owned_controlled_state = {
+					limit = { dockyard > 0 }
+					remove_building = {
+						type = dockyard
+						level = 1
+					}
+				}
+			}
+			hidden_effect = {
+				activate_mission = mission_interwar_demobilization
+			}
+		}
+	}
+	# country_lock_all_division_template = no
+	####
+	negotiate_rearmament = {
+		icon = GFX_decision_generic_industry
+		visible = {
+			has_idea = idea_army_restrictions
+		}
+		allowed = { always = yes }
+		available = {
+			threat < 0.5
+			NOT = {
+				has_idea = interwar_recovery
+				has_idea = idea_armistice
+				has_country_flag = secret_rearmament
+				has_country_flag = ongoing_secret_rearmament
+			}
+			has_global_flag = interbellum
+		}
+		cost = 75
+		days_remove = 90
+		days_re_enable = 90
+		remove_effect = {
+			custom_effect_tooltip = remove_restrictions_if_no_faction_leaders_tt
+			hidden_effect = {
+				if = {
+					limit = {
+						any_other_country = {
+							is_subject = no
+							OR = {
+								tag = GER
+								tag = FRA
+							}
+							has_country_flag = great_war_winner
+							exists = yes
+						}
+					}
+					if = {
+						limit = {
+							has_country_flag = great_war_loser
+						}
+						random_other_country = {
+							limit = {
+								has_country_flag = great_war_winner
+								is_subject = no
+								exists = yes
+								OR = {
+									tag = GER
+									tag = FRA
+								}
+							}
+							country_event =  ww1_generic.29
+						}
+					}
+					else = {
+						set_country_flag = remove_restrictions_idea
+					}
+				}
+				else = {
+					set_country_flag = remove_restrictions_idea
+				}
+			}
+		}
+		fire_only_once = no
+		ai_will_do = {
+			factor = 10
+			modifier = {
+				factor = 0
+				OR = {
+					has_government = communism
+					has_government = fascism
+				}
+			}
+			modifier = {
+				factor = 0
+				OR = {
+					has_government = democratic
+					has_government = neutrality
+				}
+				threat > 0.25
+			}
+		}
+	}
+	denounce_the_army_restrictions = {
+		icon = generic_break_treaty
+		visible = {
+			has_idea = idea_army_restrictions
+		}
+		allowed = { always = yes }
+		available = {
+			has_war_support > 0.5
+			NOT = {
+				has_idea = interwar_recovery
+				has_idea = idea_armistice
+				has_country_flag = secret_rearmament
+				has_country_flag = ongoing_secret_rearmament
+			}
+			has_global_flag = interbellum
+		}
+		cost = 120
+		days_remove = 90
+		days_re_enable = 90
+		remove_effect = {
+			custom_effect_tooltip = denounce_the_army_restrictions_tt
+			hidden_effect = {
+				if = {
+					limit = {
+						has_country_flag = great_war_loser
+						is_subject = no
+					}
+					if = {
+						limit = {
+							OR = {
+								GER = {
+									has_country_flag = great_war_winner
+									is_subject = no
+									exists = yes
+									NOT = { has_war_with = ROOT }
+								}
+								FRA = {
+									has_country_flag = great_war_winner
+									is_subject = no
+									exists = yes
+									NOT = { has_war_with = ROOT }
+								}
+							}
+						}
+						every_other_country = {
+							limit = { 
+								has_country_flag = great_war_winner
+								is_subject = no
+								OR = {
+									tag = GER
+									tag = FRA
+								}
+							}
+							country_event = ww1_generic.32
+						}
+					}
+					else = {
+						set_country_flag = remove_restrictions_idea
+					}
+				}	
+			}
+		}
+		fire_only_once = yes
+		ai_will_do = {
+			base = 0
+			modifier = {
+				add = 10
+				OR = {
+					has_government = fascism
+					has_government = communism
+				}
+				threat > 0.25
+			}
+			modifier = {
+				factor = 0
+				original_tag = GER
+				any_other_country = {
+					original_tag = GER
+					has_war_with = PREV
+				}
+			}
+		}
+	}
+	secret_rearmament = {
+		allowed = { always = yes }
+		icon = generic_army_support
+
+		cost = 0
+		fire_only_once = no
+		days_remove = 1000
+		days_re_enable = 365
+
+		available = {
+			OR = {
+				has_global_flag = frankfurt_treaty
+				has_global_flag = versallies_treaty
+			}
+			has_idea = idea_army_restrictions
+			OR = {
+				has_government = communism
+				has_government = fascism
+			}
+		}
+		cancel_trigger = {
+			NOT = {
+				has_idea = idea_army_restrictions
+				has_government = communism
+				has_government = fascism
+			}
+		}
+		visible = {
+			has_idea = idea_army_restrictions
+		}
+		modifier = {
+			stability_factor = -0.05
+			industrial_capacity_factory = 0.10
+			industrial_capacity_dockyard = 0.10
+			production_speed_arms_factory_factor = 0.1
+		}
+		cancel_effect = {
+			clr_country_flag = ongoing_secret_rearmament
+		}
+		complete_effect = {
+			set_country_flag = ongoing_secret_rearmament
+		}
+		remove_effect = {
+			clr_country_flag = ongoing_secret_rearmament
+			set_country_flag = secret_rearmament
+			remove_ideas = idea_army_restrictions
+		}
+		ai_will_do = { factor = 200 }
+	}
+	end_the_armistice = {
+		icon = GFX_decision_generic_form_nation
+		visible = {
+			has_idea = idea_armistice
+		}
+		allowed = { always = yes }
+		available = {
+			OR = {
+				threat < 0.10
+				has_war_support > 0.8
+				AND = {
+					has_war_support > 0.5
+					OR = {
+						threat > 0.5
+						any_other_country = {
+							PREV = { has_wargoal_against = PREV }
+						}
+					}
+				}
+				AND = {
+ 					any_other_country = {
+ 						PREV = {
+ 							has_wargoal_against = PREV
+ 						}
+ 					}
+ 					NOT = {
+ 						has_country_flag = great_war_loser
+ 					}
+ 				}
+				has_war = yes
+			}
+			NOT = { has_idea = interwar_recovery }
+			has_global_flag = interbellum
+			has_country_flag = interbellum
+		}
+		cost = 75
+		days_remove = 90
+		remove_effect = {
+			set_country_flag = end_the_armistice
+			custom_effect_tooltip = end_the_armistice_tt
+		}
+		fire_only_once = yes
+		ai_will_do = {
+			factor = 10
+		}
+	}
+	interwar_recovery_removal = {
+		icon = GFX_decision_generic_industry
+		days_mission_timeout = 1000
+		activation = {
+			has_idea = interwar_recovery
+			OR = {
+				has_global_flag = great_war_ends
+				has_global_flag = interbellum
+			}
+
+		}
+		allowed = {
+			always = yes
+		}
+		available = {
+			NOT = {
+				has_idea = interwar_recovery
+			}
+		}
+		visible = {
+			has_idea = interwar_recovery
+		}
+		fire_only_once = yes
+		is_good = yes
+		timeout_effect = {
+			add_stability = 0.10
+			set_country_flag = interwar_recovery_removal
+			set_country_flag = interwar_recovery_removal_complete
+			if = {
+				limit = {
+					NOT = { tag = USA }
+				}
+				swap_ideas = {
+					remove_idea = interwar_recovery
+					add_idea = roaring_twenties
+				}
+				else = {
+					swap_ideas = {
+						remove_idea = interwar_recovery
+						add_idea = undisturbed_isolation
+					}
+				}
+			}	
+		}
+	}
+	
+	#reparations_mission = {
+	#}
+	#refuse_to_pay_reparations = {
+	#}
+
+	#refuse_disarmament = { +threat
+	#}
+	#disarmament_mission = {
+	#}
+}
