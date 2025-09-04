@@ -13,9 +13,31 @@ focus_tree = {
 
 		#shortcuts
 		shortcut = {
-			#name USA_radicalism_era_shortcut
-			name = USA_radicalism_era
-			target = USA_radicalism_era 
+			#name USA_great_white_fleet_shortcut
+			name = navy_tree_shortcut
+			target = USA_great_white_fleet 
+			scroll_wheel_factor = 0.98
+		}
+
+		
+		shortcut = {
+			#name USA_reorganize_army_corps_shortcut
+			name = army_tree_shortcut
+			target = USA_reorganize_army_corps 
+			scroll_wheel_factor = 0.98
+		}
+
+		shortcut = {
+			#name USA_international_conference_of_american_states_shortcut
+			name = foreign_policy_tree_shortcut
+			target = USA_international_conference_of_american_states 
+			scroll_wheel_factor = 0.98
+		}
+
+		shortcut = {
+			#name USA_american_reactionism_shortcut
+			name = USA_american_reactionism
+			target = USA_american_reactionism 
 			scroll_wheel_factor = 0.86
 		}
 
@@ -27,31 +49,10 @@ focus_tree = {
 		}
 
 		shortcut = {
-			#name USA_american_reactionism_shortcut
-			name = USA_american_reactionism
-			target = USA_american_reactionism 
+			#name USA_radicalism_era_shortcut
+			name = USA_radicalism_era
+			target = USA_radicalism_era 
 			scroll_wheel_factor = 0.86
-		}
-
-		shortcut = {
-			#name USA_international_conference_of_american_states_shortcut
-			name = foreign_politics_tree
-			target = USA_international_conference_of_american_states 
-			scroll_wheel_factor = 0.98
-		}
-
-		shortcut = {
-			#name USA_reorganize_army_corps_shortcut
-			name = army_tree_shortcut
-			target = USA_reorganize_army_corps 
-			scroll_wheel_factor = 0.98
-		}
-
-		shortcut = {
-			#name USA_great_white_fleet_shortcut
-			name = navy_tree_shortcut
-			target = USA_great_white_fleet 
-			scroll_wheel_factor = 0.98
 		}
 
 	focus = {
@@ -928,6 +929,7 @@ focus_tree = {
 		x = -1
 		y = 1
 		available = {
+			is_great_war_ongoing = yes
 			GER = {
 				has_war =  yes
 			}
@@ -935,10 +937,9 @@ focus_tree = {
 			has_civil_war = no
 			NOT = {
 				is_in_faction_with = GER
-				has_war_with = FRA
+				has_war_with = ENT
 				has_idea = idea_armistice
 				has_idea = idea_army_restrictions
-				has_global_flag = great_war_ends
 			}
 			has_opinion = {
 				target = GER
@@ -950,81 +951,7 @@ focus_tree = {
 			has_war_with = GER
 		}
 		completion_reward = {
-			if = {
-				limit = {
-					FRA = {
-						has_war_with = GER
-						OR = {
-							has_government = USA
-							has_government = neutrality
-						}
-					}
-				}
-				USA = {
-					add_to_war = { 
-						targeted_alliance = FRA 
-						enemy = GER 
-						hostility_reason = topple_government
-					}	
-				}
-				if = {
-					limit = {
-						FRA = { is_faction_leader = yes }
-					}
-					FRA = { add_to_faction = ROOT }
-				}
-			}
-			else_if = {
-				limit = {
-					any_country = {
-						is_major = yes
-						has_war_with = GER
-						has_civil_war = no
-						has_capitulated = no					
-						OR = {
-							has_government = USA
-							has_government = neutrality
-						}
-					}
-				}
-				random_country = {
-					limit = {
-						is_major = yes
-						has_war_with = GER
-						has_civil_war = no
-						has_capitulated = no
-						OR = {
-							has_government = USA
-							has_government = neutrality
-						}	
-
-					}
-					USA = {
-						add_to_war = { 
-							targeted_alliance = PREV 
-							enemy = GER 
-							hostility_reason = topple_government
-						}	
-					}
-					if = {
-						limit = {
-							is_faction_leader = yes
-						}
-						add_to_faction = ROOT
-					}
-				}
-			}
-			else = {
-				create_wargoal = {
-					type = topple_government
-					target = GER
-				}
-				add_ai_strategy = {
-					type = declare_war
-					id = GER
-					value = 200
-				}
-			}
+			join_great_war_against_GER = yes
 		}
 		ai_will_do = {
 			factor = 1
@@ -1041,13 +968,27 @@ focus_tree = {
 				}
 			}
 			modifier = {
+				add = 1000
+				OR = {
+					has_global_flag = brest_litovsk_peace
+					has_global_flag = october_revolution
+					has_global_flag = RUS_surrender_alone
+					RUS = {
+						has_government = communism
+						NOT = {
+							has_war_with = ENT
+						}
+					}
+				}
+			}			
+			modifier = {			
 				factor = -1000
 				has_government = democratic
 				GER = {
-					has_war_with = FRA
+					has_war_with = ENT
 				}
 				GER = { has_government = democratic }
-				FRA = {
+				ENT = {
 					NOT = {
 						has_government = democratic
 					}
@@ -1191,7 +1132,9 @@ focus_tree = {
 		x = 15
 		y = 2
 		available = { has_war_support > 0.2 }
-		bypass = { NOT = { has_idea = undisturbed_isolation } }
+		bypass = {
+			NOT = { has_idea = undisturbed_isolation }
+		}
 		completion_reward = { add_ideas = isolation }
 	}
 	focus = {
@@ -1205,7 +1148,7 @@ focus_tree = {
 		y = 3
 		available = { 
 			has_war_support > 0.45 
-			has_idea = USA_idea_defender_of_the_american_sphere2
+			has_idea = USA_idea_defender_of_the_american_sphere
 		}
 		completion_reward = {
 			swap_ideas = {
@@ -1304,10 +1247,19 @@ focus_tree = {
 		bypass = {
 			NOT = { has_idea = undisturbed_isolation }
 			NOT = { has_idea = isolation }
+			NOT = { has_idea = USA_idea_neglected_military_budget }
 		}
 		available = { has_war_support > 0.45 }
 		completion_reward = {
-			add_ideas = civilian_economy
+			if = {
+				limit = {
+					OR = {
+						has_idea = undisturbed_isolation
+						has_idea = isolation
+					}
+				}
+				add_ideas = civilian_economy
+			}
 			remove_ideas = USA_idea_neglected_military_budget
 		}
 	}
@@ -1742,41 +1694,6 @@ focus_tree = {
 		}
 	}
 	focus = {
-		id = USA_dont_tread_on_me
-		icon = GFX_focus_spr_torchbearers_of_tomorrow
-		cost = 10
-		prerequisite = {
-			focus = USA_arm_the_nation
-		}
-		x = 17
-		y = 6
-		available = { 
-			has_government = democratic 
-			democratic > 0.95
-			NOT = { has_completed_focus = USA_land_of_dixie }
-			NOT = { has_completed_focus = USA_revived_states_of_america }
-			NOT = { has_country_leader = { character = USA_theodore_roosevelt } }
-		}
-		completion_reward = { 
-			set_cosmetic_tag = USA_ancap
-			USA_federal_congress = {
-				add_country_leader_role = {
-					country_leader = {
-						ideology = libertarianism
-						
-						
-					}
-				}
-				promote_character = libertarianism
-			}	
-			remove_ideas = USA_idea_progressivism_era
-			add_ideas = USA_dont_tread_on_me 
-		}
-		ai_will_do = {
-			factor = 0
-		}
-	}
-	focus = {
 		id = USA_protectionist_act
 		icon = GFX_goal_generic_positive_trade_relations
 		cost = 10
@@ -1822,6 +1739,7 @@ focus_tree = {
 		cost = 10
 		prerequisite = {
 			focus = USA_protectionist_act
+			focus = USA_american_autarky
 		}
 		x = 19
 		y = 4
@@ -2077,7 +1995,7 @@ focus_tree = {
 				add_extra_state_shared_building_slots = 1
 				add_building_construction = {
 					type = industrial_complex
-					level = 2
+					level = 1
 					instant_build = yes
 				}
 				set_state_flag = USA_henry_ford_conglomerate
@@ -2094,7 +2012,7 @@ focus_tree = {
 				add_extra_state_shared_building_slots = 1
 				add_building_construction = {
 					type = industrial_complex
-					level = 2
+					level = 1
 					instant_build = yes
 				}
 				set_state_flag = USA_henry_ford_conglomerate
@@ -2232,7 +2150,6 @@ focus_tree = {
 				limit = { NOT = { has_country_flag = new_prohibition } }
 				fascism > 0.5
 			}
-			NOT = { has_completed_focus = USA_dont_tread_on_me }
 		}
 		completion_reward = { 
 			if = {
@@ -2331,7 +2248,6 @@ focus_tree = {
 				limit = { NOT = { has_country_flag = new_prohibition } }
 				fascism > 0.5
 			}
-			NOT = { has_completed_focus = USA_dont_tread_on_me }
 		}
 		completion_reward = {
 			if = {
@@ -2996,7 +2912,7 @@ focus_tree = {
 		x = 42
 		y = 1
 		available = {
-			has_tech = motorised_infantry2
+			has_tech = motorised_infantry
 		}
 		search_filters = {FOCUS_FILTER_RESEARCH}
 		completion_reward = {
@@ -3218,7 +3134,7 @@ focus_tree = {
 				name = USA_artillery_support
 				bonus = 1.0
 				uses = 1
-				category = artillery
+				category = cat_artillery
 			}
 		}
 	}
@@ -3667,6 +3583,10 @@ focus_tree = {
 				bonus = 3.0
 				uses = 1
 				category = naval_bomber
+			}
+			add_breakthrough_progress = {
+				value = 0.25
+				specialization = specialization_naval
 			}
 		}
 	}
