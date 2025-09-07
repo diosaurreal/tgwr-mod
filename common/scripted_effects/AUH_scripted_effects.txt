@@ -1,4 +1,14 @@
 AUS_update_imperial_council_effects = {
+	clamp_variable = {
+		var = AUS_parliament_influence
+		min = 0
+		max = 4
+	}
+	clamp_variable = {
+		var = AUS_relations
+		min = 0
+		max = 4
+	}
 	# Reset value
 	set_variable = {
 		AUS_austrian_parliament_pp_gain = AUS_parliament_influence
@@ -26,6 +36,93 @@ AUS_update_imperial_council_effects = {
     else = {
         # If conservatives don't dominate, no neutrality drift
         set_variable = { AUS_imperial_council_neutrality_drift = 0 }
+    }
+	 if = {
+        limit = { has_global_flag = AUS_imperial_council_liberal }
+
+        # ===================== DEMOCRATIC DRIFT =====================
+        set_variable = { AUS_imperial_council_democratic_drift = AUS_parliament_influence }
+        multiply_variable = {AUS_imperial_council_democratic_drift = 0.02}
+
+        # ===================== MINORITY LOYALTY CLAMP =====================
+        if = {
+            limit = { check_variable = { AUS_parliament_relations > 0 } }
+            # Good relations → clamp minimum loyalty higher based on influence
+            set_variable = { AUS_loyalty_minimum = AUS_parliament_influence }
+            multiply_variable = {AUS_loyalty_minimum = 10}
+            add_to_variable = { AUS_loyalty_minimum = 10 }  # ensures a base floor
+            # Clamp the minimum for every minority group
+            clamp_variable = { var = AUS_hungarian_loyalty min = AUS_loyalty_minimum max = 100 }
+            clamp_variable = { var = AUS_czechoslovak_loyalty min = AUS_loyalty_minimum max = 100 }
+            clamp_variable = { var = AUS_croat_loyalty min = AUS_loyalty_minimum max = 100 }
+            clamp_variable = { var = AUS_serb_loyalty min = AUS_loyalty_minimum max = 100 }
+            clamp_variable = { var = AUS_pole_loyalty min = AUS_loyalty_minimum max = 100 }
+            clamp_variable = { var = AUS_ruthenian_loyalty min = AUS_loyalty_minimum max = 100 }
+            clamp_variable = { var = AUS_romanian_loyalty min = AUS_loyalty_minimum max = 100 }
+            clamp_variable = { var = AUS_italian_loyalty min = AUS_loyalty_minimum max = 100 }
+        }
+        else_if = {
+            limit = { check_variable = { AUS_parliament_relations < 0 } }
+            # Bad relations → clamp maximum loyalty lower based on influence
+            set_variable = { AUS_loyalty_maximum = 100 }
+            subtract_from_variable = { AUS_loyalty_maximum = AUS_parliament_influence }
+            multiply_variable = {AUS_loyalty_maximum = 10}
+            add_to_variable = { AUS_loyalty_maximum = 60 } # baseline top
+            # Clamp the maximum for every minority group
+            clamp_variable = { var = AUS_hungarian_loyalty min = 0 max = AUS_loyalty_maximum }
+            clamp_variable = { var = AUS_czechoslovak_loyalty min = 0 max = AUS_loyalty_maximum }
+            clamp_variable = { var = AUS_croat_loyalty min = 0 max = AUS_loyalty_maximum }
+            clamp_variable = { var = AUS_serb_loyalty min = 0 max = AUS_loyalty_maximum }
+            clamp_variable = { var = AUS_pole_loyalty min = 0 max = AUS_loyalty_maximum }
+            clamp_variable = { var = AUS_ruthenian_loyalty min = 0 max = AUS_loyalty_maximum }
+            clamp_variable = { var = AUS_romanian_loyalty min = 0 max = AUS_loyalty_maximum }
+            clamp_variable = { var = AUS_italian_loyalty min = 0 max = AUS_loyalty_maximum }
+        }
+        else = {
+            # Neutral relations → reset clamps (full range)
+            clamp_variable = { var = AUS_hungarian_loyalty min = 0 max = 100 }
+            clamp_variable = { var = AUS_czechoslovak_loyalty min = 0 max = 100 }
+            clamp_variable = { var = AUS_croat_loyalty min = 0 max = 100 }
+            clamp_variable = { var = AUS_serb_loyalty min = 0 max = 100 }
+            clamp_variable = { var = AUS_pole_loyalty min = 0 max = 100 }
+            clamp_variable = { var = AUS_ruthenian_loyalty min = 0 max = 100 }
+            clamp_variable = { var = AUS_romanian_loyalty min = 0 max = 100 }
+            clamp_variable = { var = AUS_italian_loyalty min = 0 max = 100 }
+        }
+    }
+    else = {
+        # If liberals aren't in control → reset democratic drift, no clamps
+        set_variable = { AUS_imperial_council_democratic_drift = 0 }
+        clamp_variable = { var = AUS_hungarian_loyalty min = 0 max = 100 }
+        clamp_variable = { var = AUS_czechoslovak_loyalty min = 0 max = 100 }
+        clamp_variable = { var = AUS_croat_loyalty min = 0 max = 100 }
+        clamp_variable = { var = AUS_serb_loyalty min = 0 max = 100 }
+        clamp_variable = { var = AUS_pole_loyalty min = 0 max = 100 }
+        clamp_variable = { var = AUS_ruthenian_loyalty min = 0 max = 100 }
+        clamp_variable = { var = AUS_romanian_loyalty min = 0 max = 100 }
+        clamp_variable = { var = AUS_italian_loyalty min = 0 max = 100 }
+    }
+	if = {
+        limit = { has_country_flag = AUS_imperial_council_social_democrat }
+
+        # DEMOCRATIC DRIFT (double liberal)
+        set_variable = { AUS_imperial_council_democratic_drift = AUS_parliament_influence }
+        multiply_variable = {AUS_imperial_council_democratic_drift = 0.04}
+
+        # CONSUMER GOODS: 0, 0.05, 0.1, 0.15, 0.2
+        set_variable = { AUS_imperial_council_consumer_goods = AUS_parliament_influence }
+        multiply_variable = {AUS_imperial_council_consumer_goods = 0.05}
+
+        # STABILITY: signed by relations, scaled so max = +/-0.25 at influence 4
+        # stability = 0.03125 * influence * relations  (since 0.03125 * 4 * 2 = 0.25)
+        set_variable = { AUS_imperial_council_stability = AUS_parliament_influence }
+        multiply_variable = {AUS_imperial_council_stability = AUS_parliament_relations}
+        multiply_variable = {AUS_imperial_council_stability = 0.03}
+
+    } else = {
+        set_variable = { AUS_imperial_council_democratic_drift = 0 }
+        set_variable = { AUS_imperial_council_consumer_goods = 0 }
+        set_variable = { AUS_imperial_council_stability = 0 }
     }
 }
 
