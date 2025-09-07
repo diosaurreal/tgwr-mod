@@ -45,8 +45,7 @@
 					limit = {
 						OR = {
 							tag = ROOT
-							is_in_faction_with = ROOT
-							is_subject_of = ROOT
+							is_ally_with = ROOT
 						}
 						NOT = {
 							has_country_flag = great_war_loser
@@ -98,8 +97,7 @@
 					limit = {
 						OR = {
 							tag = ROOT
-							is_in_faction_with = ROOT
-							is_subject_of = ROOT
+							is_ally_with = ROOT
 						}
 						NOT = {
 							has_country_flag = great_war_loser
@@ -350,6 +348,63 @@
 				ROOT = {
 					annex_country = {
 						target = SOV
+					}
+				}
+			}
+			# Post War Whites
+			if = {
+				limit = {
+					has_global_flag = russian_civil_war
+					original_tag = RUS
+					is_subject = no
+					NOT = {
+						tag = SOV
+						country_exists = SOV
+					}
+					FROM = {
+						original_tag = RUS
+						NOT = { tag = SOV }
+					}
+				}
+				FROM = {
+					transfer_navy = {
+						target = ROOT
+					}
+				}
+				annex_country = {
+					target = FROM
+				}
+				if = {
+					limit = {
+						has_subject = KAZ
+						any_owned_state = {
+							is_core_of = KAZ
+						}
+					}
+					every_owned_state = {
+						limit = {
+							is_core_of = KAZ
+						}
+						transfer_state_to = KAZ
+					}
+				}
+				if = {
+					limit = {
+						has_subject = TRK
+						any_owned_state = {
+							OR = {
+								state = 585
+								state = 586
+								state = 732
+								state = 1219
+							}
+						}
+					}
+					every_owned_state = {
+						limit = {
+							is_core_of = TRK
+						}
+						transfer_state_to = TRK
 					}
 				}
 			}
@@ -4812,6 +4867,7 @@
 					annex_country = {
 						target = FUJ
 					}
+					FRA_the_first_carrier_effect = yes
 				}
 				GRE = {
 					annex_country = {
@@ -4846,6 +4902,12 @@
 					annex_country = {
 						target = NIC
 					}
+				}
+				GER = {
+					GER_steal_netherlands_ships = yes
+				}
+				BRA = {
+					BRA_sao_paulo_battleship_effect = yes
 				}
 			}
 			if = {
@@ -5678,6 +5740,42 @@
 					}
 				}
 			}
+			# Post War Whites	
+			if = {
+				limit = {
+					has_global_flag = russian_civil_war
+					original_tag = RUS
+					has_subject = CER
+					NOT = {
+						tag = SOV
+						country_exists = SOV
+					}
+					any_enemy_country = {
+						original_tag = RUS
+						is_subject = no
+						NOT = { tag = SOV }
+					}
+				}
+				end_puppet = CER
+				random_enemy_country = {
+					limit = {
+						original_tag = RUS
+						is_subject = no
+						NOT = { tag = SOV }
+					}
+					white_peace = CER
+					CER = {
+						get_current_government_type = yes
+					}
+					set_autonomy = {
+						target = CER
+						autonomy_state = autonomy_tgwr_concession
+					}
+					CER = {
+						restore_previous_government_type = yes
+					}
+				}
+			}
 			if = {
 				limit = {
 					is_balkan_nation = yes
@@ -6231,6 +6329,7 @@
 						country_event = ww1_china.155
 					}
 				}
+				set_global_flag = national_protection_war_end
 			}
 			# national protection army victorious
 			if = {
@@ -6305,6 +6404,7 @@
 						}
 					}
 				}
+				set_global_flag = national_protection_war_end
 			}
 			if = {
 				limit = {
@@ -6394,12 +6494,7 @@
 					FROM = {
 						OR = {
 							tag = AUS
-							any_country = {
-								OR = {
-									is_in_faction_with = AUS
-									is_subject_of = AUS
-								}								
-							}
+							is_ally_with = AUS
 						}
 					}
 
@@ -6886,10 +6981,7 @@
 						random_country = {
 							limit = {
 								original_tag = UKR
-								OR = {
-									is_subject_of = SOV
-									is_in_faction_with = SOV
-								}
+								is_ally_with = SOV
 							}
 							if = {
 								limit = {
@@ -6908,10 +7000,7 @@
 						random_country = {
 							limit = {
 								original_tag = BLR
-								OR = {
-									is_subject_of = SOV
-									is_in_faction_with = SOV
-								}
+								is_ally_with = SOV
 							}
 							if = {
 								limit = {
@@ -6923,10 +7012,7 @@
 						random_country = {
 							limit = {
 								original_tag = LIT
-								OR = {
-									is_subject_of = SOV
-									is_in_faction_with = SOV
-								}
+								is_ally_with = SOV
 							}
 							if = {
 								limit = {
@@ -6938,10 +7024,7 @@
 						random_country = {
 							limit = {
 								original_tag = GER
-								OR = {
-									is_subject_of = SOV
-									is_in_faction_with = SOV
-								}
+								is_ally_with = SOV
 							}
 							if = {
 								limit = {
@@ -11149,31 +11232,31 @@
 	#ROOT is new controller #FROM is old controller #FROM.FROM is state ID
 	on_state_control_changed = {
 		effect = {
-			if = {
-				limit = {
-					FROM.FROM = { state = 2 }
-				}
-				if = {
-					limit = {
-						ROOT = {
-							original_tag = ITA
-							NOT = {
-								has_idea = ITA_roman_question
-							}
-						}
-					}	
-					ROOT = { add_ideas = ITA_roman_question }
-				}
-				if = {
-					limit = {
-						FROM = {
-							original_tag = ITA
-							has_idea = ITA_roman_question
-						}
-					}	
-					FROM = { remove_ideas = ITA_roman_question }
-				}
-			}
+			#if = {
+			#	limit = {
+			#		FROM.FROM = { state = 2 }
+			#	}
+			#	if = {
+			#		limit = {
+			#			ROOT = {
+			#				original_tag = ITA
+			#				NOT = {
+			#					has_idea = ITA_roman_question
+			#				}
+			#			}
+			#		}	
+			#		ROOT = { add_ideas = ITA_roman_question }
+			#	}
+			#	if = {
+			#		limit = {
+			#			FROM = {
+			#				original_tag = ITA
+			#				has_idea = ITA_roman_question
+			#			}
+			#		}	
+			#		FROM = { remove_ideas = ITA_roman_question }
+			#	}
+			#}
 			#Bulgaria get Solun
 			if = {
 				limit = {
@@ -11270,45 +11353,45 @@
 					}
 				}
 			}
-			if = {
-				limit = {
-					FROM.FROM = { state = 2 }
-				}
-				if = {
-					limit = {
-						ROOT = {
-							original_tag = ITA
-						}
-					}
-					if = {
-						limit = {
-							NOT = {
-								has_global_flag = ITA_lateran_treaty
-								has_war_with = PAP
-								has_idea = ITA_lateran_treaty
-								has_idea = ITA_roman_question
-							}
-							OR = {
-								PAP = { has_idea = PAP_captivus_vaticani }
-								NOT = { country_exists = PAP }
-							}
-						}
-						add_ideas = ITA_roman_question
-					}
-					if = {
-						limit = {
-							NOT = {
-								has_war_with = PAP
-								has_idea = ITA_lateran_treaty
-								has_idea = ITA_roman_question
-							}
-							has_global_flag = ITA_lateran_treaty
-							is_neighbor_of = PAP
-						}
-						add_ideas = ITA_lateran_treaty
-					}
-				}
-			}
+			#if = {
+			#	limit = {
+			#		FROM.FROM = { state = 2 }
+			#	}
+			#	if = {
+			#		limit = {
+			#			ROOT = {
+			#				original_tag = ITA
+			#			}
+			#		}
+			#		if = {
+			#			limit = {
+			#				NOT = {
+			#					has_global_flag = ITA_lateran_treaty
+			#					has_war_with = PAP
+			#					has_idea = ITA_lateran_treaty
+			#					has_idea = ITA_roman_question
+			#				}
+			#				OR = {
+			#					PAP = { has_idea = PAP_captivus_vaticani }
+			#					NOT = { country_exists = PAP }
+			#				}
+			#			}
+			#			add_ideas = ITA_roman_question
+			#		}
+			#		if = {
+			#			limit = {
+			#				NOT = {
+			#					has_war_with = PAP
+			#					has_idea = ITA_lateran_treaty
+			#					has_idea = ITA_roman_question
+			#				}
+			#				has_global_flag = ITA_lateran_treaty
+			#				is_neighbor_of = PAP
+			#			}
+			#			add_ideas = ITA_lateran_treaty
+			#		}
+			#	}
+			#}
 			# Transcaucasia autonomies
 			if = {
 				limit = {
