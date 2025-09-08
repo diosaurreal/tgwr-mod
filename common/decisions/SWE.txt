@@ -64,7 +64,7 @@ crisis = {
 			OR = {
 				communism > 0.4
 				AND = {
-					has_stability < 0.3
+					has_stability < 0.5
 					custom_trigger_tooltip = {
 						tooltip = high_enough_non_conservative_support_tt
 						set_temp_variable = { leftwing_temp = party_popularity@democratic }
@@ -95,6 +95,10 @@ crisis = {
 			}
 			remove_ideas = SWE_anti_conservative_coalition
 			add_ideas = SWE_effects_of_coup
+			add_timed_idea = {
+				idea = SWE_acceptance_of_status_quo
+				days = 365
+			}
 			hidden_effect = {
 				country_event = {
 					id = ww_sverige_demo_crisis.9
@@ -110,6 +114,54 @@ crisis = {
 		complete_effect = {
 			custom_effect_tooltip = a_leftwing_government_takes_charge
 			set_country_flag = sweden_anti_demo_successful
+			
+			add_to_variable = {
+				tooltip = swe_con_dem_vote_f_tt
+				var = SWE_con_dem_votes_f
+				value = -0.12
+			}
+			add_to_variable = {
+				tooltip = swe_soc_dem_vote_f_tt
+				var = SWE_soc_dem_votes_f
+				value = 0.10
+			}
+			add_to_variable = {
+				tooltip = swe_lib_dem_vote_f_tt
+				var = SWE_lib_dem_votes_f
+				value = 0.02
+			}
+			custom_effect_tooltip = skip_line
+			add_to_variable = {
+				tooltip = swe_con_dem_vote_a_tt
+				var = SWE_con_dem_votes_a
+				value = -0.08
+			}
+			add_to_variable = {
+				tooltip = swe_soc_dem_vote_a_tt
+				var = SWE_soc_dem_votes_a
+				value = 0.07
+			}
+			add_to_variable = {
+				tooltip = swe_lib_dem_vote_a_tt
+				var = SWE_lib_dem_votes_a
+				value = 0.01
+			}
+			custom_effect_tooltip = skip_line
+			add_to_variable = {
+				tooltip = swe_con_neu_vote_a_tt
+				var = SWE_con_neu_votes_a
+				value = -0.05
+			}
+			add_to_variable = {
+				tooltip = swe_agr_neu_vote_a_tt
+				var = SWE_agr_neu_votes_a
+				value = 0.05
+			}
+			
+			country_event = {
+				id = ww_sverige_demo_crisis.10
+			}
+			
 			# SocDem government
 				# If socialist support is above 40% other event from communists
 		}
@@ -198,6 +250,32 @@ crisis = {
 					add_ideas = SWE_threat_of_famine
 				}
 			}
+		}
+	}
+	SWE_demands_of_elections_mission = {
+		allowed = {
+			always = no
+		}
+		available = {
+			OR = {
+				has_completed_focus = SWE_kungliga_regeringen
+				has_completed_focus = SWE_military_control
+				has_elections = yes
+			}
+		}
+		visible = {
+			original_tag = SWE
+		}
+		
+		fire_only_once = yes
+		
+		is_good = no
+		
+		days_mission_timeout = 210
+		
+		timeout_effect = {
+			add_stability = -0.20
+			add_war_support = -0.20
 		}
 	}
 }
@@ -488,7 +566,7 @@ SWE_staaff_emergency = {
 			modifier = {
 				factor = 0
 				is_historical_focus_on = yes
-				date > 1913.9.1
+				date > 1913.3.1
 			}
 		}
 	}
@@ -612,11 +690,11 @@ SWE_staaff_emergency = {
 			modifier = {
 				factor = 0
 				is_historical_focus_on = yes
-				date > 1913.9.1
+				date > 1913.3.1
 			}
 			modifier = {
 				factor = 0
-				date < 1912.9.1
+				date < 1912.6.1
 			}
 		}
 	}
@@ -833,20 +911,75 @@ SWE_riksdagens_decisions = {
 		complete_effect = { SWE_recalculate_second_chamber = yes }
 		ai_will_do = { factor = 0 }
 	}
+	SWE_fix_stuff = {
+		allowed = { tag = SWE }
+		available = { always = no }
+		visible = {
+			has_country_flag = swe_debug_dec
+		}
+		fire_only_once = yes
+		complete_effect = {
+			set_variable = {
+				var = sweden_f_mandate_requirement
+				value = 76
+			}
+			set_variable = {
+				var = sweden_a_mandate_requirement
+				value = 116
+			}
+			add_to_variable = {
+				var = SWE_mil_army_org_factor
+				value = -0.10
+			}
+		}
+		ai_will_do = { factor = 0 }
+	}
+	SWE_debug_first_chamber_info = {
+		allowed = { tag = SWE }
+		
+		available = { always = no }
+		ai_will_do = { factor = 0 }
+	}
+	SWE_debug_andra_chamber_info = {
+		allowed = { tag = SWE }
+		
+		available = { always = no }
+		ai_will_do = { factor = 0 }
+	}
 	# Missions
 	SWE_retain_support_of_majority_of_riksdagen = {
 		allowed = {
 			always = no
 		}
 		available = {
-			custom_trigger_tooltip = {
-				tooltip = combined_soc_dem_support_is_below_fifty
-				set_temp_variable = { leftwing_temp = party_popularity@democratic }
-				add_to_temp_variable = { leftwing_temp = party_popularity@communism }
-				NOT = {
-					check_variable = {
-						var = leftwing_temp
-						value = 0.5
+			OR = {
+				custom_trigger_tooltip = {
+					tooltip = combined_soc_dem_support_is_below_fifty
+					set_temp_variable = { leftwing_temp = party_popularity@democratic }
+					add_to_temp_variable = { leftwing_temp = party_popularity@communism }
+					NOT = {
+						check_variable = {
+							var = leftwing_temp
+							value = 0.5
+						}
+					}
+				}
+				AND = {
+					custom_trigger_tooltip = {
+						tooltip = majority_con_riksdag_f_tt
+						set_temp_variable = { riksdag_f_temp = conservative_f_riksdag }
+						check_variable = {
+							var = riksdag_f_temp
+							value = 76
+						}
+					}
+					custom_trigger_tooltip = {
+						tooltip = majority_con_riksdag_a_tt
+						set_temp_variable = { riksdag_a_temp = conservative_a_riksdag }
+						check_variable = {
+							var = riksdag_a_temp
+							value = 116
+						}
 					}
 				}
 			}
@@ -876,14 +1009,39 @@ SWE_riksdagens_decisions = {
 					value = -0.10
 				}
 			}
-			custom_effect_tooltip = adjust_swe_political_tt
-			add_to_variable = {
-				tooltip = democratic_drift_tt
-				var = SWE_pol_democratic_drift
-				value = -0.01
-			}
+			add_political_power = -100
+			#custom_effect_tooltip = adjust_swe_political_tt
+			#add_to_variable = {
+			#	tooltip = democratic_drift_tt
+			#	var = SWE_pol_democratic_drift
+			#	value = -0.01
+			#}
 		}
 		timeout_effect = {
+			add_stability = 0.05
+		}
+	}
+	SWE_address_prohibition_question = {
+		allowed = {
+			always = no
+		}
+		available = {
+			has_completed_focus = SWE_prohibition_question
+		}
+		cancel_trigger = {
+			OR = {
+				has_completed_focus = SWE_third_liberal_regering
+				has_completed_focus = SWE_courtyard_speech
+			}
+		}
+		
+		fire_only_once = yes
+		
+		is_good = yes
+		
+		days_mission_timeout = 500
+		
+		complete_effect = {
 			if = {
 				limit = {
 					has_power_balance = {
@@ -895,10 +1053,96 @@ SWE_riksdagens_decisions = {
 					value = 0.02
 				}
 			}
-			add_stability = 0.05
+			add_political_power = 35
+		}
+		timeout_effect = {
+			if = {
+				limit = {
+					has_power_balance = {
+						id = SWE_staaf_approval
+					}
+				}
+				add_power_balance_value = {
+					id = SWE_staaf_approval
+					value = -0.10
+				}
+			}
+			add_popularity = {
+				ideology = democratic
+				popularity = -0.01
+			}
+			add_to_variable = {
+				tooltip = swe_lib_dem_vote_f_tt
+				var = SWE_lib_dem_votes_f
+				value = -0.02
+			}
+			add_to_variable = {
+				tooltip = swe_con_dem_vote_f_tt
+				var = SWE_con_dem_votes_f
+				value = 0.01
+			}
+			add_to_variable = {
+				tooltip = swe_agr_dem_vote_f_tt
+				var = SWE_agr_dem_votes_f
+				value = 0.01
+			}
 		}
 	}
-	# Mission about war investment
+	SWE_public_demand_rearmament_mission = {
+		allowed = {
+			always = no
+		}
+		available = {
+			has_completed_focus = SWE_swedish_rearmament
+			has_completed_focus = SWE_support_the_military
+		}
+		cancel_trigger = {
+			OR = {
+				has_idea = idea_army_restrictions
+				has_idea = idea_armistice
+			}
+		}
+		
+		fire_only_once = yes
+		
+		days_mission_timeout = 365
+		
+		complete_effect = {
+			add_war_support = 0.01
+		}
+		timeout_effect = {
+			add_stability = -0.05
+			add_political_power = -50
+		}
+	}
+	# Riksdag Slowdown
+	SWE_riksdag_rigidness_removal = {
+		allowed = {
+			always = no
+		}
+		available = {
+			# If decision is used, then this will be removed
+			always = no
+		}
+		
+		fire_only_once = yes
+		
+		is_good = yes
+		
+		days_mission_timeout = 90
+		
+		timeout_effect = {
+			custom_effect_tooltip = restore_the_riksdag_requirement_to_base_value
+			set_variable = {
+				var = sweden_f_mandate_requirement
+				value = 76
+			}
+			set_variable = {
+				var = sweden_a_mandate_requirement
+				value = 116
+			}
+		}
+	}
 	# Decisions
 	SWE_prepare_statskommisioner_for_wartime = {
 		allowed = {
@@ -934,7 +1178,6 @@ SWE_riksdagens_decisions = {
 		}
 		visible = {
 			has_decision = SWE_prepare_statskommisioner_for_wartime
-			has_global_flag = great_war_ends
 		}
 		available = {
 			has_war = no
@@ -953,37 +1196,6 @@ SWE_riksdagens_decisions = {
 			modifier = {
 				add = 10
 				date > 1917.1.1
-			}
-		}
-	}
-	SWE_organise_additional_administrative_funds = {
-		allowed = {
-			original_tag = SWE
-		}
-		visible = {
-			has_completed_focus = SWE_second_karl_staaff_regeringen
-		}
-		available = {
-			NOT = { has_idea = SWE_temporary_state_of_ermegency }
-		}
-		
-		cost = 25
-		fire_only_once = yes
-		days_remove = 140
-		
-		modifier = {
-			consumer_goods_factor = 0.05
-		}
-		
-		remove_effect = {
-			add_political_power = 100
-		}
-		
-		ai_will_do = {
-			base = 0
-			modifier = {
-				add = 100
-				date > 1913.1.1
 			}
 		}
 	}
@@ -1113,69 +1325,6 @@ SWE_riksdagens_decisions = {
 			}
 		}
 	}
-	SWE_parliament_and_dem = {
-		allowed = {
-			original_tag = SWE
-		}
-		visible = {
-			has_completed_focus = SWE_second_karl_staaff_regeringen
-			NOT = { has_completed_focus = SWE_fuel_to_the_fire }
-			has_government = democratic
-		}
-		available = {
-			democratic < 0.6
-			has_completed_focus = SWE_liberalism_and_parliamentalism
-			NOT = { has_completed_focus = SWE_fuel_to_the_fire }
-			OR = {
-				has_country_leader_ideology = social_liberalism
-				has_country_leader_ideology = social_democracy
-				has_idea = SWE_parliamentalism
-				#democratic < 0.3
-			}
-			NOT = { has_idea = SWE_temporary_state_of_ermegency }
-		}
-		cancel_trigger = {
-			hidden_trigger = {
-				NOT = { has_government = democratic }
-			}
-		}
-		
-		cost = 25
-		days_remove = 120
-		fire_only_once = yes
-		
-		modifier = {
-			democratic_drift = 0.07
-		}
-		
-		ai_will_do = {
-			base = 0
-			modifier = {
-				add = 1
-				democratic < 0.45
-			}
-			modifier = {
-				add = 1
-				democratic < 0.4
-			}
-			modifier = {
-				add = 1
-				democratic < 0.35
-			}
-			modifier = {
-				add = 1
-				democratic < 0.3
-			}
-			modifier = {
-				add = 1
-				democratic < 0.25
-			}
-			modifier = {
-				factor = 0
-				has_political_power < 50
-			}
-		}
-	}
 	SWE_implement_allman_folkpension = {
 		# People over 67, have some money
 			# (less so if you're a woman unfortunately)
@@ -1189,12 +1338,8 @@ SWE_riksdagens_decisions = {
 			date > 1911.1.1
 		}
 		available = {
-			has_war = no
 			has_stability > 0.35
-			NOT = {
-				has_government = fascism
-			}
-			fascism < 0.2
+			SWE_has_majority_for_reform_social_liberal = yes
 			NOT = { has_idea = SWE_temporary_state_of_ermegency }
 		}
 		fire_only_once = yes
@@ -1244,6 +1389,136 @@ SWE_riksdagens_decisions = {
 			}
 		}
 	}
+	SWE_implement_laws_around_driving_license = {
+		# Körkort
+			# A few laws around körkort was implemented
+		allowed = {
+			tag = SWE
+		}
+		visible = {
+			date > 1916.1.1
+			NOT = {
+				has_country_flag = { 
+					flag = sweden_korkort_flag
+					value = 1
+				}
+			}
+		}
+		
+		fire_only_once = yes
+		
+		days_remove = 120
+		cost = 20
+		
+		remove_effect = {
+			add_stability = 0.02
+			if = {
+				limit = {
+					has_country_flag = sweden_korkort_flag
+				}
+				modify_country_flag = {
+					flag = sweden_korkort_flag
+					value = 1
+				}
+			}
+			else = {
+				set_country_flag = {
+					flag = sweden_korkort_flag
+					value = 1
+				}
+			}
+		}
+		ai_will_do = {
+			base = 10
+		}
+	}
+	SWE_implement_laws_around_driving_license_2 = {
+		# Körkort
+			# Some tests were implemented to test ability to drive for drivings license (theoretical and practical)
+		allowed = {
+			tag = SWE
+		}
+		visible = {
+			date > 1920.1.1
+			has_country_flag = {
+				flag = sweden_korkort_flag
+				days > 365
+			}
+			has_country_flag = { 
+				flag = sweden_korkort_flag
+				value = 1
+			}
+			NOT = {
+				has_country_flag = { 
+					flag = sweden_korkort_flag
+					value = 3
+				}
+			}
+		}
+		
+		fire_only_once = yes
+		
+		days_remove = 120
+		cost = 15
+		
+		remove_effect = {
+			add_stability = 0.015
+		}
+		ai_will_do = {
+			base = 10
+		}
+	}
+	SWE_implement_laws_around_driving_license_3 = {
+		# Körkort
+			# 1923 ökade kraven på föraren, så att man både skulle vara en god förare och vara väl förtrogen med fordonet.
+		allowed = {
+			tag = SWE
+		}
+		visible = {
+			date > 1923.1.1
+			has_country_flag = {
+				flag = sweden_korkort_flag
+				days > 365
+			}
+			has_country_flag = { 
+				flag = sweden_korkort_flag
+				value = 2
+			}
+			NOT = {
+				has_country_flag = { 
+					flag = sweden_korkort_flag
+					value = 3
+				}
+			}
+		}
+		
+		fire_only_once = yes
+		
+		days_remove = 120
+		cost = 10
+		
+		remove_effect = {
+			add_stability = 0.01
+			if = {
+				limit = {
+					has_country_flag = sweden_korkort_flag
+				}
+				modify_country_flag = {
+					flag = sweden_korkort_flag
+					value = 1
+				}
+			}
+			else = {
+				set_country_flag = {
+					flag = sweden_korkort_flag
+					value = 1
+				}
+			}
+		}
+		ai_will_do = {
+			base = 10
+		}
+	}
 	SWE_push_suffrage_through = {
 		allowed = {
 			original_tag = SWE
@@ -1253,7 +1528,6 @@ SWE_riksdagens_decisions = {
 				has_government = democratic
 				has_government = communism
 			}
-			
 			custom_trigger_tooltip = {
 				tooltip = conservatives_wont_support_this_unless_forced
 				OR = {
@@ -1282,31 +1556,39 @@ SWE_riksdagens_decisions = {
 						}
 					}
 					AND = {
+						OR = {
+							has_country_leader_ideology = social_liberalism
+							has_country_leader_ideology = social_democracy
+							has_government = communism
+						}
 						set_temp_variable = { leftwing_a_temp = liberal_a_riksdag }
 						add_to_temp_variable = { leftwing_a_temp = socialist_a_riksdag }
 						check_variable = {
-							var = leftwing_f_temp
+							var = leftwing_a_temp
 							value = 116
 						}
 						set_temp_variable = { leftwing_f_temp = liberal_f_riksdag }
 						add_to_temp_variable = { leftwing_f_temp = socialist_f_riksdag }
 						check_variable = {
-							var = leftwing_a_temp
+							var = leftwing_f_temp
 							value = 76
 						}
-						communism > 0.35	 # to make it less likely early on
+						communism > 0.3	 # to make it less likely early on
 					}
 				}
 			}
 			NOT = { has_idea = SWE_temporary_state_of_ermegency }
 		}
 		fire_only_once = yes
+		priority = 5
 		
 		days_remove = 7
 		cost = 50
 		
 		complete_effect = {
 			set_country_flag = SWE_suffrage_flag
+			SWE_init_first_chamber = yes
+			SWE_init_second_chamber = yes
 		}
 		remove_effect = {
 			if = {
@@ -1320,20 +1602,12 @@ SWE_riksdagens_decisions = {
 					value = -0.15
 				}
 			}
-			add_stability = 0.05
-			add_popularity = {
-				ideology = democratic
-				popularity = 0.05
-			}
-			add_popularity = {
-				ideology = communism
-				popularity = 0.02
-			}
-			add_popularity = {
-				ideology = fascism
-				popularity = 0.01
-			}
 			custom_effect_tooltip = adjust_swe_political_tt
+			add_to_variable = {
+				tooltip = political_power_cost_tt
+				var = SWE_pol_political_power_cost
+				value = -0.05
+			}
 			add_to_variable = {
 				tooltip = stability_factor_tt
 				var = SWE_pol_stability_factor
@@ -1349,6 +1623,85 @@ SWE_riksdagens_decisions = {
 				var = SWE_pol_neutrality_drift
 				value = -0.01
 			}
+			custom_effect_tooltip = skip_line
+			if = {
+				limit = { has_idea = SWE_new_liberalism }
+				add_to_variable = {
+					tooltip = swe_con_dem_vote_f_tt
+					var = SWE_con_dem_votes_f
+					value = -0.11
+				}
+				add_to_variable = {
+					tooltip = swe_agr_dem_vote_f_tt
+					var = SWE_agr_dem_votes_f
+					value = -0.01
+				}
+				add_to_variable = {
+					tooltip = swe_lib_dem_vote_f_tt
+					var = SWE_lib_dem_votes_f
+					value = 0.04
+				}
+				add_to_variable = {
+					tooltip = swe_soc_dem_vote_f_tt
+					var = SWE_soc_dem_votes_f
+					value = 0.08
+				}
+			}
+			else = {
+				add_to_variable = {
+					tooltip = swe_con_dem_vote_f_tt
+					var = SWE_con_dem_votes_f
+					value = -0.09
+				}
+				add_to_variable = {
+					tooltip = swe_agr_dem_vote_f_tt
+					var = SWE_agr_dem_votes_f
+					value = -0.01
+				}
+				add_to_variable = {
+					tooltip = swe_lib_dem_vote_f_tt
+					var = SWE_lib_dem_votes_f
+					value = -0.04
+				}
+				add_to_variable = {
+					tooltip = swe_soc_dem_vote_f_tt
+					var = SWE_soc_dem_votes_f
+					value = 0.14
+				}
+			}
+			custom_effect_tooltip = skip_line
+			add_to_variable = {
+				tooltip = swe_lib_soc_vote_f_tt
+				var = SWE_lib_soc_votes_f
+				value = -0.54
+			}
+			add_to_variable = {
+				tooltip = swe_soc_soc_vote_f_tt
+				var = SWE_soc_soc_votes_f
+				value = 0.48
+			}
+			add_to_variable = {
+				tooltip = swe_com_soc_vote_f_tt
+				var = SWE_com_soc_votes_f
+				value = 0.06
+			}
+			custom_effect_tooltip = skip_line
+			add_to_variable = {
+				tooltip = swe_lib_dem_vote_a_tt
+				var = SWE_lib_dem_votes_a
+				value = -0.06
+			}
+			add_to_variable = {
+				tooltip = swe_soc_dem_vote_a_tt
+				var = SWE_soc_dem_votes_a
+				value = 0.04
+			}
+			add_to_variable = {
+				tooltip = swe_agr_dem_vote_a_tt
+				var = SWE_agr_dem_votes_a
+				value = 0.02
+			}
+			# Election should occur summer after if possible
 		}
 		ai_will_do = {
 			base = 0
@@ -1364,7 +1717,10 @@ SWE_riksdagens_decisions = {
 		}
 		visible = {
 			date > 1912.12.1
-			NOT = { has_completed_focus = SWE_courtyard_speech }
+			OR = {
+				NOT = { has_completed_focus = SWE_courtyard_speech }
+				has_completed_focus = SWE_anti_authoritan_coalition_successful
+			}
 		}
 		available = {
 			NOT = { has_idea = SWE_higher_taxes }
@@ -1380,30 +1736,17 @@ SWE_riksdagens_decisions = {
 			OR = {
 				has_completed_focus = SWE_fix_what_is_backwards
 				has_completed_focus = SWE_promote_reasonable_reforms
+				has_completed_focus = SWE_welfare_reforms
 			}
 			OR = {
 				has_country_leader_ideology = social_liberalism
 				has_country_leader_ideology = social_democracy
 				has_government = communism
 			}
-			# Support from non-conservatives (can maybe bring over Agrarian parties?)
-			custom_trigger_tooltip = {
-				tooltip = national_conservative_support_f_below_half_tt
-				set_temp_variable = { con_f_temp = AV_f }
-				add_to_temp_variable = { con_f_temp = H_f }
-				add_to_temp_variable = { con_f_temp = NAP_f }
-				if = {
-					limit = { SWE_agrarian_party_split = no }
-					add_to_temp_variable = { con_f_temp = C_f }
-				}
-				NOT = {
-					check_variable = {
-						var = con_f_temp
-						value = 76
-					}
-				}
-			}
+			# Basically social liberal trigger without support from right
+			SWE_has_majority_for_reform_radical = yes
 		}
+		
 		fire_only_once = yes
 		
 		days_remove = 120
@@ -1456,24 +1799,32 @@ SWE_riksdagens_decisions = {
 			original_tag = SWE
 		}
 		visible = {
-			date > 1913.1.1
 			has_idea = SWE_forsvarsvasendet
 			NOT = {
 				has_country_leader_ideology = social_liberalism
 				has_country_leader_ideology = social_democracy
 			}
-			has_completed_focus = SWE_courtyard_speech
+			OR = {
+				has_completed_focus = SWE_courtyard_speech
+				has_completed_focus = SWE_third_liberal_regering
+			}
 		}
 		available = {
 			OR = {
-				has_war_support > 0.15
-				threat > 0.1
+				has_war_support > 0.2
+				threat > 0.15
 			}
 			# Nothing for now, fix later
+			NOT = {
+				has_country_leader = {
+					character = SWE_karl_staaff
+					ruling_only = yes
+				}
+			}
 		}
 		fire_only_once = yes
 		
-		cost = 50
+		cost = 20
 		
 		complete_effect = {
 			remove_ideas = SWE_forsvarsvasendet
@@ -1483,37 +1834,321 @@ SWE_riksdagens_decisions = {
 			base = 100
 		}
 	}
-	SWE_temporary_increase_of_taxation_for_government = {
-		# Generic for now
+	SWE_motion_for_military_expansion = {
 		allowed = {
-			tag = SWE
+			original_tag = SWE
+		}
+		visible = {
+			OR = {
+				has_completed_focus = SWE_keeping_our_head_down
+				has_completed_focus = SWE_foreign_policy_of_the_king
+				has_completed_focus = SWE_creation_of_nationalistiskt_arbetarparti
+			}
+		}
+		available = {
+			has_completed_focus = SWE_support_the_military
+			SWE_has_majority_for_reform_war = yes
+			NOT = { has_idea = idea_army_restrictions }
+		}
+		
+		custom_cost_trigger = {
+			command_power > 24
+			has_political_power > 49
+		}
+		custom_cost_text = decision_cost_CP_25_pp_50
+
+		days_remove = 175
+		fire_only_once = yes
+		
+		complete_effect = {
+			hidden_effect = {
+				add_command_power = -25
+				add_political_power = -50
+			}
+			activate_mission = SWE_goal_of_army_bill
+		}
+		
+		modifier = {
+			war_support_weekly = 0.002
+		}
+		
+		remove_effect = {
+			army_experience = 15
+			custom_effect_tooltip = adjust_swe_military_tt
+			add_to_variable = {
+				tooltip = training_time_factor_tt
+				var = SWE_mil_training_time_factor
+				value = -0.10
+			}
+			add_to_variable = {
+				tooltip = mobilization_speed_tt
+				var = SWE_mil_mobilization_speed
+				value = 0.10
+			}
+			custom_effect_tooltip = adjust_swe_economic_tt
+			add_to_variable = {
+				tooltip = industrial_capacity_factory_tt
+				var = SWE_mil_industrial_capacity_factory
+				value = 0.02
+			}
+		}
+		
+		ai_will_do = {
+			base = 1
+			modifier = {	# Just to make sure pp is spent properly
+				factor = 0
+				has_political_power < 151
+			}
+		}
+	}
+	SWE_kommunal_skattereform = {
+		# https://snd.se/sv/vivill/party/fp/v/1917
+		# A desire to move more of income of state to schools, infrastructure and poor laws
+		allowed = {
+			original_tag = SWE
 		}
 		visible = {
 			OR = {
 				has_completed_focus = SWE_fix_what_is_backwards
 				has_completed_focus = SWE_promote_reasonable_reforms
+				has_completed_focus = SWE_welfare_reforms
+				# It was implemented post war
+				AND = {
+					has_global_flag = great_war_ends
+					date > 1917.1.1
+					has_government = democratic
+				}
 			}
 		}
 		available = {
-			has_war = no
-			has_stability > 0.6
 			OR = {
-				communism > 0.12
-				neutrality < 0.1
+				has_country_leader_ideology = social_liberalism
+				has_country_leader_ideology = social_democracy
+				AND = {
+					has_government = communism
+					custom_trigger_tooltip = {
+						tooltip = leftwing_seats_make_up_twentyfive_per
+						OR = {
+							check_variable = {
+								var = liberal_f_riksdag
+								value = 38
+							}
+							check_variable = {
+								var = liberal_a_riksdag
+								value = 58
+							}
+						}
+					}
+				}
+			}
+			SWE_has_majority_for_reform_social_liberal = yes
+			NOT = { has_idea = SWE_temporary_state_of_ermegency }
+		}
+		fire_only_once = yes
+		
+		days_remove = 365
+		cost = 50
+		
+		remove_effect = {
+			custom_effect_tooltip = adjust_swe_political_tt
+			add_to_variable = {
+				tooltip = stability_factor_tt
+				var = SWE_pol_stability_factor
+				value = 0.05
+			}
+			add_to_variable = {
+				tooltip = research_speed_factor_tt
+				var = SWE_pol_research_speed_factor
+				value = 0.01
+			}
+			custom_effect_tooltip = adjust_swe_economic_tt
+			add_to_variable = {
+				tooltip = consumer_goods_factor_tt
+				var = SWE_consumer_goods
+				value = -0.01
+			}
+			custom_effect_tooltip = adjust_emigration_problem_tt
+			add_to_variable = {
+				tooltip = monthly_population_tt
+				var = SWE_emigration_monthly_population
+				value = 0.03
+			}
+		}
+		
+		ai_will_do = {
+			base = 100
+		}
+	}
+	SWE_anti_trust_and_monopoly_reforms = {
+		# https://snd.se/sv/vivill/party/fp/v/1920
+		# Anti-monopoly stuff (monopolies and trusts being looked into, but otherwise no restrictions to be implemented)
+		allowed = {
+			tag = SWE
+		}
+		visible = {
+			OR = {
+				has_completed_focus = SWE_svensk_liberalism
+				has_completed_focus = SWE_a_mixed_economy_solution
+			}
+		}
+		available = {
+			OR = {
+				AND = {
+					OR = {
+						has_country_leader_ideology = social_liberalism
+						has_country_leader_ideology = social_democracy
+					}
+				}
+				AND = {
+					OR = {
+						has_country_leader_ideology = social_democracy
+						has_government = communism
+					}
+				}
+			}
+			if = {
+				limit = {
+					OR = {
+						has_country_leader_ideology = social_liberalism
+						has_country_leader_ideology = social_democracy
+					}
+				}
+				SWE_has_majority_for_reform_liberalism = yes
+			}
+			else_if = {
+				limit = {
+					OR = {
+						has_country_leader_ideology = social_democracy
+						has_government = communism
+					}
+				}
+				SWE_has_majority_for_reform_socialist = yes
 			}
 		}
 		fire_only_once = yes
 		
-		modifier = {
-			stability_factor = -0.05
-			consumer_goods_factor = -0.05
-		}
-		
 		days_remove = 365
 		cost = 100
 		
+		remove_effect = {
+			custom_effect_tooltip = adjust_swe_economic_tt
+			add_to_variable = {
+				tooltip = political_power_cost_tt
+				var = SWE_eco_political_power_cost
+				value = 0.10
+			}
+			add_to_variable = {
+				tooltip = stability_factor_tt
+				var = SWE_eco_stability
+				value = 0.03
+			}
+			add_to_variable = {
+				tooltip = consumer_goods_factor_tt
+				var = SWE_consumer_goods
+				value = -0.03
+			}
+		}
+		
 		ai_will_do = {
 			base = 1
+		}
+	}
+	SWE_reduce_state_waste = {
+		# https://snd.se/sv/vivill/party/fp/v/1920 (and 1917)
+		# Wishing to reduce the state's waste of money essentially
+		allowed = {
+			tag = SWE
+		}
+		visible = {
+			has_completed_focus = SWE_svensk_liberalism
+		}
+		available = {
+			OR = {
+				has_country_leader_ideology = social_liberalism
+				has_country_leader_ideology = classical_liberalism
+			}
+			SWE_has_majority_for_reform_liberalism = yes
+		}
+		fire_only_once = yes
+		
+		days_remove = 210
+		cost = 50
+		
+		remove_effect = {
+			custom_effect_tooltip = adjust_swe_economic_tt
+			add_to_variable = {
+				tooltip = political_power_cost_tt
+				var = SWE_eco_political_power_cost
+				value = -0.15
+			}
+			# Maybe represent it differently in future
+			add_to_variable = {
+				tooltip = production_speed_buildings_factor_tt
+				var = SWE_build_speed
+				value = -0.03
+			}
+		}
+		
+		ai_will_do = {
+			base = 1
+		}
+	}
+	SWE_reduction_of_unnessecary_tariffs = {
+		allowed = {
+			tag = SWE
+		}
+		visible = {
+			has_completed_focus = SWE_an_unfortunate_passing
+			has_country_flag = {
+				flag = swe_customs_flag
+				days > 365
+			}
+			NOT = {
+				check_variable = {
+					var = SWE_min_export
+					value = -0.04
+				}
+			}
+		}
+		
+		available = {
+			OR = {
+				has_country_leader_ideology = social_liberalism
+				has_country_leader_ideology = social_democracy
+				has_country_leader_ideology = classical_liberalism	# No one to fit this rn technically afaik
+			}
+			OR = {
+				has_completed_focus = SWE_svensk_liberalism
+				has_completed_focus = SWE_a_mixed_economy_solution	# Maybe remove this one
+			}
+			SWE_has_majority_for_reform_liberalism = yes
+		}
+		fire_only_once = yes
+		
+		days_remove = 50
+		cost = 25
+		
+		remove_effect = {
+			custom_effect_tooltip = adjust_swe_economic_tt
+			add_to_variable = {
+				tooltip = political_power_gain_tt
+				var = SWE_eco_political_power_gain
+				value = -0.03
+			}
+			add_to_variable = {
+				tooltip = min_export_tt
+				var = SWE_min_export
+				value = 0.05
+			}
+			add_to_variable = {
+				tooltip = consumer_goods_factor_tt
+				var = SWE_consumer_goods
+				value = -0.02
+			}
+		}
+		
+		ai_will_do = {
+			base = 10
 		}
 	}
 	SWE_discussion_around_current_tariff = {
@@ -1524,12 +2159,9 @@ SWE_riksdagens_decisions = {
 		}
 		visible = {
 			date > 1912.12.1
-			focus_progress = {
-				focus = SWE_resource_market
-				progress < 0.01
-			}
 			NOT = { has_country_flag = swe_customs_flag }
 		}
+		
 		available = {
 			has_war = no
 		}
@@ -1546,17 +2178,6 @@ SWE_riksdagens_decisions = {
 			country_event = { id = ww_sverige_riksdag.1 }
 			custom_effect_tooltip = SWE_discussion_around_current_tariff_tt
 			#event_option_tooltip = ww_sverige_riksdag.1.a
-			#if = {
-			#	limit = {
-			#		NOT = {
-			#			check_variable = {
-			#				var = SWE_pol_min_export
-			#				value = -0.04
-			#			}
-			#		}
-			#	}
-			#	event_option_tooltip = ww_sverige_riksdag.1.b
-			#}
 		}
 		
 		ai_will_do = {
@@ -1657,37 +2278,156 @@ SWE_riksdagens_decisions = {
 		allowed = {
 			original_tag = SWE
 		}
-		visible = {
-			has_completed_focus = SWE_welfare_reforms
-			date > 1916.1.1
-		}
+		
 		available = {
-			neutrality < 0.2
-			fascism < 0.2
-			NOT = { has_idea = SWE_class_conflict }
 			OR = {
-				has_country_leader_ideology = social_liberalism
+				AND = {
+					has_country_leader_ideology = social_liberalism
+					NOT = { has_idea = SWE_class_conflict }
+				}
+				AND = {
+					has_completed_focus = SWE_reason_and_our_causes
+					has_country_leader = {
+						character = SWE_gustaf_v
+						ruling_only = yes
+					}
+				}
 				has_country_leader_ideology = social_democracy
 				has_government = communism
+			}
+			OR = {
+				has_completed_focus = SWE_reason_and_our_causes
+				has_completed_focus = SWE_welfare_reforms
+				communism > 0.35
+			}
+			if = {
+				limit = { has_completed_focus = SWE_reason_and_our_causes }
+				SWE_has_majority_for_reform_social_liberal = yes
+			}
+			else = {
+				SWE_has_majority_for_reform_radical = yes
 			}
 		}
 		fire_only_once = yes
 		
-		days_remove = 120
-		cost = 50
+		days_remove = 151
+		cost = 25
+		
 		modifier = { political_power_gain = -0.5 }
 		
 		remove_effect = {
-			add_ideas = SWE_eight_hour_workday
+			#add_ideas = SWE_eight_hour_workday
+			custom_effect_tooltip = adjust_swe_economic_tt
+			add_to_variable = {
+				tooltip = stability_factor_tt
+				var = SWE_eco_stability
+				value = 0.05
+			}
+			add_to_variable = {
+				tooltip = production_factory_max_efficiency_factor_tt
+				var = SWE_eco_production_max
+				value = 0.03
+			}
+			add_to_variable = {
+				tooltip = industrial_capacity_factory_tt
+				var = SWE_mil_industrial_capacity_factory
+				value = -0.05
+			}
+			add_to_variable = {
+				tooltip = industrial_capacity_dockyard_tt
+				var = SWE_mil_industrial_capacity_dockyard
+				value = -0.05
+			}
 			custom_effect_tooltip = adjust_emigration_problem_tt
 			add_to_variable = {
 				tooltip = monthly_population_tt
 				var = SWE_emigration_monthly_population
 				value = 0.08
 			}
+			set_country_flag = swe_eight_hour_workday
 		}
 		ai_will_do = {
 			base = 100
+			modifier = {
+				factor = 0
+				date < 1919.8.4
+			}
+		}
+	}
+	SWE_iden_om_folkhemmet = {
+		allowed = {
+			original_tag = SWE
+		}
+		visible = {
+			OR = {
+				date > 1928.1.1
+				AND = {
+					date > 1919.1.1
+					OR = {
+						has_completed_focus = SWE_secure_peace_within_the_left
+						has_completed_focus = SWE_fuel_to_the_fire
+					}
+				}
+			}
+		}
+		
+		available = {
+			OR = {
+				has_government = communism
+				has_completed_focus = SWE_welfare_reforms
+				has_country_leader = {
+					character = SWE_per_albin
+					ruling_only = yes
+				}
+			}
+			SWE_has_majority_for_reform_socialist = yes
+		}
+		fire_only_once = yes
+		
+		days_remove = 365
+		cost = 50
+		
+		remove_effect = {
+			custom_effect_tooltip = adjust_swe_economic_tt
+			add_to_variable = {
+				tooltip = consumer_goods_factor_tt
+				var = SWE_consumer_goods
+				value = 0.10
+			}
+			custom_effect_tooltip = adjust_swe_political_tt
+			add_to_variable = {
+				tooltip = political_power_factor_tt
+				var = SWE_pol_political_power_factor
+				value = 0.10
+			}
+			add_to_variable = {
+				tooltip = stability_factor_tt
+				var = SWE_pol_stability_factor
+				value = 0.10
+			}
+			add_to_variable = {
+				tooltip = research_speed_factor_tt
+				var = SWE_pol_research_speed_factor
+				value = 0.05
+			}
+			add_to_variable = {
+				tooltip = communism_drift_tt
+				var = SWE_pol_communism_drift
+				value = 0.01
+			}
+			custom_effect_tooltip = adjust_emigration_problem_tt
+			add_to_variable = {
+				tooltip = monthly_population_tt
+				var = SWE_emigration_monthly_population
+				value = 0.05
+			}
+		}
+		ai_will_do = {
+			base = 1
+			modifier = {
+				factor = 0
+				date < 1921.1.1
+			}
 		}
 	}
 	SWE_establish_nomadskola = {
@@ -1783,18 +2523,7 @@ SWE_riksdagens_decisions = {
 				# Stealing their land
 				add_extra_state_shared_building_slots = 1
 			}
-			# To represent the people that goes over to Norway
-			custom_effect_tooltip = adjust_emigration_problem_tt
-			add_to_variable = {
-				tooltip = monthly_population_tt
-				var = SWE_emigration_monthly_population
-				value = 0.01
-			}
-			add_to_variable = {
-				tooltip = stability_factor_tt
-				var = SWE_emigration_stability_factor
-				value = -0.01
-			}
+			# Some small-ish manpower loss possibly?
 		}
 		
 		ai_will_do = {
@@ -1871,7 +2600,6 @@ SWE_riksdagens_decisions = {
 		}
 		available = {
 			has_war = no
-			has_stability > 0.5
 			has_country_leader = {
 				character = SWE_ernst_trygger
 				ruling_only = yes
@@ -2146,6 +2874,7 @@ SWE_riksdagens_decisions = {
 					has_war_support > 0.4
 				}
 			}
+			SWE_has_majority_for_reform_war_light = yes
 			threat > 0.2
 			NOT = {
 				has_idea = idea_armistice
@@ -2178,12 +2907,6 @@ SWE_riksdagens_decisions = {
 			add_manpower = 2000
 			if = {
 				limit = {
-					has_idea = limited_conscription
-				}
-				add_ideas = extensive_conscription
-			}
-			else_if = {
-				limit = {
 					OR = {
 						has_idea = disarmed_nation
 						has_idea = volunteer_only
@@ -2215,10 +2938,11 @@ SWE_riksdagens_decisions = {
 		}
 		visible = {
 			date > 1917.1.1
-			has_dynamic_modifier = { modifier = SWE_emigration_problem }
+			#has_dynamic_modifier = { modifier = SWE_emigration_problem }
 		}
 		available = {
 			has_war = no
+			SWE_has_majority_for_reform_social_liberal = yes
 			NOT = { has_idea = SWE_temporary_state_of_ermegency }
 		}
 		
@@ -2345,10 +3069,14 @@ SWE_riksdagens_decisions = {
 			has_government = democratic
 			OR = {
 				has_idea = SWE_albert_ehrensvard
-				threat > 0.15
+				threat > 0.10
 			}
 			focus_progress = {
 				focus = SWE_pro_entente_stance
+				progress < 0.01
+			}
+			focus_progress = {
+				focus = SWE_rally_to_neutrality
 				progress < 0.01
 			}
 			focus_progress = {
@@ -2398,9 +3126,10 @@ SWE_riksdagens_decisions = {
 				has_country_leader_ideology = social_democracy
 				has_government = communism
 			}
-			has_stability > 0.7
-			neutrality < 0.1
-			fascism < 0.1
+			neutrality < 0.25
+			fascism < 0.25
+			#SWE_has_majority_for_reform_radical = yes
+			SWE_has_majority_for_reform_social_liberal = yes
 			NOT = { has_idea = SWE_temporary_state_of_ermegency }
 		}
 		fire_only_once = yes
@@ -2441,53 +3170,7 @@ SWE_riksdagens_decisions = {
 					remove_idea = SWE_class_conflict
 				}
 			}
-			unlock_decision_tooltip = SWE_leverage_industrial_security
 			set_country_flag = swe_handled_class_conflict
-		}
-		ai_will_do = {
-			base = 1
-		}
-	}
-	SWE_leverage_industrial_security = {
-		allowed = {
-			original_tag = SWE
-		}
-		visible = {
-			has_idea = SWE_class_compromise
-		}
-		available = {
-			OR = {
-				has_country_leader_ideology = social_liberalism
-				has_country_leader_ideology = social_democracy
-			}
-			has_stability > 0.7
-			num_of_factories > 20
-			NOT = { has_idea = SWE_hungerskjold }
-			NOT = { has_idea = SWE_temporary_state_of_ermegency }
-		}
-		fire_only_once = yes
-		
-		days_remove = 90
-		modifier = {
-			consumer_goods_factor = 0.05
-			weekly_manpower = 50
-			monthly_population = 0.05
-		}
-		
-		cost = 50
-		
-		remove_effect = {
-			custom_effect_tooltip = adjust_emigration_problem_tt
-			add_to_variable = {
-				tooltip = monthly_population_tt
-				var = SWE_emigration_monthly_population
-				value = 0.07
-			}
-			add_to_variable = {
-				tooltip = stability_factor_tt
-				var = SWE_emigration_stability_factor
-				value = 0.02
-			}
 		}
 		ai_will_do = {
 			base = 1
@@ -2599,6 +3282,9 @@ SWE_riksdagens_decisions = {
 			date > 1911.11.1
 			NOT = { has_country_flag = swe_socialstyrelsen }
 		}
+		available = {
+			SWE_has_majority_for_reform_social_liberal = yes
+		}
 		
 		fire_only_once = yes
 		
@@ -2636,6 +3322,9 @@ SWE_riksdagens_decisions = {
 			SWE_arvid_bergman = {	# Simple check
 				is_advisor = no
 			}
+		}
+		available = {
+			SWE_has_majority_for_reform_social_liberal = yes
 		}
 		
 		fire_only_once = yes
@@ -2707,40 +3396,6 @@ SWE_riksdagens_decisions = {
 			base = 0.1
 		}
 	}
-	SWE_collecitivization_decision = {
-		allowed = {
-			always = no
-		}
-		visible = { has_government = communism }
-		available = {
-			has_stability > 0.6
-			NOT = { has_idea = SWE_temporary_state_of_ermegency }
-		}
-		fire_only_once = yes
-		
-		days_remove = 120
-		
-		modifier = { stability_factor = -0.05 }
-		
-		cost = 50
-		complete_effect = {
-			add_stability = -0.05
-		}
-		
-		remove_effect = {
-			add_timed_idea = {
-				idea = collectivization
-				days = 1095
-			}
-		}
-		ai_will_do = {
-			base = 1
-			modifier = {
-				factor = 0
-				has_stability < 0.7
-			}
-		}
-	}
 	SWE_funds_to_army_jobs = {
 		# Let's bring in those funds!
 		icon = GFX_decision_generic_industry
@@ -2758,6 +3413,7 @@ SWE_riksdagens_decisions = {
 				has_war_support > 0.15
 				threat > 0.1
 			}
+			SWE_has_majority_for_reform_war = yes
 		}
 		
 		fire_only_once = yes
@@ -3006,6 +3662,7 @@ SWE_riksdagens_decisions = {
 		available = {
 			has_completed_focus = SWE_support_for_agrarian_sector
 			NOT = { has_idea = SWE_temporary_state_of_ermegency }
+			SWE_has_majority_for_reform_agrarian = yes
 		}
 		
 		fire_only_once = yes
@@ -3023,15 +3680,20 @@ SWE_riksdagens_decisions = {
 		}
 		
 		remove_effect = {
-			custom_effect_tooltip = adjust_swe_political_tt
+			custom_effect_tooltip = adjust_swe_economic_tt
 			add_to_variable = {
-				tooltip = political_power_cost_tt
-				var = SWE_pol_political_power_cost
+				tooltip = stability_factor_tt
+				var = SWE_eco_stability
 				value = 0.05
 			}
 			add_to_variable = {
-				tooltip = stability_factor_tt
-				var = SWE_pol_stability_factor
+				tooltip = production_speed_industrial_complex_factor_tt
+				var = SWE_civ_build_speed
+				value = 0.03
+			}
+			add_to_variable = {
+				tooltip = consumer_goods_factor_tt
+				var = SWE_consumer_goods
 				value = 0.05
 			}
 			set_country_flag = unlock_agrarian_decisions
@@ -3067,6 +3729,8 @@ SWE_riksdagens_decisions = {
 					}
 				}
 			}
+			NOT = { has_decision = SWE_southern_agrarian_investment }
+			SWE_has_majority_for_reform_agrarian = yes
 			NOT = { has_idea = SWE_temporary_state_of_ermegency }
 		}
 		
@@ -3099,11 +3763,12 @@ SWE_riksdagens_decisions = {
 		days_remove = 300
 		
 		modifier = {
-			political_power_cost = 0.20
+			political_power_cost = 0.15
 			consumer_goods_factor = 0.1
 		}
 		
 		remove_effect = {
+			add_stability = 0.01
 			if = {
 				limit = {
 					owns_state = 38
@@ -3177,6 +3842,8 @@ SWE_riksdagens_decisions = {
 					}
 				}
 			}
+			NOT = { has_decision = SWE_northern_agrarian_investment }
+			SWE_has_majority_for_reform_agrarian = yes
 			NOT = { has_idea = SWE_temporary_state_of_ermegency }
 		}
 		
@@ -3218,11 +3885,12 @@ SWE_riksdagens_decisions = {
 		days_remove = 300
 		
 		modifier = {
-			political_power_cost = 0.20
+			political_power_cost = 0.15
 			consumer_goods_factor = 0.1
 		}
 		
 		remove_effect = {
+			add_stability = 0.01
 			if = {
 				limit = {
 					owns_state = 138
@@ -3355,6 +4023,179 @@ SWE_riksdagens_decisions = {
 			base = 100
 		}
 	}
+	SWE_hold_limited_elections = {
+		allowed = {
+			tag = SWE
+		}
+		visible = {
+			has_elections = no
+			OR = {
+				has_government = fascism
+				has_government = neutrality
+			}
+			has_completed_focus = SWE_military_control
+			NOT = {
+				has_completed_focus = SWE_restoration_of_democracy
+			}
+		}
+		available = {
+			democratic < 0.05
+			communism < 0.05
+			has_stability > 0.6
+			NOT = { has_idea = SWE_the_limited_government }
+		}
+		
+		days_remove = 30
+		days_re_enable = 365
+		cost = 50
+		priority = 10
+		
+		remove_effect = {
+			custom_effect_tooltip = adjust_swe_political_tt
+			add_to_variable = {
+				tooltip = political_power_cost_tt
+				var = SWE_pol_political_power_cost
+				value = -0.05
+			}
+			country_event = { id = ww_sverige_demo_crisis.14 }
+		}
+		
+		ai_will_do = {
+			base = 2
+		}
+	}
+	SWE_realign_conservative_to_na_in_forsta_kammaren = {
+		allowed = {
+			tag = SWE
+		}
+		visible = {
+			has_idea = SWE_the_limited_government
+			NOT = {
+				check_variable = {
+					var = NAP_f
+					value = 40
+				}
+			}
+		}
+		available = {
+			fascism > 0.25
+			custom_trigger_tooltip = {
+				tooltip = can_take_seats_from_h_f_tt
+				check_variable = {
+					var = H_f
+					value = 10
+				}
+			}
+		}
+		cancel_trigger = {
+			NOT = { has_idea = SWE_the_limited_government }
+		}
+		
+		days_remove = 14
+		priority = 10
+		
+		complete_effect = {
+			add_popularity = {
+				ideology = fascism
+				popularity = -0.03
+			}
+		}
+		
+		remove_effect = {
+			add_to_variable = {
+				tooltip = H_f_mandates_tt
+				var = H_f
+				value = -10
+			}
+			add_to_variable = {
+				tooltip = NP_f_mandates_tt
+				var = NAP_f
+				value = 10
+			}
+			SWE_init_first_chamber = yes
+		}
+		
+		ai_will_do = {
+			base = 1
+			modifier = {
+				factor = 0
+				fascism < 0.28
+			}
+			modifier = {
+				factor = 0
+				check_variable = {
+					var = NAP_f
+					value = 40
+				}
+			}
+		}
+	}
+	SWE_realign_conservative_to_na_in_andra_kammaren = {
+		allowed = {
+			tag = SWE
+		}
+		visible = {
+			has_idea = SWE_the_limited_government
+			NOT = {
+				check_variable = {
+					var = NP_a
+					value = 58
+				}
+			}
+		}
+		available = {
+			fascism > 0.25
+			custom_trigger_tooltip = {
+				tooltip = can_take_seats_from_av_a_tt
+				check_variable = {
+					var = AV_a
+					value = 8
+				}
+			}
+		}
+		cancel_trigger = {
+			NOT = { has_idea = SWE_the_limited_government }
+		}
+		
+		days_remove = 14
+		priority = 10
+		
+		complete_effect = {
+			add_popularity = {
+				ideology = fascism
+				popularity = -0.03
+			}
+		}
+		
+		remove_effect = {
+			add_to_variable = {
+				tooltip = AV_a_mandates_tt
+				var = AV_a
+				value = -8
+			}
+			add_to_variable = {
+				tooltip = NP_a_mandates_tt
+				var = NP_a
+				value = 8
+			}
+			SWE_init_second_chamber = yes
+		}
+		
+		ai_will_do = {
+			base = 1
+			modifier = {
+				factor = 0
+				fascism < 0.28
+			}
+			modifier = {
+				factor = 0
+				check_variable = {
+					var = NP_a
+					value = 58
+				}
+			}
+		}
+	}
 }
 political_actions = {
 	SWE_prepare_ourselves_for_the_worst = {
@@ -3369,7 +4210,7 @@ political_actions = {
 		}
 		available = {
 			threat > 0.25
-			num_of_factories > 20
+			num_of_factories > 25
 			OR = {
 				has_idea = SWE_threat_of_famine
 				AND = {
@@ -3406,6 +4247,10 @@ political_actions = {
 			modifier = {
 				add = 1
 				date > 1915.1.1
+			}
+			modifier = {
+				factor = 0.1
+				is_historical_focus_on = yes
 			}
 		}
 	}
@@ -3702,6 +4547,7 @@ operations = {
 			RUS = {
 				exists = yes
 			}
+			NOT = { has_country_flag = sweden_democratic_crisis }
 		}
 		
 		days_remove = 50
@@ -3744,6 +4590,7 @@ operations = {
 				var = SWE_mil_training_time_factor
 				value = -0.05
 			}
+			custom_effect_tooltip = adjust_swe_economic_tt
 			add_to_variable = {
 				tooltip = industrial_capacity_factory_tt
 				var = SWE_mil_industrial_capacity_factory
@@ -3793,7 +4640,10 @@ operations = {
 		fire_only_once = yes
 		
 		complete_effect = {
-			hidden_effect = { add_command_power = -50 }
+			hidden_effect = {
+				add_command_power = -50
+				add_political_power = -50
+			}
 			set_country_flag = SWE_inviting_finnish_volunteers
 			unlock_decision_tooltip = SWE_german_training_for_finnish_volunteers
 		}
@@ -3833,6 +4683,7 @@ operations = {
 		}
 		remove_effect = {
 			custom_effect_tooltip = will_gain_two_finnish_divisions_when_at_war_with_russia
+			set_country_flag = SWE_finland_units_with_russia
 		}
 		
 		ai_will_do = {
@@ -3896,10 +4747,7 @@ SWE_varnplikten_decisions = {
 				has_global_flag = great_war_ends
 			}
 			NOT = { has_idea = idea_army_restrictions }
-			custom_trigger_tooltip = {
-				tooltip = swe_recent_army_imp_taken
-				NOT = { has_country_flag = swe_recent_army_improvement }
-			}
+			NOT = { has_country_flag = swe_recent_army_improvement }
 		}
 		
 		modifier = {
@@ -3992,10 +4840,7 @@ SWE_varnplikten_decisions = {
 			has_war_support > 0.8
 			NOT = { has_decision = SWE_reogranise_the_military_for_future }
 			NOT = { has_idea = idea_army_restrictions }
-			custom_trigger_tooltip = {
-				tooltip = swe_recent_army_imp_taken
-				NOT = { has_country_flag = swe_recent_army_improvement }
-			}
+			NOT = { has_country_flag = swe_recent_army_improvement }
 		}
 		fire_only_once = yes
 		
@@ -4074,10 +4919,8 @@ SWE_varnplikten_decisions = {
 		}
 		available = {
 			has_completed_focus = SWE_a_liberal_military_plan
-			custom_trigger_tooltip = {
-				tooltip = swe_recent_army_imp_taken
-				NOT = { has_country_flag = swe_recent_army_improvement }
-			}
+			SWE_has_majority_for_reform_war_light = yes
+			NOT = { has_country_flag = swe_recent_army_improvement }
 		}
 		
 		custom_cost_trigger = {
@@ -4130,10 +4973,7 @@ SWE_varnplikten_decisions = {
 			}
 			unlock_decision_tooltip = SWE_divisional_reorganisation_for_support
 			hidden_effect = {
-				activate_targeted_decision = {
-					target = SWE
-					decision = SWE_divisional_reorganisation_for_support
-				}
+				set_country_flag = swe_inf_reform_done
 			}
 		}
 		
@@ -4156,10 +4996,8 @@ SWE_varnplikten_decisions = {
 		}
 		available = {
 			has_completed_focus = SWE_support_the_military
-			custom_trigger_tooltip = {
-				tooltip = swe_recent_army_imp_taken
-				NOT = { has_country_flag = swe_recent_army_improvement }
-			}
+			SWE_has_majority_for_reform_war_light = yes
+			NOT = { has_country_flag = swe_recent_army_improvement }
 		}
 		
 		custom_cost_trigger = {
@@ -4190,11 +5028,6 @@ SWE_varnplikten_decisions = {
 		remove_effect = {
 			custom_effect_tooltip = adjust_swe_military_tt
 			add_to_variable = {
-				tooltip = training_time_factor_tt
-				var = SWE_mil_training_time_factor
-				value = 0.05
-			}
-			add_to_variable = {
 				tooltip = acclimatization_cold_climate_gain_factor_tt
 				var = SWE_mil_acclimatization_cold_climate_gain_factor
 				value = 0.05
@@ -4216,10 +5049,7 @@ SWE_varnplikten_decisions = {
 			}
 			unlock_decision_tooltip = SWE_divisional_reorganisation_for_support
 			hidden_effect = {
-				activate_targeted_decision = {
-					target = SWE
-					decision = SWE_divisional_reorganisation_for_support
-				}
+				set_country_flag = swe_inf_reform_done
 			}
 		}
 		
@@ -4229,14 +5059,14 @@ SWE_varnplikten_decisions = {
 	}
 	SWE_divisional_reorganisation_for_support = {
 		allowed = {
-			always = no
+			tag = SWE
 		}
 		available = {
 			has_army_experience > 25
-			custom_trigger_tooltip = {
-				tooltip = swe_recent_army_imp_taken
-				NOT = { has_country_flag = swe_recent_army_improvement }
-			}
+			NOT = { has_country_flag = swe_recent_army_improvement }
+		}
+		visible = {
+			has_country_flag = swe_inf_reform_done
 		}
 		
 		days_remove = 60
@@ -4263,11 +5093,11 @@ SWE_varnplikten_decisions = {
 				var = SWE_mil_army_defence_factor
 				value = -0.05
 			}
-			add_to_variable = {
-				tooltip = army_infantry_attack_factor_tt
-				var = SWE_mil_infantry_attack_factor
-				value = -0.05
-			}
+			#add_to_variable = {
+			#	tooltip = army_infantry_attack_factor_tt
+			#	var = SWE_mil_infantry_attack_factor
+			#	value = -0.05
+			#}
 			add_to_variable = {
 				tooltip = army_infantry_defence_factor_tt
 				var = SWE_mil_infantry_defence_factor
@@ -4316,87 +5146,11 @@ SWE_varnplikten_decisions = {
 		
 		complete_effect = {
 			add_war_support = 0.05
-		}
-	}
-	SWE_motion_for_military_expansion = {
-		allowed = {
-			original_tag = SWE
-		}
-		visible = {
-			OR = {
-				has_completed_focus = SWE_keeping_our_head_down
-				has_completed_focus = SWE_foreign_policy_of_the_king
-				has_completed_focus = SWE_creation_of_nationalistiskt_arbetarparti
-			}
-		}
-		available = {
-			has_completed_focus = SWE_support_the_military
-			OR = {
-				threat > 0.35
-				has_war_support > 0.8
-				AND = {
-					NOT = { has_global_flag = great_war_ends }
-					has_global_flag = great_war
-				}
-			}
-			NOT = { has_idea = idea_army_restrictions }
-			custom_trigger_tooltip = {
-				tooltip = swe_recent_army_imp_taken
-				NOT = { has_country_flag = swe_recent_army_improvement }
-			}
-		}
-		
-		custom_cost_trigger = {
-			command_power > 24
-			has_political_power > 49
-		}
-		custom_cost_text = decision_cost_CP_25_pp_50
-
-		days_remove = 175
-		fire_only_once = yes
-		
-		complete_effect = {
-			hidden_effect = {
-				add_command_power = -25
-				add_political_power = -50
-			}
-			activate_mission = SWE_goal_of_army_bill
-			set_country_flag = {
-				flag = swe_recent_army_improvement
-				days = 195
-				value = 1
-			}
-		}
-		
-		modifier = {
-			war_support_weekly = 0.002
-		}
-		
-		remove_effect = {
-			army_experience = 15
 			custom_effect_tooltip = adjust_swe_military_tt
-			add_to_variable = {
-				tooltip = training_time_factor_tt
-				var = SWE_mil_training_time_factor
-				value = -0.10
-			}
 			add_to_variable = {
 				tooltip = mobilization_speed_tt
 				var = SWE_mil_mobilization_speed
 				value = 0.10
-			}
-			add_to_variable = {
-				tooltip = industrial_capacity_factory_tt
-				var = SWE_mil_industrial_capacity_factory
-				value = 0.02
-			}
-		}
-		
-		ai_will_do = {
-			base = 1
-			modifier = {	# Just to make sure pp is spent properly
-				factor = 0
-				has_political_power < 151
 			}
 		}
 	}
@@ -4410,10 +5164,7 @@ SWE_varnplikten_decisions = {
 				has_war = yes
 				threat > 0.3
 			}
-			custom_trigger_tooltip = {
-				tooltip = swe_recent_army_imp_taken
-				NOT = { has_country_flag = swe_recent_army_improvement }
-			}
+			NOT = { has_country_flag = swe_recent_army_improvement }
 		}
 		visible = {
 			has_country_flag = SWE_army_decisions
@@ -4461,10 +5212,7 @@ SWE_varnplikten_decisions = {
 		}
 		available = {
 			has_war_support > 0.6
-			custom_trigger_tooltip = {
-				tooltip = swe_recent_army_imp_taken
-				NOT = { has_country_flag = swe_recent_army_improvement }
-			}
+			NOT = { has_country_flag = swe_recent_army_improvement }
 		}
 		visible = {
 			has_country_flag = SWE_army_decisions
@@ -4511,22 +5259,17 @@ SWE_varnplikten_decisions = {
 			OR = {
 				has_government = communism
 				AND = {
-					has_country_leader_ideology = social_democracy
+					OR = {
+						has_country_leader_ideology = social_democracy
+						has_country_leader_ideology = social_liberalism
+					}
 					has_completed_focus = SWE_fix_what_is_backwards
-				}
-				AND = {
-					has_country_leader_ideology = social_liberalism
-					has_completed_focus = SWE_fix_what_is_backwards
-					communism > 0.2
 				}
 			}
-			has_war_support > 0.7
+			SWE_has_majority_for_reform_socialist = yes
 			NOT = { has_idea = communism_banned }
 			NOT = { has_idea = SWE_temporary_state_of_ermegency }
-			custom_trigger_tooltip = {
-				tooltip = swe_recent_army_imp_taken
-				NOT = { has_country_flag = swe_recent_army_improvement }
-			}
+			NOT = { has_country_flag = swe_recent_army_improvement }
 		}
 		visible = {
 			NOT = { has_government = fascism }
@@ -4565,14 +5308,15 @@ SWE_varnplikten_decisions = {
 			}
 			custom_effect_tooltip = adjust_swe_military_tt
 			add_to_variable = {
-				tooltip = industrial_capacity_factory_tt
-				var = SWE_mil_industrial_capacity_factory
-				value = -0.01
-			}
-			add_to_variable = {
 				tooltip = experience_gain_army_unit_factor_tt
 				var = SWE_mil_experience_gain_army_unit_factor
 				value = 0.05
+			}
+			custom_effect_tooltip = adjust_swe_economic_tt
+			add_to_variable = {
+				tooltip = industrial_capacity_factory_tt
+				var = SWE_mil_industrial_capacity_factory
+				value = -0.01
 			}
 		}
 		ai_will_do = {
@@ -4601,10 +5345,7 @@ SWE_varnplikten_decisions = {
 		}
 		available = {
 			has_completed_focus = SWE_coastal_projection
-			custom_trigger_tooltip = {
-				tooltip = swe_recent_army_imp_taken
-				NOT = { has_country_flag = swe_recent_army_improvement }
-			}
+			NOT = { has_country_flag = swe_recent_army_improvement }
 			NOT = { has_idea = idea_army_restrictions }
 		}
 		
@@ -4661,10 +5402,7 @@ SWE_varnplikten_decisions = {
 		}
 		available = {
 			has_completed_focus = SWE_a_local_naval_arms_race
-			custom_trigger_tooltip = {
-				tooltip = swe_recent_army_imp_taken
-				NOT = { has_country_flag = swe_recent_army_improvement }
-			}
+			NOT = { has_country_flag = swe_recent_army_improvement }
 			NOT = { has_idea = idea_army_restrictions }
 		}
 		
@@ -4718,7 +5456,7 @@ SWE_varnplikten_decisions = {
 					instant_build = yes
 				}
 			}
-			custom_effect_tooltip = adjust_swe_military_tt
+			custom_effect_tooltip = adjust_swe_economic_tt
 			add_to_variable = {
 				tooltip = industrial_capacity_factory_tt
 				var = SWE_mil_industrial_capacity_factory
@@ -4746,21 +5484,17 @@ SWE_varnplikten_decisions = {
 		available = {
 			has_war = no
 			has_war_support > 0.35
-			has_global_flag = great_war
-			NOT = { has_global_flag = great_war_ends }
-			custom_trigger_tooltip = {
-				tooltip = swe_recent_army_imp_taken
-				NOT = { has_country_flag = swe_recent_army_improvement }
-			}
+			has_completed_focus = SWE_modernise_the_army
+			is_great_war_ongoing = yes
+			NOT = { has_country_flag = swe_recent_army_improvement }
 		}
 		visible = {
 			has_war = no
-			has_global_flag = great_war
-			NOT = { has_global_flag = great_war_ends }
+			is_great_war_ongoing = yes
 			NOT = {
 				has_country_flag = { 
 					flag = sweden_observe_the_fronts_amount
-					value = 5
+					value = 6
 				}
 			}
 		}
@@ -4791,6 +5525,11 @@ SWE_varnplikten_decisions = {
 		remove_effect = {
 			custom_effect_tooltip = repeatable_decision_tt
 			custom_effect_tooltip = adjust_swe_military_tt
+			add_to_variable = {
+				tooltip = army_org_factor_tt
+				var = SWE_mil_army_org_factor
+				value = 0.01
+			}
 			add_to_variable = {
 				tooltip = army_attack_factor_tt
 				var = SWE_mil_army_attack_factor
@@ -4832,21 +5571,17 @@ SWE_varnplikten_decisions = {
 		available = {
 			has_war = yes
 			has_capitulated = no
-			has_global_flag = great_war
-			NOT = { has_global_flag = great_war_ends }
-			custom_trigger_tooltip = {
-				tooltip = swe_recent_army_imp_taken
-				NOT = { has_country_flag = swe_recent_army_improvement }
-			}
+			has_completed_focus = SWE_modernise_the_army
+			is_great_war_ongoing = yes
+			NOT = { has_country_flag = swe_recent_army_improvement }
 		}
 		visible = {
 			has_war = yes
-			has_global_flag = great_war
-			NOT = { has_global_flag = great_war_ends }
+			is_great_war_ongoing = yes
 			NOT = {
 				has_country_flag = { 
 					flag = sweden_observe_the_fronts_amount
-					value = 5
+					value = 6
 				}
 			}
 		}
@@ -4877,6 +5612,11 @@ SWE_varnplikten_decisions = {
 		remove_effect = {
 			custom_effect_tooltip = repeatable_decision_tt
 			custom_effect_tooltip = adjust_swe_military_tt
+			add_to_variable = {
+				tooltip = army_org_factor_tt
+				var = SWE_mil_army_org_factor
+				value = 0.01
+			}
 			add_to_variable = {
 				tooltip = army_attack_factor_tt
 				var = SWE_mil_army_attack_factor
@@ -4917,20 +5657,16 @@ SWE_varnplikten_decisions = {
 		}
 		available = {
 			has_war = no
+			has_completed_focus = SWE_modernise_the_army
 			has_global_flag = great_war_ends
-			custom_trigger_tooltip = {
-				tooltip = swe_recent_army_imp_taken
-				NOT = { has_country_flag = swe_recent_army_improvement }
-			}
+			NOT = { has_country_flag = swe_recent_army_improvement }
 		}
 		visible = {
-			has_war = yes
-			has_global_flag = great_war
-			NOT = { has_global_flag = great_war_ends }
+			has_global_flag = great_war_ends
 			NOT = {
 				has_country_flag = { 
 					flag = sweden_observe_the_fronts_amount
-					value = 5
+					value = 6
 				}
 			}
 		}
@@ -4961,6 +5697,11 @@ SWE_varnplikten_decisions = {
 		remove_effect = {
 			custom_effect_tooltip = repeatable_decision_tt
 			custom_effect_tooltip = adjust_swe_military_tt
+			add_to_variable = {
+				tooltip = army_org_factor_tt
+				var = SWE_mil_army_org_factor
+				value = 0.01
+			}
 			add_to_variable = {
 				tooltip = army_attack_factor_tt
 				var = SWE_mil_army_attack_factor

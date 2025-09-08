@@ -14,11 +14,16 @@
 				SWE = {
 					SWE_first_chamber_initial = yes
 					SWE_second_chamber_initial = yes
-					country_event = {
-						id = ww_sverige_general.2
-						days = 560
+					set_country_flag = {	# Stop that one generic event at start
+						flag = workers_protest
+						days = 1825
+						value = 1
 					}
-					country_event = {
+					country_event = {	# SAC
+						id = ww_sverige_general.44
+						days = 17
+					}
+					country_event = {	# Election Surge
 						id = ww_sverige_general.32
 						days = 246
 					}
@@ -35,6 +40,10 @@
 						id = ww_sverige_riksdag.2
 						days = 491
 					}
+					country_event = {	# Death of Christian Lundeberg
+						id = ww_sverige_general.2
+						days = 560
+					}
 					country_event = {	# Untraverket
 						id = ww_sverige_general.3801
 						days = 567
@@ -43,7 +52,7 @@
 						id = ww_sverige_riksdag.3
 						days = 611
 					}
-					country_event = {	# Start of 1912
+					country_event = {	# Start of 1912 - Growing Support for Rearmament
 						id = ww_sverige_general.36
 						days = 620
 					}
@@ -51,9 +60,13 @@
 						id = ww_sverige_general.37
 						days = 644
 					}
-					country_event = {	# March 1912
+					country_event = {	# March 1912 - Motion for Tariffs
 						id = ww_sverige_riksdag.0
 						days = 700
+					}
+					country_event = {	# Karl Staaff Died
+						id = ww_sverige_general.3
+						days = 1727
 					}
 					country_event = {	# 20s-ish
 						id = ww_sverige_general.34
@@ -64,6 +77,11 @@
 			else_if = {
 				limit = { date > 1914.1.1 }
 				SWE = {
+					set_country_flag = {	# Stop that one generic event at start
+						flag = workers_protest
+						days = 1095
+						value = 1
+					}
 					activate_mission = SWE_untraverket_construction
 					add_days_mission_timeout = {
 						mission = SWE_untraverket_construction
@@ -79,6 +97,7 @@
 						id = ww_sverige_riksdag.2
 						days = 447
 					}
+					retire_character = SWE_karl_staaff
 				}
 			}
 		}
@@ -142,31 +161,24 @@
 				}
 				country_event = { id = ww_sverige_general.43 days = 10 }
 			}
-			if = {	# Response to Balkan War
-				limit = {
-					has_global_flag = kis_firstbalkan_war
-					has_idea = SWE_anti_war_promises
-				}
-				country_event = { id = ww_sverige_general.43 days = 10 }
-			}
 			if = {	# These are repeat event for poor harvest
 				limit = {
 					OR = {
 						AND = {
 							date > 1914.3.1
-							date < 1914.4.1
+							date < 1914.5.1
 						}
 						AND = {
 							date > 1917.3.1
-							date < 1917.4.1
+							date < 1917.5.1
 						}
 						AND = {
 							date > 1918.3.1
-							date < 1918.4.1
+							date < 1918.5.1
 						}
 					}
 				}
-				country_event = { id = ww_sverige_hungerskjold.0 days = 40 random_days = 5 }
+				country_event = { id = ww_sverige_hungerskjold.0 days = 40 }
 			}
 			if = {	# Swartz Government, if stab or popularity is too low
 				limit = {
@@ -182,15 +194,25 @@
 				}
 				country_event = { id = ww_sverige.16 days = 30 }
 			}
+			if = {	# Adjust trigger later
+				limit = {
+					has_elections = yes
+					has_government = democratic
+					has_idea = SWE_motbokssystemet
+					date > 1923.4.1
+					NOT = { has_country_flag = split_of_liberal_party }
+				}
+				country_event = { id = ww_sverige_riksdag.7 days = 27 }
+			}
 			# Happens once
 			if = {
 				limit = {
 					NOT = {
-						SWE = { has_country_flag = swe_end_of_emigration }
 						has_dynamic_modifier = {
 							modifier = SWE_emigration_problem
 						}
 					}
+					SWE = { NOT = { has_country_flag = swe_end_of_emigration } }
 					# Has to be positive
 					check_variable = {
 						var = SWE_emigration_monthly_population
@@ -198,8 +220,10 @@
 						value = 0
 					}
 				}
-				SWE = { set_country_flag = swe_end_of_emigration }
-				country_event = { id = ww_sverige_general.1002 }
+				SWE = {
+					country_event = { id = ww_sverige_general.1002 }
+					set_country_flag = swe_end_of_emigration
+				}
 			}
 		}
 	}
@@ -207,7 +231,7 @@
 		effect = {
 			if = {
 				limit = { original_tag = SWE }
-				SWE_recalculate_first_chamber = yes
+				#SWE_recalculate_first_chamber = yes
 				SWE_recalculate_second_chamber = yes
 				if = {		# Karl Staaff's Second Regime
 					limit = { date < 1911.11.1 }
@@ -215,7 +239,7 @@
 				}
 				else_if = {	# Liberal Government again?
 					limit = { date < 1915.11.1 }
-					country_event = { id = ww1_sweden.13 }
+					country_event = { id = ww_sverige.13 }
 				}
 				else_if = {
 					limit = { date < 1918.11.1 }
@@ -225,26 +249,13 @@
 					limit = { date < 1922.11.1 }
 					country_event = { id = ww_sverige.22 }	# Primarily Branting
 				}
-			}
-		}
-	}
-	on_civil_war_end = {
-		effect = {
-			if = {
-				limit = {
-					original_tag = SWE
-					has_country_flag = swe_civil_war
-				}
-				if = {
-					limit = { NOT = { has_government = communism } }
-					country_event = { id = ww_sverige_cw.100 hours = 1 }
-				}
-				else = {
-					country_event = { id = ww_sverige_cw.101 hours = 1 }
+				else = {	# Generic backup
+					country_event = { id = ww_sverige.2701 }
 				}
 			}
 		}
 	}
+	
 	on_join_faction = {
 		effect = {
 			if = {
@@ -295,6 +306,47 @@
 	}
 	on_war_relation_added = {
 		effect = {
+			if = {
+				limit = {
+					SWE = {
+						has_country_flag = SWE_finland_units_with_russia
+						NOT = {
+							has_country_flag = SWE_finland_units_spawned
+						}
+					}
+					OR = {
+						AND = {
+							ROOT = { original_tag = RUS }
+							FROM = { original_tag = SWE }
+						}
+						AND = {
+							ROOT = { original_tag = SWE }
+							FROM = { original_tag = RUS }
+						}
+					}
+				}
+				SWE = {
+					clr_country_flag = SWE_finland_units_with_russia
+					set_country_flag = SWE_finland_units_spawned
+					load_oob = "SWE_finland_units"
+					random_controlled_state = {
+						limit = {
+							OR = {
+								is_core_of = SWE
+								is_core_of = FIN
+							}
+						}
+						create_unit = {
+							division = "name = \"First Finnish Volunteer Division\" division_template = \"Finska Voluntärer\" start_experience_factor = 0.15 start_equipment_factor = 0.2"
+							owner = SWE
+						}
+						create_unit = {
+							division = "name = \"Second Finnish Volunteer Division\" division_template = \"Finska Voluntärer\" start_experience_factor = 0.15 start_equipment_factor = 0.2"
+							owner = SWE
+						}
+					}
+				}
+			}
 			# Great War
 			if = {
 				limit = {
@@ -307,7 +359,7 @@
 									original_tag = ENG
 									original_tag = FRA
 								}
-							}						
+							}
 						}
 						AND = {
 							FROM = { original_tag = GER }
@@ -317,16 +369,33 @@
 									original_tag = ENG
 									original_tag = FRA
 								}
-							}	
+							}
+						}
+					}
+				}
+				if = {
+					limit = {
+						SWE = {
+							NOT = { has_country_flag = emigration_great_war }
 						}
 					}
 					SWE = {
-						NOT = { has_country_flag = emigration_great_war }
+						set_country_flag = emigration_great_war
+						country_event = { id = ww_sverige_general.35 days = 3 }
 					}
 				}
-				SWE = {
-					set_country_flag = emigration_great_war
-					country_event = { id = ww_sverige_general.35 days = 3 }
+				if = {
+					limit = {
+						SWE = {
+							OR = {
+								NOT = { has_completed_focus = SWE_support_the_military }
+								NOT = { has_completed_focus = SWE_swedish_rearmament }
+							}
+						}
+					}
+					SWE = {
+						country_event = { id = ww_sverige_riksdag.6 days = 3 }
+					}
 				}
 			}
 		}
