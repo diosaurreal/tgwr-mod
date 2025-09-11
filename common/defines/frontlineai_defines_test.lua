@@ -239,6 +239,8 @@ NDefines.NAI.PLAN_ACTIVATION_PLAYER_WEIGHT_FACTOR = 1 		                -- AI co
 
 NDefines.NAI.PLAN_MIN_SIZE_FOR_FALLBACK = 5000					                -- A country with less provinces than this will not draw fallback plans  but rather station their troops along the front
 
+NDefines.NAI.RECON_PLANES_NAVAL = 0.1
+NDefines.NAI.RECON_PLANES_LAND_COMBAT = 100
 --------------------------------------------------------------------------------------------------------------
 -- OlD COAST DEFENSE AI
 --------------------------------------------------------------------------------------------------------------
