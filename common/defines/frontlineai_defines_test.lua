@@ -400,9 +400,9 @@ NDefines.NAI.STR_BOMB_MIN_EXCORT_PLANES = 200					-- Min amount of planes reques
 
 
 NDefines.NAI.NAVAL_STRIKE_PLANES_PER_SHIP = 40					-- Amount of bombers requested per enemy ship
-
+NDefines.NAI.SUPPLY_PRIO_FACTOR = 0 --100 						--	AI is bad with that
 NDefines.NAI.NAVAL_SHIP_AIR_IMPORTANCE = 1 --2.0					-- Naval ship air importance
-
+NDefines.NAI.STR_BOMB_IMPORTANCE_SCALE = 30 --1.0
 NDefines.NAI.NAVAL_IMPORTANCE_SCALE = 0.5 --0.65						-- Naval total importance scale (every naval score get's multiplied by it)
 
 
