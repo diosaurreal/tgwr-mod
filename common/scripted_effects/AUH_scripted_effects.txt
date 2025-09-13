@@ -1,138 +1,334 @@
 AUS_update_imperial_council_effects = {
-    # Ensure variables use the expected ranges
-    clamp_variable = {
-        var = AUS_parliament_influence
-        min = 0
-        max = 4
-    }
-    clamp_variable = {
-        var = AUS_parliament_relations
-        min = -2
-        max = 2
-    }
-
-    # === Political power from parliament (scaled so max = +/-0.40 at influence=5, relations=2) ===
-    # AUS_austrian_parliament_pp_gain = 0.04 * influence * relations
-    set_variable = { AUS_austrian_parliament_pp_gain = AUS_parliament_influence }
-    multiply_variable = {AUS_austrian_parliament_pp_gain = AUS_parliament_relations}
-    multiply_variable = {AUS_austrian_parliament_pp_gain = 0.04}
-
-    # === Advisor cost factor (scaled so max magnitude = 0.40 at influence=5, relations=2) ===
-    # AUS_imperial_council_political_advisor_cost_factor = -0.04 * influence * relations
-    set_variable = { AUS_imperial_council_political_advisor_cost_factor = AUS_parliament_relations }
-    multiply_variable = {AUS_imperial_council_political_advisor_cost_factor = AUS_parliament_influence}
-    multiply_variable = {AUS_imperial_council_political_advisor_cost_factor = -0.04}
-
-    ### CONSERVATIVE EFFECTS ###
-    if = {
-        limit = { has_global_flag = AUS_imperial_council_conservative }
-
-        # neutrality drift: keep previous max (0.08) but move it to influence=5
-        # neutrality = 0.016 * influence  (since 0.016 * 5 = 0.08)
-        set_variable = { AUS_imperial_council_neutrality_drift = AUS_parliament_influence }
-        multiply_variable = {AUS_imperial_council_neutrality_drift = 0.016}
-    } else = {
-        set_variable = { AUS_imperial_council_neutrality_drift = 0 }
-    }
-
-    ### LIBERAL/NATIONALIST EFFECTS ###
-    if = {
-        limit = { has_global_flag = AUS_imperial_council_liberal }
-
-        # democratic drift (same shape as conservative neutrality but for democracy)
-        set_variable = { AUS_imperial_council_democratic_drift = AUS_parliament_influence }
-        multiply_variable = {AUS_imperial_council_democratic_drift = 0.016}
-
-        # ---- Minority loyalty clamps ----
-        # Positive relations -> raise minimum loyalty floor based on influence
-        if = {
-            limit = { check_variable = { AUS_parliament_relations > 0 } }
-            # new min formula: min = influence * 8 + 10  (maps influence 5 -> 50)
-            set_variable = { AUS_loyalty_minimum = AUS_parliament_influence }
-            multiply_variable = {AUS_loyalty_minimum = 8}
-            add_to_variable = {AUS_loyalty_minimum = 10}
-
-            clamp_variable = { var = AUS_hungarian_loyalty    min = AUS_loyalty_minimum max = 100 }
-            clamp_variable = { var = AUS_czechoslovak_loyalty min = AUS_loyalty_minimum max = 100 }
-            clamp_variable = { var = AUS_croat_loyalty        min = AUS_loyalty_minimum max = 100 }
-            clamp_variable = { var = AUS_serb_loyalty         min = AUS_loyalty_minimum max = 100 }
-            clamp_variable = { var = AUS_pole_loyalty         min = AUS_loyalty_minimum max = 100 }
-            clamp_variable = { var = AUS_ruthenian_loyalty    min = AUS_loyalty_minimum max = 100 }
-            clamp_variable = { var = AUS_romanian_loyalty     min = AUS_loyalty_minimum max = 100 }
-            clamp_variable = { var = AUS_italian_loyalty      min = AUS_loyalty_minimum max = 100 }
-        }
-        else_if = {
-            limit = { check_variable = { AUS_parliament_relations < 0 } }
-            # Negative relations -> lower the maximum loyalty cap based on influence
-            # new max formula: max = 100 - influence * 8  (maps influence 5 -> 60)
-            set_variable = { AUS_loyalty_maximum = AUS_parliament_influence }
-            multiply_variable = {AUS_loyalty_maximum = 8}
-            set_variable = { AUS_loyalty_maximum = 100 }  # reset then subtract
-            subtract_from_variable = { AUS_loyalty_maximum = AUS_parliament_influence } # (we'll overwrite correctly below)
-            # Simpler: directly compute 100 - influence*8 by computing influence*8 then subtracting from 100
-            set_variable = { AUS_temp_loyalty_calc = AUS_parliament_influence }
-            multiply_variable = {AUS_temp_loyalty_calc = 8}
-            set_variable = { AUS_loyalty_maximum = 100 }
-            subtract_from_variable = { AUS_loyalty_maximum = AUS_temp_loyalty_calc }
-
-            clamp_variable = { var = AUS_hungarian_loyalty    min = 0 max = AUS_loyalty_maximum }
-            clamp_variable = { var = AUS_czechoslovak_loyalty min = 0 max = AUS_loyalty_maximum }
-            clamp_variable = { var = AUS_croat_loyalty        min = 0 max = AUS_loyalty_maximum }
-            clamp_variable = { var = AUS_serb_loyalty         min = 0 max = AUS_loyalty_maximum }
-            clamp_variable = { var = AUS_pole_loyalty         min = 0 max = AUS_loyalty_maximum }
-            clamp_variable = { var = AUS_ruthenian_loyalty    min = 0 max = AUS_loyalty_maximum }
-            clamp_variable = { var = AUS_romanian_loyalty     min = 0 max = AUS_loyalty_maximum }
-            clamp_variable = { var = AUS_italian_loyalty      min = 0 max = AUS_loyalty_maximum }
-        }
-        else = {
-            # Neutral relations -> reset clamps
-            clamp_variable = { var = AUS_hungarian_loyalty    min = 0 max = 100 }
-            clamp_variable = { var = AUS_czechoslovak_loyalty min = 0 max = 100 }
-            clamp_variable = { var = AUS_croat_loyalty        min = 0 max = 100 }
-            clamp_variable = { var = AUS_serb_loyalty         min = 0 max = 100 }
-            clamp_variable = { var = AUS_pole_loyalty         min = 0 max = 100 }
-            clamp_variable = { var = AUS_ruthenian_loyalty    min = 0 max = 100 }
-            clamp_variable = { var = AUS_romanian_loyalty     min = 0 max = 100 }
-            clamp_variable = { var = AUS_italian_loyalty      min = 0 max = 100 }
-        }
-    } else = {
-        # If not liberal -> reset democratic drift and clamps
-        set_variable = { AUS_imperial_council_democratic_drift = 0 }
-        clamp_variable = { var = AUS_hungarian_loyalty    min = 0 max = 100 }
-        clamp_variable = { var = AUS_czechoslovak_loyalty min = 0 max = 100 }
-        clamp_variable = { var = AUS_croat_loyalty        min = 0 max = 100 }
-        clamp_variable = { var = AUS_serb_loyalty         min = 0 max = 100 }
-        clamp_variable = { var = AUS_pole_loyalty         min = 0 max = 100 }
-        clamp_variable = { var = AUS_ruthenian_loyalty    min = 0 max = 100 }
-        clamp_variable = { var = AUS_romanian_loyalty     min = 0 max = 100 }
-        clamp_variable = { var = AUS_italian_loyalty      min = 0 max = 100 }
-    }
-
-    ### SOCIAL DEMOCRAT EFFECTS ###
-    if = {
-        limit = { has_global_flag = AUS_imperial_council_social_democrat }
-
-        # democratic drift (double liberal) but scaled to influence max 5
-        set_variable = { AUS_imperial_council_democratic_drift = AUS_parliament_influence }
-        multiply_variable = {AUS_imperial_council_democratic_drift = 0.025 }
-
-        # consumer goods scaled so influence 5 -> 0.20
-        set_variable = { AUS_imperial_council_consumer_goods = AUS_parliament_influence }
-        multiply_variable = {AUS_imperial_council_consumer_goods = 0.04}
-
-        # stability: signed by relations, scaled so influence=5, relations=2 -> +/-0.25
-        # stability = 0.025 * influence * relations
-        set_variable = { AUS_imperial_council_stability = AUS_parliament_influence }
-        multiply_variable = {AUS_imperial_council_stability = AUS_parliament_relations}
-        multiply_variable = {AUS_imperial_council_stability = 0.025}
-    } else = {
-        set_variable = { AUS_imperial_council_democratic_drift = 0 }
-        set_variable = { AUS_imperial_council_consumer_goods = 0 }
-        set_variable = { AUS_imperial_council_stability = 0 }
-    }
+	# Ensure variables use the expected ranges
+	clamp_variable = {
+		var = AUS_parliament_influence
+		min = 0
+		max = 4
+	}
+	clamp_variable = {
+		var = AUS_parliament_relations
+		min = -2
+		max = 2
+	}
+	# === Political power from parliament (scaled so max = +/-0.40 at influence=5, relations=2) ===
+	# AUS_austrian_parliament_pp_gain = 0.04 * influence * relations
+	set_variable = {
+		AUS_austrian_parliament_pp_gain = AUS_parliament_influence
+	}
+	multiply_variable = {
+		AUS_austrian_parliament_pp_gain = AUS_parliament_relations
+	}
+	multiply_variable = {
+		AUS_austrian_parliament_pp_gain = 0.04
+	}
+	# === Advisor cost factor (scaled so max magnitude = 0.40 at influence=5, relations=2) ===
+	# AUS_imperial_council_political_advisor_cost_factor = -0.04 * influence * relations
+	set_variable = {
+		AUS_imperial_council_political_advisor_cost_factor = AUS_parliament_relations
+	}
+	multiply_variable = {
+		AUS_imperial_council_political_advisor_cost_factor = AUS_parliament_influence
+	}
+	multiply_variable = {
+		AUS_imperial_council_political_advisor_cost_factor = -0.04
+	}
+	### CONSERVATIVE EFFECTS ###
+	if = {
+		limit = {
+			has_global_flag = AUS_imperial_council_conservative
+		}
+		# neutrality drift: keep previous max (0.08) but move it to influence=5
+		# neutrality = 0.016 * influence  (since 0.016 * 5 = 0.08)
+		set_variable = {
+			AUS_imperial_council_neutrality_drift = AUS_parliament_influence
+		}
+		multiply_variable = {
+			AUS_imperial_council_neutrality_drift = 0.016
+		}
+	}
+	else = {
+		set_variable = {
+			AUS_imperial_council_neutrality_drift = 0
+		}
+	}
+	### LIBERAL/NATIONALIST EFFECTS ###
+	if = {
+		limit = {
+			has_global_flag = AUS_imperial_council_liberal
+		}
+		# democratic drift (same shape as conservative neutrality but for democracy)
+		set_variable = {
+			AUS_imperial_council_democratic_drift = AUS_parliament_influence
+		}
+		multiply_variable = {
+			AUS_imperial_council_democratic_drift = 0.016
+		}
+		# ---- Minority loyalty clamps ----
+		# Positive relations -> raise minimum loyalty floor based on influence
+		if = {
+			limit = {
+				check_variable = {
+					AUS_parliament_relations > 0
+				}
+			}
+			# new min formula: min = influence * 8 + 10  (maps influence 5 -> 50)
+			set_variable = {
+				AUS_loyalty_minimum = AUS_parliament_influence
+			}
+			multiply_variable = {
+				AUS_loyalty_minimum = 8
+			}
+			add_to_variable = {
+				AUS_loyalty_minimum = 10
+			}
+			clamp_variable = {
+				var = AUS_hungarian_loyalty
+				min = AUS_loyalty_minimum
+				max = 100
+			}
+			clamp_variable = {
+				var = AUS_czechoslovak_loyalty
+				min = AUS_loyalty_minimum
+				max = 100
+			}
+			clamp_variable = {
+				var = AUS_croat_loyalty
+				min = AUS_loyalty_minimum
+				max = 100
+			}
+			clamp_variable = {
+				var = AUS_serb_loyalty
+				min = AUS_loyalty_minimum
+				max = 100
+			}
+			clamp_variable = {
+				var = AUS_pole_loyalty
+				min = AUS_loyalty_minimum
+				max = 100
+			}
+			clamp_variable = {
+				var = AUS_ruthenian_loyalty
+				min = AUS_loyalty_minimum
+				max = 100
+			}
+			clamp_variable = {
+				var = AUS_romanian_loyalty
+				min = AUS_loyalty_minimum
+				max = 100
+			}
+			clamp_variable = {
+				var = AUS_italian_loyalty
+				min = AUS_loyalty_minimum
+				max = 100
+			}
+		}
+		else_if = {
+			limit = {
+				check_variable = {
+					AUS_parliament_relations < 0
+				}
+			}
+			# Negative relations -> lower the maximum loyalty cap based on influence
+			# new max formula: max = 100 - influence * 8  (maps influence 5 -> 60)
+			set_variable = {
+				AUS_loyalty_maximum = AUS_parliament_influence
+			}
+			multiply_variable = {
+				AUS_loyalty_maximum = 8
+			}
+			set_variable = {
+				AUS_loyalty_maximum = 100
+			}			# reset then subtract
+			subtract_from_variable = {
+				AUS_loyalty_maximum = AUS_parliament_influence
+			}			# (we'll overwrite correctly below)
+			# Simpler: directly compute 100 - influence*8 by computing influence*8 then subtracting from 100
+			set_variable = {
+				AUS_temp_loyalty_calc = AUS_parliament_influence
+			}
+			multiply_variable = {
+				AUS_temp_loyalty_calc = 8
+			}
+			set_variable = {
+				AUS_loyalty_maximum = 100
+			}
+			subtract_from_variable = {
+				AUS_loyalty_maximum = AUS_temp_loyalty_calc
+			}
+			clamp_variable = {
+				var = AUS_hungarian_loyalty
+				min = 0
+				max = AUS_loyalty_maximum
+			}
+			clamp_variable = {
+				var = AUS_czechoslovak_loyalty
+				min = 0
+				max = AUS_loyalty_maximum
+			}
+			clamp_variable = {
+				var = AUS_croat_loyalty
+				min = 0
+				max = AUS_loyalty_maximum
+			}
+			clamp_variable = {
+				var = AUS_serb_loyalty
+				min = 0
+				max = AUS_loyalty_maximum
+			}
+			clamp_variable = {
+				var = AUS_pole_loyalty
+				min = 0
+				max = AUS_loyalty_maximum
+			}
+			clamp_variable = {
+				var = AUS_ruthenian_loyalty
+				min = 0
+				max = AUS_loyalty_maximum
+			}
+			clamp_variable = {
+				var = AUS_romanian_loyalty
+				min = 0
+				max = AUS_loyalty_maximum
+			}
+			clamp_variable = {
+				var = AUS_italian_loyalty
+				min = 0
+				max = AUS_loyalty_maximum
+			}
+		}
+		else = {
+			# Neutral relations -> reset clamps
+			clamp_variable = {
+				var = AUS_hungarian_loyalty
+				min = 0
+				max = 100
+			}
+			clamp_variable = {
+				var = AUS_czechoslovak_loyalty
+				min = 0
+				max = 100
+			}
+			clamp_variable = {
+				var = AUS_croat_loyalty
+				min = 0
+				max = 100
+			}
+			clamp_variable = {
+				var = AUS_serb_loyalty
+				min = 0
+				max = 100
+			}
+			clamp_variable = {
+				var = AUS_pole_loyalty
+				min = 0
+				max = 100
+			}
+			clamp_variable = {
+				var = AUS_ruthenian_loyalty
+				min = 0
+				max = 100
+			}
+			clamp_variable = {
+				var = AUS_romanian_loyalty
+				min = 0
+				max = 100
+			}
+			clamp_variable = {
+				var = AUS_italian_loyalty
+				min = 0
+				max = 100
+			}
+		}
+	}
+	else = {
+		# If not liberal -> reset democratic drift and clamps
+		set_variable = {
+			AUS_imperial_council_democratic_drift = 0
+		}
+		clamp_variable = {
+			var = AUS_hungarian_loyalty
+			min = 0
+			max = 100
+		}
+		clamp_variable = {
+			var = AUS_czechoslovak_loyalty
+			min = 0
+			max = 100
+		}
+		clamp_variable = {
+			var = AUS_croat_loyalty
+			min = 0
+			max = 100
+		}
+		clamp_variable = {
+			var = AUS_serb_loyalty
+			min = 0
+			max = 100
+		}
+		clamp_variable = {
+			var = AUS_pole_loyalty
+			min = 0
+			max = 100
+		}
+		clamp_variable = {
+			var = AUS_ruthenian_loyalty
+			min = 0
+			max = 100
+		}
+		clamp_variable = {
+			var = AUS_romanian_loyalty
+			min = 0
+			max = 100
+		}
+		clamp_variable = {
+			var = AUS_italian_loyalty
+			min = 0
+			max = 100
+		}
+	}
+	### SOCIAL DEMOCRAT EFFECTS ###
+	if = {
+		limit = {
+			has_global_flag = AUS_imperial_council_social_democrat
+		}
+		# democratic drift (double liberal) but scaled to influence max 5
+		set_variable = {
+			AUS_imperial_council_democratic_drift = AUS_parliament_influence
+		}
+		multiply_variable = {
+			AUS_imperial_council_democratic_drift = 0.025
+		}
+		# consumer goods scaled so influence 5 -> 0.20
+		set_variable = {
+			AUS_imperial_council_consumer_goods = AUS_parliament_influence
+		}
+		multiply_variable = {
+			AUS_imperial_council_consumer_goods = 0.04
+		}
+		# stability: signed by relations, scaled so influence=5, relations=2 -> +/-0.25
+		# stability = 0.025 * influence * relations
+		set_variable = {
+			AUS_imperial_council_stability = AUS_parliament_influence
+		}
+		multiply_variable = {
+			AUS_imperial_council_stability = AUS_parliament_relations
+		}
+		multiply_variable = {
+			AUS_imperial_council_stability = 0.025
+		}
+	}
+	else = {
+		set_variable = {
+			AUS_imperial_council_democratic_drift = 0
+		}
+		set_variable = {
+			AUS_imperial_council_consumer_goods = 0
+		}
+		set_variable = {
+			AUS_imperial_council_stability = 0
+		}
+	}
 }
-
-
 
 AUS_update_state_of_realm = {
 	set_variable = {
@@ -152,7 +348,6 @@ AUS_update_state_of_realm = {
 			NOT = {
 				has_completed_focus = AUS_rachet_on_bosnia
 			}
-			
 		}
 		multiply_variable = {
 			AUS_admin_struggle_slav_var = 2
@@ -208,61 +403,216 @@ AUS_update_state_of_realm = {
 		var = AUS_total_loyalty
 		value = 8
 	}
-	if = {
-		limit = {
-			check_variable = {
-				AUS_total_loyalty < 21
-			}
-		}
-		set_variable = {
-			AUS_state_of_the_realm_political_power_var = -0.8
-		}
-		set_variable = {
-			AUS_state_of_the_realm_stability_var = -0.4
-		}
-	}
-	else_if = {
-		limit = {
-			check_variable = {
-				AUS_total_loyalty < 41
-			}
-		}
-		set_variable = {
-			AUS_state_of_the_realm_political_power_var = -0.4
-		}
-		set_variable = {
-			AUS_state_of_the_realm_stability_var = -0.2
-		}
-	}
-	else_if = {
-		limit = {
-			check_variable = {
-				AUS_total_loyalty > 60
-			}
-			check_variable = {
-				AUS_total_loyalty < 81
-			}
-		}
-		set_variable = {
-			AUS_state_of_the_realm_political_power_var = 0.4
-		}
-		set_variable = {
-			AUS_state_of_the_realm_stability_var = 0.2
-		}
-	}
-	else_if = {
-		limit = {
-			check_variable = {
-				AUS_total_loyalty > 80
-			}
-		}
-		set_variable = {
-			AUS_state_of_the_realm_political_power_var = 0.8
-		}
-		set_variable = {
-			AUS_state_of_the_realm_stability_var = 0.4
-		}
-	}
+	# Exactly 50 loyalty (neutral)
+if = {
+    limit = {
+        check_variable = { AUS_total_loyalty = 50 }
+    }
+    set_variable = { AUS_state_of_the_realm_political_power_var = 0 }
+    set_variable = { AUS_state_of_the_realm_stability_var = 0 }
+}
+
+# 45–49 loyalty (−4 PP, −2 stab)
+else_if = {
+    limit = {
+        check_variable = { AUS_total_loyalty > 44 }
+        check_variable = { AUS_total_loyalty < 50 }
+    }
+    set_variable = { AUS_state_of_the_realm_political_power_var = -4 }
+    set_variable = { AUS_state_of_the_realm_stability_var = -2 }
+}
+
+# 40–44 loyalty (−8 PP, −4 stab)
+else_if = {
+    limit = {
+        check_variable = { AUS_total_loyalty > 39 }
+        check_variable = { AUS_total_loyalty < 45 }
+    }
+    set_variable = { AUS_state_of_the_realm_political_power_var = -8 }
+    set_variable = { AUS_state_of_the_realm_stability_var = -4 }
+}
+
+# 35–39 loyalty (−12 PP, −6 stab)
+else_if = {
+    limit = {
+        check_variable = { AUS_total_loyalty > 34 }
+        check_variable = { AUS_total_loyalty < 40 }
+    }
+    set_variable = { AUS_state_of_the_realm_political_power_var = -12 }
+    set_variable = { AUS_state_of_the_realm_stability_var = -6 }
+}
+
+# 30–34 loyalty (−16 PP, −8 stab)
+else_if = {
+    limit = {
+        check_variable = { AUS_total_loyalty > 29 }
+        check_variable = { AUS_total_loyalty < 35 }
+    }
+    set_variable = { AUS_state_of_the_realm_political_power_var = -16 }
+    set_variable = { AUS_state_of_the_realm_stability_var = -8 }
+}
+
+# 25–29 loyalty (−20 PP, −10 stab)
+else_if = {
+    limit = {
+        check_variable = { AUS_total_loyalty > 24 }
+        check_variable = { AUS_total_loyalty < 30 }
+    }
+    set_variable = { AUS_state_of_the_realm_political_power_var = -20 }
+    set_variable = { AUS_state_of_the_realm_stability_var = -10 }
+}
+
+# 20–24 loyalty (−24 PP, −12 stab)
+else_if = {
+    limit = {
+        check_variable = { AUS_total_loyalty > 19 }
+        check_variable = { AUS_total_loyalty < 25 }
+    }
+    set_variable = { AUS_state_of_the_realm_political_power_var = -24 }
+    set_variable = { AUS_state_of_the_realm_stability_var = -12 }
+}
+
+# 15–19 loyalty (−28 PP, −14 stab)
+else_if = {
+    limit = {
+        check_variable = { AUS_total_loyalty > 14 }
+        check_variable = { AUS_total_loyalty < 20 }
+    }
+    set_variable = { AUS_state_of_the_realm_political_power_var = -28 }
+    set_variable = { AUS_state_of_the_realm_stability_var = -14 }
+}
+
+# 10–14 loyalty (−32 PP, −16 stab)
+else_if = {
+    limit = {
+        check_variable = { AUS_total_loyalty > 9 }
+        check_variable = { AUS_total_loyalty < 15 }
+    }
+    set_variable = { AUS_state_of_the_realm_political_power_var = -32 }
+    set_variable = { AUS_state_of_the_realm_stability_var = -16 }
+}
+
+# 5–9 loyalty (−36 PP, −18 stab)
+else_if = {
+    limit = {
+        check_variable = { AUS_total_loyalty > 4 }
+        check_variable = { AUS_total_loyalty < 10 }
+    }
+    set_variable = { AUS_state_of_the_realm_political_power_var = -36 }
+    set_variable = { AUS_state_of_the_realm_stability_var = -18 }
+}
+
+# 0–4 loyalty (−40 PP, −20 stab)
+else_if = {
+    limit = {
+        check_variable = { AUS_total_loyalty < 5 }
+    }
+    set_variable = { AUS_state_of_the_realm_political_power_var = -40 }
+    set_variable = { AUS_state_of_the_realm_stability_var = -20 }
+}
+
+### ABOVE 50 BOOSTS ###
+
+# 51–55 loyalty (+4 PP, +2 stab)
+else_if = {
+    limit = {
+        check_variable = { AUS_total_loyalty > 50 }
+        check_variable = { AUS_total_loyalty < 56 }
+    }
+    set_variable = { AUS_state_of_the_realm_political_power_var = 4 }
+    set_variable = { AUS_state_of_the_realm_stability_var = 2 }
+}
+
+# 56–60 loyalty (+8 PP, +4 stab)
+else_if = {
+    limit = {
+        check_variable = { AUS_total_loyalty > 55 }
+        check_variable = { AUS_total_loyalty < 61 }
+    }
+    set_variable = { AUS_state_of_the_realm_political_power_var = 8 }
+    set_variable = { AUS_state_of_the_realm_stability_var = 4 }
+}
+
+# 61–65 loyalty (+12 PP, +6 stab)
+else_if = {
+    limit = {
+        check_variable = { AUS_total_loyalty > 60 }
+        check_variable = { AUS_total_loyalty < 66 }
+    }
+    set_variable = { AUS_state_of_the_realm_political_power_var = 12 }
+    set_variable = { AUS_state_of_the_realm_stability_var = 6 }
+}
+
+# 66–70 loyalty (+16 PP, +8 stab)
+else_if = {
+    limit = {
+        check_variable = { AUS_total_loyalty > 65 }
+        check_variable = { AUS_total_loyalty < 71 }
+    }
+    set_variable = { AUS_state_of_the_realm_political_power_var = 16 }
+    set_variable = { AUS_state_of_the_realm_stability_var = 8 }
+}
+
+# 71–75 loyalty (+20 PP, +10 stab)
+else_if = {
+    limit = {
+        check_variable = { AUS_total_loyalty > 70 }
+        check_variable = { AUS_total_loyalty < 76 }
+    }
+    set_variable = { AUS_state_of_the_realm_political_power_var = 20 }
+    set_variable = { AUS_state_of_the_realm_stability_var = 10 }
+}
+
+# 76–80 loyalty (+24 PP, +12 stab)
+else_if = {
+    limit = {
+        check_variable = { AUS_total_loyalty > 75 }
+        check_variable = { AUS_total_loyalty < 81 }
+    }
+    set_variable = { AUS_state_of_the_realm_political_power_var = 24 }
+    set_variable = { AUS_state_of_the_realm_stability_var = 12 }
+}
+
+# 81–85 loyalty (+28 PP, +14 stab)
+else_if = {
+    limit = {
+        check_variable = { AUS_total_loyalty > 80 }
+        check_variable = { AUS_total_loyalty < 86 }
+    }
+    set_variable = { AUS_state_of_the_realm_political_power_var = 28 }
+    set_variable = { AUS_state_of_the_realm_stability_var = 14 }
+}
+
+# 86–90 loyalty (+32 PP, +16 stab)
+else_if = {
+    limit = {
+        check_variable = { AUS_total_loyalty > 85 }
+        check_variable = { AUS_total_loyalty < 91 }
+    }
+    set_variable = { AUS_state_of_the_realm_political_power_var = 32 }
+    set_variable = { AUS_state_of_the_realm_stability_var = 16 }
+}
+
+# 91–95 loyalty (+36 PP, +18 stab)
+else_if = {
+    limit = {
+        check_variable = { AUS_total_loyalty > 90 }
+        check_variable = { AUS_total_loyalty < 96 }
+    }
+    set_variable = { AUS_state_of_the_realm_political_power_var = 36 }
+    set_variable = { AUS_state_of_the_realm_stability_var = 18 }
+}
+
+# 96–100 loyalty (+40 PP, +20 stab)
+else_if = {
+    limit = {
+        check_variable = { AUS_total_loyalty > 95 }
+    }
+    set_variable = { AUS_state_of_the_realm_political_power_var = 40 }
+    set_variable = { AUS_state_of_the_realm_stability_var = 20 }
+}
+
+	
 }
 
 AUH_release_CRO_state_of_croats_and_slovenes = {
