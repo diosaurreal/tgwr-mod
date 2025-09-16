@@ -29773,6 +29773,146 @@ TUR_investing_in_the_sick_man = {
 	}
 }
 
+TUR_intelligence_market = {
+	TUR_steal_classified_documents = {
+		icon = GFX_decision_SWI_expand_covert_operations
+		allowed = { NOT = { has_dlc = "La Resistance" } }
+		visible = { has_completed_focus = TUR_officialize_the_second_bureau }
+		target_trigger = { FROM = { is_major = yes } }
+		available = {
+			if = {
+				limit = { FROM = { has_tech = advanced_cryptanalysis } }
+				has_tech = decryption_machine
+			}
+			else_if = {
+				limit = { FROM = { has_tech = basic_cryptanalysis } }
+				has_tech = advanced_cryptography
+			}
+			else = { has_tech = basic_cryptanalysis }
+		}
+		days_remove = 70
+		cost = 50
+		remove_effect = {
+			custom_effect_tooltip = TUR_steal_classified_documents_tt
+			hidden_effect = {
+				if = {
+					limit = { has_variable = TUR_stolen_documents }
+					FROM = { add_to_variable = { TUR_stolen_documents = 1 } }
+					add_to_variable = { TUR_stolen_documents_ROOT = 1 }
+				}
+				else = {
+					FROM = { set_to_variable = { TUR_stolen_documents = 1 } }
+					set_to_variable = { TUR_stolen_documents_ROOT = 1 }
+				}
+			}
+		}
+		ai_will_do = { base = 20 }
+	}
+	TUR_sell_off_intelligence_reports = {
+		icon = GFX_decision_SWI_expand_covert_operations
+		allowed = { always = yes }
+		visible = {
+			has_completed_focus = TUR_officialize_the_second_bureau
+			NOT = { has_war_with = FROM }
+		}
+		target_trigger = { FROM = { is_major = yes } }
+		available = {
+			custom_trigger_tooltip = {
+				tooltip = TUR_sell_off_intelligence_reports_tt
+				check_variable = { TUR_stolen_documents_ROOT > 1 }
+			}
+		}
+		cost = 35
+		days_re_enable = 90
+		complete_effect = {
+			hidden_effect = { add_to_variable = { TUR_stolen_documents_ROOT = -1 } }
+			custom_effect_tooltip = TUR_sell_off_intelligence_reports_tt2
+			FROM = { country_event = { id = ottoman.249 hours = 8 } }
+			custom_effect_tooltip = if_they_accept_tt
+			event_option_tooltip = ottoman.250.a
+		}
+		ai_will_do = { base = 35 }
+	}
+	TUR_purchasing_intelligence_reports = {
+		icon = GFX_decision_hol_exchange_intelligence_data
+		allowed = { always = yes }
+		days_remove = 90
+		visible = { has_decision = TUR_purchasing_intelligence_reports }
+		complete_effect = {
+			add_offsite_building = { type = industrial_complex level = -1 }
+			var:TUR_selling_intelligence_tag = { add_offsite_building = { type = industrial_complex level = 1 } }
+		}
+		remove_effect = {
+			add_offsite_building = { type = industrial_complex level = 1 }
+			var:TUR_selling_intelligence_tag = { add_offsite_building = { type = industrial_complex level = -1 } }
+		}
+	}
+	TUR_utilize_intelligence_reports = {
+		allowed = { always = yes }
+		target_trigger = { FROM = { check_variable = { TUR_stolen_documents > 1 } } }
+		available = {
+			custom_trigger_tooltip = {
+				tooltip = TUR_utilize_intelligence_reports_tt
+				FROM = { check_variable = { TUR_stolen_documents > 1 } }
+			}
+		}
+		complete_effect = {
+			hidden_effect = { FROM =  { add_to_variable = { TUR_stolen_documents = -1 } } }
+			add_decryption = {
+				target = FROM
+				amount = 50
+			}
+			add_intel = {
+				target = FROM
+				civilian_intel = 5
+				army_intel = 5
+				navy_intel = 5
+				airforce_intel = 5
+			}
+		}
+		ai_will_do = {
+			base = 0
+			modifier = {
+				add = 1000
+				OR = {
+					AND = {
+						has_government = democratic
+						FROM = { NOT = { has_government = democratic } }
+					}
+					AND = {
+						has_government = neutrality
+						FROM = { NOT = { has_government = neutrality } }
+					}
+					AND = {
+						has_government = fascism
+						FROM = { NOT = { has_government = fascism } }
+					}
+					AND = {
+						has_government = communism
+						FROM = { NOT = { has_government = communism } }
+					}
+				}
+			}
+			modifier = {
+				add = 1000
+				FROM = { has_war_with = ROOT }
+			}
+			modifier = {
+				add = 5
+				FROM = { has_added_tension_amount > 10 }
+			}
+			modifier = {
+				add = 5
+				FROM = { has_added_tension_amount > 20 }
+			}
+			modifier = {
+				factor = 0
+				FROM = { is_in_faction_with = ROOT }
+			}
+		}
+	}
+}
+
 TUR_government_committee_struggle_decisions = {
 	TUR_promote_pluralism = {
 		allowed = { original_tag = TUR }
