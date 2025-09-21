@@ -59,11 +59,12 @@ operations = {
 				419 = { set_border_war = no }
 				420 = { set_border_war = no }
 				877 = { set_border_war = no }
+				1212 = { set_border_war = no }
 			}
 			start_border_war = {
 				change_state_after_war = no
 				attacker = {
-					state = 229
+					state = 877
 					num_provinces = 3
 					on_win = ww1_russia.64
 					on_lose = ww1_russia.65
@@ -79,7 +80,7 @@ operations = {
 			}
 			hidden_effect = {
 				set_border_war_data = {
-					attacker = 229
+					attacker = 877
 					defender = 420
 					attacker_modifier = 0.60
 					combat_width = 100
@@ -292,7 +293,7 @@ foreign_politics = {
 				NOT = {
 					has_war_with = ROOT
 					original_tag = TUR
-					is_in_faction_with = ROOT
+					is_ally_with = ROOT
 				}
 				is_balkan_nation = no
 			}
@@ -318,7 +319,7 @@ foreign_politics = {
 		available = {
 			has_capitulated = no
 			has_civil_war = no
-			OR = {
+			NOT = {
 				has_idea = idea_armistice
 				has_idea = idea_army_restrictions
 			}
@@ -868,7 +869,7 @@ economy_decisions = {
 			}
 		}
 		available = {	
-			num_of_available_civilian_factories > 3
+			num_of_civilian_factories_available_for_projects > 3
 			can_build_railway = {
 				path = { 10574 12556 12543 7851 10678 12657 7763 }
 			}
@@ -889,6 +890,10 @@ economy_decisions = {
 			build_railway = {
 				path = { 7763 12654 1802 4246 12261 4805 12192 12189 }
 				level = 1
+			}
+			add_victory_points = {
+				province = 12657 #Alexeyevsk
+				value = 1
 			}
 		}
 	}
@@ -1474,6 +1479,12 @@ RUS_fight_for_trade_unions = {
 		fire_only_once = yes
 		remove_effect = {
 			remove_ideas = RUS_idea_strike_movement
+			if = {
+				limit = {
+					has_idea = RUS_idea_strike_movement2
+				}
+				remove_ideas = RUS_idea_strike_movement2
+			}
 			set_country_flag = strikes_end
 		}		
 		ai_will_do = {
@@ -1724,6 +1735,15 @@ RUS_civil_war = {
 		}
 		remove_effect = {
 			constituent_assembly_effect = yes
+			every_state = {
+				limit = {
+					is_russian_core = yes
+					NOT = {
+						is_core_of = ROOT
+					}
+				}
+				add_core_of = ROOT
+			}
 			if = {
 				limit = {
 					owns_state = 195
@@ -2287,7 +2307,6 @@ RUS_release_country = {
 				autonomous_state = autonomy_colony
 				freedom_level = 0.1
 			}
-			retire_character = RUS_pavel_skoropadsky
 			if = {
 				limit = {
 					MOL = { exists = no }
@@ -2488,9 +2507,7 @@ GER_great_war = {
 				tag = SOV
 				tag = STV
 				has_war_with = SER
-				is_subject_of = AUS
-				has_subject = AUS
-				is_in_faction_with = AUS
+				is_ally_with = AUS
 				has_country_flag = plan_III_sent_to_serbia
 			}
 		}
@@ -2688,78 +2705,6 @@ GER_great_war = {
 			custom_effect_tooltip = rus_demobilize_army_tt
 		}
 	}
-	RUS_sue_for_peace_GER = {
-		name = sue_for_peace_FROM
-		icon = GFX_decision_eng_trade_unions_support
-		allowed = {
-			original_tag = RUS
-		}
-		target_trigger = {
-			FROM = { tag = GER }
-		}
-		visible = {
-			has_global_flag = great_war
-			has_war_with = FROM
-			has_capitulated = no
-			is_subject = no
-			is_faction_leader = no
-			NOT = {
-				tag = SOV
-				country_exists = SOV
-				has_global_flag = compiegne_armistice
-				has_global_flag = frankfurt_armistice
-				has_global_flag = great_war_ends
-				has_global_flag = russian_revolution
-				has_global_flag = russ_kapitulation
-			}
-			FROM = {
-				is_subject = no
-				has_capitulated = no
-			}
-			has_war_with = FROM
-			surrender_progress < 0.99 #prevent effect collide
-		}
-		available = {
-			NOT = {
-				has_active_mission = RUS_mission_tsar_abdication
-				has_active_mission = RUS_threat_of_bolshevik_revolution
-			}
-			surrender_progress > 0.2
-			195 = { #Petrograd
-				is_owned_by = ROOT
-				is_controlled_by_FROM_or_ally = yes
-			}
-			217 = { #Tzaritzyn
-				is_owned_by = ROOT
-				is_controlled_by_FROM_or_ally = yes
-			}
-			219 = { #Moscow
-				is_owned_by = ROOT
-				is_controlled_by_FROM_or_ally = yes
-			}
-		}
-		fire_only_once = yes
-		ai_will_do = {
-			factor = 400
-			modifier = {
-				factor = 0
-				surrender_progress < 0.5
-				has_war_support > 0.3
-			}
-			modifier = {
-				factor = 0
-				has_game_rule = {
-					rule = allow_scripted_peace_treaty
-					option = "BLOCKED"
-				}
-			}
-		}
-		complete_effect = {
-			FROM = {
-				country_event = ww1_russia.98
-			}
-		}
-	}
 }
 
 RUS_provisional_government = {
@@ -2827,7 +2772,6 @@ RUS_provisional_government = {
 		}
 
 		days_remove = 7
-		cost = 5
 		fire_only_once = yes
 		complete_effect = {
 
@@ -2863,7 +2807,6 @@ RUS_provisional_government = {
 		}
 
 		days_remove = 7
-		cost = 5
 		fire_only_once = yes
 		complete_effect = {
 
@@ -2899,7 +2842,6 @@ RUS_provisional_government = {
 		}
 
 		days_remove = 7
-		cost = 5
 		fire_only_once = yes
 		complete_effect = {
 
@@ -2935,7 +2877,6 @@ RUS_provisional_government = {
 		}
 
 		days_remove = 7
-		cost = 5
 		fire_only_once = yes
 		complete_effect = {
 

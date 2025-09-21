@@ -140,14 +140,26 @@ country_event = {
 				}		
 				RUS_nikolai_ii = {
 					set_character_name = RUS_nikolai_romanov
-					remove_country_leader_role = {
-						ideology = semi_constitutional_monarchy
+					if = {
+						limit = {
+							has_ideology = semi_constitutional_monarchy
+						}
+						remove_country_leader_role = {
+							ideology = semi_constitutional_monarchy
+						}
 					}
-					remove_country_leader_role = {
-						ideology = authoritarian_democracy
+					else_if = {
+						limit = {
+							has_ideology = authoritarian_democracy
+						}
+						remove_country_leader_role = {
+							ideology = authoritarian_democracy
+						}
 					}
-					remove_country_leader_role = {
-						ideology = absolute_monarchy
+					else = {
+						remove_country_leader_role = {
+							ideology = absolute_monarchy
+						}
 					}
 					remove_any_country_role_from_character = yes
 				}
@@ -156,14 +168,26 @@ country_event = {
 		else = {
 			RUS_nikolai_ii = {
 				set_character_name = RUS_nikolai_romanov
-				remove_country_leader_role = {
-					ideology = semi_constitutional_monarchy
+				if = {
+					limit = {
+						has_ideology = semi_constitutional_monarchy
+					}
+					remove_country_leader_role = {
+						ideology = semi_constitutional_monarchy
+					}
 				}
-				remove_country_leader_role = {
-					ideology = authoritarian_democracy
+				else_if = {
+					limit = {
+						has_ideology = authoritarian_democracy
+					}
+					remove_country_leader_role = {
+						ideology = authoritarian_democracy
+					}
 				}
-				remove_country_leader_role = {
-					ideology = absolute_monarchy
+				else = {
+					remove_country_leader_role = {
+						ideology = absolute_monarchy
+					}
 				}
 				remove_any_country_role_from_character = yes
 			}
@@ -202,8 +226,17 @@ country_event = {
 				}
 				set_party_name = {
 					ideology = neutrality
-					long_name = RUS_democratic_party_long
-					name = RUS_democratic_party
+					long_name = RUS_provisional_committee_party_long
+					name = RUS_provisional_committee_party
+				}
+				set_party_name = {
+					ideology = communism
+					long_name = RUS_petrograd_soviet_party_long
+					name = RUS_petrograd_soviet_party
+				}
+				promote_character = {
+					character = GEO_nikoloz_chkheidze
+					ideology = reformist_socialism
 				}
 				every_country = {
 					limit = {
@@ -233,6 +266,7 @@ country_event = {
 					}
 				}
 				set_province_name = { id = 3134 name = MURMANSK_PROV }
+				set_province_name = { id = 12657 name = SVOBODNY_PROV }
 			}
 			if = {
 				limit = {
@@ -720,22 +754,8 @@ country_event = {
 		hidden_effect = {
 			set_global_flag = russian_revolution
 			set_global_flag = october_revolution
-			if = {
-				limit = {
-					is_faction_leader = yes
-					has_country_flag = entente_leader
-				}
-				clr_country_flag = entente_leader
-				random_other_country = {
-					limit = {
-						is_in_faction_with = ROOT
-						has_war_with = GER
-						is_major = yes
-					}
-					set_country_flag = entente_leader
-					set_faction_leader = yes
-				}
-			}
+			relinguish_entente_leadership = yes
+			clr_country_flag = RUS_surrender_alone
 			every_state = {
 				limit = {
 					is_claimed_by = RUS
@@ -1650,6 +1670,7 @@ country_event = {
 	trigger = {
 		tag = UKR
 		has_civil_war = yes
+		has_war_with = SOV
 		any_country = {
 			original_tag = UKR
 			owns_state = 226
@@ -1662,8 +1683,10 @@ country_event = {
 	immediate = {
 		hidden_effect = {
 			VLN = {
+				delete_obsolete_russian_templates = yes
 				add_state_core = 226
-				transfer_state = 226
+				set_state_owner = 226
+				set_province_controller = 3449
 				load_oob = "VLN_1918"
 				every_state = {
 					limit = {
@@ -1671,13 +1694,50 @@ country_event = {
 					}
 					add_claim_by = PREV
 				}
-				declare_war_on = {
-					target = UKR
-					type = take_claimed_state
+				add_to_war = {
+					targeted_alliance = SOV
+					enemy = ROOT
 				}
-				declare_war_on = {
-					target = SRA
-					type = take_claimed_state
+				if = {
+					limit = {
+						SRA = { has_war_with = SOV }
+					}
+					add_to_war = {
+						targeted_alliance = SOV
+						enemy = SRA
+					}
+				}
+				if = {
+					limit = {
+						DON = { has_war_with = SOV }
+					}
+					add_to_war = {
+						targeted_alliance = SOV
+						enemy = DON
+					}
+				}
+				every_other_country = {
+					limit = {
+						original_tag = UKR
+						has_war_with = GER
+					}
+					PREV = {
+						add_to_war = {
+							targeted_alliance = PREV
+							enemy = GER
+						}
+					}
+					every_enemy_country = {
+						limit = {
+							is_in_faction_with = GER
+						}
+						PREV.PREV = {
+							add_to_war = {
+								targeted_alliance = PREV.PREV
+								enemy = PREV
+							}
+						}
+					}
 				}
 			}
 		}
@@ -1688,7 +1748,7 @@ country_event = {
 	option = {
 		name = rusrevolt.15.b
 		VLN = { change_tag_from = PREV }
-		ai_chance = { factor = 0 }
+		trigger = { is_ai = no }
 	}
 }
 
@@ -1724,8 +1784,7 @@ news_event = {
 			is_russian_tag = no
 			NOT = {
 				tag = SOV
-				is_subject_of = SOV
-				is_in_faction_with = SOV
+				is_ally_with = SOV
 			}
 		}
 		if = {
@@ -1745,8 +1804,7 @@ news_event = {
 			is_russian_tag = yes
 			NOT = {
 				tag = SOV
-				is_subject_of = SOV
-				is_in_faction_with = SOV
+				is_ally_with = SOV
 			}
 		}
 		if = {
@@ -1771,8 +1829,7 @@ news_event = {
 		trigger = {
 			OR = {
 				tag = SOV
-				is_subject_of = SOV
-				is_in_faction_with = SOV
+				is_ally_with = SOV
 			}
 		}
 		if = {
@@ -1830,11 +1887,8 @@ country_event = {
 				}
 			}
 		}
-		has_global_flag = great_war
+		is_great_war_ongoing = yes
 		has_global_flag = brest_litovsk
-		NOT = {
-			has_global_flag = great_war_ends
-		}
 		SOV = {
 			is_subject = no
 			has_government = communism

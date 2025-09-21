@@ -13,30 +13,38 @@ peace_deals = {
 		# 	has_war_with = FROM
 		# }
 		available = {
-			has_war_with = AUS
-			surrender_progress > 0.25
+			OR = {
+				surrender_progress > 0.1
+				war_length_with = {
+					tag = FROM
+					months = 6
+				}
+			}
 		}
 		visible = {
-			has_global_flag = HUN_want_independence
+			has_global_flag = AUH_civil_war
+			NOT = {
+				has_global_flag = AUH_HUN_civil_war_ends
+			}
 			has_war_with = AUS	
 		}
 		fire_only_once = yes
 		ai_will_do = {
-			factor = 1000
+			base = 0
 			modifier = {
-                surrender_progress < 0.75
-				date < 1912.1.1
-				factor = 0
+				add = 1000
+				surrender_progress > 0.25
 			}
 			modifier = {
-				factor = 0
-                surrender_progress < 0.50
-				date < 1913.1.1
-			}
-			modifier = {
-                surrender_progress < 0.25
-				date < 1914.1.1
-				factor = 0
+				add = 1000
+				war_length_with = {
+					tag = FROM
+					months = 6
+				}
+				surrender_progress > 0.1
+				FROM = {
+					surrender_progress < 0.1
+				}
 			}
 		}
 		complete_effect = {
@@ -141,7 +149,85 @@ GER_great_war = {
 	}
 	
 }
-political_actions = {	
+HUN_soviet_army = {
+	HUN_found_the_international_brigade = {
+		icon = GFX_decision_generic_military
+		cost = 15
+		days_remove = 5
+		allowed = {
+			original_tag = HUN
+		}
+		available = {
+			has_government = communism
+			has_war = yes
+		}
+		visible = {
+			has_completed_focus = HUN_found_the_red_army
+			has_government = communism
+		}
+		fire_only_once = yes
+		ai_will_do = {
+			factor = 1
+		}
+		remove_effect = {
+			custom_effect_tooltip = HUN_voros_division.tt
+			43 = {
+				create_unit = {
+					division = "name = \"80th Nemzetközi Brigád\" division_template = \"Vörös Hadosztály\" start_experience_factor = 0.3"
+					owner = ROOT
+				}
+			}
+		}
+	}
+	HUN_war_communism = {
+		icon = GFX_decision_eng_trade_unions_support
+		cost = 15
+		days_remove = 15
+		allowed = {
+			original_tag = HUN
+		}
+		available = {
+			has_government = communism
+			has_war = yes
+		}
+		visible = {
+			has_completed_focus = HUN_collectivise_farming
+			has_completed_focus = HUN_union_decision_making
+			has_government = communism
+		}
+		fire_only_once = yes
+		ai_will_do = {
+			factor = 1
+		}
+		complete_effect = {
+			add_stability = -0.1
+		}
+		remove_effect = {
+			add_equipment_to_stockpile = {
+				type = infantry_equipment
+				amount = 6000
+				producer = ROOT
+			}
+			add_equipment_to_stockpile = {
+				type = field_gun_equipment
+				amount = 200
+				producer = ROOT
+			}
+			add_equipment_to_stockpile = {
+				type = support_equipment
+				amount = 200
+				producer = ROOT
+			}
+			if = {
+				limit = {
+					NOT = {
+						has_idea = tot_economic_mobilisation
+					}
+				}
+				add_ideas = tot_economic_mobilisation
+			}
+		}
+	}
 	HUN_establish_slovak_soviet_republic = {
 		icon = GFX_decision_SOV_secure_the_administration
 		allowed = {
@@ -154,15 +240,7 @@ political_actions = {
 		visible = {
 			is_subject = no
 			has_government = communism
-			OR = {
-				NOT = {
-					has_global_flag = great_war
-				}
-				AND = {
-					has_global_flag = great_war
-					has_global_flag = interbellum
-				}
-			}
+			has_completed_focus = HUN_offensive_against_czechs
 		}
 		fire_only_once = yes
 		ai_will_do = {
@@ -176,6 +254,9 @@ political_actions = {
 				limit = {
 					is_core_of = SLO
 					is_fully_controlled_by = HUN
+					NOT = {
+						state = 664
+					}
 				}
 				transfer_state_to = SLO
 			}
@@ -208,7 +289,6 @@ political_actions = {
 				}
 			}
 			NOT = {
-				country_exists = AUS
 				country_exists = AUS
 			}
 		}
@@ -250,6 +330,8 @@ political_actions = {
 			puppet = AUS
 		}
 	}
+}
+political_actions = {
 	HUN_end_regency = {
 		icon = GFX_decision_generic_monarchy
 		allowed = {
@@ -305,24 +387,24 @@ political_actions = {
 				add = 10
 				is_subject_of = FROM
 			}
-			modifier = {
-				add = 1
-				# OR = {
-				# 	has_global_flag = prussian_blue
-				# 	has_global_flag = spartakist_in_bavaria
-				# }
-				has_war = no
-				FROM = {
-					tag = AUS
-					is_neighbor_of = PREV
-					has_war = no
-					is_subject = no
-					has_country_leader = {
-						character = AUS_otto_von_habsburg
-						ruling_only = yes
-					}
-				}
-			}
+			# modifier = {
+			# 	add = 1
+			# 	OR = {
+			# 		#has_global_flag = prussian_blue
+			# 		has_global_flag = spartakist_in_bavaria
+			# 	}
+			# 	has_war = no
+			# 	FROM = {
+			# 		tag = AUS
+			# 		is_neighbor_of = PREV
+			# 		has_war = no
+			# 		is_subject = no
+			# 		has_country_leader = {
+			# 			character = AUS_otto_von_habsburg
+			# 			ruling_only = yes
+			# 		}
+			# 	}
+			# }
 		}
 		cost = 200
 		complete_effect = {
@@ -812,10 +894,11 @@ ROM_romanian_hungarian_war = {
 	HUN_invade_cze_mission = {
 		icon = GFX_decision_generic_prepare_civil_war
 		days_mission_timeout = 50
-		selectable_mission = yes
+		#selectable_mission = yes
 		days_remove = 10
 		fire_only_once = yes
 		available = {
+			always = no
 		}	
 		allowed = {
 			always = no
@@ -824,21 +907,14 @@ ROM_romanian_hungarian_war = {
 			always = no
 		}
 		cancel_trigger = {
-		}
-		fire_only_once = yes
-		complete_effect = {
-			declare_war_on = {
-				target = CZE
-				type = annex_everything
-			}
-			custom_effect_tooltip = HUN_take_presov.tt
-			set_country_flag = HUN_take_presov
-			add_timed_idea = {
-				idea = HUN_czech_offensive
-				days = 50
+			OR = {
+				has_completed_focus = HUN_offensive_against_czechs
+				NOT = {
+					has_government = communism
+				}
 			}
 		}
-		timeout_effect = {
+		timeout_effect = { #romania and czechoslovakia make the move against soviet hungary
 			custom_effect_tooltip = HUN_demarcations_broken.tt
 			swap_ideas = {
 				remove_idea = HUN_disorganized_army
@@ -847,7 +923,7 @@ ROM_romanian_hungarian_war = {
 			CZE = {
 				create_wargoal = {
 					target = HUN
-					type = annex_everything
+					type = take_core_state
 				}
 			}
 			hidden_effect = {
@@ -866,10 +942,11 @@ ROM_romanian_hungarian_war = {
 	HUN_rom_offensive_mission = {
 		icon = GFX_decision_generic_prepare_civil_war
 		days_mission_timeout = 80
-		selectable_mission = yes
+		#selectable_mission = yes
 		days_remove = 10
 		fire_only_once = yes
 		available = {
+			always = no
 		}
 		allowed = {
 			always = no
@@ -878,32 +955,15 @@ ROM_romanian_hungarian_war = {
 			always = no
 		}
 		cancel_trigger = {
-		}
-		fire_only_once = yes
-		target_trigger = {
-			FROM = { 
-				tag = CZE
-				has_war = no 
-				is_in_faction = no
+			OR = {
+				has_completed_focus = HUN_the_great_gambit
 				NOT = {
 					has_government = communism
+					has_war_with = ROM
 				}
 			}
 		}
 		complete_effect = {
-			custom_effect_tooltip = HUN_demarcations_broken.tt
-			clr_country_flag = HUN_preparing_rom_offensive
-			add_timed_idea = {
-				idea = HUN_desperate_rom_offensive
-				days = 50
-			}
-			hidden_effect = {
-				remove_ideas = HUN_armistice
-				ROM = {
-					remove_ideas = ROM_armistice
-				}
-			}
-			set_country_flag = HUN_rom_offensive
 		}
 		timeout_effect = {
 			custom_effect_tooltip = HUN_demarcations_broken.tt
@@ -918,11 +978,11 @@ ROM_romanian_hungarian_war = {
 							has_war_with = HUN
 						}
 					}
-				}
-				create_wargoal = {
-					target = HUN
-					type = annex_everything
-				}
+					create_wargoal = {
+						target = HUN
+						type = annex_everything
+					}
+				}		
 			}
 			hidden_effect = {
 				ROM = {
@@ -935,33 +995,6 @@ ROM_romanian_hungarian_war = {
 		}
 		ai_will_do = {
 			base = 1000
-		}
-	}
-	HUN_enact_universal_conscription = {
-		icon = GFX_decision_generic_military
-		days_remove = 10
-		fire_only_once = yes
-		allowed = {
-		}
-		available = {
-			has_government = communism
-			has_country_flag = HUN_preparing_rom_offensive
-		}
-		visible = {
-			has_country_flag = HUN_preparing_rom_offensive
-		}
-		complete_effect = {
-			add_ideas = all_adults_serve
-			43 = {
-				create_unit = {
-					division = "name = \"Gyári Munkás Milícia\" division_template = \"Milícia\" start_experience_factor = 0.1 start_equipment_factor = 0.5"
-					owner = ROOT
-					count = 3
-				}
-			}
-		}
-		ai_will_do = {
-			base = 100
 		}
 	}
 }

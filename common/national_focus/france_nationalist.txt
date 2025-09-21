@@ -11,12 +11,218 @@ focus_tree = {
 	}
 	default = no
 	continuous_focus_position = {
-		x = 2200
+		x = 2800
 		y = 200
 	}
 	shared_focus = early_industrialization
 	shared_focus = naval_experience
 	shared_focus = state_of_the_country_army
+
+	#dissolve the parliament
+	focus = {
+		id = NFA_dissolve_the_parliament
+		icon = GFX_goal_generic_forceful_treaty
+		x = 25
+		y = 0
+		cost = 5
+		available_if_capitulated = yes
+		bypass_if_unavailable = yes
+		ai_will_do = {
+			factor = 1000
+		}
+		available = {
+			NOT = { has_country_flag =  FRA_parliament_dissolved }
+		}
+		completion_reward = {
+			add_political_power = 75
+			add_ideas = FRA_idea_union_sacree
+			country_event = {
+				id = ww1_france.622
+				days = 2
+			}
+		}
+	}
+
+	focus = {
+		id = NFA_government_of_national_defence
+		icon = GFX_focus_FRA_goverment_reform
+		x = 0
+		y = 1
+		cost = 5
+		prerequisite = {
+			focus = NFA_dissolve_the_parliament
+		}
+		relative_position_id = NFA_dissolve_the_parliament
+		ai_will_do = {
+			factor = 1000
+		}
+		available = {
+			
+		}
+		completion_reward = {
+			add_political_power = 120
+			set_country_flag = FRA_national_defence_government
+			custom_effect_tooltip = available_political_advisor
+			show_ideas_tooltip = FRA_leon_daudet
+			custom_effect_tooltip = available_political_advisor
+			show_ideas_tooltip = FRA_antoine_schwerer
+			custom_effect_tooltip = available_political_advisor
+			show_ideas_tooltip = FRA_maurice_barres
+		}
+	}
+
+	focus = {
+		id = NFA_support_paramilitary_nationalists
+		icon = GFX_focus_RAJ_a_private_military
+		x = 0
+		y = 1
+		cost = 5
+		prerequisite = {
+			focus = NFA_government_of_national_defence
+		}
+		relative_position_id = NFA_government_of_national_defence
+		ai_will_do = {
+			factor = 1000
+		}
+		available = {
+			
+		}
+		completion_reward = {
+			add_war_support = 0.05
+			set_country_flag = FRA_join_act_with_nationalists
+			unlock_decision_tooltip = FRA_governement_support_to_cross_of_fire
+			unlock_decision_tooltip = FRA_governement_support_to_young_patriots
+			unlock_decision_tooltip = FRA_governement_support_to_le_faisceau
+			hidden_effect = {
+				country_event = {
+					id = ww1_france.623
+					days = 2
+				}
+			}
+		}
+	}
+
+	focus = {
+		id = NFA_structured_high_quarter
+		icon = GFX_focus_generic_advanced_military_studies
+		x = 0
+		y = 1
+		cost = 5
+		prerequisite = {
+			focus = NFA_support_paramilitary_nationalists
+		}
+		relative_position_id = NFA_support_paramilitary_nationalists
+		ai_will_do = {
+			factor = 1000
+		}
+		available = {
+			
+		}
+		completion_reward = {
+			add_ideas = NFA_structured_doctrines
+		}
+	}
+
+	focus = {
+		id = NFA_rally_conservatives
+		icon = GFX_focus_FRA_democracy
+		x = 1
+		y = 1
+		cost = 5
+		mutually_exclusive = {
+			focus = NFA_continue_the_military_junta
+		}
+		prerequisite = {
+			focus = NFA_structured_high_quarter
+		}
+		relative_position_id = NFA_structured_high_quarter
+		ai_will_do = {
+			factor = 1000
+		}
+		available = {
+			
+		}
+		completion_reward = {
+			add_stability = 0.1
+			if = {
+				limit = {
+					has_idea = FRA_disjointed_government2
+				}
+				remove_ideas = FRA_disjointed_government2
+			}
+			add_popularity = {
+				ideology = democratic
+				popularity = 0.1
+			}
+			set_temp_variable = {
+				fascismCut = party_popularity@fascism
+			}
+			divide_temp_variable = {
+				fascismCut = 2
+			}
+			add_popularity = {
+				ideology = neutrality
+				popularity = fascismCut
+			}
+			
+			FRA_maurice_pujo = {
+				promote_character = yes
+			}
+		}
+	}
+
+	focus = {
+		id = NFA_continue_the_military_junta
+		icon = GFX_focus_ITA_army_officer
+		x = -1
+		y = 1
+		cost = 5
+		mutually_exclusive = {
+			focus = NFA_rally_conservatives
+		}
+		prerequisite = {
+			focus = NFA_structured_high_quarter
+		}
+		relative_position_id = NFA_structured_high_quarter
+		ai_will_do = {
+			factor = 1000
+		}
+		available = {
+			
+		}
+		completion_reward = {
+			if = {
+				limit = {
+					has_idea = FRA_disjointed_government
+				}
+				swap_ideas = {
+					remove_idea = FRA_disjointed_government
+					add_idea = FRA_disjointed_government3
+				}
+			}
+			if = {
+				limit = {
+					has_idea = FRA_disjointed_government2
+				}
+				swap_ideas = {
+					remove_idea = FRA_disjointed_government2
+					add_idea = FRA_disjointed_government3
+				}
+			}
+			# country_event = {
+			# 	id = ww1_france.624
+			# 	days = 2
+			# }
+			swap_ideas = {
+				remove_idea = NFA_structured_doctrines
+				add_idea = NFA_general_staff_dictatorship
+			} 
+		}
+	}
+
+
+
+
 	#Focus for Above All The Losses
 	focus = {
 		id = NFA_above_all_the_losses
@@ -31,6 +237,7 @@ focus_tree = {
 		available = {
 			has_war = no
 			is_subject = no
+			has_global_flag = FRA_three_side_civil_war
 		}
 		completion_reward = {
 			remove_ideas = standing_alone
@@ -1035,7 +1242,7 @@ focus_tree = {
 					ENG = {
 						exists = yes
 						is_subject = no
-						has_focus_tree = uk_3
+						has_focus_tree = uk_iw_focus
 						NOT = {
 							has_government = communism
 							has_country_flag = great_war_winner
@@ -1161,7 +1368,7 @@ focus_tree = {
 	#Focus for New Jobs
 	focus = {
 		id = NFA_new_jobs
-		icon = GFX_goal_generic_production2
+		icon = GFX_focus_generic_war_industry_jobs
 		relative_position_id = NFA_the_great_exile
 		x = 0
 		y = 1
@@ -1361,8 +1568,7 @@ focus_tree = {
 				exists = yes
 				NOT = {
 					has_war_with = ROOT
-					is_in_faction_with = ROOT
-					is_subject_of = ROOT
+					is_ally_with = ROOT
 				}
 			}
 		}
