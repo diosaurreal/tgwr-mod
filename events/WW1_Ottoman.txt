@@ -61,28 +61,28 @@ country_event = { #ottoman revolt
 								OR = {
 									AND = {
 										capital_scope = { ALB_is_kosovar_state = yes }
-										var:global.occupied_state = {
-											OR = {
-												ALB_is_kosovar_state = yes
-												has_state_flag = ALB_can_organize_uprisings
-												AND = {
+										OR = {
+											var:global.occupied_state = {
+												OR = {
+													ALB_is_kosovar_state = yes
+													has_state_flag = ALB_can_organize_uprisings
 													ALB_is_northern_state = yes
-													controller = { has_country_flag = ALB_can_organize_northern_uprisings }
 												}
 											}
+											has_country_flag = ALB_can_organize_northern_uprisings
 										}
 									}
 									AND = {
 										capital_scope = { ALB_is_northern_state = yes }
-										var:global.occupied_state = {
-											OR = {
-												ALB_is_northern_state = yes
-												has_state_flag = ALB_can_organize_uprisings
-												AND = {
+										OR = {
+											var:global.occupied_state = {
+												OR = {
+													ALB_is_northern_state = yes
+													has_state_flag = ALB_can_organize_uprisings
 													ALB_is_kosovar_state = yes
-													controller = { has_country_flag = ALB_can_organize_northern_uprisings }
 												}
 											}
+											has_country_flag = ALB_can_organize_northern_uprisings
 										}
 									}
 									AND = {
@@ -110,30 +110,62 @@ country_event = { #ottoman revolt
 				}
 				random_country_with_original_tag = {
 					original_tag_to_check = ALB
-					limit = { has_war_with = var:global.occupier_country }
-					if = {
-						limit = {
-							OR = {
-								AND = {
-									capital_scope = { ALB_is_kosovar_state = yes }
-									var:global.occupied_state = { ALB_is_kosovar_state = yes }
-								}
-								AND = {
-									capital_scope = { ALB_is_northern_state = yes }
-									var:global.occupied_state = { ALB_is_northern_state = yes }
-								}
-								AND = {
-									capital_scope = { ALB_is_central_state = yes }
-									var:global.occupied_state = { ALB_is_central_state = yes }
-								}
-								AND = {
-									capital_scope = { ALB_is_southern_state = yes }
-									var:global.occupied_state = { ALB_is_southern_state = yes }
+					limit = {
+						has_war_with = var:global.occupier_country
+						OR = {
+							NOT = { has_dynamic_modifier = { modifier = ALB_albanian_society_bad } }
+							AND = {
+								has_dynamic_modifier = { modifier = ALB_albanian_society_bad }
+								OR = {
+									AND = {
+										capital_scope = { ALB_is_kosovar_state = yes }
+										OR = {
+											var:global.occupied_state = {
+												OR = {
+													ALB_is_kosovar_state = yes
+													has_state_flag = ALB_can_organize_uprisings
+													ALB_is_northern_state = yes
+												}
+											}
+											has_country_flag = ALB_can_organize_northern_uprisings
+										}
+									}
+									AND = {
+										capital_scope = { ALB_is_northern_state = yes }
+										OR = {
+											var:global.occupied_state = {
+												OR = {
+													ALB_is_northern_state = yes
+													has_state_flag = ALB_can_organize_uprisings
+													ALB_is_kosovar_state = yes
+												}
+											}
+											has_country_flag = ALB_can_organize_northern_uprisings
+										}
+									}
+									AND = {
+										capital_scope = { ALB_is_central_state = yes }
+										var:global.occupied_state = {
+											OR = {
+												ALB_is_central_state = yes
+												has_state_flag = ALB_can_organize_uprisings
+											}
+										}
+									}
+									AND = {
+										capital_scope = { ALB_is_southern_state = yes }
+										var:global.occupied_state = {
+											OR = {
+												ALB_is_southern_state = yes
+												has_state_flag = ALB_can_organize_uprisings
+											}
+										}
+									}
 								}
 							}
 						}
-						transfer_state = var:global.occupied_state
 					}
+					transfer_state = var:global.occupied_state
 					set_temp_variable = { global.new_occupied_country = THIS }
 				}
 			}
@@ -983,13 +1015,16 @@ country_event = { #ottoman revolt
 				}
 			}
 		}
+		var:global.new_occupied_country = { set_temp_variable = { global.occupied_country = THIS } }
 		var:global.occupied_country = {
-			add_timed_idea = {
-				idea = standing_alone
-				days = 270
-			}
+			add_timed_idea = { idea = standing_alone days = 270 }
 			if = {
-				limit = { NOT = { has_country_flag = created_civil_war_template } }
+				limit = {
+					NOT = {
+						original_tag = ALB
+						has_country_flag = created_civil_war_template
+					}
+				}
 				set_country_flag = created_civil_war_template
 				division_template = {
 					name = "Rebels"
@@ -1000,8 +1035,8 @@ country_event = { #ottoman revolt
 					}
 				}
 			}
-			clear_temp_array = checked_neighbours
-			every_controlled_state = {
+			#clear_temp_array = checked_neighbours
+			every_state = {
 				limit = {
 					state = var:global.occupied_state
 					impassable = no
@@ -1040,21 +1075,45 @@ country_event = { #ottoman revolt
 				}
 				clamp_temp_variable = { var = num_units_to_create min = 1 max = 5 }
 				if = {
-					limit = { var:global.occupier_country = { has_completed_focus = TUR_iron_fist_of_the_empire } }
-					for_loop_effect = {
-						end = num_units_to_create
-						create_unit = {
-							division = "division_template = \"Rebels\" start_experience_factor = 0.4 start_equipment_factor = 0.4"
-							owner = var:global.new_occupied_country
+					limit = { var:global.new_occupied_country = { original_tag = ALB } }
+					if = {
+						limit = { var:global.occupier_country = { has_completed_focus = TUR_iron_fist_of_the_empire } }
+						for_loop_effect = {
+							end = num_units_to_create
+							create_unit = {
+								division = "division_template = \"Kryengritësit Shqiptarë\" start_experience_factor = 0.4 start_equipment_factor = 0.4"
+								owner = var:global.new_occupied_country
+							}
+						}
+					}
+					else = {
+						for_loop_effect = {
+							end = num_units_to_create
+							create_unit = {
+								division = "division_template = \"Kryengritësit Shqiptarë\" start_experience_factor = 0.6 start_equipment_factor = 0.6"
+								owner = var:global.new_occupied_country
+							}
 						}
 					}
 				}
 				else = {
-					for_loop_effect = {
-						end = num_units_to_create
-						create_unit = {
-							division = "division_template = \"Rebels\" start_experience_factor = 0.6 start_equipment_factor = 0.6"
-							owner = var:global.new_occupied_country
+					if = {
+						limit = { var:global.occupier_country = { has_completed_focus = TUR_iron_fist_of_the_empire } }
+						for_loop_effect = {
+							end = num_units_to_create
+							create_unit = {
+								division = "division_template = \"Rebels\" start_experience_factor = 0.4 start_equipment_factor = 0.4"
+								owner = var:global.new_occupied_country
+							}
+						}
+					}
+					else = {
+						for_loop_effect = {
+							end = num_units_to_create
+							create_unit = {
+								division = "division_template = \"Rebels\" start_experience_factor = 0.6 start_equipment_factor = 0.6"
+								owner = var:global.new_occupied_country
+							}
 						}
 					}
 				}
