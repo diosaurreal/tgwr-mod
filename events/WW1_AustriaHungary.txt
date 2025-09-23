@@ -300,10 +300,6 @@ country_event = {
 					democratic = 40
 					fascism = 60
 				}
-				declare_war_on = {
-					target = AUS
-					type = independence_wargoal
-				}
 				division_template = {
 					name = "Bosanski pobunjenici"
 					is_locked = yes
@@ -330,6 +326,10 @@ country_event = {
 					division = "name = \"Podrinjski čentički odred\" division_template = \"Bosanski pobunjenici\" start_experience_factor = 0.5 start_equipment_factor = 0.5"
 					owner = BOS
 				}
+			}
+			declare_war_on = {
+				target = BOS
+				type = annex_everything
 			}
 		}
 	}
@@ -1155,8 +1155,7 @@ country_event = {
 					original_tag = PAP
 				}
 				NOT = {
-					is_in_faction_with = PREV
-					is_subject_of = PREV
+					is_ally_with = PREV
 				}
 			}
 			news_event = ww1_auh.26
@@ -3184,7 +3183,22 @@ country_event = {
 		name = ww1_auh.69.a	
 		set_country_flag = TRA_rebellion_in_AUH_civil_war
 		HUN = {
-			release = TRA
+			every_owned_state = {
+				limit = {
+					is_core_of = TRA
+					NOT = {
+						OR = {
+							state = 1020
+							state = 83
+						}
+					}
+				}
+				remove_core_of = HUN
+				transfer_state_to = TRA
+			}
+			778 = { #szekelyfold
+				add_core_of = HUN
+			}
 		}
 		every_state = {
 			limit = {
@@ -5436,50 +5450,25 @@ country_event = {
 	desc = ww1_auh.97.d
 	picture = GFX_report_event_generic_usa_treaty
 	immediate = {
-		# Czechia is easy to won if Austria dont dissolve their autonomy
-		set_variable = {
-			var = CZE_friendly_level
-			value = 100
-		}
 		if = {
 			limit = {
-				has_completed_focus = AUH_limit_czech_partliament_authority
+				OR = {
+					has_completed_focus = AUH_dissolve_czech_autonomy
+					has_completed_focus = AUH_limit_czech_partliament_authority
+				}
 			}
-			subtract_from_variable = {
-				var = CZE_friendly_level
-				value = 40
-			}
+			set_country_flag = CZE_are_not_friendly
 		}
-		if = {
+		else_if = {
 			limit = {
-				has_completed_focus = AUH_dissolve_czech_autonomy
+				has_completed_focus = AUH_develop_austrian_cisleithania 
 			}
-			subtract_from_variable = {
-				var = CZE_friendly_level
-				value = 40
-			}
+			set_country_flag = CZE_are_friendly
 		}
-		if = {
-			limit = {
-				has_completed_focus = AUH_develop_austrian_cisleithania
-			}
-			add_to_variable = {
-				var = CZE_friendly_level
-				value = 10
-			}
+		else = {
+			set_country_flag = CZE_are_neutrals
 		}
 		hidden_effect = {
-			random_list = {
-				CZE_friendly_level = {
-					set_country_flag = CZE_are_friendly
-				}
-				20 = {
-					set_country_flag = CZE_are_neutrals
-				}
-				20 = {
-					set_country_flag = CZE_are_not_friendly
-				}
-			}
 			country_event = {
 				id = ww1_auh.98
 				days = 2
@@ -5493,7 +5482,7 @@ country_event = {
 			has_country_flag = CZE_are_friendly
 		}
 		add_to_variable = {
-			var= federalism_acceptance
+			var = federalism_acceptance
 			value = 10
 		}
 		custom_effect_tooltip = they_looked_friendly
@@ -5504,19 +5493,11 @@ country_event = {
 			has_country_flag = CZE_are_neutrals
 		}
 		add_to_variable = {
-			var= federalism_acceptance
+			var = federalism_acceptance
 			value = 5
 		}
 		custom_effect_tooltip = they_looked_neutral
-		if = {
-			limit = {
-				OR = {
-					has_completed_focus = AUH_dissolve_czech_autonomy
-					has_completed_focus = AUH_limit_czech_partliament_authority
-				}
-			}
-			custom_effect_tooltip = you_shouldnt_have_dissolved_czech_parliament
-		}
+		custom_effect_tooltip = you_should_have_developed_czech
 	}
 	option = {
 		name = looked_cold
@@ -7352,8 +7333,7 @@ country_event = {
 				original_tag = ALB
 				original_tag = EPR
 				original_tag = TUR 
-				is_in_faction_with = ROOT
-				is_subject_of = ROOT
+				is_ally_with = ROOT
 				has_war_with = ROOT
 			}
 			OR = {
@@ -7405,8 +7385,7 @@ country_event = {
 					original_tag = ALB
 					original_tag = EPR
 					original_tag = TUR 
-					is_in_faction_with = ROOT
-					is_subject_of = ROOT
+					is_ally_with = ROOT
 					has_war_with = ROOT
 				}
 			}
@@ -11588,7 +11567,6 @@ country_event = {
 	title = ww1_auh.215.t
 	desc = ww1_auh.215.d
 	picture = GFX_french_parliament
-	fire_only_once = no
 	is_triggered_only = yes
 	option = {
 		name = ww1_auh.215.a
@@ -11641,7 +11619,6 @@ country_event = {
 	title = ww1_auh.216.t
 	desc = ww1_auh.216.d
 	picture = GFX_french_parliament
-	fire_only_once = no
 	is_triggered_only = yes
 	option = {
 		name = ww1_auh.216.a
@@ -11686,7 +11663,6 @@ country_event = {
 	title = ww1_auh.217.t
 	desc = ww1_auh.217.d
 	picture = GFX_french_parliament
-	fire_only_once = no
 	is_triggered_only = yes
 	option = {
 		name = ww1_auh.217.a
