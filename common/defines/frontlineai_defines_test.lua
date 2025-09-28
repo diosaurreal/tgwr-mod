@@ -48,9 +48,6 @@ NDefines.NMilitary.FRONTLINE_EXPANSION_FACTOR = 0.0 -- #MOD -- was 0.6,				-- Wh
 -- GAMEPLAY
 --------------------------------------------------------------------------------------------------------------
 	
-NDefines.NMilitary.EXPERIENCE_COMBAT_FACTOR = 0.15 -- 0.25
-NDefines.NMilitary.DIG_IN_FACTOR = 0.01 -- 0.02
-	
 --------------------------------------------------------------------------------------------------------------
 -- RESEARCH
 --------------------------------------------------------------------------------------------------------------
@@ -126,8 +123,6 @@ NDefines.NAI.GARRISON_TEMPLATE_SCORE_MANPOWER_FACTOR = 0.05 -- formula is (templ
 
 NDefines.NAI.REFIT_SHIP_RELUCTANCE = 5000							-- How often to consider refitting to new equipment variants for ships in the field
 NDefines.NAI.REFIT_SHIP_PERCENTAGE_OF_FORCES = 0.0				-- How big part of the navy that should be considered for refitting
-
-NDefines.NCountry.REINFORCEMENT_DIVISION_PRIORITY_COUNT = 8
 
 NDefines.NAI.DIVISION_DESIGN_MANPOWER_WEIGHT = 0 --0.005
 NDefines.NAI.DIVISION_DESIGN_STOCKPILE_WEIGHT = 0 --0.01
@@ -404,9 +399,9 @@ NDefines.NAI.STR_BOMB_MIN_EXCORT_PLANES = 200					-- Min amount of planes reques
 
 NDefines.NAI.NAVAL_STRIKE_PLANES_PER_SHIP = 40					-- Amount of bombers requested per enemy ship
 
-NDefines.NAI.NAVAL_SHIP_AIR_IMPORTANCE = 10000 --2.0					-- Naval ship air importance
+NDefines.NAI.NAVAL_SHIP_AIR_IMPORTANCE = 1 --2.0					-- Naval ship air importance
 
-NDefines.NAI.NAVAL_IMPORTANCE_SCALE = 2 --0.65						-- Naval total importance scale (every naval score get's multiplied by it)
+NDefines.NAI.NAVAL_IMPORTANCE_SCALE = 0.5 --0.65						-- Naval total importance scale (every naval score get's multiplied by it)
 
 
 NDefines.NAI.NAVAL_PATROL_PLANES_PER_SHIP_PATROLLING = 20 --10.0		-- Amount of naval patrol planes per ship on a patrol mission

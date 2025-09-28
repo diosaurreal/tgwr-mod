@@ -876,7 +876,7 @@ focus_tree = {
 					}
 				}
 				build_railway = {
-					path = { 7125 10030 1100 7943 4126 10110 }
+					path = { 7125 7175 1100 7943 4126 10110 }
 					start_province = 7125
 					target_province = 10110
 					level = 2
@@ -1061,7 +1061,7 @@ focus_tree = {
 				}
 			}
 			NOT = {
-				is_in_faction_with = FRA
+				is_in_faction_with = ENT
 			}
 		}
 		bypass = {
@@ -1215,7 +1215,7 @@ focus_tree = {
 			GER = {
 				exists = yes
 				is_faction_leader = yes
-				has_war_with = FRA
+				has_war_with = ENT
 				NOT = {
 					has_war_with = ROOT
 					any_other_country = {
@@ -1278,7 +1278,7 @@ focus_tree = {
 		available = {
 			is_subject = no
 			is_in_faction = no
-			FRA = {
+			ENT = {
 				exists = yes
 				is_faction_leader = yes
 				has_war_with = GER
@@ -1295,11 +1295,11 @@ focus_tree = {
 		bypass = {
 			OR = {
 				has_global_flag = great_war_ends
-				is_in_faction_with = FRA
+				is_in_faction_with = ENT
 			}
 		}
 		completion_reward = {
-			FRA = {
+			ENT = {
 				hidden_effect = {
 					# prevent ai rejecting japan on historical gameplay
 					if = {
@@ -1327,7 +1327,7 @@ focus_tree = {
 				ENG = {
 					has_guaranteed = ROOT
 					is_guaranteed_by = ROOT
-					is_in_faction_with = FRA
+					is_in_faction_with = ENT
 					has_war_with = GER
 				}
 				add = 150
@@ -1635,10 +1635,7 @@ focus_tree = {
 						original_tag = FNG
 						AND = {
 							is_china_or_warlord = yes
-							OR = {
-								is_subject_of = ROOT
-								is_in_faction_with = ROOT
-							}
+							is_ally_with = ROOT
 						}
 					}
 				}
@@ -1903,7 +1900,7 @@ focus_tree = {
 			}			
 		}
 		completion_reward = {
-			unlock_decision_tooltip = CHI_JAP_assassinate_zhang_zuolin
+			#unlock_decision_tooltip = CHI_JAP_assassinate_zhang_zuolin
 			add_popularity = {
 				ideology = democratic
 				popularity = 0.40
@@ -2169,7 +2166,7 @@ focus_tree = {
 	#-----------------------------------------------------------------------
 	#-----------------------------------------
 	focus = {
-		id = JAP_ww1_Form_Manchukuo		# Open Beta 0.5
+		id = JAP_ww1_form_manchukuo		# Open Beta 0.5
 		prerequisite = {
 			focus = JAP_ww1_Invasion_of_Manchuria
 		}
@@ -2203,6 +2200,8 @@ focus_tree = {
 						original_tag = MAN
 						is_subject_of = ROOT
 					}
+					save_event_target_as = JAP_manchukuo
+
 					every_state = {
 						limit = {
 							OR = {
@@ -2212,93 +2211,99 @@ focus_tree = {
 						}
 						add_core_of = PREV
 					}
-					ROOT = {
-						every_state = {
-							limit = {
-								is_core_of = PREV.PREV
-								controller = {
-									OR = {
-										tag = ROOT
-										is_subject_of = ROOT
-									}
-								}
-								NOT = {
-									is_core_of = ROOT
-									state = 744
-									owner = {
-										tag = CER
-									}
-								}
-							}
-							transfer_state_to = PREV.PREV
-						}
-						every_other_country = {
-							limit = {
-								is_subject = no
-								NOT = { is_in_faction_with = ROOT }
-								is_china_or_warlord_no_tt = yes
-							}
-							country_event = ww1_china.66
-							if = {
-								limit = {
-									tag = FNG
-								}
-								transfer_units_fraction = {
-									target = PREV.PREV
-									size = 0.4
-									keep_unit_leaders_trigger = {
-										always = yes
-									}
-								}
+				}
+
+				every_state = {
+					limit = {
+						is_core_of = event_target:JAP_manchukuo
+						controller = {
+							OR = {
+								tag = ROOT
+								is_subject_of = ROOT
 							}
 						}
-						set_autonomy = {
+						NOT = {
+							is_core_of = ROOT
+							state = 744 # Dalian
+							owner = {
+								tag = CER
+							}
+						}
+					}
+					transfer_state_to = event_target:JAP_manchukuo
+				}
+
+				every_other_country = {
+					limit = {
+						is_subject = no
+						NOT = { is_in_faction_with = ROOT }
+						is_china_or_warlord_no_tt = yes
+					}
+					country_event = ww1_china.66
+					if = {
+						limit = {
+							tag = FNG
+						}
+						transfer_units_fraction = {
+							target = event_target:JAP_manchukuo
+							size = 0.4
+							keep_unit_leaders_trigger = {
+								always = yes
+							}
+						}
+					}
+				}
+				set_autonomy = {
+					target = event_target:JAP_manchukuo
+					autonomy_state = autonomy_wtt_imperial_protectorate
+				}
+				every_subject_country = {
+					limit = {
+						OR = {
+							original_tag = FNG
+							original_tag = CER
+						}
+					}
+					transfer_navy = {
+						target = event_target:JAP_manchukuo
+					}
+					event_target:JAP_manchukuo = {
+						annex_country = {
 							target = PREV
-							autonomy_state = autonomy_wtt_imperial_protectorate
 						}
-						every_subject_country = {
-							limit = {
-								OR = {
-									original_tag = FNG
-									original_tag = CER
-								}
-							}
-							transfer_navy = {
-								target = PREV.PREV
-							}
-							PREV.PREV = {
-								annex_country = {
-									target = PREV
-								}
-							}
-							if = {
-								limit = {
-									original_tag = CER
-								}
-								every_state = {
-									remove_claim_by = PREV
-									remove_core_of = PREV
-								}
-							}
+					}
+					if = {
+						limit = {
+							original_tag = CER
 						}
-						if = {
-							limit = {
-								country_exists = CER
-							}
-							CER = {
-								give_military_access = PREV
-								give_market_access = PREV
-								set_truce = {
-									target = PREV
-									days = 365
-								}
-								diplomatic_relation = {
-									country = PREV
-									relation = non_aggression_pact
-									active = yes
-								}
-							}
+						every_state = {
+							remove_claim_by = PREV
+							remove_core_of = PREV
 						}
+					}
+				}
+				if = {
+					limit = {
+						country_exists = CER
+					}
+					CER = {
+						give_military_access = PREV
+						give_market_access = PREV
+						set_truce = {
+							target = PREV
+							days = 365
+						}
+						diplomatic_relation = {
+							country = PREV
+							relation = non_aggression_pact
+							active = yes
+						}
+					}
+				}
+				random_other_country = {
+					limit = {
+						original_tag = MAN
+						is_subject_of = ROOT
 					}
 					load_focus_tree = generic_focus
 					set_politics = {
@@ -2338,10 +2343,7 @@ focus_tree = {
 							limit = {
 								NOT = { has_character = MAN_aisin_gioro_puyi }
 							}
-							every_possible_country = {
-								limit = {
-									has_character = MAN_aisin_gioro_puyi
-								}
+							MAN = {
 								MAN_aisin_gioro_puyi = { set_nationality = PREV.PREV }
 							}
 						}
@@ -2369,20 +2371,20 @@ focus_tree = {
 							state = 328
 						}
 					}
-				}
+				}	
 			}
 			effect_tooltip = {
 				release_puppet = MAN
 			}
 			hidden_effect = {
-				set_politics = {
-					ruling_party = fascism
-					elections_allowed = no
-				}
-				add_popularity = {
-					ideology = fascism
-					popularity = 0.20
-				}
+				# set_politics = {
+				# 	ruling_party = fascism
+				# 	elections_allowed = no
+				# }
+				# add_popularity = {
+				# 	ideology = fascism
+				# 	popularity = 0.20
+				# }
 				country_event = {
 					id = ww1_china.309
 					days = 40
@@ -2392,12 +2394,12 @@ focus_tree = {
 					days = 100
 				}
 				country_event = {
-					id = ww1_china.313
-					days = 200
+					id = ww1_china.312
+					days = 130
 				}
 				country_event = {
-					id = ww1_china.312
-					days = 300
+					id = ww1_china.313
+					days = 200
 				}
 				every_other_country = {
 					limit = {
@@ -2412,12 +2414,12 @@ focus_tree = {
 						days = 100
 					}
 					country_event = {
-						id = ww1_china.313
-						days = 200
+						id = ww1_china.312
+						days = 130
 					}
 					country_event = {
-						id = ww1_china.312
-						days = 300
+						id = ww1_china.313
+						days = 200
 					}
 				}
 				news_event = {
@@ -2474,11 +2476,11 @@ focus_tree = {
 					AND = {
 						is_in_faction_with = GER
 						RUS = {
-							is_in_faction_with = FRA
+							is_in_faction_with = ENT
 						}
 					}
 					AND = {
-						is_in_faction_with = FRA
+						is_in_faction_with = ENT
 						RUS = {
 							is_in_faction_with = GER
 						}
@@ -2527,11 +2529,11 @@ focus_tree = {
 					AND = {
 						is_in_faction_with = GER
 						RUS = {
-							is_in_faction_with = FRA
+							is_in_faction_with = ENT
 						}
 					}
 					AND = {
-						is_in_faction_with = FRA
+						is_in_faction_with = ENT
 						RUS = {
 							is_in_faction_with = GER
 						}

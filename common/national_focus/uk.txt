@@ -10,6 +10,8 @@ focus_tree = {
 	default = no
 	initial_show_position = { focus = ENG_Engage_Continental }
 
+	shared_focus = ENG_GER_haldane_mission
+	
 	#Focus Path shortcuts	
 	shortcut = {
 		#name = ENG_balfours_folly_shortcut
@@ -1761,7 +1763,7 @@ focus_tree = {
 			add_resource = {
 				type = steel
 				amount = 32
-				state = 129
+				state = 130
 			}
 		}
 	}
@@ -2690,12 +2692,17 @@ focus_tree = {
 				add_equipment_to_stockpile = {
 					type = infantry_equipment
 					amount = 5000
-					producer = ENG
+					producer = ROOT
 				}
 				add_equipment_to_stockpile = {
-					type = artillery_equipment
-					amount = 200
-					producer = ENG
+					type = field_gun_equipment
+					amount = 160
+					producer = ROOT
+				}
+				add_equipment_to_stockpile = {
+					type = howitzer_equipment
+					amount = 40
+					producer = ROOT
 				}
 			}
 		}
@@ -3202,9 +3209,11 @@ focus_tree = {
 			add_state_claim = 293
 			add_state_claim = 747
 			add_state_claim = 679
+			add_state_claim = 1149
 			add_state_claim = 878
 			add_state_claim = 455
 			add_state_claim = 454
+			add_state_claim = 856
 			add_state_claim = 1021
 			add_state_claim = 858
 		}
@@ -3747,7 +3756,8 @@ focus_tree = {
 			is_subject = no
 			is_in_faction = no
 			NOT = {
-				has_war_with = FRA
+				has_war_with = ENT
+				has_global_flag = great_war_ends
 			}
 			NOT = {
 				has_idea = neutrality_idea
@@ -3758,11 +3768,11 @@ focus_tree = {
 			if = {
 				limit = {
 					OR = {
-						has_war_with = FRA
+						has_war_with = ENT
 						#ENG is democratic => France must be democratic or neutral / democratic + neutral alliance are valid
 						AND = {
 							has_government = democratic
-							FRA = {
+							ENT = {
 								OR = {
 									has_government = fascism
 									has_government = communism
@@ -3772,7 +3782,7 @@ focus_tree = {
 						#ENG is communist => France is communist too
 						AND = {
 							has_government = communism
-							FRA = {
+							ENT = {
 								NOT = {
 									has_government = communism
 									has_government = democratic #COMMIE BRITAIN IS MEANT TO BE ABLE TO JOIN HISTORICAL FRANCE NUMBNUTS
@@ -3783,7 +3793,7 @@ focus_tree = {
 						AND = {
 							has_government = fascism
 							NOT = {
-								FRA = {
+								ENT = {
 									OR = {
 										has_government = fascism
 										has_government = neutrality
@@ -3794,13 +3804,13 @@ focus_tree = {
 						#ENG is neutral => France must be democratic or neutral or fascist
 						AND = {
 							has_government = neutrality
-							FRA = {
+							ENT = {
 								has_government = communism
 							}
 						}
 					}
 				}
-				ENG = {
+				ENT = {
 					set_rule = {
 						can_create_factions = yes
 					}
@@ -3812,26 +3822,40 @@ focus_tree = {
 		bypass = {
 			OR = {
 				has_country_flag = ENG_cant_ally_france
-				is_in_faction_with = FRA
+				is_in_faction_with = ENT
+				has_country_flag = entente_leader
 			}
 		}
 		completion_reward = {
 			if = {
 				limit = {
-					FRA = {
+					ENT = {
+						NOT = {
+							tag = ROOT
+						}
 						is_faction_leader = yes
 					}
 				}
-				FRA = {
+				ENT = {
 					country_event = ww1_england.29
 				}
 			}
-			else = {
+			else_if = {
+				limit = {
+					is_faction_leader = no
+				}
 				create_faction = ENG_coalition_of_free_commonwealth_states
+			}
+			else = {
+				set_faction_name = ENG_coalition_of_free_commonwealth_states
 			}
 		}
 		ai_will_do = {
 			factor = 100
+			modifier = {
+				factor = 0.5
+				has_global_flag = ww1_haldane_mission_successful
+			}
 		}
 		search_filters = {
 			FOCUS_FILTER_HISTORICAL
@@ -3986,6 +4010,13 @@ focus_tree = {
 		}
 		search_filters = {
 			FOCUS_FILTER_HISTORICAL
+		}
+		ai_will_do = {
+			base = 50
+			modifier = {
+				factor = 0.5
+				has_global_flag = ww1_haldane_mission_successful
+			}
 		}
 	}
 	focus = {
@@ -4222,6 +4253,9 @@ focus_tree = {
 		y = 1
 		available = {
 			threat > 0.05
+			NOT = {
+				has_global_flag = ww1_haldane_mission_successful
+			}
 		}
 		completion_reward = {
 			add_named_threat = {
@@ -4278,6 +4312,11 @@ focus_tree = {
 		cost = 5
 		prerequisite = {
 			focus = ENG_Naval_Arms_Race
+		}
+		available = {
+			NOT = {
+				has_global_flag = ww1_haldane_mission_successful
+			}
 		}
 		x = 52
 		y = 2
@@ -5955,14 +5994,9 @@ focus_tree = {
 		cost = 10.00
 		available = {
 			is_subject = no
-			GER = {
-				NOT = {
-					is_subject_of = ROOT
-					is_in_faction_with = ROOT
-				}
-				exists = yes
-			}
+			country_exists = GER
 			NOT = {
+				is_ally_with = GER
 				has_country_flag = great_war_loser
 				has_idea = idea_armistice
 			}
@@ -6009,12 +6043,7 @@ focus_tree = {
 		icon = GFX_focus_ENG_dev_raj
 		cost = 10.00
 		available = {
-			RAJ = {
-				OR = {
-					is_in_faction_with = ROOT
-					is_subject_of = ROOT
-				}
-			}
+			is_ally_with = RAJ
 		}
 		prerequisite = {
 			focus = ENG_institute_tariff_reform
@@ -6084,6 +6113,198 @@ focus_tree = {
 				}
 			}
 		}
+	}
+}
 
+#haldane mission to persue british neutrality
+joint_focus = {
+	id = ENG_GER_haldane_mission
+	icon = {
+		trigger = { has_focus_tree = german_focus }
+		value = GFX_focus_chi_british_cooperation
+	}
+	icon = {
+		value = GFX_focus_deal_with_german_empire
+	}
+	icon = GFX_focus_chi_british_cooperation
+	text_icon = joint_ENG_GER_focus_style
+	cost = 2
+	x = 0
+	y = 1
+	available = {
+		has_crisis = no
+		GER = {
+			exists = yes
+			is_subject = no
+			is_GER_a_monarchy = yes
+			is_hollweg_chancellor = yes
+			NOT = {
+				has_completed_focus = GER_expansion_of_shipyards
+				has_war_with = ENG
+			}	
+		}
+		ENG = {
+			exists = yes
+			is_subject = no
+			is_britain_a_monarchy = yes
+			NOT = {
+				has_completed_focus = ENG_balfours_folly
+				has_completed_focus = ENG_Romanov_Alliance
+				has_completed_focus = ENG_Reaffirm_Triple_Entente
+				has_completed_focus = ENG_Royal_Prerogative
+				has_country_leader = { character = ENG_fallen_government }
+			}
+		}	
+		NOT = {
+			has_global_flag = great_war
+		}
+	}
+	bypass = {
+		ENG = {
+			is_in_faction_with = GER
+		}
+	}
+	prerequisite = {
+		focus = GER_organise_potsdam_conference
+		focus = ENG_Pax_Britannica
+		focus = ENG_Engage_Continental
+	}
+	offset = {
+		x = -3
+		trigger = {
+			has_focus_tree = german_focus
+		}
+	}
+	offset = {
+		x = 37
+		trigger = {
+			has_focus_tree = uk_focus
+		}
+	}
+	completion_reward_joint_originator = {
+		if = {
+			limit = { has_focus_tree = german_focus }
+			custom_effect_tooltip = tt_might_get_neutral_british
+		}
+		else = {
+			custom_effect_tooltip = tt_might_stop_german_naval_expansion
+		}
+	}
+	completion_reward_joint_member = {
+		if = {
+			limit = { has_focus_tree = german_focus }
+			country_event = {
+				id = ww1_germanrework.85
+				days = 1
+			}
+
+		}
+		else = {
+			country_event = {
+				id = ww1_germanrework.83
+				days = 3
+			}
+		}
+	}
+	ai_will_do = {
+		factor = 25
+	}
+	search_filters = {
+		FOCUS_FILTER_HISTORICAL
+		#FOCUS_FILTER_NAVY_XP
+	}
+}
+joint_focus = {
+	id = ENG_GER_vickers_krupp_cooperation
+	icon = GFX_focus_GER_krupp
+	text_icon = joint_ENG_GER_focus_style
+	cost = 5
+	relative_position_id = ENG_GER_haldane_mission
+	x = 0
+	y = 1
+	available = {
+		GER = {
+			is_GER_a_monarchy = yes
+			NOT = {
+				has_war_with = ENG
+			}
+		}	
+		ENG = {
+			is_britain_a_monarchy = yes
+		}
+		OR = {
+			ENG = {
+				is_in_faction_with = GER
+			}
+			has_global_flag = ww1_haldane_mission_successful
+		}
+	}
+	offset = {
+		x = 1
+		trigger = {
+			has_focus_tree = german_focus
+		}
+	}
+	offset = {
+		y = 1
+		trigger = {
+			has_focus_tree = uk_focus
+		}
+	}
+	prerequisite = {
+		focus = ENG_GER_haldane_mission
+	}
+	completion_reward_joint_originator = {
+		if = {
+			limit = {
+				has_dlc = "Arms Against Tyranny"
+			}
+			if = {
+				limit = { has_focus_tree = german_focus }
+				mio:GER_krupp_organization = {
+					add_mio_funds = 350
+					add_mio_size = 1
+				}
+				mio:GER_krupp_germaniawerft_organization = {
+					add_mio_funds = 350
+					add_mio_size = 1
+				}
+			}
+			else = {
+				mio:ENG_vickers_limited_organization = {
+					add_mio_funds = 700
+				}
+			}
+		}
+	}
+	completion_reward_joint_member = {
+		if = {
+			limit = {
+				has_dlc = "Arms Against Tyranny"
+			}
+			if = {
+				limit = { has_focus_tree = german_focus }
+				mio:GER_krupp_organization = {
+					add_mio_funds = 350
+					add_mio_size = 1
+				}
+				mio:GER_krupp_germaniawerft_organization = {
+					add_mio_funds = 350
+					add_mio_size = 1
+				}
+			}
+			else = {
+				mio:ENG_vickers_limited_organization = {
+					add_mio_funds = 700
+				}
+			}
+		}	
+	}
+	completion_reward = {
+		add_to_tech_sharing_group = krupp_vickers_research
+		country_event = ww1_germanrework.73
+	}
+	ai_will_do = {
+		factor = 1
 	}
 }

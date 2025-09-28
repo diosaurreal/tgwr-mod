@@ -12,6 +12,59 @@ remove_french_presidents = {
 	}
 }
 
+FRA_the_first_carrier_effect = {
+	if = {
+		limit = {
+			has_dlc = "Man the Guns"
+		}
+		hidden_effect = {
+			set_technology = {
+				early_ship_hull_carrier = 1
+			}
+		}
+		create_equipment_variant = {
+			name = "Foudre Class"
+			type = ship_hull_carrier_conversion_ca
+			name_group = FRA_CL_HISTORICAL
+			parent_version = 0
+			modules = {
+				fixed_ship_deck_slot_1 = ship_deck_space
+				fixed_ship_deck_slot_2 = empty
+				fixed_ship_anti_air_slot = empty
+				fixed_ship_radar_slot = empty
+				fixed_ship_engine_slot = carrier_ship_engine_1
+				fixed_ship_secondaries_slot = empty
+			}
+		}
+		create_ship = {
+			type = ship_hull_carrier_conversion_ca
+			equipment_variant = "Foudre Class"
+			name = "Foudre"
+		}
+		else = {
+			set_technology = {
+				early_carrier = 1
+			}
+			### Ship Variants ###
+			create_equipment_variant = {
+				name = "Foudre Class"
+				type = carrier_1
+				upgrades = {
+					ship_reliability_upgrade = 1
+					sub_engine_upgrade = 1
+					sub_stealth_upgrade = 1
+					sub_torpedo_upgrade = 1
+				}
+			}
+			create_ship = {
+				type = carrier_1
+				equipment_variant = "Foudre Class"
+				name = "Foudre"
+			}
+		}
+	}
+}
+
 FRA_clear_all_alliance = {
 	clr_country_flag = SFIO_allied
 	clr_country_flag = independent_socialist_allied
@@ -289,6 +342,10 @@ FRA_create_FRC = {
 			limit = { FRA = { has_country_flag = great_war_loser } }
 			set_country_flag = great_war_loser
 		}
+		if = {
+			limit = { FRA = { has_country_flag = FRA_surrender_alone } }
+			set_country_flag = FRA_surrender_alone
+		}
 		set_country_flag = FRA_socialist_france_flag
 		set_cosmetic_tag = FRA_socialism
 		reserve_dynamic_country = yes
@@ -412,6 +469,14 @@ FRA_create_NFA = {
 			communism = 0
 		}
 		set_capital = { state = 31 }
+		if = {
+			limit = { FRA = { has_country_flag = great_war_loser } }
+			set_country_flag = great_war_loser
+		}
+		if = {
+			limit = { FRA = { has_country_flag = FRA_surrender_alone } }
+			set_country_flag = FRA_surrender_alone
+		}
 		set_country_flag = FRA_nationalist_france_flag
 		set_cosmetic_tag = FRA_proto_fascism
 		reserve_dynamic_country = yes
@@ -1807,65 +1872,9 @@ FRA_french_surrender_effect = {
 			days = 365
 			value = 1
 		}
-		if = {
-			limit = {
-				ENG = {
-					is_in_faction_with = FRA
-					NOT = {
-						has_country_flag = has_capitulated_with_france_early
-					}
-					has_war_with = GER
-				}
-			}
-			ENG = {
-				set_country_flag = entente_leader
-				set_faction_leader = yes
-			}
-		}
-		else_if = {
-			limit = {
-				RUS = {
-					is_in_faction_with = FRA
-					NOT = {
-						has_country_flag = has_capitulated_with_france_early
-						has_global_flag = russ_kapitulation
-						tag = SOV
-					}
-					has_war_with = GER
-				}
-			}
-			RUS = {
-				set_country_flag = entente_leader
-				set_faction_leader = yes
-			}
-		}
-		else_if = {
-			limit = {
-				is_in_faction_with = FRA
-				has_war_with = GER
-				is_major = yes
-				NOT = {
-					tag = FRA
-				}
-			}
-			set_country_flag = entente_leader
-			set_faction_leader = yes
-		}
-		else = {
-			random_country = {
-				limit = {
-					is_in_faction_with = FRA
-					has_war_with = GER
-					capital_scope = {
-						is_on_continent = europe
-					}
-					NOT = {
-						tag = FRA
-					}
-				}
-				set_country_flag = entente_leader
-				set_faction_leader = yes
-			}
+		FRA = {
+			relinguish_entente_leadership = yes
+			leave_faction = yes
 		}
 		hidden_effect = {
 			every_country = {
@@ -1897,10 +1906,32 @@ FRA_french_surrender_effect = {
 					}
 				}
 				white_peace = PREV
-				diplomatic_relation = {
-					country = PREV
-					relation = non_aggression_pact
-					active = yes
+				set_truce = {
+					target = PREV
+					days = 365
+				}
+				every_state = {
+					limit = {
+						NOT = {
+							is_owned_by = PREV
+						}
+					}
+					teleport_armies = {
+						limit = {
+							tag = PREV
+						}
+					}
+				}
+			}
+			every_state = {
+				limit = {
+					is_owned_by = FRA
+					is_on_continent = europe
+				}
+				teleport_armies = {
+					limit = {
+						tag = PREV
+					}
 				}
 			}
 		}
@@ -1999,10 +2030,8 @@ FRA_french_surrender_effect = {
 					}
 					is_core_of = FRA
 					NOT = {
-						OR = {
-							is_claimed_by = PREV
-							is_core_of = PREV
-						}
+						is_claimed_by = PREV
+						is_core_of = PREV
 					}
 				}
 				transfer_state_to = FRA	## restitution of occupation zones in France

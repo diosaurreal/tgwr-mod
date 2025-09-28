@@ -13,65 +13,58 @@ GER_great_war = {
 
 			NOT = {
 				has_global_flag = GER_capitulation
-				has_global_flag = FRA_capitulation
+				has_global_flag = ENT_capitulation
 			}
 			is_faction_leader = yes
 		}
 		visible = {
 			NOT = {
-				has_war_with = SOV
-			}
-			NOT = {
 				has_global_flag = GER_capitulation
-				has_global_flag = FRA_capitulation
+				has_global_flag = ENT_capitulation
 			}
 		}
 		allowed = {
-			OR = {
-				tag = FRA
-				tag = RUS
-				tag = ENG
-			}
+			tag = FRA		
 		}
 		visible = {
-			tag = FRA
+			has_country_flag = entente_leader
+		}
+		target_trigger = {
+			FROM = {
+				tag = GER
+			}
+		}
+		target_root_trigger = {
+			has_country_flag = entente_leader
+			is_faction_leader = yes
 		}
 		fire_only_once = yes
 		complete_effect = {
 			set_country_flag = ask_for_peace
 			if = {
 				limit = {
-					RUS = {
-						is_in_faction_with = ROOT
-						surrender_progress < 0.25
+					any_allied_country = {
 						has_war_with = GER
-						has_civil_war = no
-					}
-				} 
-				set_global_flag = FRA_capitulation_alone
-				FRA = {
-					country_event = {
-						id = ww1_france.305
-						hours = 5
+						is_major = yes
+						is_subject = no
+						has_capitulated = no
+						capital_scope = {
+							is_on_continent = europe
+						}
 					}
 				}
+				set_global_flag = FRA_capitulation_alone
+				country_event =  ww1_france.305
 				else = {
-					set_global_flag = FRA_capitulation
-					GER = {
+					set_global_flag = ENT_capitulation
+					FROM = {
 						country_event = {
 							id = ww1_entente_capitulation.1
 							hours = 5
 						}
 					}
-					FRA = {
-						country_event = {
-							id = ww1_france.590
-							hours = 5
-						}
-					}
 				}
 			}
-			
 		}
 		ai_will_do = {
 			factor = 500
@@ -106,42 +99,6 @@ GER_great_war = {
 				casualties < 250000
 				surrender_progress < 0.50
 			}
-			### What if UK lead the faction ?
-			# Well UK wont surrender since they are not alone in europe
-			modifier = {
-				factor = 0
-				tag = ENG
-				is_in_faction_with = FRA
-				FRA = {
-					has_capitulated = no
-				}
-				surrender_progress < 0.10
-			}
-			modifier = {
-				factor = 0
-				tag = ENG
-				is_in_faction_with = RUS
-				RUS = {
-					has_capitulated = no
-				}
-				surrender_progress < 0.10
-			}
-			modifier = {
-				factor = 0
-				tag = ENG
-				is_in_faction_with = ITA
-				ITA = {
-					has_capitulated = no
-				}
-				surrender_progress < 0.10
-			}
-			## What about russia ?
-			## its all hardcoded for russia, so very hard condition
-			modifier = {
-				factor = 0
-				tag = RUS
-				surrender_progress < 0.50
-			}
 			# game rule
 			modifier = {
 				factor = 0
@@ -154,33 +111,139 @@ GER_great_war = {
 	}
 	#ENTENTE WITHOUT FRANCE ASK FOR PEACE
 	#######################
-	FRA_armistice_ent = {
+	RUS_sue_for_peace_GER = {
+		name = FRA_armistice
+		icon = GFX_decision_eng_trade_unions_support
+		allowed = {
+			tag = RUS
+		}
+		target_trigger = {
+			FROM = { tag = GER }
+		}
+		visible = {
+			has_global_flag = great_war
+			has_war_with = FROM
+			has_capitulated = no
+			is_subject = no
+			NOT = {
+				tag = SOV
+				country_exists = SOV
+				has_global_flag = GER_capitulation
+				has_global_flag = ENT_capitulation
+				has_global_flag = great_war_ends
+				has_global_flag = october_revolution
+				has_global_flag = RUS_surrender_alone
+			}
+			FROM = {
+				is_subject = no
+				has_capitulated = no
+			}
+			has_war_with = FROM
+			surrender_progress < 0.99 #prevent effect collide
+		}
+		target_root_trigger = {
+			has_war_with = GER
+		}
+		available = {
+			NOT = {
+				has_active_mission = RUS_mission_tsar_abdication
+				has_active_mission = RUS_threat_of_bolshevik_revolution
+			}
+			surrender_progress > 0.2
+		}
+		fire_only_once = yes
+		ai_will_do = {
+			factor = 400
+			modifier = {
+				factor = 0
+				surrender_progress < 0.5
+				has_war_support > 0.3
+				is_in_faction_with = FRA
+				FRA = { has_war_with = GER }
+				NOT = { has_global_flag = FRA_surrender_alone }
+			}
+			modifier = {
+				factor = 0
+				surrender_progress < 0.3
+			}
+			modifier = {
+				factor = 0
+				has_game_rule = {
+					rule = allow_scripted_peace_treaty
+					option = "BLOCKED"
+				}
+			}
+		}
+		complete_effect = {
+			if = {
+				limit = {
+					any_allied_country = {
+						has_war_with = GER
+						is_major = yes
+						is_subject = no
+						has_capitulated = no
+						capital_scope = {
+							is_on_continent = europe
+						}
+					}
+				}
+				FROM = {
+					country_event = {
+						id = ww1_russia.98
+						hours = 5
+					}	
+				}
+				else = {
+					set_global_flag = ENT_capitulation
+					FROM = {
+						country_event = {
+							id = ww1_entente_capitulation.1
+							hours = 5
+						}
+					}
+				}
+			}
+		}
+	}
+	ENT_armistice = {
 		desc = FRA_armistice_desc
 		icon = GFX_decision_eng_trade_unions_support
+		allowed = {
+			NOT = {
+				tag = FRA
+				tag = RUS
+			}
+		}
 		available = {
 			has_global_flag = great_war
 			NOT = {
 				has_global_flag = GER_capitulation
+				has_global_flag = ENT_capitulation
 				has_global_flag = honourable_peace
 			}
 		}
 		visible = {
-			has_war_with = GER
-			has_country_flag = entente_leader
+			tag = ENT
 			NOT = {
-				tag = SOV
-				has_active_mission = RUS_mission_tsar_abdication
+				has_global_flag = GER_capitulation
+				has_global_flag = ENT_capitulation
 			}
 		}
-		allowed = {
-			always = yes
+		target_trigger = {
+			FROM = {
+				tag = GER
+			}
+		}
+		target_root_trigger = {
+			has_country_flag = entente_leader
+			is_faction_leader = yes
 		}
 		fire_only_once = yes
 		complete_effect = {
 			set_country_flag = ask_for_peace
-			set_global_flag = FRA_capitulation
+			set_global_flag = ENT_capitulation
 			set_global_flag = honourable_peace
-			GER = {
+			FROM = {
 				country_event = {
 					id = ww1_entente_capitulation.1
 					hours = 5
@@ -188,98 +251,169 @@ GER_great_war = {
 			}
 		}
 		ai_will_do = {
-			base = 0
+			base = 500
+			### What if UK lead the faction ?
+			# Well UK wont surrender since they are not alone in europe
+			modifier = {
+				factor = 0
+				tag = ENG
+				is_in_faction_with = FRA
+				FRA = {
+					is_in_faction_with = ROOT
+					has_war_with = GER
+					is_subject = no
+					has_capitulated = no
+					surrender_progress < 0.3
+				}
+				surrender_progress < 0.10
+			}
+			modifier = {
+				factor = 0
+				tag = ENG
+				is_in_faction_with = RUS
+				RUS = {
+					is_in_faction_with = ROOT
+					has_war_with = GER
+					is_subject = no
+					has_capitulated = no
+					NOT = {
+						has_country_flag = has_capitulated_with_france_early
+						has_global_flag = RUS_surrender_alone
+						tag = SOV
+					}
+					surrender_progress < 0.3
+				}
+				surrender_progress < 0.10
+			}
+			modifier = {
+				factor = 0
+				tag = ENG
+				is_in_faction_with = ITA
+				ITA = {
+					is_in_faction_with = ROOT
+					has_war_with = GER
+					is_subject = no
+					has_capitulated = no
+					OR = {
+						surrender_progress < 0.30
+						AND = {
+							war_length_with = {
+								tag = GER
+								months < 48
+							}
+							surrender_progress < 0.1
+						}				
+					}
+				}
+				surrender_progress < 0.10
+			}
 			# oh
 			modifier = {
-				add = 500
-				surrender_progress > 0.15
-				# continental tag needs more lose
-				if = {
-					limit = {
-						any_core_state = {
-							any_neighbor_state = {
-								is_core_of = owner
-								owner = {
-									OR = {
-										tag = GER
-										is_subject_of = GER
-										is_in_faction_with = GER
-									}
-									has_war_with = ROOT
-									has_capitulated = no
+				factor = 0
+				NOT = {
+					tag = ENG
+				}
+				is_european_tag = yes
+				any_core_state = {
+					is_on_continent = europe
+					any_neighbor_state = {
+						is_core_of = owner
+						is_on_continent = europe
+						owner = {
+							OR = {
+								tag = GER
+								AND = {
+									is_ally_with = GER
+									is_neighbor_of = GER
 								}
+							}
+							is_european_tag = yes
+							has_war_with = ROOT
+							has_capitulated = no
+						}
+					}
+				}
+				OR = {
+					surrender_progress < 0.30
+					AND = {
+						war_length_with = {
+							tag = GER
+							months < 48
+						}
+						surrender_progress < 0.1
+					}				
+				}			
+			}
+			# there is a major ally in europe capable to keep war effort
+			modifier = {
+				factor = 0
+				surrender_progress < 0.1
+				any_allied_country = {
+					is_major = yes
+					is_european_tag = yes
+					any_core_state = {
+						is_on_continent = europe
+						any_neighbor_state = {						
+							is_core_of = owner
+							is_on_continent = europe
+							owner = {
+								OR = {
+									tag = GER
+									AND = {
+										is_ally_with = GER
+										is_neighbor_of = GER
+									}
+								}
+								is_european_tag = yes
+								has_war_with = ROOT
+								has_capitulated = no
 							}
 						}
 					}
-					surrender_progress > 0.30
-				}
-			}
-			# there is no ally in europe capable to keep war effort
-			modifier = {
-				add = 500
-				# checking french condition
-				FRA = {
 					OR = {
-						# they re-joined the war and lost the again
+						surrender_progress < 0.30
 						AND = {
-							has_war_with = GER
-							has_capitulated = yes
-						}
-						# they already peaced out
-						NOT = {
-							has_war_with = GER
-						}
+							war_length_with = {
+								tag = GER
+								months < 48
+							}
+							surrender_progress < 0.1
+						}				
 					}
+				}		
+			}
+			# there is a minor ally in europe that didn't give up
+			modifier = {
+				factor = 0
+				surrender_progress < 0.1
+				war_length_with = {
+					tag = GER
+					months < 48
 				}
-				# there is no russian fighting spirit
-				RUS = {
-					OR = {
-						tag = SOV # you are soviet harry
-						has_war_with = SOV
-						has_civil_war = yes # that savinkov civil war
-						NOT = { has_war_with = GER } # they are not against germany at all
-						# no need since they either capitulate or get revolution
-						# surrender_progress > 0.1
-					}
-				}
-				NOT = {
-					any_allied_country = {
-						is_major = yes
-						capital_scope = {
+				any_allied_country = {
+					is_major = no
+					is_european_tag = yes
+					any_core_state = {
+						is_on_continent = europe
+						any_neighbor_state = {					
+							is_core_of = owner
 							is_on_continent = europe
+							owner = {
+								AND = {
+									is_ally_with = GER
+									is_neighbor_of = GER
+								}
+								is_european_tag = yes
+								has_war_with = ROOT
+								has_capitulated = no
+							}
 						}
-						has_war_with = GER
-						has_capitulated = no
 					}
-				}
-				# America won't get much more involved if it has no allies in Europe at all
-				# this litteraly makes the Great War forever
-				# NOT = {
-				# 	is_in_faction_with = USA
-				# }
-			}
-			# Honourable Peace
-			modifier = {
-				add = 1 #dont make them rush it
-				surrender_progress < 0.02
-				GER = {
-					surrender_progress < 0.02
-				}
-				NOT = {
-					# it supposed to be britain
-					original_tag = RUS
-					# is_in_faction_with = USA
-					is_in_faction_with = RUS
-					is_in_faction_with = FRA
-				}
-			}
-			# Entente leader is not major
-			modifier = {
-				add = 500
-				is_major = no
+					has_capitulated = no
+				}		
 			}
 			modifier = {
-				add = -500
+				factor = 0
 				# about to win
 				GER = {
 					surrender_progress > 0.15
@@ -300,7 +434,7 @@ GER_great_war = {
 		icon = GFX_decision_generic_break_treaty
 		available = {
 			has_war_with = GER
-			has_global_flag = FRA_capitulation
+			has_global_flag = ENT_capitulation
 			NOT = {
 				has_global_flag = frankfurt_armistice
 			}
@@ -311,10 +445,14 @@ GER_great_war = {
 			NOT = {
 				has_global_flag = frankfurt_armistice
 			}
-			is_in_faction_with = FRA
+			is_in_faction_with = ENT
 			NOT = {
-				tag = FRA
-				has_country_flag = entente_leader
+				tag = ENT
+			}
+		}
+		target_trigger = {
+			FROM = {
+				tag = GER
 			}
 		}
 		fire_only_once = yes
@@ -322,7 +460,7 @@ GER_great_war = {
 			leave_faction = yes
 			add_ai_strategy = {
 				type = alliance
-				id = FRA
+				id = ENT
 				value = -2000
 			}
 			custom_effect_tooltip = refuse_to_surrender_tt
@@ -359,15 +497,8 @@ GER_great_war = {
 		days_mission_timeout = 10
 		activation = {
 			GER = {
-				has_global_flag = germany_accepts_FRA_capitulation
-				OR = {
-					has_war_with = FRA
-					any_country = {
-						has_country_flag = entente_leader
-						has_war_with = GER
-						has_country_flag = ask_for_peace
-					}
-				}
+				has_war_with = ENT
+				has_global_flag = GER_accepts_ENT_capitulation
 			}
 		}
 		visible = {
@@ -376,9 +507,11 @@ GER_great_war = {
 				tag = GER
 				has_country_flag = member_of_central_powers
 				is_in_faction_with = GER
-				has_country_flag = accepted_french_surrender
+				has_country_flag = accepted_entente_surrender
+				has_country_flag = FRA_surrender_alone
+				has_country_flag = RUS_surrender_alone
 			}
-			has_global_flag = germany_accepts_FRA_capitulation
+			has_global_flag = GER_accepts_ENT_capitulation
 			NOT = { has_global_flag = frankfurt_armistice }
 		}
 		fire_only_once = yes
@@ -388,24 +521,15 @@ GER_great_war = {
 				limit = { tag = GER }
 				set_global_flag = frankfurt_armistice
 				set_global_flag = great_war_ends
-				hidden_effect = {
-					random_other_country = {
-						limit = { has_country_flag = entente_leader }
-						set_faction_leader = yes
-					}
-				}
 				every_country = {
 					limit = {
-						OR = {
-							has_war_with = FRA
-							any_enemy_country = { has_country_flag = entente_leader }
-						}
+						has_war_with = ENT
 						OR = {
 							tag = GER
 							is_in_faction_with = GER
 							is_subject_of = GER
 							has_country_flag = member_of_central_powers
-							has_country_flag = accepted_french_surrender
+							has_country_flag = accepted_entente_surrender
 							has_subject = GER #austria
 						}
 						NOT = { has_country_flag = refused_to_surrender }
@@ -416,42 +540,33 @@ GER_great_war = {
 							NOT = {
 								AND = {
 									is_subject = yes
-									original_tag = LUX
-									has_global_flag = luxembourg_submitted					
+									OR = {
+										AND = {
+											original_tag = LUX
+											has_global_flag = luxembourg_submitted
+										}
+										has_country_flag = released_by_germany
+									}									
 								}
 							}
 						}
-						set_country_flag = great_war_winner					
+						set_country_flag = great_war_winner
 					}
 					add_ideas = idea_armistice
-					every_country = {
+					every_other_country = {
 						limit = {
-							has_war = yes
+							OR = {
+								has_war = yes
+								has_country_flag = FRA_surrender_alone
+								has_country_flag = RUS_surrender_alone
+							}
 							OR = {
 								has_country_flag = member_of_entente
-								AND = {
-									NOT = { has_global_flag = FRA_surrender_alone }
-									OR = {
-										is_in_faction_with = FRA
-										tag = FRA
-										is_subject_of = FRA
-									}
-								}
-								AND = {
-									has_global_flag = FRA_surrender_alone
-									OR = {
-										has_country_flag = entente_leader
-										any_allied_country = {
-											has_country_flag = entente_leader
-										}
-										AND = {
-											is_subject = yes
-											OVERLORD = {
-												has_country_flag = entente_leader
-											}
-										}
-									}
-								}
+								tag = ENT
+								is_in_faction_with = ENT
+								is_subject_of = ENT
+								has_country_flag = FRA_surrender_alone
+								has_country_flag = RUS_surrender_alone
 							}
 							NOT = {
 								has_country_flag = refused_to_surrender
@@ -526,125 +641,8 @@ GER_great_war = {
 				}
 				hidden_effect = { armistice_effect = yes }
 			}
-			if = {
-				limit = {
-					NOT = { tag = GER }
-					is_in_faction_with = GER
-				}
+			else = {
 				effect_tooltip = {
-					every_country = {
-						limit = {
-							OR = {
-								has_war_with = FRA
-								any_enemy_country = { has_country_flag = entente_leader }
-							}
-							OR = {
-								tag = GER
-								is_in_faction_with = GER
-								is_subject_of = GER
-								has_country_flag = member_of_central_powers
-								has_country_flag = accepted_french_surrender
-								has_subject = GER #austria
-							}
-							NOT = { has_country_flag = refused_to_surrender }
-						}
-						custom_effect_tooltip = get_great_war_winner
-						set_country_flag = great_war_winner
-						add_ideas = idea_armistice
-						every_country = {
-							limit = {
-								has_war = yes
-								OR = {
-									has_country_flag = member_of_entente
-									AND = {
-										NOT = { has_global_flag = FRA_surrender_alone }
-										OR = {
-											is_in_faction_with = FRA
-											tag = FRA
-											is_subject_of = FRA
-										}
-									}
-									AND = {
-										has_global_flag = FRA_surrender_alone
-										OR = {
-											has_country_flag = entente_leader
-											any_allied_country = {
-												has_country_flag = entente_leader
-											}
-											AND = {
-												is_subject = yes
-												OVERLORD = {
-													has_country_flag = entente_leader
-												}
-											}
-										}
-									}
-								}
-								NOT = { has_country_flag = refused_to_surrender }
-							}
-							custom_effect_tooltip = get_great_war_loser
-							set_country_flag = great_war_loser
-							add_ideas = idea_armistice
-							white_peace = {
-								tag = PREV
-								message = frankfurt_armistice_message
-							}
-							set_truce = {
-								target = PREV
-								days = 365
-							}
-							# Army Restriction checker
-							# i.e. you can't force usa or japan to restrict its army
-							if = {
-								limit = {
-									OR = {
-										has_capitulated = yes
-										surrender_progress > 0.01
-										casualties_inflicted_by = {
-											opponent = PREV
-											thousands > 1
-										}
-										any_home_area_neighbor_country = {
-											is_major = yes
-											has_country_flag = great_war_winner
-										}
-									}
-								}
-								if = {
-									limit = {
-										has_capitulated = yes
-									}
-									set_country_flag = has_capitulated_in_great_war
-								}
-								set_country_flag = army_should_be_restricted
-							}
-							# PEACE WITH NON-FACTIONAL ENEMIES
-							# YOU CANNOT CONDUCT WAR ANYMORE SINCE YOU ARE GONNA LOST THE GREAT WAR
-							# BUT THEY ARE NOT GONNA RECOGNISED AS VICTOR OF THE GREAT WAR
-							every_other_country = {
-								limit = {
-									has_defensive_war_with = PREV
-									is_in_faction = no
-									is_subject = no
-									has_civil_war = no
-									NOT = {
-										has_country_flag = member_of_entente
-										has_country_flag = refused_to_surrender
-									}
-								}
-								PREV = {
-									white_peace = {
-										tag = PREV
-										message = frankfurt_armistice_message
-									}
-									set_truce = {
-										target = PREV
-										days = 365
-									}
-								}
-							}
-						}
-					}
 					add_named_threat = {
 						name = frankfurt_armistice
 						threat = -10
@@ -667,8 +665,7 @@ GER_great_war = {
 		}
 		days_mission_timeout = 90
 		activation = {
-			any_country = {
-				tag = GER
+			GER = {
 				has_global_flag = frankfurt_armistice
 				OR = {
 					has_country_flag = great_war_winner
@@ -678,13 +675,15 @@ GER_great_war = {
 		}
 		visible = {
 			OR = {
-				tag = FRA
-				is_in_faction_with = FRA
+				tag = ENT
+				is_in_faction_with = ENT
 				has_country_flag = member_of_entente
 				tag = GER
 				has_country_flag = member_of_central_powers
-				has_country_flag = accepted_french_surrender
+				has_country_flag = accepted_entente_surrender
 				is_in_faction_with = GER
+				has_country_flag = FRA_surrender_alone
+				has_country_flag = RUS_surrender_alone
 			}
 			NOT = { has_global_flag = frankfurt_treaty }
 			has_global_flag = frankfurt_armistice
@@ -718,21 +717,7 @@ GER_great_war = {
 		available = {
 			has_global_flag = great_war
 			GER = {
-				OR = {
-					has_war_with = FRA
-					AND = {
-						any_enemy_country = {
-							is_major = yes
-							OR = {
-								has_country_flag = entente_leader
-								any_allied_country = {
-									has_country_flag = entente_leader
-								}
-							}
-							has_war_with = ROOT
-						}
-					}
-				}
+				has_war_with = ENT
 				OR = {
 					surrender_progress > 0.05
 					has_idea = GER_famine
@@ -756,22 +741,28 @@ GER_great_war = {
 			}
 			NOT = {
 				has_global_flag = GER_capitulation
-				has_global_flag = FRA_capitulation
+				has_global_flag = ENT_capitulation
 			}
 		}
 		visible = {
 			NOT = {
 				has_global_flag = GER_capitulation
-				has_global_flag = FRA_capitulation
+				has_global_flag = ENT_capitulation
 			}
 		}
 		allowed = {
 			tag = GER
 		}
+		target_trigger = {
+			FROM = {
+				has_country_flag = entente_leader
+				is_faction_leader = yes
+			}
+		}
 		fire_only_once = yes
 		complete_effect = {
 			set_global_flag = GER_capitulation
-			FRA = {
+			FROM = {
 				country_event = {
 					id = ww1_centre_capitulation.1
 					hours = 5
@@ -1094,7 +1085,7 @@ GER_great_war = {
 				any_country = {
 					is_major = yes
 					has_war_with = ROOT
-					is_in_faction_with = FRA
+					is_in_faction_with = ENT
 					has_capitulated = no
 					surrender_progress < 0.20
 				}
@@ -1208,26 +1199,24 @@ GER_great_war = {
 		allowed = { always = yes }
 		days_mission_timeout = 10
 		activation = {
-			any_country = {
-				tag = FRA
-				has_global_flag = france_accepts_GER_capitulation
-				OR = {
-					has_war_with = GER
-					has_country_flag = FRA_surrender_alone
-				}
+			ENT = {
+				has_global_flag = ENT_accepts_GER_capitulation
+				has_war_with = GER
 			}
 		}
 		visible = {
 			OR = {
-				tag = FRA
-				is_in_faction_with = FRA
+				tag = ENT
+				is_in_faction_with = ENT
 				has_country_flag = member_of_entente
 				tag = GER
 				has_country_flag = member_of_central_powers
 				is_in_faction_with = GER
 				has_country_flag = accepted_german_surrender
+				has_country_flag = FRA_surrender_alone
+				has_country_flag = RUS_surrender_alone
 			}
-			has_global_flag = france_accepts_GER_capitulation
+			has_global_flag = ENT_accepts_GER_capitulation
 			NOT = {
 				has_global_flag = compiegne_armistice
 			}
@@ -1237,7 +1226,7 @@ GER_great_war = {
 		timeout_effect = {
 			if = {
 				limit = {
-					tag = FRA
+					tag = ENT
 				}
 				set_global_flag = compiegne_armistice
 				set_global_flag = great_war_ends
@@ -1245,9 +1234,9 @@ GER_great_war = {
 					limit = {
 						has_war_with = GER
 						OR = {
-							tag = FRA
-							is_in_faction_with = FRA
-							is_subject_of = FRA
+							tag = ENT
+							is_in_faction_with = ENT
+							is_subject_of = ENT
 							has_country_flag = member_of_entente
 							has_country_flag = accepted_german_surrender
 						}
@@ -1255,9 +1244,14 @@ GER_great_war = {
 							has_country_flag = refused_to_surrender
 						}
 					}
-					set_country_flag = great_war_winner
-					add_ideas = idea_armistice
-					every_country = {
+					if = {
+						limit = {
+							is_arabian_peninsula_tag = no
+						}
+						set_country_flag = great_war_winner
+						add_ideas = idea_armistice
+					}		
+					every_other_country = {
 						limit = {
 							has_war = yes
 							OR = {
@@ -1276,11 +1270,7 @@ GER_great_war = {
 									AND = {
 										is_subject = yes
 										OR = {
-											tag = POL
-											tag = LIT
-											tag = UKR
-											tag = GEO
-											tag = AZR
+											has_country_flag = released_by_germany							
 											tag = YEM
 											tag = UAS
 											AND = {
@@ -1327,6 +1317,10 @@ GER_great_war = {
 							}
 							set_country_flag = army_should_be_restricted
 						}
+						if = {
+							limit = { has_idea = GER_idea_german_military_advisors }
+							remove_ideas = GER_idea_german_military_advisors
+						}
 						# PEACE WITH NON-FACTIONAL ENEMIES
 						# YOU CANNOT CONDUCT WAR ANYMORE SINCE YOU ARE GONNA LOST THE GREAT WAR
 						# BUT THEY ARE NOT GONNA RECOGNISED AS VICTOR OF THE GREAT WAR
@@ -1339,15 +1333,10 @@ GER_great_war = {
 								NOT = {
 									has_country_flag = member_of_entente
 									has_country_flag = refused_to_surrender
+									tag = SOV
 									AND = {
 										is_russian_tag = yes
 										has_war_with = SOV
-									}
-									AND = {
-										tag = SOV
-										any_enemy_country = {
-											is_russian_tag = yes
-										}
 									}
 								}
 							}
@@ -1372,13 +1361,21 @@ GER_great_war = {
 					armistice_effect = yes
 				}
 			}
+			else = {
+				effect_tooltip = {
+					add_named_threat = {
+						name = compiegne_armistice
+						threat = -10
+					}
+				}
+			}
 		}
 	}
 	#CP - REFUSE TO SURRENDER
 	member_of_centre_armistice = {
 		icon = GFX_decision_generic_break_treaty
 		available = {
-			has_war_with = FRA
+			has_war_with = ENT
 			has_global_flag = GER_capitulation
 			NOT = {
 				has_global_flag = compiegne_armistice
@@ -1395,6 +1392,12 @@ GER_great_war = {
 				tag = GER
 			}
 			is_subject = no
+		}
+		target_trigger = {
+			FROM = {
+				has_country_flag = entente_leader
+				is_faction_leader = yes
+			}
 		}
 		fire_only_once = yes
 		complete_effect = {
@@ -1444,8 +1447,7 @@ GER_great_war = {
 		}
 		days_mission_timeout = 90
 		activation = {
-			any_country = {
-				tag = FRA
+			ENT = {
 				has_global_flag = compiegne_armistice
 				OR = {
 					has_country_flag = great_war_winner
@@ -1455,13 +1457,15 @@ GER_great_war = {
 		}
 		visible = {
 			OR = {
-				tag = FRA
-				is_in_faction_with = FRA
+				tag = ENT
+				is_in_faction_with = ENT
 				has_country_flag = member_of_entente
 				tag = GER
 				has_country_flag = member_of_central_powers
 				is_in_faction_with = GER
 				has_country_flag = accepted_german_surrender
+				has_country_flag = FRA_surrender_alone
+				has_country_flag = RUS_surrender_alone
 			}
 			NOT = {
 				has_global_flag = versailles_treaty
@@ -1472,7 +1476,7 @@ GER_great_war = {
 		is_good = no
 		timeout_effect = {
 			if = {
-				limit = { tag = FRA }
+				limit = { tag = ENT }
 				set_global_flag = versailles_treaty
 				add_named_threat = {
 					name = versailles_treaty
