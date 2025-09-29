@@ -226,7 +226,27 @@ country_event = { #ottoman revolt
 						promote_character = { character = ALB_cerciz_topulli ideology = warlordism }
 						promote_character = { character = ALB_cerciz_topulli ideology = stratocracy }
 					}
-					set_temp_variable = { global.new_occupied_country = THIS }
+					if = {
+						limit = { is_government_in_exile = yes }
+						set_temp_variable = { global.new_occupied_country = THIS }
+						every_owned_state = {
+							limit = {
+								NOT = {
+									is_controlled_by = THIS
+									state = var:global.occupied_state
+								}
+							}
+							set_temp_variable = { global.occupied_albanian_state = THIS }
+							controller = { set_temp_variable = { global.occupier_albanian_state = THIS } }
+							set_state_controller_to = PREV
+							random_other_country = {
+								limit = { is_hosting_exile = PREV.PREV }
+								end_exile = PREV.PREV
+							}
+							transfer_state_to = var:global.occupier_albanian_state #come look at it later
+							#set_state_controller_to = var:global.occupier_albanian_state
+						}
+					}
 				}
 			}
 			else_if = {
@@ -1075,7 +1095,13 @@ country_event = { #ottoman revolt
 				}
 			}
 		}
-		var:global.new_occupied_country = { set_temp_variable = { global.occupied_country = THIS } }
+		var:global.new_occupied_country = {
+			set_temp_variable = { global.occupied_country = THIS }
+			if = {
+				limit = { is_government_in_exile = yes }
+				end_exile = THIS
+			}
+		}
 		var:global.occupied_country = {
 			add_timed_idea = { idea = standing_alone days = 270 }
 			if = {
