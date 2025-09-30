@@ -16970,28 +16970,28 @@ peace_deals = {
 		# }
 		available = {
 			has_war_with = ITA
-			OR = {
+			is_in_faction = no
+			ITA = {
 				is_in_faction = no
-				ITA = {
-					is_in_faction = no
+			}	
+			OR = {
+				war_length_with = {
+					tag = ITA
+					months > 3
 				}
-				OR = {
-					has_global_flag = kis_firstbalkan_war
-					has_war_with = BUL
-					has_war_with = SER
-					has_war_with = GRE
-					any_enemy_country = {
-						is_major = yes
-						NOT = { original_tag = ITA }
-					}
-				}
+				has_war_with = BUL
+				has_war_with = SER
+				has_war_with = GRE
 			}
+			#any_enemy_country = {
+			#	is_major = yes
+			#	NOT = { original_tag = ITA }
+			#}
 		}
 		visible = {
 			has_global_flag = italo_turkish_war
 			NOT = {
-				has_country_flag = ITA_libyan_war_mission_timeout
-				has_global_flag = italo_turkish_war_ends
+				has_global_flag = libyan_crisis_resolved
 			}
 			if = {
 				limit = {
@@ -17012,95 +17012,186 @@ peace_deals = {
 		}
 		fire_only_once = yes
 		ai_will_do = {
-			base = 0
+			base = 1
+			# historical accuracy ottoman peace out with ita ai, ita player exit war when take libyan coast line and rhodos island, also he can try to cap ottoman in mainland
 			modifier = {
-				add = 100
+				add = -5
+				any_controlled_state = {
+					OR = {
+						state = 448
+						state = 450
+					}
+				}
+			}
+			modifier = { # idk is it really need, players can destroy turkey and dont capture islands
+				add = -5
+				ITA = { is_ai = no } # ai with losses check can forget about rhodos
+				casualties_inflicted_by = {
+					opponent = ITA
+					thousands < 50
+				}
+			}
+			modifier = { # waiting for balkan wars
+				add = -5
+				ITA = { is_ai = yes }
+			}
+			modifier = { # fast war for player
+				add = 3
+				ITA = { is_ai = no }
+				NOT = {
+					any_controlled_state = {
+						is_core_of = LBA
+						is_coastal = yes
+					}
+				}
+			}
+			modifier = { # fast war for player
+				add = 2
+				ITA = { is_ai = no }
+				ITA = {
+					controls_state = 899 #Rodos
+					controls_state = 164 #Dodecanese	
+				}
+			}
+			modifier = { # ai peace out with ita ai like in history
+				add = 5 
+				OR = {
+					has_war_with = BUL
+					has_war_with = GRE
+					has_war_with = SER
+					date > 1913.1.1 # late war
+				}
 				war_length_with = {
 					tag = ITA
 					months > 6
 				}
-				OR = {
-					casualties_inflicted_by = {
-						opponent = ITA
-						thousands > 50
-					}
-					NOT = {
-						AND = {
-							controls_state = 450
-							controls_state = 663
-							controls_state = 1156
-							controls_state = 448
-							controls_state = 1060
-							controls_state = 1061
-							controls_state = 1157
-						}
-					}
-					AND = {
-						surrender_progress > 0.2
+				ITA = {
+					controls_state = 448
+					controls_state = 450
+				}
+			}
+			modifier = { # smart player makes invasion in mainland
+				add = 10
+				ITA = {
+					any_controlled_state = {
+						is_owned_by = TUR
 						NOT = {
-							has_war_with = BUL
-							has_war_with = SER
-							has_war_with = GRE
-						}
-					}					
-				}
-			}
-			modifier = {
-				add = 500
-				OR = {
-					has_war_with = BUL
-					has_war_with = SER
-					has_war_with = GRE
-				}
-				war_length_with = {
-					tag = ITA
-					months > 3
-				}
-				OR = {
-					casualties_inflicted_by = {
-						opponent = ITA
-						thousands > 50
-					}
-					AND = {
-						ITA = {
-							surrender_progress < 0.05
-						}
-						OR = {
-							ITA = {
-								controls_state = 450
-								controls_state = 1061
-							}
-							ITA = {
-								controls_state = 448
-									controls_state = 1060
-							}
+							is_core_of = LBA
 						}
 					}
-					surrender_progress > 0.2
+				}
+				surrender_progress > 0.15
+				casualties_inflicted_by = {
+					opponent = ITA
+					thousands > 50
 				}
 			}
-			modifier = {
-				add = 25
-				NOT = {
-					all_owned_state = {
-						if = {
-							limit = {
-								is_core_of = LBA
-								impassable = no
-							}
-						}
-						is_controlled_by = ROOT
-					}
-				}
-			}
+
+
+			#old behavior
+			#modifier = {
+			#	add = -300
+			#	casualties_inflicted_by = {
+			#		opponent = ITA
+			#		thousands < 10 # i was managed to inflict only this even with encircles, but not 50k as it was, free to change but only around this number
+			#	}
+			#}
+			#modifier = {
+			#	add = -300
+			#	any_controlled_state = {
+			#		OR = {
+			#			state = 448
+			#			state = 450
+			#		}
+			#	}
+			#}
+			#modifier = {
+			#	add = 100
+			#	war_length_with = {
+			#		tag = ITA
+			#		months > 6
+			#	}
+			#	OR = {
+			#		casualties_inflicted_by = {
+			#			opponent = ITA
+			#			thousands > 35
+			#		}
+			#		NOT = {
+			#			AND = {
+			#				controls_state = 450 #Bengazi
+			#				controls_state = 448 #Tripoli
+			#				controls_state = 1060 #Tripolitania
+			#				controls_state = 1061 #Cyrenaica
+			#				controls_state = 1157 #Syrte
+			#			}
+			#		}
+			#		AND = {
+			#			surrender_progress > 0.15
+			#			NOT = {
+			#				has_war_with = BUL
+			#				has_war_with = SER
+			#				has_war_with = GRE
+			#			}
+			#		}					
+			#	}
+			#}
+			#modifier = {
+			#	add = 300
+			#	OR = {
+			#		has_war_with = BUL
+			#		has_war_with = SER
+			#		has_war_with = GRE
+			#	}
+			#	war_length_with = {
+			#		tag = ITA
+			#		months > 6
+			#	}
+			#	OR = {
+			#		casualties_inflicted_by = {
+			#			opponent = ITA
+			#			thousands > 35
+			#		}
+			#		AND = {
+			#			ITA = {
+			#				surrender_progress < 0.05
+			#			}
+			#			ITA = {
+			#				controls_state = 450 #Bengazi
+			#				controls_state = 448 #Tripoli
+			#			}
+			#		}
+			#		surrender_progress > 0.1
+			#	}
+			#}
+			#modifier = {
+			#	add = 250
+			#	all_owned_state = {
+			#		if = {
+			#			limit = {
+			#				is_core_of = LBA
+			#				impassable = no
+			#				region = 225
+			#			}
+			#		}
+			#		is_controlled_by = ITA 
+			#	}
+			#}
+			#modifier = {
+			#	add = 300
+			#	if = {
+			#		limit = {
+			#			owns_state = 899 #Rodos
+			#			owns_state = 164 #Dodecanese
+			#		}
+			#		NOT = {
+			#			controls_state = 899 #Rodos
+			#			controls_state = 164 #Dodecanese
+			#		}
+			#	}
+			#}
 		}
 		complete_effect = {
-			ITA = {
-				country_event = {
-					id = ww1_italianturkish.4
-					hours = 3
-				}
-			}
+			set_global_flag = ITA_won_against_ottomans
 		}
 	}
 #	TUR_sue_for_peace_BLL = {
@@ -19310,7 +19401,7 @@ crisis = {
 				infantry_equipment_1 > -3000
 			}
 			has_equipment = {
-				artillery_equipment > -800
+				field_gun_equipment > -800
 			}
 			# has_equipment = {
 			# 	howitzer_equipment > -300
@@ -19615,7 +19706,7 @@ TUR_libyanwar_decision = {
 		fire_only_once = yes
 		visible = {
 			NOT = {
-				has_global_flag = italo_turkish_war_ends
+				has_global_flag = libyan_crisis_resolved
 			}
 			any_owned_state = {
 				is_core_of = LBA
@@ -19687,7 +19778,7 @@ TUR_libyanwar_decision = {
 		fire_only_once = yes
 		visible = {
 			NOT = {
-				has_global_flag = italo_turkish_war_ends
+				has_global_flag = libyan_crisis_resolved
 			}
 			any_owned_state = {
 				is_coastal = yes
@@ -21441,14 +21532,12 @@ TUR_economy_decision = {
 					}
 				}
 			}
-			NOT = {
-				custom_trigger_tooltip = {
-					tooltip = debt_less_than_0
-					check_variable = {
-						var = opda_consumer_goods
-						value = 0
-						compare = less_than_or_equals
-					}
+			custom_trigger_tooltip = {
+				tooltip = debt_more_than_0
+				check_variable = {
+					var = opda_consumer_goods
+					value = 0
+					compare = greater_than
 				}
 			}
 		}
@@ -21474,14 +21563,12 @@ TUR_economy_decision = {
 			has_variable = opda_consumer_goods
 		}
 		available = {
-			NOT = {
-				custom_trigger_tooltip = {
-					tooltip = debt_less_than_0
-					check_variable = {
-						var = opda_consumer_goods
-						value = 0
-						compare = less_than_or_equals
-					}
+			custom_trigger_tooltip = {
+				tooltip = debt_more_than_0
+				check_variable = {
+					var = opda_consumer_goods
+					value = 0
+					compare = greater_than
 				}
 			}
 		}
@@ -21509,14 +21596,12 @@ TUR_economy_decision = {
 		}
 		available = {
 			num_of_civilian_factories > 15
-			NOT = {
-				custom_trigger_tooltip = {
-					tooltip = debt_less_than_0
-					check_variable = {
-						var = opda_consumer_goods
-						value = 0
-						compare = less_than_or_equals
-					}
+			custom_trigger_tooltip = {
+				tooltip = debt_more_than_0
+				check_variable = {
+					var = opda_consumer_goods
+					value = 0
+					compare = greater_than
 				}
 			}
 		}
@@ -21611,14 +21696,12 @@ TUR_economy_decision = {
 					has_war_with = ITA
 				}
 			}
-			NOT = {
-				custom_trigger_tooltip = {
-					tooltip = debt_less_than_0
-					check_variable = {
-						var = opda_consumer_goods
-						value = 0
-						compare = less_than_or_equals
-					}
+			custom_trigger_tooltip = {
+				tooltip = debt_more_than_0
+				check_variable = {
+					var = opda_consumer_goods
+					value = 0
+					compare = greater_than
 				}
 			}
 		}
@@ -21795,14 +21878,12 @@ TUR_economy_decision = {
 					has_war_with = ITA
 				}
 			}
-			NOT = {
-				custom_trigger_tooltip = {
-					tooltip = debt_less_than_0
-					check_variable = {
-						var = opda_consumer_goods
-						value = 0
-						compare = less_than_or_equals
-					}
+			custom_trigger_tooltip = {
+				tooltip = debt_more_than_0
+				check_variable = {
+					var = opda_consumer_goods
+					value = 0
+					compare = greater_than
 				}
 			}
 		}
@@ -21979,14 +22060,12 @@ TUR_economy_decision = {
 					has_war_with = ITA
 				}
 			}
-			NOT = {
-				custom_trigger_tooltip = {
-					tooltip = debt_less_than_0
-					check_variable = {
-						var = opda_consumer_goods
-						value = 0
-						compare = less_than_or_equals
-					}
+			custom_trigger_tooltip = {
+				tooltip = debt_more_than_0
+				check_variable = {
+					var = opda_consumer_goods
+					value = 0
+					compare = greater_than
 				}
 			}
 		}
@@ -22167,14 +22246,12 @@ TUR_economy_decision = {
 					has_war_with = ITA
 				}
 			}
-			NOT = {
-				custom_trigger_tooltip = {
-					tooltip = debt_less_than_0
-					check_variable = {
-						var = opda_consumer_goods
-						value = 0
-						compare = less_than_or_equals
-					}
+			custom_trigger_tooltip = {
+				tooltip = debt_more_than_0
+				check_variable = {
+					var = opda_consumer_goods
+					value = 0
+					compare = greater_than
 				}
 			}
 		}
@@ -22342,14 +22419,12 @@ TUR_economy_decision = {
 			has_completed_focus = TUR_search_for_investments
 			owns_state = 656
 			has_variable = opda_consumer_goods
-			NOT = {
-				custom_trigger_tooltip = {
-					tooltip = debt_less_than_0
-					check_variable = {
-						var = opda_consumer_goods
-						value = 0
-						compare = less_than_or_equals
-					}
+			custom_trigger_tooltip = {
+				tooltip = debt_more_than_0
+				check_variable = {
+					var = opda_consumer_goods
+					value = 0
+					compare = greater_than
 				}
 			}
 		}
@@ -22765,7 +22840,6 @@ TUR_economy_decision = {
 				has_completed_focus = TUR_secular_education
 				has_completed_focus = TUR_expand_military_research
 				has_completed_focus = TUR_socialist_education
-				has_completed_focus = TUR_socialist_economics
 				has_completed_focus = TUR_anatolian_literacy_campaigns
 			}
 		}
@@ -23457,15 +23531,25 @@ TUR_economy_decision = {
 					has_completed_focus = TUR_import_dependency
 				}
 				add_equipment_to_stockpile = {
-					type = artillery_equipment
-					amount = 250
+					type = field_gun_equipment
+					amount = 200
+					producer = FROM
+				}
+				add_equipment_to_stockpile = {
+					type = howitzer_equipment_1
+					amount = 50
 					producer = FROM
 				}
 			}
 			else = {
 				add_equipment_to_stockpile = {
-					type = artillery_equipment
-					amount = 200
+					type = field_gun_equipment
+					amount = 160
+					producer = FROM
+				}
+				add_equipment_to_stockpile = {
+					type = howitzer_equipment_1
+					amount = 40
 					producer = FROM
 				}
 			}
@@ -23475,8 +23559,13 @@ TUR_economy_decision = {
 			modifier = {
 				OR = {
 					num_of_civilian_factories < 5
-					has_equipment = {
-						artillery_equipment > 100
+					stockpile_ratio = {
+						archetype = field_gun_equipment
+						ratio > 0.75
+					}
+					stockpile_ratio = {
+						archetype = howitzer_equipment
+						ratio > 0.75
 					}
 					has_idea = TUR_dependence_on_imported_weapons_4
 				}
@@ -23677,7 +23766,7 @@ TUR_economy_decision = {
 					has_country_flag = great_war_loser
 				}
 				exists = yes
-				has_tech = motorised_infantry
+				has_tech = tech_trucks
 			}
 			has_completed_focus = TUR_new_weapon_contracts
 			has_variable = opda_consumer_goods
@@ -25497,7 +25586,7 @@ TUR_war_of_independence_support_OTT = {
 						infantry = { x = 3 y = 1 }
 						infantry = { x = 3 y = 2 }
 						infantry = { x = 3 y = 3 }
-						artillery_brigade = { x = 3 y = 4 }
+						field_gun_brigade = { x = 3 y = 4 }
 					}
 					support = {
 						engineer = { x = 0 y = 0 }
@@ -26026,6 +26115,7 @@ TUR_panturkism_decision = {
 					tag = TRK
 					tag = KUM
 					tag = ETS
+					tag = KYR
 				}
 			}
 		}
@@ -26079,6 +26169,7 @@ TUR_panturkism_decision = {
 					tag = TRK
 					tag = KUM
 					tag = ETS
+					tag = KYR
 				}
 			}
 		}
@@ -26132,6 +26223,7 @@ TUR_panturkism_decision = {
 					tag = TRK
 					tag = KUM
 					tag = ETS
+					tag = KYR
 				}
 			}
 		}
@@ -29356,6 +29448,7 @@ TUR_panislamism_decision = {
 					is_core_of = KHI
 					is_core_of = TRK
 					is_core_of = KAZ
+					is_core_of = KYR
 				}
 			}
 		}
@@ -29543,6 +29636,7 @@ TUR_panislamism_decision = {
 							tag = KHI
 							tag = TRK
 							tag = KAZ
+							tag = KYR
 						}
 					}
 				}
@@ -29727,6 +29821,7 @@ TUR_panislamism_decision = {
 							is_core_of = KHI
 							is_core_of = TRK
 							is_core_of = KAZ
+							is_core_of = KYR
 						}
 					}
 				}

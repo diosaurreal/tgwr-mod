@@ -6860,7 +6860,7 @@ country_event = {
 							y = 0
 						}
 						cavalry = {
-							x = 1
+							x = 2
 							y = 0
 						}
 					}
@@ -6869,6 +6869,7 @@ country_event = {
 			541 = {
 				create_unit = {
 					division = "name = \"Baster Volunteer Brigade\" division_template = \"Baster Volunteers\" start_experience_factor = 0.1"
+					allow_spawning_on_enemy_provs = yes
 					owner = SAF
 				}
 			}
@@ -6922,6 +6923,7 @@ country_event = {
 				create_unit = {
 					division = "name = \"Baster Volunteer Brigade\" division_template = \"Baster Volunteers\" start_experience_factor = 0.1"
 					owner = SAF
+					allow_spawning_on_enemy_provs = yes
 				}
 			}
 		}
@@ -8456,11 +8458,22 @@ country_event = {
 			ideology = democratic
 			popularity = 0.02
 		}
-		add_to_variable = { GER_influence_in_hesse = -1 }
-		custom_effect_tooltip = {
-			localization_key = GER_add_INFLUENCE_to_FEDERAL_STATE_tt
-			INFLUENCE = "-1"  #Negative influence is not a bug, I intended it
-			FEDERAL_STATE = GER_bundesrat_hesse_tt
+		if = {
+			limit = {check_variable = { GER_influence_in_hesse > 0 } }
+			add_to_variable = { GER_influence_in_hesse = -1 }
+			custom_effect_tooltip = {
+				localization_key = GER_add_INFLUENCE_to_FEDERAL_STATE_tt
+				INFLUENCE = "-1"
+				FEDERAL_STATE = GER_bundesrat_hesse_tt
+			}
+		}
+		else_if = {
+			limit = {check_variable = { GER_extra_influence > 0 } }
+			add_to_variable = { GER_extra_influence = -1 }
+			custom_effect_tooltip = {
+				localization_key = GER_get_extra_influence_tt
+				INFLUENCE = "-1"
+			}
 		}
 		#GER_update_bundesrat_gui = yes
 		HES = {
@@ -9372,6 +9385,15 @@ country_event = {
 		activate_advisor = GER_erich_von_falkenhayn_chief
 		add_ideas = GER_home_by_christmas
 		add_war_support = -0.05
+		if = {
+			limit = {
+				has_idea = GER_josias_von_heeringen
+			}
+			GER_josias_von_heeringen = {
+				remove_any_country_role_from_character = yes
+			}
+			activate_advisor = GER_erich_von_falkenhayn
+		}
 	}
 }
 
@@ -10062,7 +10084,7 @@ country_event = {
 	option = {
 		name = ww1_germanrework.75.a
 		custom_effect_tooltip = historical_tt
-		#Erich von Falkenhayn plan
+		#Moltke plan
 		effect_tooltip = {
 			swap_ideas = {
 				add_idea = GER_schlieffen_moltke_plan
@@ -10071,14 +10093,13 @@ country_event = {
 		}
 		set_country_flag = GER_schliffenmoltkeplan
 		unlock_decision_tooltip = GER_schliffenmoltkeplan
-		deactivate_advisor = GER_josias_von_heeringen
+	}
+	option = {
+		name = ww1_germanrework.75.b
 		GER_josias_von_heeringen = {
 			remove_any_country_role_from_character = yes
 		}
 		activate_advisor = GER_erich_von_falkenhayn
-	}
-	option = {
-		name = ww1_germanrework.75.b
 		trigger = {
 			NOT = {
 				has_completed_focus = GER_quantitative_plan
@@ -10724,7 +10745,7 @@ country_event = {
 	is_triggered_only = yes
 	fire_only_once = no
 	option = {
-		name = ww1_germanrework.99.a
+		name = ww1_germanrework.98.a
 		add_war_support = 0.05
 		add_political_power = 75
 	}
@@ -13766,6 +13787,7 @@ country_event = {
 	#we changed our mind
 	option = {
 		name = ww1_germanrework.174.d
+		GER_remove_all_negotiation_flags = yes
 		#GER_update_bundesrat_gui = yes	
 	}
 }

@@ -68,7 +68,7 @@ focus_tree = {
 	focus = {
 		id = CHI_establish_provisional_gov
 		icon = GFX_focus_chinese_revolutionaries
-		cost = 10
+		cost = 6
 		relative_position_id = CHI_stand_with_tongmenghui
 		prerequisite = {
 			focus = CHI_stand_with_tongmenghui
@@ -113,8 +113,8 @@ focus_tree = {
 		}
 	}
 	focus = {
-		id = CHI_tongmenghui_cabinet
-		icon = GFX_focus_kmt_tutelage
+		id = CHI_hold_parliamentary_elections
+		icon = GFX_focus_beiyang_elections
 		cost = 10
 		relative_position_id = CHI_establish_provisional_gov
 		prerequisite = {
@@ -123,7 +123,11 @@ focus_tree = {
 		x = 0
 		y = 1
 		available = {
-			NOT = { has_war_with = QIN }
+			has_war = no
+			NOT = {
+				has_government = fascism
+				has_government = communism
+			}
 		}
 		cancelable = no
 		cancel_if_invalid = no
@@ -145,42 +149,6 @@ focus_tree = {
 				days = 1
 			}
 		}
-		bypass = {
-
-		}
-		completion_reward = {
-			country_event = {
-				id = ww1_china.225
-				days = 3
-			}
-		}
-		ai_will_do = {
-			factor = 100
-		}
-		search_filters = {
-			FOCUS_FILTER_HISTORICAL
-			FOCUS_FILTER_POLITICAL
-		}
-	}
-	focus = {
-		id = CHI_hold_parliamentary_elections
-		icon = GFX_focus_beiyang_elections
-		cost = 10
-		relative_position_id = CHI_tongmenghui_cabinet
-		prerequisite = {
-			focus = CHI_tongmenghui_cabinet
-		}
-		x = 0
-		y = 1
-		available = {
-			has_war = no
-			NOT = {
-				has_government = fascism
-				has_government = communism
-			}
-		}
-		cancelable = no
-		cancel_if_invalid = no
 		completion_reward = {
 			add_political_power = 75
 			country_event = {
@@ -208,16 +176,48 @@ focus_tree = {
 		}
 	}
 	focus = {
+		id = CHI_tongmenghui_cabinet
+		icon = GFX_focus_kmt_tutelage
+		cost = 10
+		relative_position_id = CHI_hold_parliamentary_elections
+		prerequisite = {
+			focus = CHI_hold_parliamentary_elections
+		}
+		x = 0
+		y = 1
+		available = {
+			NOT = { has_war_with = QIN }
+		}
+		cancelable = no
+		cancel_if_invalid = no
+		bypass = {
+
+		}
+		completion_reward = {
+			country_event = {
+				id = ww1_china.225
+				days = 3
+			}
+		}
+		ai_will_do = {
+			factor = 100
+		}
+		search_filters = {
+			FOCUS_FILTER_HISTORICAL
+			FOCUS_FILTER_POLITICAL
+		}
+	}
+	focus = {
 		id = CHI_ruling_of_yuan_shikai
 		icon = GFX_focus_beiyang_beijing
 		cost = 7
 		prerequisite = {
-			focus = CHI_hold_parliamentary_elections
+			focus = CHI_tongmenghui_cabinet
 		}
 		mutually_exclusive = {
 			focus = CHI_kuomintang
 		}
-		relative_position_id = CHI_hold_parliamentary_elections
+		relative_position_id = CHI_tongmenghui_cabinet
 		x = -3
 		y = 1
 		allow_branch = {
@@ -258,18 +258,23 @@ focus_tree = {
 				}
 				CURRENT_DATE = "[?global.date.GetDateStringNoHour]"
 			}
-			CHI_yuan_shikai = {
-				if = {
-					limit = {
-						has_ideology = authoritarian_democracy
-					}
-					promote_character = authoritarian_democracy
+			if = {
+				limit = {
+					has_character = CHI_yuan_shikai
 				}
-				else = {
-					add_country_leader_role = {
-						promote_leader = yes
-						country_leader = {
-							ideology = authoritarian_democracy
+				CHI_yuan_shikai = {
+					if = {
+						limit = {
+							has_ideology = authoritarian_democracy
+						}
+						promote_character = authoritarian_democracy
+					}
+					else = {
+						add_country_leader_role = {
+							promote_leader = yes
+							country_leader = {
+								ideology = authoritarian_democracy
+							}
 						}
 					}
 				}
@@ -433,6 +438,17 @@ focus_tree = {
 			add_war_support = 0.05
 			custom_effect_tooltip = ww1_china_tooltip.1
 			add_country_leader_trait = CHI_trait_dictator
+			meta_effect = {
+				text = {
+					set_politics = {
+						ruling_party = neutrality
+						last_election = "[CURRENT_DATE]"
+						election_frequency = 120 #historical
+						elections_allowed = yes
+					}
+				}
+				CURRENT_DATE = "[?global.date.GetDateStringNoHour]"
+			}
 			hidden_effect = {
 				if = {
 					limit = {
@@ -474,17 +490,6 @@ focus_tree = {
 			add_popularity = {
 				ideology = democratic
 				popularity = -0.05
-			}
-			meta_effect = {
-				text = {
-					set_politics = {
-						ruling_party = neutrality
-						last_election = "[CURRENT_DATE]"
-						election_frequency = 120 #historical
-						elections_allowed = yes
-					}
-				}
-				CURRENT_DATE = "[?global.date.GetDateStringNoHour]"
 			}
 			if = {
 				limit = {
@@ -692,6 +697,9 @@ focus_tree = {
 					days = -20
 				}
 			}
+			effect_tooltip = {
+				retire_character = CHI_song_jiaoren
+			}
 			add_stability = -0.1
 			add_popularity = {
 				ideology = neutrality
@@ -728,6 +736,7 @@ focus_tree = {
 				character = CHI_yuan_shikai
 				ruling_only = yes
 			}
+			has_civil_war = no
 		}
 		select_effect = {
 			if = {
@@ -1604,12 +1613,12 @@ focus_tree = {
 		icon = GFX_focus_kmt_support
 		cost = 10
 		prerequisite = {
-			focus = CHI_hold_parliamentary_elections
+			focus = CHI_tongmenghui_cabinet
 		}
 		mutually_exclusive = {
 			focus = CHI_ruling_of_yuan_shikai
 		}
-		relative_position_id = CHI_hold_parliamentary_elections
+		relative_position_id = CHI_tongmenghui_cabinet
 		x = 18
 		y = 1
 		allow_branch = {
@@ -1998,15 +2007,15 @@ focus_tree = {
 						infantry = { x = 0 y = 0 }
 						infantry = { x = 0 y = 1 }
 						infantry = { x = 0 y = 2 }
-						artillery_brigade = { x = 0 y = 3 }
+						field_gun_brigade = { x = 0 y = 3 }
 						infantry = { x = 1 y = 0 }
 						infantry = { x = 1 y = 1 }
 						infantry = { x = 1 y = 2 }
-						artillery_brigade = { x = 1 y = 3 }
+						field_gun_brigade = { x = 1 y = 3 }
 						infantry = { x = 2 y = 0 }
 						infantry = { x = 2 y = 1 }
 						infantry = { x = 2 y = 2 }
-						artillery_brigade = { x = 2 y = 3 }
+						field_gun_brigade = { x = 2 y = 3 }
 						infantry = { x = 3 y = 0 }
 						infantry = { x = 3 y = 1 }
 						infantry = { x = 3 y = 2 }
@@ -2726,13 +2735,13 @@ focus_tree = {
 		relative_position_id = CHI_stand_with_tongmenghui
 		x = -18
 		y = 7
-		# offset = {
-		# 	trigger = {
-		# 		has_completed_focus = CHI_kuomintang
-		# 	}
-		# 	x = -3
-		# 	y = 1
-		# }
+		offset = {
+			trigger = {
+				has_completed_focus = CHI_ruling_of_yuan_shikai
+			}
+			x = 3
+			y = 1
+		}
 		allow_branch = {
 			
 		}
@@ -4217,7 +4226,7 @@ focus_tree = {
 			focus = CHI_focus_purchase_weapons
 		}
 		available = {
-			has_tech = motorised_infantry
+			has_tech = tech_trucks
 			has_tech = basic_train
 		}
 		bypass = {
@@ -4225,7 +4234,7 @@ focus_tree = {
 		}
 		completion_reward = {
 			add_equipment_to_stockpile = {
-				type = motorized_equipment_1
+				type = motorized_equipment
 				amount = 50
 				producer = ROOT
 			}
