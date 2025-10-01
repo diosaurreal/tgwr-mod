@@ -1758,7 +1758,7 @@ focus_tree = {
 		}
 	}
 	focus = {
-		id = TUR_expand_shipyards
+		id = TUR_renovate_imperial_arsenals
 		icon = GFX_focus_POL_develop_polish_shipbuilding
 		cost = 5
 		search_filters = {
@@ -1770,11 +1770,117 @@ focus_tree = {
 		relative_position_id = TUR_bahriye_nezareti
 		available = { has_navy_experience > 30 }
 		continue_if_invalid = yes
-		complete_tooltip = {
+		completion_reward = {
 			navy_experience = -30
-			custom_effect_tooltip = TUR_expand_shipyards_tt
+			custom_effect_tooltip = TUR_renovate_imperial_arsenals_tt
+			set_variable = { TUR_dh_repair_speed_factor = 0.1 }
+			set_variable = { TUR_dh_refit_speed = 0.1 }
+		}
+	}
+	focus = {
+		id = TUR_fund_naval_companies
+		icon = GFX_goal_generic_intelligence_exchange
+		cost = 5
+		search_filters = {
+			FOCUS_FILTER_INDUSTRY
+		}
+		prerequisite = { focus = TUR_renovate_imperial_arsenals }
+		x = 1
+		y = 1
+		relative_position_id = TUR_renovate_imperial_arsenals
+		available = {
+			NOT = {
+				custom_trigger_tooltip = {
+					tooltip = TUR_OPDA_trigger_tooltip
+					OR = {
+						has_idea = TUR_OPDA_idea
+						has_idea = TUR_OPDA_idea_2
+						has_idea = TUR_OPD_idea
+						has_idea = TUR_OPD_idea_2
+						has_idea = TUR_OPD_idea_3
+					}
+				}
+			}
+		}
+		completion_reward = {
+			custom_effect_tooltip = TUR_fund_naval_companies_tt
+			add_to_variable = { TUR_dh_naval_manufacturer_cost_factor = -0.25 }
+			if = {
+				limit = { has_dlc = "Arms Against Tyranny" }
+				custom_effect_tooltip = available_mio_tt
+				show_mio_tooltip = TUR_sirket_i_hayriye_organization
+				mio:TUR_sirket_i_hayriye_organization = { add_mio_size = 3 }
+			}
+			else = {
+				custom_effect_tooltip = available_designer
+				show_ideas_tooltip = TUR_sirket_i_hayriye
+			}
+		}
+	}
+	focus = {
+		id = TUR_collect_naval_funds
+		icon = GFX_focus_usa_reestablish_the_gold_standard
+		cost = 5
+		search_filters = {
+			FOCUS_FILTER_INDUSTRY
+		}
+		prerequisite = { focus = TUR_fund_naval_companies }
+		x = 0
+		y = 1
+		relative_position_id = TUR_fund_naval_companies
+		completion_reward = {
+			add_timed_idea = {
+				idea = TUR_donations_for_naval_expansion
+				days = 780
+			}
+		}
+	}
+	focus = {
+		id = TUR_increased_naval_research
+		icon = GFX_focus_generic_navy_research_bonus
+		cost = 10
+		search_filters = {
+			FOCUS_FILTER_RESEARCH
+		}
+		prerequisite = { focus = TUR_fund_naval_companies }
+		x = -1
+		y = 2
+		relative_position_id = TUR_fund_naval_companies
+		available = { has_navy_experience > 50 }
+		continue_if_invalid = yes
+		completion_reward = {
+			navy_experience = -50
+			custom_effect_tooltip = TUR_increased_naval_research_tt
+			set_variable = { TUR_dh_consumer_goods_factor = 0.05 }
+			set_variable = { TUR_dh_naval_equipment_upgrade_xp_cost = -0.15 }
+			hidden_effect = { add_ideas = TUR_naval_research_funding }
+			set_country_flag = TUR_increased_naval_research
+		}
+	}
+	focus = {
+		id = TUR_rebuild_the_ottoman_fleet
+		icon = GFX_goal_generic_construct_naval_dockyard
+		cost = 10
+		search_filters = {
+			FOCUS_FILTER_INDUSTRY
+		}
+		prerequisite = { focus = TUR_fund_naval_companies }
+		x = 1
+		y = 2
+		relative_position_id = TUR_fund_naval_companies
+		complete_tooltip = {
+			custom_effect_tooltip = TUR_rebuild_the_ottoman_fleet_tt
 			every_state = {
-				limit = { has_state_flag = TUR_expand_shipyards }
+				limit = { has_state_flag = TUR_rebuild_the_ottoman_fleet1 }
+				add_extra_state_shared_building_slots = 1
+				add_building_construction = {
+					type = dockyard
+					level = 1
+					instant_build = yes
+				}
+			}
+			every_state = {
+				limit = { has_state_flag = TUR_rebuild_the_ottoman_fleet2 }
 				add_extra_state_shared_building_slots = 1
 				add_building_construction = {
 					type = dockyard
@@ -1784,10 +1890,8 @@ focus_tree = {
 			}
 		}
 		completion_reward = {
-			navy_experience = -30
-			custom_effect_tooltip = TUR_expand_shipyards_tt
-			set_variable = { TUR_dh_repair_speed_factor = 0.1 }
-			set_variable = { TUR_dh_refit_speed = 0.1 }
+			custom_effect_tooltip = TUR_rebuild_the_ottoman_fleet_tt
+			set_variable = { TUR_dh_industrial_capacity_dockyard = 0.05 }
 			random_owned_controlled_state = {
 				limit = {
 					is_core_of = ROOT
@@ -1798,14 +1902,31 @@ focus_tree = {
 						include_locked = yes
 					}
 				}
-				prioritize = { 825 }
+				set_state_flag = TUR_rebuild_the_ottoman_fleet1
 				add_extra_state_shared_building_slots = 1
 				add_building_construction = {
 					type = dockyard
 					level = 1
 					instant_build = yes
 				}
-				set_state_flag = TUR_expand_shipyards
+			}
+			random_owned_controlled_state = {
+				limit = {
+					is_core_of = ROOT
+					is_coastal = yes
+					free_building_slots = {
+						building = dockyard
+						size > 1
+						include_locked = yes
+					}
+				}
+				set_state_flag = TUR_rebuild_the_ottoman_fleet2
+				add_extra_state_shared_building_slots = 1
+				add_building_construction = {
+					type = dockyard
+					level = 1
+					instant_build = yes
+				}
 			}
 		}
 	}
@@ -1816,10 +1937,10 @@ focus_tree = {
 		search_filters = {
 			FOCUS_FILTER_RESEARCH
 		}
-		prerequisite = { focus = TUR_bahriye_nezareti }
-		x = 4
+		prerequisite = { focus = TUR_mektep_i_bahriye }
+		x = 1
 		y = 1
-		relative_position_id = TUR_bahriye_nezareti
+		relative_position_id = TUR_mektep_i_bahriye
 		available = { has_navy_experience > 30 }
 		continue_if_invalid = yes
 		completion_reward = {
@@ -1921,7 +2042,7 @@ focus_tree = {
 			add_tech_bonus = {
 				name = TUR_study_heavy_gunnery
 				bonus = 0.5
-				uses = 2
+				uses = 1
 				category = ship_modules_tech
 			}
 		}
@@ -1936,7 +2057,7 @@ focus_tree = {
 		}
 		prerequisite = { focus = TUR_mektep_i_bahriye }
 		mutually_exclusive = { focus = TUR_rely_on_domestic_expertise }
-		x = -2
+		x = -3
 		y = 1
 		relative_position_id = TUR_mektep_i_bahriye
 		completion_reward = {
@@ -1944,76 +2065,30 @@ focus_tree = {
 			add_to_variable = { TUR_dh_experience_gain_navy_factor = 0.1 }
 			add_to_variable = { TUR_dh_naval_coordination = 0.05 }
 			set_variable = { TUR_dh_naval_doctrine_cost_factor = -0.1 }
-			navy_experience = 15
+			TUR_henry_felix_woods = { gain_xp = 500 }
 		}
 	}
 	focus = {
-		id = TUR_purchase_foreign_battleships
-		icon = GFX_focus_SWE_italian_destroyers
-		cost = 5
+		id = TUR_rely_on_domestic_expertise
+		icon = GFX_focus_generic_military_academy
+		cost = 10
 		search_filters = {
-			FOCUS_FILTER_HISTORICAL
-		}
-		prerequisite = { focus = TUR_european_naval_advisors }
-		x = -1
-		y = 1
-		relative_position_id = TUR_european_naval_advisors
-		bypass_if_unavailable = yes
-		available = {
-			custom_trigger_tooltip = {
-				tooltip = TUR_OPDA_trigger_tooltip
-				OR = {
-					has_idea = TUR_OPDA_idea
-					has_idea = TUR_OPDA_idea_2
-					has_idea = TUR_OPD_idea
-					has_idea = TUR_OPD_idea_2
-					has_idea = TUR_OPD_idea_3
-				}
-			}
-		}
-		completion_reward = {
-			custom_effect_tooltip = TUR_purchase_foreign_battleships_tt
-			set_variable = { TUR_dh_license_purchase_cost = -0.1 }
-			unlock_decision_tooltip = TUR_purchase_brandenburg_class
-			unlock_decision_tooltip = TUR_purchase_majestic_class
-			unlock_decision_tooltip = TUR_purchase_lauria_class
-		}
-	}
-	focus = {
-		id = TUR_welcome_foreign_naval_companies
-		icon = GFX_goal_generic_intelligence_exchange
-		cost = 5
-		search_filters = {
-			FOCUS_FILTER_HISTORICAL
 			FOCUS_FILTER_RESEARCH
 		}
-		prerequisite = { focus = TUR_european_naval_advisors }
-		x = 1
+		prerequisite = { focus = TUR_mektep_i_bahriye }
+		mutually_exclusive = { focus = TUR_european_naval_advisors }
+		x = -1
 		y = 1
-		relative_position_id = TUR_european_naval_advisors
-		bypass_if_unavailable = yes
+		relative_position_id = TUR_mektep_i_bahriye
+		available = { has_navy_experience > 50 }
+		continue_if_invalid = yes
 		completion_reward = {
-			custom_effect_tooltip = TUR_welcome_foreign_naval_companies_tt
-			add_to_variable = { TUR_dh_naval_accidents_chance = -0.1 }
-			if = {
-				limit = {
-					has_dlc = "Arms Against Tyranny"
-				}
-				custom_effect_tooltip = available_mio_tt
-				show_mio_tooltip = GER_kaiserliche_werft_wilhelmshaven_organization
-				show_mio_tooltip = GER_blohm_und_voss_organization
-				show_mio_tooltip = ENG_yarrow_shipbuilders_organization
-				show_mio_tooltip = ITA_cantieri_navali_riuniti_organization
-				show_mio_tooltip = USA_newport_news_shipbuilding_organization
-			}
-			else = {
-				custom_effect_tooltip = available_designer
-				show_ideas_tooltip = TUR_kaiserliche_werft_wilhelmshaven
-				show_ideas_tooltip = TUR_blohm_und_voss
-				show_ideas_tooltip = TUR_yarrow_shipbuilders
-				show_ideas_tooltip = TUR_cantieri_navali_riuniti
-				show_ideas_tooltip = TUR_newport_news_shipbuilding
-			}
+			navy_experience = -50
+			custom_effect_tooltip = TUR_rely_on_domestic_expertise_tt
+			add_to_variable = { TUR_dh_naval_coordination = 0.05 }
+			add_to_variable = { TUR_dh_naval_hit_chance = 0.05 }
+			TUR_huseyin_rauf = { gain_xp = 300 }
+			TUR_mahmud_muhtar = { gain_xp = 300 }
 		}
 	}
 	focus = {
@@ -2024,13 +2099,10 @@ focus_tree = {
 			FOCUS_FILTER_HISTORICAL
 			FOCUS_FILTER_RESEARCH
 		}
-		prerequisite = {
-			focus = TUR_purchase_foreign_battleships
-			focus = TUR_welcome_foreign_naval_companies
-		}
-		x = 1
+		prerequisite = { focus = TUR_european_naval_advisors }
+		x = 0
 		y = 1
-		relative_position_id = TUR_purchase_foreign_battleships
+		relative_position_id = TUR_european_naval_advisors
 		completion_reward = {
 			custom_effect_tooltip = TUR_study_european_navies_tt
 			add_to_variable = { TUR_dh_naval_damage_factor = 0.1 }
@@ -2045,101 +2117,11 @@ focus_tree = {
 		}
 	}
 	focus = {
-		id = TUR_priority_in_purchases
-		icon = GFX_focus_generic_treaty
-		cost = 5
-		search_filters = {
-			FOCUS_FILTER_HISTORICAL
-		}
-		prerequisite = { focus = TUR_study_european_navies }
-		x = 0
-		y = 1
-		relative_position_id = TUR_study_european_navies
-		available = {
-			custom_trigger_tooltip = {
-				tooltip = TUR_OPDA_trigger_tooltip
-				OR = {
-					has_idea = TUR_OPDA_idea
-					has_idea = TUR_OPDA_idea_2
-					has_idea = TUR_OPD_idea
-					has_idea = TUR_OPD_idea_2
-					has_idea = TUR_OPD_idea_3
-				}
-			}
-		}
-		completion_reward = {
-			if = {
-				limit = { has_dlc = "Arms Against Tyranny" }
-				custom_effect_tooltip = TUR_priority_in_purchases_tt
-			}
-			else = { custom_effect_tooltip = TUR_priority_in_purchases_tt2 }
-			hidden_effect = {
-				if = {
-					limit = { has_idea = TUR_kaiserliche_werft_wilhelmshaven }
-					TUR_remove_debt_15_GER = yes
-				}
-				if = {
-					limit = { has_idea = TUR_blohm_und_voss }
-					TUR_remove_debt_15_GER = yes
-				}
-				if = {
-					limit = { has_idea = TUR_yarrow_shipbuilders }
-					TUR_remove_debt_15_ENG = yes
-				}
-				if = {
-					limit = { has_idea = TUR_cantieri_navali_riuniti }
-					TUR_remove_debt_15_ITA = yes
-				}
-				if = {
-					limit = { has_idea = TUR_newport_news_shipbuilding }
-					TUR_remove_debt_15_USA = yes
-				}
-			}
-		}
-	}
-	focus = {
-		id = TUR_rely_on_domestic_expertise
-		icon = GFX_focus_generic_military_academy
-		cost = 10
-		search_filters = {
-			FOCUS_FILTER_RESEARCH
-		}
-		prerequisite = { focus = TUR_mektep_i_bahriye }
-		mutually_exclusive = { focus = TUR_european_naval_advisors }
-		x = 2
-		y = 1
-		relative_position_id = TUR_mektep_i_bahriye
-		available = { has_navy_experience > 50 }
-		continue_if_invalid = yes
-		completion_reward = {
-			navy_experience = -50
-			custom_effect_tooltip = TUR_rely_on_domestic_expertise_tt
-			add_to_variable = { TUR_dh_naval_coordination = 0.05 }
-			add_to_variable = { TUR_dh_naval_hit_chance = 0.05 }
-			add_to_variable = { TUR_dh_naval_manufacturer_cost_factor = -0.25 }
-			if = {
-				limit = {
-					has_dlc = "Arms Against Tyranny"
-				}
-				custom_effect_tooltip = available_mio_tt
-				show_mio_tooltip = TUR_tersane_i_amire_organization 
-				show_mio_tooltip = TUR_sirket_i_hayriye_organization
-			}
-			else = {
-				custom_effect_tooltip = available_designer
-				show_ideas_tooltip = TUR_tersane_i_amire
-				show_ideas_tooltip = TUR_sirket_i_hayriye
-			}
-			TUR_huseyin_rauf = { gain_xp = 300 }
-			TUR_mahmud_muhtar = { gain_xp = 300 }
-		}
-	}
-	focus = {
 		id = TUR_developing_our_own_tactics
 		icon = GFX_goal_generic_position_armies
 		cost = 10
 		prerequisite = { focus = TUR_rely_on_domestic_expertise }
-		x = -1
+		x = 0
 		y = 1
 		relative_position_id = TUR_rely_on_domestic_expertise
 		available = { has_navy_experience > 80 }
@@ -2154,166 +2136,6 @@ focus_tree = {
 		}
 	}
 	focus = {
-		id = TUR_more_resources_for_the_naval_industry
-		icon = GFX_focus_generic_navy_battleship2
-		cost = 10
-		prerequisite = { focus = TUR_rely_on_domestic_expertise }
-		mutually_exclusive = { focus = TUR_increased_ship_production }
-		x = 1
-		y = 1
-		relative_position_id = TUR_rely_on_domestic_expertise
-		available = {
-			has_navy_experience > 60
-			custom_trigger_tooltip = {
-				tooltip = debt_less_than_75
-				check_variable = { opda_consumer_goods < 0.75 }
-			}
-		}
-		continue_if_invalid = yes
-		completion_reward = {
-			navy_experience = -60
-			custom_effect_tooltip = TUR_more_resources_for_the_naval_industry_tt
-			hidden_effect = { add_ideas = TUR_better_ship_building }
-			set_country_flag = TUR_more_resources_for_the_naval_industry
-		}
-	}
-	focus = {
-		id = TUR_increased_ship_production
-		icon = GFX_focus_generic_destroyer
-		cost = 10
-		prerequisite = { focus = TUR_rely_on_domestic_expertise }
-		mutually_exclusive = { focus = TUR_more_resources_for_the_naval_industry }
-		x = 3
-		y = 1
-		relative_position_id = TUR_rely_on_domestic_expertise
-		available = {
-			has_navy_experience > 60
-			custom_trigger_tooltip = {
-				tooltip = debt_less_than_75
-				check_variable = { opda_consumer_goods < 0.75 }
-			}
-		}
-		continue_if_invalid = yes
-		completion_reward = {
-			navy_experience = -60
-			custom_effect_tooltip = TUR_increased_ship_production_tt
-			hidden_effect = { add_ideas = TUR_cutting_corners }
-			set_country_flag = TUR_increased_ship_production
-		}
-	}
-	focus = {
-		id = TUR_increased_naval_research
-		icon = GFX_goal_generic_scientific_exchange
-		cost = 10
-		search_filters = {
-			FOCUS_FILTER_RESEARCH
-		}
-		prerequisite = { focus = TUR_developing_our_own_tactics }
-		prerequisite = {
-			focus = TUR_more_resources_for_the_naval_industry
-			focus = TUR_increased_ship_production
-		}
-		x = -1
-		y = 1
-		relative_position_id = TUR_more_resources_for_the_naval_industry
-		available = {
-			has_navy_experience > 50
-			custom_trigger_tooltip = {
-				tooltip = debt_less_than_45
-				check_variable = { opda_consumer_goods < 0.45 }
-			}
-		}
-		continue_if_invalid = yes
-		completion_reward = {
-			navy_experience = -50
-			custom_effect_tooltip = TUR_increased_naval_research_tt
-			set_variable = { TUR_dh_consumer_goods_factor = 0.05 }
-			set_variable = { TUR_dh_naval_equipment_upgrade_xp_cost = -0.15 }
-			hidden_effect = { add_ideas = TUR_naval_research_funding }
-			set_country_flag = TUR_increased_naval_research
-		}
-	}
-	focus = {
-		id = TUR_rebuild_the_ottoman_fleet
-		icon = GFX_goal_generic_construct_naval_dockyard
-		cost = 10
-		search_filters = {
-			FOCUS_FILTER_INDUSTRY
-		}
-		prerequisite = { focus = TUR_increased_naval_research }
-		x = 0
-		y = 1
-		relative_position_id = TUR_increased_naval_research
-		available = {
-			custom_trigger_tooltip = {
-				tooltip = debt_less_than_45
-				check_variable = { opda_consumer_goods < 0.45 }
-			}
-		}
-		continue_if_invalid = yes
-		complete_tooltip = {
-			custom_effect_tooltip = TUR_rebuild_the_ottoman_fleet_tt
-			every_state = {
-				limit = { has_state_flag = TUR_rebuild_the_ottoman_fleet1 }
-				add_extra_state_shared_building_slots = 1
-				add_building_construction = {
-					type = dockyard
-					level = 1
-					instant_build = yes
-				}
-			}
-			every_state = {
-				limit = { has_state_flag = TUR_rebuild_the_ottoman_fleet2 }
-				add_extra_state_shared_building_slots = 1
-				add_building_construction = {
-					type = dockyard
-					level = 1
-					instant_build = yes
-				}
-			}
-		}
-		completion_reward = {
-			custom_effect_tooltip = TUR_rebuild_the_ottoman_fleet_tt
-			set_variable = { TUR_dh_industrial_capacity_dockyard = 0.05 }
-			random_owned_controlled_state = {
-				limit = {
-					is_core_of = ROOT
-					is_coastal = yes
-					free_building_slots = {
-						building = dockyard
-						size > 1
-						include_locked = yes
-					}
-				}
-				set_state_flag = TUR_rebuild_the_ottoman_fleet1
-				add_extra_state_shared_building_slots = 1
-				add_building_construction = {
-					type = dockyard
-					level = 1
-					instant_build = yes
-				}
-			}
-			random_owned_controlled_state = {
-				limit = {
-					is_core_of = ROOT
-					is_coastal = yes
-					free_building_slots = {
-						building = dockyard
-						size > 1
-						include_locked = yes
-					}
-				}
-				set_state_flag = TUR_rebuild_the_ottoman_fleet2
-				add_extra_state_shared_building_slots = 1
-				add_building_construction = {
-					type = dockyard
-					level = 1
-					instant_build = yes
-				}
-			}
-		}
-	}
-	focus = {
 		id = TUR_improving_our_naval_tactics
 		icon = GFX_goal_generic_navy_doctrines_tactics
 		cost = 10
@@ -2322,9 +2144,9 @@ focus_tree = {
 		}
 		prerequisite = {
 			focus = TUR_study_european_navies
-			focus = TUR_increased_naval_research
+			focus = TUR_developing_our_own_tactics
 		}
-		x = 2
+		x = 1
 		y = 1
 		relative_position_id = TUR_study_european_navies
 		available = { has_navy_experience > 100 }
@@ -2342,6 +2164,68 @@ focus_tree = {
 				cost_reduction = 0.5
 				uses = 2
 				category = naval_doctrine
+			}
+		}
+	}
+	focus = {
+		id = TUR_purchase_foreign_battleships
+		icon = GFX_focus_SWE_italian_destroyers
+		cost = 5
+		search_filters = {
+			FOCUS_FILTER_HISTORICAL
+		}
+		prerequisite = { focus = TUR_bahriye_nezareti }
+		x = 4
+		y = 1
+		relative_position_id = TUR_bahriye_nezareti
+		bypass_if_unavailable = yes
+		available = {
+			custom_trigger_tooltip = {
+				tooltip = TUR_OPDA_trigger_tooltip
+				OR = {
+					has_idea = TUR_OPDA_idea
+					has_idea = TUR_OPDA_idea_2
+					has_idea = TUR_OPD_idea
+					has_idea = TUR_OPD_idea_2
+					has_idea = TUR_OPD_idea_3
+				}
+			}
+		}
+		completion_reward = {
+			unlock_decision_tooltip = TUR_purchase_brandenburg_class
+			unlock_decision_tooltip = TUR_purchase_majestic_class
+			unlock_decision_tooltip = TUR_purchase_lauria_class
+		}
+	}
+	focus = {
+		id = TUR_welcome_foreign_naval_companies
+		icon = GFX_goal_generic_intelligence_exchange
+		cost = 5
+		search_filters = {
+			FOCUS_FILTER_RESEARCH
+		}
+		prerequisite = { focus = TUR_purchase_foreign_battleships }
+		x = 1
+		y = 1
+		relative_position_id = TUR_purchase_foreign_battleships
+		bypass_if_unavailable = yes
+		completion_reward = {
+			if = {
+				limit = { has_dlc = "Arms Against Tyranny" }
+				custom_effect_tooltip = available_mio_tt
+				show_mio_tooltip = GER_kaiserliche_werft_wilhelmshaven_organization
+				show_mio_tooltip = GER_blohm_und_voss_organization
+				show_mio_tooltip = ENG_yarrow_shipbuilders_organization
+				show_mio_tooltip = ITA_cantieri_navali_riuniti_organization
+				show_mio_tooltip = USA_newport_news_shipbuilding_organization
+			}
+			else = {
+				custom_effect_tooltip = available_designer
+				show_ideas_tooltip = TUR_kaiserliche_werft_wilhelmshaven
+				show_ideas_tooltip = TUR_blohm_und_voss
+				show_ideas_tooltip = TUR_yarrow_shipbuilders
+				show_ideas_tooltip = TUR_cantieri_navali_riuniti
+				show_ideas_tooltip = TUR_newport_news_shipbuilding
 			}
 		}
 	}
