@@ -26273,32 +26273,96 @@ economy_decisions = {
 				flag = has_active_purchase_contract
 				value = 1
 			}
+			set_temp_variable = { TUR_equipment_to_add = 10 }
 			if = {
-				limit = {
-					has_completed_focus = TUR_a_deal_with_foreign_aircraft_designers
-				}
-				add_equipment_to_stockpile = {
-					type = fighter_equipment
-					amount = 15
-					producer = FROM
-				}
-				add_equipment_to_stockpile = {
-					type = tac_bomber_equipment
-					amount = 8
-					producer = FROM
+				limit = { has_completed_focus = TUR_a_deal_with_foreign_aircraft_designers }
+				set_temp_variable = { TUR_equipment_to_multiply = FROM.opinion@TUR }
+				multiply_temp_variable  = { TUR_equipment_to_multiply = 0.1 }
+				add_to_temp_variable = { TUR_equipment_to_add = TUR_equipment_to_multiply }
+			}
+			add_equipment_to_stockpile = {
+				type = fighter_equipment
+				amount = var:TUR_equipment_to_add
+				producer = FROM
+			}
+		}
+		ai_will_do = {
+			base = 0.1
+			modifier = {
+				has_equipment = { fighter_equipment > 20 }
+				factor = 0
+			}
+			modifier = {
+				any_enemy_country = { NOT = { has_country_flag = TUR_revolting_country } }
+				factor = 10
+			}
+		}
+	}
+	TUR_buy_FROM_tactical_bombers = {
+		icon = GFX_decision_generic_air
+		allowed = { tag = TUR }
+		target_trigger = {
+			FROM = {
+				OR = {
+					tag = GER
+					tag = FRA
 				}
 			}
-			else = {
-				add_equipment_to_stockpile = {
-					type = fighter_equipment
-					amount = 10
-					producer = FROM
-				}
-				add_equipment_to_stockpile = {
-					type = tac_bomber_equipment
-					amount = 5
-					producer = FROM
-				}
+		}
+		cancel_trigger = {
+			TUR_has_land_connection = no
+			enemies_naval_strength_ratio > 3
+		}
+		available = {
+			NOT = {
+				has_war_with = FROM
+				has_country_flag = has_active_purchase_contract
+			}
+			custom_trigger_tooltip = {
+				tooltip = TUR_OPDA_trigger_tooltip
+				has_dynamic_modifier = { modifier = TUR_OPDA }
+			}
+			OR = {
+				TUR_has_land_connection = yes
+				enemies_naval_strength_ratio < 3
+			}
+		}
+		cost = 10
+		priority = 98
+		fire_only_once = no
+		days_remove = 15
+		visible = {
+			FROM = {
+				NOT = { has_country_flag = great_war_loser }
+				exists = yes
+			}
+			has_variable = opda_consumer_goods
+			has_completed_focus = TUR_import_aircrafts
+		}
+		complete_effect = {
+			set_country_flag = {
+				flag = has_active_purchase_contract
+				days = 30
+				value = 1
+			}
+			TUR_add_debt_5_FROM = yes
+		}
+		remove_effect = {
+			clr_country_flag = {
+				flag = has_active_purchase_contract
+				value = 1
+			}
+			set_temp_variable = { TUR_equipment_to_add = 5 }
+			if = {
+				limit = { has_completed_focus = TUR_a_deal_with_foreign_aircraft_designers }
+				set_temp_variable = { TUR_equipment_to_multiply = FROM.opinion@TUR }
+				multiply_temp_variable  = { TUR_equipment_to_multiply = 0.05 }
+				add_to_temp_variable = { TUR_equipment_to_add = TUR_equipment_to_multiply }
+			}
+			add_equipment_to_stockpile = {
+				type = tac_bomber_equipment
+				amount = var:TUR_equipment_to_add
+				producer = FROM
 			}
 		}
 		ai_will_do = {
