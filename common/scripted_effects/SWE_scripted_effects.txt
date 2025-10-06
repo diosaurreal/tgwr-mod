@@ -584,84 +584,7 @@ SWE_recalculate_first_chamber = {
 	add_to_array = { temp_val = SAP_f }
 	add_to_array = { temp_val = V_f }
 	
-	set_temp_variable = {
-		var = target_var
-		value = 0
-	}
-	set_temp_variable = {
-		var = loop_var
-		value = 2
-	}
-	
-	# Effect that runs thrice or until alloctable seats are 0 (not more or less)
-	# If a party has less than 10 seats:
-		# Remove a seat and gain another alloctable seat
-	while_loop_effect = {	# Might remove this cuz ugh
-		limit = {
-			check_variable = {
-				var = loop_var
-				value = 1
-			}
-			NOT = {
-				check_variable = {
-					var = alloctable_seats
-					value = 0
-					compare = not_equals
-				}
-			}
-		}
-		
-		if = {
-			limit = {
-				check_variable = {
-					var = temp_val^target_var
-					value = 1
-				}
-				NOT = {
-					check_variable = {
-						var = temp_val^target_var
-						value = 15
-					}
-					check_variable = {
-						var = alloctable_seats
-						value = 0
-					}
-				}
-			}
-			add_to_variable = {
-				var = temp_val^target_var
-				value = -1
-			}
-			add_to_temp_variable = {
-				var = allocatable_seats
-				value = 1
-			}
-		}
-		
-		add_to_temp_variable = {
-			var = target_var
-			value = 1
-		}
-		
-		if = {
-			limit = {
-				check_variable = {
-					var = target_var
-					value = 8
-				}
-			}
-			set_temp_variable = {
-				var = target_var
-				value = 0
-			}
-			subtract_from_temp_variable = {
-				var = loop_var
-				value = 1
-			}
-		}
-	}
-	
-	# After above is done, grab biggest party
+	# Grab biggest party
 	find_highest_in_array = {
 		array = temp_val
 		index = temporary_target
@@ -1337,117 +1260,7 @@ SWE_recalculate_second_chamber = {
 	add_to_array = { temp_val = SKP_a }
 	add_to_array = { temp_val = independents_a }
 	
-	set_temp_variable = {
-		var = target_var
-		value = 0
-	}
-	set_temp_variable = {
-		var = loop_var
-		value = 4
-	}
-	
-	# Effect that runs loop_var times to clean up small parties a bit
-	# Will remove up to loop_var mandates from smaller parties
-	# Will add up to loop_var mandates to bigger parties
-	while_loop_effect = {
-		limit = {
-			check_variable = {
-				var = loop_var
-				value = 1
-			}
-		}
-		
-		if = {	# Negative seats go to allocatable seats
-			limit = {
-				NOT = {
-					check_variable = {
-						var = temp_val^target_var
-						value = 0
-					}
-				}
-			}
-			add_to_temp_variable = {
-				var = allocatable_seats
-				value = temp_val^target_var
-			}
-			multiply_variable = {
-				var = temp_val^target_var
-				value = 0
-			}
-		}
-		# Remove Seats From Very Smaller Parties (limit kingmakers)
-		if = {
-			limit = {
-				check_variable = {
-					var = temp_val^target_var
-					value = 1
-				}
-				NOT = {
-					check_variable = {
-						var = temp_val^target_var
-						value = 10
-					}
-					check_variable = {
-						var = alloctable_seats
-						value = 0
-					}
-				}
-			}
-			add_to_variable = {
-				var = temp_val^target_var
-				value = -1
-			}
-			add_to_temp_variable = {
-				var = allocatable_seats
-				value = 1
-			}
-		}
-		# Give some seats to 'bigger' parties
-		if = {
-			limit = {
-				check_variable = {
-					var = temp_val^target_var
-					value = 20
-				}
-				check_variable = {
-					var = alloctable_seats
-					value = 1
-				}
-			}
-			add_to_variable = {
-				var = temp_val^target_var
-				value = 1
-			}
-			add_to_temp_variable = {
-				var = allocatable_seats
-				value = -1
-			}
-		}
-		
-		add_to_temp_variable = {
-			var = target_var
-			value = 1
-		}
-		
-		if = {
-			limit = {
-				check_variable = {
-					var = target_var
-					value = 10
-				}
-			}
-			set_temp_variable = {
-				var = target_var
-				value = 0
-			}
-			subtract_from_temp_variable = {
-				var = loop_var
-				value = 1
-			}
-		}
-	}
-	
-	# After above is done, grab biggest party
+	# Grab biggest party
 	find_highest_in_array = {
 		array = temp_val
 		index = temporary_target
@@ -1708,6 +1521,78 @@ SWE_banning_of_socialists = {
 	SWE_init_second_chamber = yes
 }
 
+SWE_increase_socialist_radicalisation = {
+	custom_effect_tooltip = SWE_socialists_radicalizes_further
+	if = {
+		limit = { has_idea = SWE_socialist_radicalisation_max }
+		custom_effect_tooltip = adjust_swe_political_tt
+		add_to_variable = {
+			tooltip = communism_drift_tt
+			var = SWE_pol_communism_drift
+			value = 0.01
+		}
+	}
+	else_if = {
+		limit = { has_idea = SWE_socialist_radicalisation_high }
+		swap_ideas = {
+			add_idea = SWE_socialist_radicalisation_max
+			remove_idea = SWE_socialist_radicalisation_high
+		}
+	}
+	else_if = {
+		limit = { has_idea = SWE_socialist_radicalisation_average }
+		swap_ideas = {
+			add_idea = SWE_socialist_radicalisation_high
+			remove_idea = SWE_socialist_radicalisation_average
+		}
+	}
+	else_if = {
+		limit = { has_idea = SWE_socialist_radicalisation_low }
+		swap_ideas = {
+			add_idea = SWE_socialist_radicalisation_average
+			remove_idea = SWE_socialist_radicalisation_low
+		}
+	}
+	else_if = {
+		limit = { has_idea = SWE_socialist_radicalisation_lowest }
+		swap_ideas = {
+			add_idea = SWE_socialist_radicalisation_low
+			remove_idea = SWE_socialist_radicalisation_lowest
+		}
+	}
+}
+SWE_decrease_socialist_radicalisation = {
+	custom_effect_tooltip = SWE_socialists_deradicalizes
+	if = {
+		limit = { has_idea = SWE_socialist_radicalisation_low }
+		swap_ideas = {
+			add_idea = SWE_socialist_radicalisation_lowest
+			remove_idea = SWE_socialist_radicalisation_low
+		}
+	}
+	else_if = {
+		limit = { has_idea = SWE_socialist_radicalisation_average }
+		swap_ideas = {
+			add_idea = SWE_socialist_radicalisation_low
+			remove_idea = SWE_socialist_radicalisation_average
+		}
+	}
+	else_if = {
+		limit = { has_idea = SWE_socialist_radicalisation_high }
+		swap_ideas = {
+			add_idea = SWE_socialist_radicalisation_average
+			remove_idea = SWE_socialist_radicalisation_high
+		}
+	}
+	else_if = {
+		limit = { has_idea = SWE_socialist_radicalisation_max }
+		swap_ideas = {
+			add_idea = SWE_socialist_radicalisation_high
+			remove_idea = SWE_socialist_radicalisation_max
+		}
+	}
+}
+
 # Unused right now
 SWE_increase_riksdag_rigidity = {
 	custom_effect_tooltip = swe_temporary_increase_political_rigidity
@@ -1893,4 +1778,8 @@ SWE_set_kingly_approval = {
 			add_ideas = SWE_gustaf_v
 		}
 	}
+}
+
+SWE_random_neutrality_event_effect = {	# For when moving this to mission
+	custom_effect_tooltip = neutrality_related_event_fire_tt
 }

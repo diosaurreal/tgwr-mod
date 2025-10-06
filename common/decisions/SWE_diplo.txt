@@ -1,4 +1,37 @@
 foreign_politics = {
+	SWE_neutrality_of_sweden_mission = {
+		allowed = {
+			always = no
+		}
+		available = {
+			OR = {
+				has_war = yes
+				is_in_faction = yes
+				has_global_flag = great_war_ends
+			}
+		}
+		
+		fire_only_once = yes
+		
+		days_mission_timeout = 30
+		
+		complete_effect = {
+			set_country_flag = end_of_neutrality_opposition
+		}
+		
+		timeout_effect = {
+			if = {
+				limit = {
+					has_country_flag = pause_between_neutrality_events
+				}
+				custom_effect_tooltip = neutrality_peace_achieved_temp_tt
+			}
+			else = {
+				SWE_random_neutrality_event_effect = yes
+			}
+			activate_mission = SWE_neutrality_of_sweden_mission
+		}
+	}
 	SWE_join_the_great_war_ger = {
 		allowed = {
 			original_tag = SWE
@@ -31,13 +64,16 @@ foreign_politics = {
 						FRA = {
 							has_country_flag = great_war_loser
 						}
+						FRA = {
+							has_country_flag = FRA_surrender_alone
+						}
 						RUS = {
 							has_country_flag = great_war_loser
 						}
 					}
 				}
 				custom_trigger_tooltip = {
-					tooltip = germany_has_taken_out_russia_or_france_tt
+					tooltip = russia_has_been_pushed_back_or_revolution_tt
 					AND = {
 						GER = { has_war_with = RUS }
 						OR = {
@@ -192,7 +228,8 @@ foreign_politics = {
 			army_experience = 2
 			FROM = {
 				# Event notifying about Swedish volunteers
-				add_manpower = 700
+				country_event = { id = ww_sverige.32 }
+				effect_tooltip = { add_manpower = 700 }
 			}
 			# Maybe have variable keeping track of decision
 				# And once great war is over return a % of manpower
@@ -401,8 +438,8 @@ foreign_politics = {
 				is_subject_of = ENG
 			}
 			NOT = { has_war_with = ENG }
+			has_completed_focus = SWE_work_with_great_powers
 			NOT = {
-				has_country_leader_with_trait = germanophile
 				has_country_leader = {
 					character = SWE_hjalmar_hammarskjold
 					ruling_only = yes
@@ -450,18 +487,12 @@ foreign_politics = {
 		ai_will_do = {
 			base = 10
 			modifier = {
-				factor = 0.2
+				factor = 0.5
 				has_stability > 0.6
 			}
 			modifier = {
 				factor = 0
-				has_country_flag = pact_with_germany
-				NOT = { has_country_flag = pact_with_france }
-			}
-			modifier = {
-				factor = 0
 				date < 1914.6.1
-				NOT = { has_country_flag = pact_with_france }
 			}
 		}
 	}
@@ -484,6 +515,7 @@ foreign_politics = {
 				is_subject_of = GER
 			}
 			NOT = { has_war_with = GER }
+			has_completed_focus = SWE_work_with_great_powers
 		}
 		cancel_trigger = {
 			hidden_trigger = {
@@ -526,21 +558,17 @@ foreign_politics = {
 		ai_will_do = {
 			base = 10
 			modifier = {
-				factor = 0.2
+				factor = 0.5
 				has_stability > 0.6
 			}
 			modifier = {
 				factor = 0
-				has_country_flag = pact_with_france
-				NOT = { has_country_flag = pact_with_germany }
-			}
-			modifier = {
-				factor = 0
 				date < 1914.6.1
-				NOT = { has_country_flag = pact_with_germany }
 			}
 		}
 	}
+	# Agreement Between Great Britain and Sweden Relating to the Suppression of the Capitulations in Egypt
+		# Only if Sweden didn't go  to war with UK and UK has egypt
 }
 operations = {
 	SWE_join_german_war_effort_over_aland = {
@@ -581,8 +609,7 @@ operations = {
 					}
 				}
 			}
-			has_global_flag = great_war
-			NOT = { has_global_flag = great_war_ends }
+			is_great_war_ongoing = yes
 		}
 		cancel_trigger = {
 			hidden_trigger = {
@@ -624,7 +651,7 @@ operations = {
 		}
 		available = {
 			FIN = {
-				has_civil_war = no
+				has_civil_war = yes
 			}
 		}
 		visible = {
@@ -638,7 +665,7 @@ operations = {
 		days_mission_timeout = 120
 		
 		timeout_effect = {
-			# If Sweden is communist:
+			# If Sweden is socialist:
 				# Germany will threaten intervention (if they won war)
 				# UK will pressure to end war (if they won war)
 				# You can chose to back down and thus pull out all troops from Finland
