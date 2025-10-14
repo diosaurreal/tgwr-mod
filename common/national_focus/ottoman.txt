@@ -1817,7 +1817,7 @@ focus_tree = {
 						limit = { has_idea = TUR_council_of_military_scientific_research_army }
 						swap_ideas = {
 							remove_idea = TUR_council_of_military_scientific_research_army
-							add_idea = TUR_council_of_military_scientific_research_navy_army
+							add_idea = TUR_council_of_military_scientific_research_army_navy
 						}
 					}
 					else_if = {
@@ -2442,7 +2442,7 @@ focus_tree = {
 						limit = { has_idea = TUR_council_of_military_scientific_research_army }
 						swap_ideas = {
 							remove_idea = TUR_council_of_military_scientific_research_army
-							add_idea = TUR_council_of_military_scientific_research_air_army
+							add_idea = TUR_council_of_military_scientific_research_army_air
 						}
 					}
 					else_if = {
@@ -3124,6 +3124,33 @@ focus_tree = {
 		}
 	}
 	focus = {
+		id = TUR_new_land_law
+		icon = GFX_new_treaty
+		cost = 5
+		search_filters = {
+			FOCUS_FILTER_HISTORICAL
+		}
+		prerequisite = { focus = TUR_aftermath_of_the_31_march_incident }
+		x = -14
+		y = 1
+		relative_position_id = TUR_aftermath_of_the_31_march_incident
+		available = { 291 = { is_owned_and_controlled_by = ROOT } }
+		completion_reward = {
+			every_state = {
+				limit = {
+					OR = {
+						AND = {
+							state = 4
+						}
+					}
+				}
+			}
+		}
+		ai_will_do = {
+			base = 35
+		}
+	}
+	focus = {
 		id = TUR_construct_hindiya_barrage
 		icon = GFX_focus_IRQ_construct_the_kut_barrage
 		cost = 5
@@ -3247,43 +3274,63 @@ focus_tree = {
 		relative_position_id = TUR_construct_hindiya_barrage
 		complete_tooltip = {
 			add_ideas = TUR_general_directorate_of_public_works
-			every_state = {
-				limit = { has_state_flag = TUR_umur_u_nafia_muduriyet_i_umumiyesi }
-				add_extra_state_shared_building_slots = 1
+			if = {
+				limit = { has_country_flag = TUR_umur_u_nafia_muduriyet_i_umumiyesi1 }
+				custom_effect_tooltip = TUR_naval_blockade_reduce_5
+				add_to_variable = { TUR_nb_monthly_population = 0.06 }
+				add_to_variable = { TUR_nb_consumer_goods_factor  = -0.03 }
+				add_to_variable = { TUR_nb_war_stability_factor = 0.06 }
+				hidden_effect = {
+					remove_ideas = TUR_naval_blockade
+					add_ideas = TUR_naval_blockade
+					every_country = {
+						limit = { has_idea = TUR_naval_blockade_dummy }
+						remove_ideas = TUR_naval_blockade_dummy
+						add_ideas = TUR_naval_blockade_dummy
+					}
+				}
+			}
+			if = {
+				limit = { has_country_flag = TUR_umur_u_nafia_muduriyet_i_umumiyesi2 }
+				remove_ideas = TUR_naval_blockade
+				set_country_flag = TUR_umur_u_nafia_muduriyet_i_umumiyesi2
 			}
 		}
 		completion_reward = {
 			add_ideas = TUR_general_directorate_of_public_works
-			every_controlled_state = {
-				limit = {
-					OR = {
-						state = 344
-						state = 881
-						state = 1025
-						state = 1024
-						state = 1033
-						state = 350
-						state = 829
-						state = 1028
-						state = 1027
-						state = 1029
-						state = 1023
-						state = 853
-						state = 676
+			if = {
+				limit = { has_idea = TUR_naval_blockade }
+				if = {
+					limit = { check_variable = { TUR_naval_blockade > 6 } }
+					custom_effect_tooltip = TUR_naval_blockade_reduce_6
+					add_to_variable = { TUR_nb_monthly_population = 0.06 }
+					add_to_variable = { TUR_nb_consumer_goods_factor  = -0.03 }
+					add_to_variable = { TUR_nb_war_stability_factor = 0.06 }
+					hidden_effect = {
+						remove_ideas = TUR_naval_blockade
+						add_ideas = TUR_naval_blockade
+						every_country = {
+							limit = { has_idea = TUR_naval_blockade_dummy }
+							remove_ideas = TUR_naval_blockade_dummy
+							add_ideas = TUR_naval_blockade_dummy
+						}
+					}
+					set_country_flag = TUR_umur_u_nafia_muduriyet_i_umumiyesi1
+				}
+				else_if = {
+					limit = { check_variable = { TUR_naval_blockade < 6 } }
+					remove_ideas = TUR_naval_blockade
+					set_country_flag = TUR_umur_u_nafia_muduriyet_i_umumiyesi2
+				}
+				hidden_effect = {
+					set_variable = { global.TUR_iase_nezareti_naval_blockade = TUR_naval_blockade }
+					every_country = {
+						limit = { has_idea = TUR_great_famine_of_syria }
+						country_event = ottoman.258
 					}
 				}
-				add_extra_state_shared_building_slots = 1
-				set_state_flag = TUR_umur_u_nafia_muduriyet_i_umumiyesi
+				add_to_variable = { TUR_naval_blockade = -6 }
 			}
-			custom_effect_tooltip = TUR_increase_adana_centralization_3
-			add_to_variable = { global.TUR_adana_centralization = 3 }
-			custom_effect_tooltip = TUR_increase_diyarbakir_centralization_3
-			add_to_variable = { global.TUR_diyarbakir_centralization = 3 }
-			custom_effect_tooltip = TUR_increase_deir_ez_zor_centralization_3
-			add_to_variable = { global.TUR_deir_ez_zor_centralization = 3 }
-			custom_effect_tooltip = TUR_increase_mosul_centralization_3
-			add_to_variable = { global.TUR_mosul_centralization = 3 }
-
 		}
 		ai_will_do = {
 			base = 35
@@ -3353,7 +3400,7 @@ focus_tree = {
 					level = 1
 					instant_build = yes
 				}
-				add_state_modifier = { modifier = { production_speed_buildings_factor = 0.05 } }
+				custom_effect_tooltip = TUR_expand_power_stations_tt
 			}
 		}
 		completion_reward = {
@@ -3373,7 +3420,8 @@ focus_tree = {
 					level = 1
 					instant_build = yes
 				}
-				add_state_modifier = { modifier = { production_speed_buildings_factor = 0.05 } }
+				hidden_effect = { add_state_modifier = { modifier = { production_speed_buildings_factor = 0.05 } } }
+				custom_effect_tooltip = TUR_expand_power_stations_tt
 				set_state_flag = TUR_expand_power_stations
 			}
 		}
@@ -5685,14 +5733,6 @@ focus_tree = {
 					limit = { has_country_flag = TUR_patreons_of_the_party4 }
 					remove_ideas = TUR_naval_blockade
 				}
-				hidden_effect = {
-					add_to_variable = { TUR_naval_blockade = -2 }
-					set_variable = { global.TUR_iase_nezareti_naval_blockade = TUR_naval_blockade }
-					every_country = {
-						limit = { has_idea = TUR_great_famine_of_syria }
-						country_event = { id = ottoman.160 hours = 8 }
-					}
-				}
 			}
 			if = {
 				limit = { has_country_flag = TUR_patreons_of_the_party1 }
@@ -5726,9 +5766,9 @@ focus_tree = {
 				if = {
 					limit = { check_variable = { TUR_naval_blockade > 2 } }
 					custom_effect_tooltip = TUR_naval_blockade_reduce_2
-					add_to_variable = { TUR_nb_monthly_population = -0.02 }
-					add_to_variable = { TUR_nb_consumer_goods_factor  = 0.01 }
-					add_to_variable = { TUR_nb_war_stability_factor = -0.02 }
+					add_to_variable = { TUR_nb_monthly_population = 0.02 }
+					add_to_variable = { TUR_nb_consumer_goods_factor  = -0.01 }
+					add_to_variable = { TUR_nb_war_stability_factor = 0.02 }
 					hidden_effect = {
 						remove_ideas = TUR_naval_blockade
 						add_ideas = TUR_naval_blockade
@@ -5746,13 +5786,13 @@ focus_tree = {
 					set_country_flag = TUR_patreons_of_the_party4
 				}
 				hidden_effect = {
-					add_to_variable = { TUR_naval_blockade = -2 }
 					set_variable = { global.TUR_iase_nezareti_naval_blockade = TUR_naval_blockade }
 					every_country = {
 						limit = { has_idea = TUR_great_famine_of_syria }
-						country_event = { id = ottoman.160 hours = 8 }
+						country_event = ottoman.256
 					}
 				}
+				add_to_variable = { TUR_naval_blockade = -2 }
 			}
 			if = {
 				limit = {
@@ -6042,9 +6082,9 @@ focus_tree = {
 				if = {
 					limit = { check_variable = { TUR_naval_blockade > 3 } }
 					custom_effect_tooltip = TUR_naval_blockade_reduce_3
-					add_to_variable = { TUR_nb_monthly_population = -0.03 }
-					add_to_variable = { TUR_nb_consumer_goods_factor  = 0.015 }
-					add_to_variable = { TUR_nb_war_stability_factor = -0.03 }
+					add_to_variable = { TUR_nb_monthly_population = 0.03 }
+					add_to_variable = { TUR_nb_consumer_goods_factor  = -0.015 }
+					add_to_variable = { TUR_nb_war_stability_factor = 0.03 }
 					hidden_effect = {
 						remove_ideas = TUR_naval_blockade
 						add_ideas = TUR_naval_blockade
@@ -6066,7 +6106,7 @@ focus_tree = {
 					set_variable = { global.TUR_iase_nezareti_naval_blockade = TUR_naval_blockade }
 					every_country = {
 						limit = { has_idea = TUR_great_famine_of_syria }
-						country_event = { id = ottoman.160 hours = 8 }
+						country_event = ottoman.259
 					}
 				}
 			}
@@ -8686,9 +8726,9 @@ focus_tree = {
 			if = {
 				limit = { check_variable = { TUR_naval_blockade > 10 } }
 				custom_effect_tooltip = TUR_naval_blockade_reduce_10
-				add_to_variable = { TUR_nb_monthly_population = -0.1 }
-				add_to_variable = { TUR_nb_consumer_goods_factor  = 0.05 }
-				add_to_variable = { TUR_nb_war_stability_factor = -0.1 }
+				add_to_variable = { TUR_nb_monthly_population = 0.1 }
+				add_to_variable = { TUR_nb_consumer_goods_factor  = -0.05 }
+				add_to_variable = { TUR_nb_war_stability_factor = 0.1 }
 				hidden_effect = {
 					remove_ideas = TUR_naval_blockade
 					add_ideas = TUR_naval_blockade
@@ -8706,13 +8746,13 @@ focus_tree = {
 				set_country_flag = TUR_import_german_grain2
 			}
 			hidden_effect = {
+				add_to_variable = { TUR_naval_blockade = -10 }
 				set_variable = { global.TUR_import_german_grain_naval_blockade = TUR_naval_blockade }
 				every_country = {
 					limit = { has_idea = TUR_great_famine_of_syria }
-					country_event = { id = ottoman.155 hours = 8 }
+					country_event = ottoman.155
 				}
 			}
-			add_to_variable = { TUR_naval_blockade = -10 }
 		}
 		ai_will_do = { base = 30 }
 	}
@@ -9329,9 +9369,9 @@ focus_tree = {
 				if = {
 					limit = { check_variable = { TUR_naval_blockade > 8 } }
 					custom_effect_tooltip = TUR_naval_blockade_reduce_8
-					add_to_variable = { TUR_nb_monthly_population = -0.08 }
-					add_to_variable = { TUR_nb_consumer_goods_factor  = 0.04 }
-					add_to_variable = { TUR_nb_war_stability_factor = -0.08 }
+					add_to_variable = { TUR_nb_monthly_population = 0.08 }
+					add_to_variable = { TUR_nb_consumer_goods_factor  = -0.04 }
+					add_to_variable = { TUR_nb_war_stability_factor = 0.08 }
 					hidden_effect = {
 						remove_ideas = TUR_naval_blockade
 						add_ideas = TUR_naval_blockade
@@ -9349,14 +9389,14 @@ focus_tree = {
 					set_country_flag = TUR_endorse_agricultural_economic_model2
 				}
 				hidden_effect = {
+					add_to_variable = { TUR_naval_blockade = -8 }
 					set_variable = { global.TUR_endorse_agricultural_economic_model_naval_blockade = TUR_naval_blockade }
 					every_country = {
 						limit = { has_idea = TUR_great_famine_of_syria }
-						country_event = { id = ottoman.156 hours = 8 }
+						country_event = ottoman.156
 					}
 				}
 			}
-			add_to_variable = { TUR_naval_blockade = -8 }
 		}
 		ai_will_do = {
 			base = 30
@@ -9401,9 +9441,9 @@ focus_tree = {
 				if = {
 					limit = { check_variable = { TUR_naval_blockade > 4 } }
 					custom_effect_tooltip = TUR_naval_blockade_reduce_8
-					add_to_variable = { TUR_nb_monthly_population = -0.08 }
-					add_to_variable = { TUR_nb_consumer_goods_factor  = 0.04 }
-					add_to_variable = { TUR_nb_war_stability_factor = -0.08 }
+					add_to_variable = { TUR_nb_monthly_population = 0.08 }
+					add_to_variable = { TUR_nb_consumer_goods_factor  = -0.04 }
+					add_to_variable = { TUR_nb_war_stability_factor = 0.08 }
 					hidden_effect = {
 						remove_ideas = TUR_naval_blockade
 						add_ideas = TUR_naval_blockade
@@ -9421,14 +9461,14 @@ focus_tree = {
 					set_country_flag = TUR_land_distribution2
 				}
 				hidden_effect = {
+					add_to_variable = { TUR_naval_blockade = -4 }
 					set_variable = { global.TUR_land_distribution_naval_blockade = TUR_naval_blockade }
 					every_country = {
 						limit = { has_idea = TUR_great_famine_of_syria }
-						country_event = { id = ottoman.157 hours = 8 }
+						country_event = ottoman.157
 					}
 				}
 			}
-			add_to_variable = { TUR_naval_blockade = -4 }
 		}
 		ai_will_do = {
 			base = 30
@@ -9654,9 +9694,9 @@ focus_tree = {
 				if = {
 					limit = { check_variable = { TUR_naval_blockade > 2 } }
 					custom_effect_tooltip = TUR_naval_blockade_reduce_2
-					add_to_variable = { TUR_nb_monthly_population = -0.02 }
-					add_to_variable = { TUR_nb_consumer_goods_factor  = 0.01 }
-					add_to_variable = { TUR_nb_war_stability_factor = -0.02 }
+					add_to_variable = { TUR_nb_monthly_population = 0.02 }
+					add_to_variable = { TUR_nb_consumer_goods_factor  = -0.01 }
+					add_to_variable = { TUR_nb_war_stability_factor = 0.02 }
 					hidden_effect = {
 						remove_ideas = TUR_naval_blockade
 						add_ideas = TUR_naval_blockade
@@ -9677,7 +9717,7 @@ focus_tree = {
 					set_variable = { global.TUR_protect_local_producers_naval_blockade = TUR_naval_blockade }
 					every_country = {
 						limit = { has_idea = TUR_great_famine_of_syria }
-						country_event = { id = ottoman.158 hours = 8 }
+						country_event = ottoman.158
 					}
 				}
 			}
@@ -9873,9 +9913,9 @@ focus_tree = {
 				if = {
 					limit = { check_variable = { TUR_naval_blockade > 2 } }
 					custom_effect_tooltip = TUR_naval_blockade_reduce_2
-					add_to_variable = { TUR_nb_monthly_population = -0.02 }
-					add_to_variable = { TUR_nb_consumer_goods_factor  = 0.01 }
-					add_to_variable = { TUR_nb_war_stability_factor = -0.02 }
+					add_to_variable = { TUR_nb_monthly_population = 0.02 }
+					add_to_variable = { TUR_nb_consumer_goods_factor  = -0.01 }
+					add_to_variable = { TUR_nb_war_stability_factor = 0.02 }
 					hidden_effect = {
 						remove_ideas = TUR_naval_blockade
 						add_ideas = TUR_naval_blockade
@@ -9896,7 +9936,7 @@ focus_tree = {
 					set_variable = { global.TUR_agricultural_obligation_law_naval_blockade = TUR_naval_blockade }
 					every_country = {
 						limit = { has_idea = TUR_great_famine_of_syria }
-						country_event = { id = ottoman.159 hours = 8 }
+						country_event = ottoman.159
 					}
 				}
 			}
@@ -13677,6 +13717,8 @@ focus_tree = {
 					instant_build = yes
 				}
 			}
+			custom_effect_tooltip = available_political_advisor
+			show_ideas_tooltip = TUR_ahmet_kemal
 			if = {
 				limit = { has_country_flag = TUR_invent_a_national_bourgeoisie1 }
 				if = {
@@ -13687,10 +13729,7 @@ focus_tree = {
 					limit = { has_country_flag = TUR_invent_a_national_bourgeoisie2 }
 					remove_ideas = TUR_naval_blockade
 				}
-				hidden_effect = { add_to_variable = { TUR_naval_blockade = -5 }}
 			}
-			custom_effect_tooltip = available_political_advisor
-			show_ideas_tooltip = TUR_ahmet_kemal
 			add_power_balance_value = {
 				id = TUR_unionist_struggle
 				value = 0.1
@@ -13720,14 +13759,16 @@ focus_tree = {
 				}
 				set_state_flag = TUR_invent_a_national_bourgeoisie
 			}
+			custom_effect_tooltip = available_political_advisor
+			show_ideas_tooltip = TUR_ahmet_kemal
 			if = {
 				limit = { has_idea = TUR_naval_blockade }
 				if = {
 					limit = { check_variable = { TUR_naval_blockade > 5 } }
 					custom_effect_tooltip = TUR_naval_blockade_reduce_5
-					add_to_variable = { TUR_nb_monthly_population = -0.05 }
-					add_to_variable = { TUR_nb_consumer_goods_factor  = 0.025 }
-					add_to_variable = { TUR_nb_war_stability_factor = -0.05 }
+					add_to_variable = { TUR_nb_monthly_population = 0.05 }
+					add_to_variable = { TUR_nb_consumer_goods_factor  = -0.025 }
+					add_to_variable = { TUR_nb_war_stability_factor = 0.05 }
 					hidden_effect = {
 						remove_ideas = TUR_naval_blockade
 						add_ideas = TUR_naval_blockade
@@ -13744,10 +13785,15 @@ focus_tree = {
 					remove_ideas = TUR_naval_blockade
 					set_country_flag = TUR_invent_a_national_bourgeoisie2
 				}
-				hidden_effect = { add_to_variable = { TUR_naval_blockade = -5 }}
+				hidden_effect = {
+					set_variable = { global.TUR_iase_nezareti_naval_blockade = TUR_naval_blockade }
+					every_country = {
+						limit = { has_idea = TUR_great_famine_of_syria }
+						country_event = ottoman.257
+					}
+				}
+				add_to_variable = { TUR_naval_blockade = -5 }
 			}
-			custom_effect_tooltip = available_political_advisor
-			show_ideas_tooltip = TUR_ahmet_kemal
 			add_power_balance_value = {
 				id = TUR_unionist_struggle
 				value = 0.1
@@ -13777,6 +13823,9 @@ focus_tree = {
 		}
 		complete_tooltip = {
 			add_ideas = TUR_ministry_of_food
+			custom_effect_tooltip = TUR_iase_nezareti_tt
+			custom_effect_tooltip = available_political_advisor
+			show_ideas_tooltip = TUR_ali_ihsan_iloglu
 			if = {
 				limit = { has_country_flag = TUR_iase_nezareti1 }
 				custom_effect_tooltip = TUR_naval_blockade_reduce_3
@@ -13785,8 +13834,6 @@ focus_tree = {
 				limit = { has_country_flag = TUR_iase_nezareti2 }
 				remove_ideas = TUR_naval_blockade
 			}
-			custom_effect_tooltip = available_political_advisor
-			show_ideas_tooltip = TUR_ali_ihsan_iloglu
 			add_power_balance_value = {
 				id = TUR_unionist_struggle
 				value = 0.15
@@ -13795,14 +13842,18 @@ focus_tree = {
 		completion_reward = {
 			add_ideas = TUR_ministry_of_food
 			hidden_effect = { add_ideas = TUR_ministry_of_food_yes }
+			custom_effect_tooltip = TUR_iase_nezareti_tt
+			set_variable = { TUR_feed_the_people_cost = 0.15 }
+			custom_effect_tooltip = available_political_advisor
+			show_ideas_tooltip = TUR_ali_ihsan_iloglu
 			if = {
 				limit = { has_idea = TUR_naval_blockade }
 				if = {
 					limit = { check_variable = { TUR_naval_blockade > 3 } }
 					custom_effect_tooltip = TUR_naval_blockade_reduce_3
-					add_to_variable = { TUR_nb_monthly_population = -0.03 }
-					add_to_variable = { TUR_nb_consumer_goods_factor  = 0.015 }
-					add_to_variable = { TUR_nb_war_stability_factor = -0.03 }
+					add_to_variable = { TUR_nb_monthly_population = 0.03 }
+					add_to_variable = { TUR_nb_consumer_goods_factor  = -0.015 }
+					add_to_variable = { TUR_nb_war_stability_factor = 0.03 }
 					hidden_effect = {
 						remove_ideas = TUR_naval_blockade
 						add_ideas = TUR_naval_blockade
@@ -13819,19 +13870,15 @@ focus_tree = {
 					remove_ideas = TUR_naval_blockade
 					set_country_flag = TUR_iase_nezareti2
 				}
+				add_to_variable = { TUR_naval_blockade = -3 }
 				hidden_effect = {
-					add_to_variable = { TUR_naval_blockade = -3 }
 					set_variable = { global.TUR_iase_nezareti_naval_blockade = TUR_naval_blockade }
 					every_country = {
 						limit = { has_idea = TUR_great_famine_of_syria }
-						country_event = { id = ottoman.160 hours = 8 }
+						country_event = ottoman.160
 					}
 				}
 			}
-			custom_effect_tooltip = TUR_iase_nezareti_tt
-			set_variable = { TUR_feed_the_people_cost = 0.15 }
-			custom_effect_tooltip = available_political_advisor
-			show_ideas_tooltip = TUR_ali_ihsan_iloglu
 			add_power_balance_value = {
 				id = TUR_unionist_struggle
 				value = 0.15
