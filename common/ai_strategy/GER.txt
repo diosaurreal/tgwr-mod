@@ -32,6 +32,9 @@ GER_defensive_against_FRA = {
 			NOT = {
 				has_war_with = FRA
 			}
+			NOT = {
+				has_war_with = RUS
+			}
 			has_idea = GER_idea_ludendorff_offensive
 			has_idea = GER_focus_on_french_front
 			war_length_with = {
@@ -59,7 +62,7 @@ GER_defensive_against_FRA = {
 		ordertype = front
 		execution_type = careful
 		execute_order = no
-		manual_attack = yes
+		manual_attack = no
 	}
 }
 
@@ -110,6 +113,9 @@ GER_defensive_against_RUS = {
 			NOT = {
 				has_war_with = RUS
 			}
+			NOT = {
+				has_war_with = FRA
+			}
 			surrender_progress > 0.3
 			AND = {
 				stockpile_ratio = {
@@ -130,7 +136,7 @@ GER_defensive_against_RUS = {
 		ordertype = front
 		execution_type = careful
 		execute_order = no
-		manual_attack = yes
+		manual_attack = no
 	}
 }
 
@@ -233,11 +239,6 @@ GER_dont_help_AUH_after_serbia_surrender = {
 		value = 1
 	}
 	ai_strategy = {
-		type = front_unit_request
-		tag = SER
-		value = -500
-	}
-	ai_strategy = {
 		type = dont_defend_ally_borders
 		id = AUS
 		value = 1
@@ -247,6 +248,29 @@ GER_dont_help_AUH_after_serbia_surrender = {
 		id = AUS
 		value = 500
 	}
+}
+
+GER_destroy_ITA = {
+	allowed = {
+		original_tag = GER
+	}
+	enable = {
+		is_in_faction_with = AUS
+		ITA = {
+			tag = ENT
+		}
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = strategic_air_importance
+		id = 21
+		value = 1000
+	}
+	ai_strategy = {
+		type = dont_defend_ally_borders
+		id = AUS
+		value = -2
+	}	
 }
 
 GER_dont_help_BUL = {
@@ -422,7 +446,7 @@ GER_go_schliefen = {
 	ai_strategy = {
 		type = front_unit_request
 		tag = BEL
-		value = 50
+		value = 80
 	}
 	ai_strategy = {
 		type = strategic_air_importance
@@ -471,6 +495,26 @@ GER_schliefen_is_kinda_working = {
 	}
 }
 
+GER_front_with_FRA = {
+	allowed = {
+		original_tag = GER
+	}
+	enable = {
+		has_war_with = FRA
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = front_unit_request
+		tag = FRA
+		value = 30
+	}
+	ai_strategy = {
+		type = front_unit_request
+		tag = BEL
+		value = 10
+	}
+}
+
 GER_beat_france = {
 	allowed = {
 		original_tag = GER
@@ -512,28 +556,18 @@ GER_beat_france = {
 		}
 	}
 	ai_strategy = {
-		type = front_unit_request
-		tag = FRA
-		value = 50
-	}
-	ai_strategy = {
 		type = front_control
 		tag = FRA
 		ratio = 0.5
 		ordertype = front
-		execution_type = balanced
-	}
-	ai_strategy = {
-		type = front_unit_request
-		tag = BEL
-		value = 10
+		execution_type = rush
 	}
 	ai_strategy = {
 		type = front_control
 		tag = BEL
 		ratio = 0.3
 		ordertype = front
-		execution_type = balanced
+		execution_type = rush
 	}
 }
 
@@ -615,7 +649,7 @@ GER_take_warsaw  = {
 				state = 97
 			}
 		}
-		value = 50
+		value = 25
 	}	
 	ai_strategy = {
 		type = front_control
@@ -727,21 +761,6 @@ GER_beat_RUS = {
 	}
 }
 
-GER_tarnow_offensive = {
-	allowed = {
-		original_tag = GER
-	}
-	enable = {
-		has_idea =  GER_focus_on_russian_front
-	}
-	abort_when_not_enabled = yes
-	ai_strategy = {
-		type = front_unit_request
-		tag = RUS
-		value = 30
-	}
-}
-
 CENTRAL_POWERS_dont_help_emirates = {
 	allowed = {
 		NOT = {
@@ -773,6 +792,26 @@ CENTRAL_POWERS_dont_help_emirates = {
 	ai_strategy = {
 		type = dont_defend_ally_borders
 		id = SOM
+		value = 1
+	}
+}
+
+CENTRAL_POWERS_dont_help_LUX = {
+	allowed = {
+		NOT = { 
+			tag = LUX
+		}
+	}
+	enable = {
+		is_in_faction_with = LUX
+		NOT = {
+			tag = GER
+		}
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = dont_defend_ally_borders
+		id = LUX
 		value = 1
 	}
 }
@@ -883,6 +922,9 @@ GER_dont_attack_ITA = {
 	abort_when_not_enabled = yes
 	abort = {
 		OR = {
+			ITA = {
+				tag = ENT
+			}
 			AUS = {
 				has_war_with = ITA
 				surrender_progress > 0.3
@@ -1077,9 +1119,6 @@ GER_build_army = {
 		original_tag = GER
 	}
 	enable = {
-		NOT = {
-			has_global_flag = great_war_ends
-		}
 		has_army_manpower = {
 			size < 3000000
 		}
@@ -1097,6 +1136,8 @@ GER_build_army = {
 					}
 				}
 			}
+			has_global_flag = great_war_ends
+			has_global_flag = crisis_in_progress
 		}
 	}
 	abort_when_not_enabled = yes
@@ -1117,6 +1158,7 @@ GER_stop_train_army = {
 	}
 	enable = {
 		OR = {
+			has_global_flag = crisis_in_progress
 			has_army_manpower = {
 				size > 3000000
 			}
@@ -1145,11 +1187,6 @@ GER_stop_train_army = {
 	}
 	ai_strategy = {
 		type = build_army
-		id = garrison
-		value = -1000
-	}
-	ai_strategy = {
-		type = role_ratio
 		id = garrison
 		value = -1000
 	}
@@ -1291,12 +1328,12 @@ GER_unit_production = {
 	ai_strategy = {
 		type = equipment_production_factor
 		id = infantry
-		value = 80
+		value = 100
 	}
 	ai_strategy = {
 		type = equipment_production_factor
 		id = artillery
-		value = 130
+		value = 110
 	}
 	ai_strategy = {
 		type = equipment_variant_production_factor
@@ -1305,8 +1342,8 @@ GER_unit_production = {
 	}
 	ai_strategy = {
 		type = equipment_production_factor
-		id = anti_air
-		value = 25
+		id = machine_gun
+		value = 15
 	}
 	ai_strategy = {
 		#added to railway gun define (set to 0 by default, increased in default strategies)
@@ -1833,6 +1870,18 @@ GER_build_mils = {
 		id = dockyard
 		target = 59
 		value = 100
+	}
+	ai_strategy = {
+		type = build_building
+		id = air_base
+		target = 869
+		value = 150
+	}
+	ai_strategy = {
+		type = build_building
+		id = air_base
+		target = 86
+		value = 150
 	}
 }
 
