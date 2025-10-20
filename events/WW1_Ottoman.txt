@@ -153,19 +153,19 @@ country_event = { #ottoman revolt
 								OR = {
 									AND = {
 										capital_scope = { ALB_is_kosovar_state = yes }
-										NOT = { var:global.occupied_state = { ALB_is_kosovar_state = yes } }
+										var:global.occupied_state = { ALB_is_kosovar_state = yes }
 									}
 									AND = {
 										capital_scope = { ALB_is_northern_state = yes }
-										NOT = { var:global.occupied_state = { ALB_is_northern_state = yes } }
+										var:global.occupied_state = { ALB_is_northern_state = yes }
 									}
 									AND = {
 										capital_scope = { ALB_is_central_state = yes }
-										NOT = { var:global.occupied_state = { ALB_is_central_state = yes } }
+										var:global.occupied_state = { ALB_is_central_state = yes }
 									}
 									AND = {
 										capital_scope = { ALB_is_southern_state = yes }
-										NOT = { var:global.occupied_state = { ALB_is_southern_state = yes } }
+										var:global.occupied_state = { ALB_is_southern_state = yes }
 									}
 								}
 							}
@@ -234,36 +234,7 @@ country_event = { #ottoman revolt
 					set_temp_variable = { global.new_occupied_country = THIS }
 				}
 			}
-			else_if = {
-				limit = {
-					country_exists = ALB
-					ALB = {
-						has_capitulated = no
-						NOT = { has_war_with = var:global.occupier_country }
-						OR = {
-							NOT = { has_idea = ALB_decentralized_independence_movement }
-							AND = {
-								has_idea = ALB_decentralized_independence_movement
-								AND = {
-									capital_scope = { ALB_is_kosovar_state = yes }
-									NOT = { var:global.occupied_state = { ALB_is_kosovar_state = yes } }
-								}
-								AND = {
-									capital_scope = { ALB_is_northern_state = yes }
-									NOT = { var:global.occupied_state = { ALB_is_northern_state = yes } }
-								}
-								AND = {
-									capital_scope = { ALB_is_central_state = yes }
-									NOT = { var:global.occupied_state = { ALB_is_central_state = yes } }
-								}
-								AND = {
-									capital_scope = { ALB_is_southern_state = yes }
-									NOT = { var:global.occupied_state = { ALB_is_southern_state = yes } }
-								}
-							}
-						}
-					}
-				}
+			else = {
 				create_dynamic_country = {
 					original_tag = ALB
 					copy_tag = ALB
@@ -1231,8 +1202,8 @@ country_event = { #ottoman revolt
 		}
 		var:global.occupier_country = {
 			country_event = ottoman.282
-			set_variable = { occupied_country_event = global.occupied_country }
-			set_variable = { occupied_state_event =  global.occupied_state }
+			set_variable = { global.occupied_country_event = global.occupied_country }
+			set_variable = { global.occupied_state_event =  global.occupied_state }
 		}
 	}
 }
@@ -19449,19 +19420,30 @@ country_event = { #notification for uprising spread
 	picture = GFX_report_event_ottoman_rebellion
 	immediate = {
 		hidden_effect = {
-			clear_variable = occupied_country_event
-			clear_variable = occupied_state_event
+			clear_variable = global.occupied_country_event
+			clear_variable = global.occupied_state_event
 		}
 	}
 	option = {
 		name = ottoman.282.a
 		custom_effect_tooltip = ottoman.282.tt
+		if = {
+			limit = { var:global.occupied_country_event = { has_completed_focus = ALB_let_the_dominos_topple } }
+			every_state = {
+				limit = {
+					any_neighbor_state = { state = var:global.occupied_state_event }
+					is_core_of = var:global.occupied_country_event
+					is_owned_by = ROOT
+				}
+				add_resistance = 10
+			}
+		}
 		ai_chance = { base = 100 }
 	}
 	option = {
 		name = ottoman.282.b
 		custom_effect_tooltip = ottoman.282.tt
-		var:occupied_country_event = { change_tag_from = ROOT }
+		var:global.occupied_country_event = { change_tag_from = ROOT }
 		ai_chance = { base = 100 }
 	}
 }
