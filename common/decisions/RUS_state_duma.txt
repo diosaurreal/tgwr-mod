@@ -290,6 +290,7 @@ RUS_parliament_gui_decision_category = {
 					is_prime_minister = yes
 				}
 			}
+			has_completed_focus = RUS_crack_down_on_finnish_autonomy
 			NOT = {
 				has_country_flag = RUS_law_on_finnish_autonomy_passed_in_sd
 				has_country_flag = RUS_law_on_finnish_autonomy_passed_in_sc
@@ -810,6 +811,11 @@ RUS_parliament_gui_decision_category = {
 			original_tag = RUS
 			duma_is_active = yes
 			
+			any_character = {
+				is_prime_minister = yes
+				is_reactionary = no
+			}
+			has_completed_focus = RUS_law_on_peasant_land_ownership
 			NOT = {
 				has_country_flag = RUS_law_on_peasant_land_ownership_passed_in_sd
 				has_country_flag = RUS_law_on_peasant_land_ownership_passed_in_sc
@@ -896,6 +902,7 @@ RUS_parliament_gui_decision_category = {
 				is_prime_minister = yes
 				is_reactionary = no
 			}
+			has_completed_focus = RUS_law_on_land_management
 			NOT = {
 				has_country_flag = RUS_law_on_land_management_passed_in_sd
 				has_country_flag = RUS_law_on_land_management_passed_in_sc
@@ -1220,6 +1227,90 @@ RUS_parliament_gui_decision_category = {
 			}
 		}
 	}
+	RUS_rules_of_private_education_institutions_sd = {
+		icon = GFX_decision_eng_trade_unions_support
+		allowed = {
+			original_tag = RUS
+		}
+		available = {
+
+		}
+		visible = {
+			original_tag = RUS
+			duma_is_active = yes
+			
+			has_illiteracy = yes
+			has_completed_focus = RUS_deregulate_private_education
+			NOT = {
+				has_country_flag = RUS_rules_of_private_education_institutions_passed_in_sd
+				has_country_flag = RUS_rules_of_private_education_institutions_passed_in_sc
+			}
+		}
+		complete_effect = {
+			custom_effect_tooltip = RUS_need_majority_sd
+		}
+		remove_effect = {
+			if = {
+				limit = {
+					check_variable = {
+						total_loyalist_count > 221
+					}
+				}
+				custom_effect_tooltip = RUS_likely_to_pass
+			}
+			else = {
+				custom_effect_tooltip = RUS_likely_to_be_rejected
+			}
+			if = {
+				limit = {
+					check_variable = {
+						total_loyalist_count > 221
+					}
+				}
+				hidden_effect = {
+					set_country_flag = RUS_rules_of_private_education_institutions_passed_in_sd
+					add_political_power = 25
+					country_event = ww1_russia_common.1
+				}
+			}
+			else = {
+				hidden_effect = {
+					country_event = ww1_russia_common.3
+				}
+			}
+			custom_effect_tooltip = RUS_if_the_law_passes
+			effect_tooltip = {
+				add_political_power = 25
+				custom_effect_tooltip = RUS_law_available_for_state_council
+			}
+			custom_effect_tooltip = RUS_if_the_law_passes_in_sc
+			effect_tooltip = {
+				add_political_power = 50
+				set_temp_variable = { RUS_add_education_reform_progress_var = 5 }
+				RUS_add_education_reform_progress = yes
+				custom_effect_tooltip = RUS_modify_education_reform_decision_tt
+			}
+			
+		}
+		cost = 50
+		days_remove = 30
+		days_re_enable = 180
+		cancel_trigger = {
+			OR = {
+				duma_is_active = no
+				
+				any_character = {
+					is_prime_minister = yes
+					is_reactionary = yes
+				}
+				hidden_trigger = {
+					NOT = {
+						has_illiteracy = yes
+					}
+				}
+			}
+		}
+	}
 	RUS_law_on_higher_primary_schools_sd = {
 		icon = GFX_decision_eng_trade_unions_support
 		allowed = {
@@ -1363,7 +1454,7 @@ RUS_parliament_gui_decision_category = {
 			custom_effect_tooltip = RUS_if_the_law_passes_in_sc
 			effect_tooltip = {
 				add_political_power = 50
-				set_temp_variable = { RUS_add_education_reform_progress_var = 10 }
+				set_temp_variable = { RUS_add_education_reform_progress_var = 5 }
 				RUS_add_education_reform_progress = yes
 				custom_effect_tooltip = RUS_modify_education_reform_decision_tt
 			}
@@ -1410,6 +1501,7 @@ RUS_parliament_gui_decision_category = {
 			NOT = {
 				has_country_flag = RUS_law_on_western_zemstvo_passed_in_sd
 				has_country_flag = RUS_law_on_western_zemstvo_passed_in_sc
+				has_country_flag = RUS_western_zemstvo_crisis
 			}
 		}
 		complete_effect = {
@@ -1432,6 +1524,20 @@ RUS_parliament_gui_decision_category = {
 					check_variable = {
 						total_loyalist_count > 221
 					}
+					has_country_flag = RUS_western_zemstvo_crisis
+				}
+				hidden_effect = {
+					set_country_flag = RUS_law_on_western_zemstvo_passed_in_sd
+					add_political_power = 25
+					activate_mission = RUS_western_zemstvo_reform_deadline
+					country_event = ww1_stolypin.1
+				}
+			}
+			else_if = {
+				limit = {
+					check_variable = {
+						total_loyalist_count > 221
+					}
 				}
 				hidden_effect = {
 					set_country_flag = RUS_law_on_western_zemstvo_passed_in_sd
@@ -1442,20 +1548,17 @@ RUS_parliament_gui_decision_category = {
 			else = {
 				hidden_effect = {
 					country_event = ww1_russia_common.3
+					if = {
+						limit = {
+							has_country_flag = RUS_western_zemstvo_crisis
+						}
+						clr_country_flag = RUS_western_zemstvo_crisis
+					}
 				}
 			}
 			custom_effect_tooltip = RUS_if_the_law_passes
 			effect_tooltip = {
 				add_political_power = 25
-				if = {
-					limit = {
-						NOT = {
-							has_completed_focus = RUS_law_on_western_zemstvo
-						}
-					}
-					custom_effect_tooltip = unlocks_national_focus_tt
-					custom_effect_tooltip = RUS_law_on_western_zemstvo
-				}
 				custom_effect_tooltip = RUS_law_available_for_state_council
 			}
 			custom_effect_tooltip = RUS_if_the_law_passes_in_sc
@@ -1708,15 +1811,6 @@ RUS_parliament_gui_decision_category = {
 			custom_effect_tooltip = RUS_if_the_law_passes
 			effect_tooltip = {
 				add_political_power = 25
-				if = {
-					limit = {
-						NOT = {
-							has_completed_focus = RUS_law_on_western_zemstvo
-						}
-					}
-					custom_effect_tooltip = unlocks_national_focus_tt
-					custom_effect_tooltip = RUS_law_on_western_zemstvo
-				}
 				custom_effect_tooltip = RUS_law_available_for_state_council
 			}
 			custom_effect_tooltip = RUS_if_the_law_passes_in_sc
@@ -1801,15 +1895,6 @@ RUS_parliament_gui_decision_category = {
 			custom_effect_tooltip = RUS_if_the_law_passes
 			effect_tooltip = {
 				add_political_power = 25
-				if = {
-					limit = {
-						NOT = {
-							has_completed_focus = RUS_law_on_western_zemstvo
-						}
-					}
-					custom_effect_tooltip = unlocks_national_focus_tt
-					custom_effect_tooltip = RUS_law_on_western_zemstvo
-				}
 				custom_effect_tooltip = RUS_law_available_for_state_council
 			}
 			custom_effect_tooltip = RUS_if_the_law_passes_in_sc
@@ -2770,7 +2855,7 @@ RUS_parliament_gui_decision_category = {
 		visible = {
 			original_tag = RUS
 			duma_is_active = yes
-			
+			controls_poland = yes
 			has_completed_focus = RUS_kholm_governorate
 			NOT = {
 				has_country_flag = RUS_law_on_kholm_governorate_passed_in_sd
@@ -2835,13 +2920,109 @@ RUS_parliament_gui_decision_category = {
 		cancel_trigger = {
 			OR = {
 				duma_is_active = no
-				
-				766 = {
-					NOT = {
+				controls_poland = no
+				NOT = {
+					766 = {
+						is_owned_by = ROOT	
+					}
+				}
+			}
+		}
+	}
+	RUS_law_on_ethnographic_poland_sd = {
+		icon = GFX_decision_eng_trade_unions_support
+		allowed = {
+			original_tag = RUS
+		}
+		available = {
+
+		}
+		visible = {
+			original_tag = RUS
+			duma_is_active = yes
+			controls_poland = yes
+			has_completed_focus = RUS_ethnographic_poland
+			NOT = {
+				has_country_flag = RUS_law_on_ethnographic_poland_passed_in_sd
+				has_country_flag = RUS_law_on_ethnographic_poland_passed_in_sc
+			}
+			95 = {
+				is_owned_by = ROOT
+				NOT = {
+					has_dynamic_modifier = {
+						modifier = RUS_tsardom_of_poland	
+					}
+				}
+			}
+			11 = {
+				is_owned_by = ROOT
+				has_dynamic_modifier = {
+					modifier = RUS_tsardom_of_poland	
+				}
+			}
+		}
+		complete_effect = {
+			custom_effect_tooltip = RUS_need_majority_sd
+		}
+		remove_effect = {
+			if = {
+				limit = {
+					check_variable = {
+						total_loyalist_count > 221
+					}
+				}
+				custom_effect_tooltip = RUS_likely_to_pass
+			}
+			else = {
+				custom_effect_tooltip = RUS_likely_to_be_rejected
+			}
+			if = {
+				limit = {
+					check_variable = {
+						total_loyalist_count > 221
+					}
+				}
+				hidden_effect = {
+					set_country_flag = RUS_law_on_kholm_governorate_passed_in_sd
+					add_political_power = 25
+					country_event = ww1_russia_common.1
+				}
+			}
+			else = {
+				hidden_effect = {
+					country_event = ww1_russia_common.3
+				}
+			}
+			custom_effect_tooltip = RUS_if_the_law_passes
+			effect_tooltip = {
+				add_political_power = 25
+				custom_effect_tooltip = RUS_law_available_for_state_council
+			}
+			custom_effect_tooltip = RUS_if_the_law_passes_in_sc
+			effect_tooltip = {
+				add_political_power = 50
+				95 = {
+					add_dynamic_modifier = { modifier = RUS_tsardom_of_poland }
+				}
+				11 = {
+					remove_dynamic_modifier = { modifier = RUS_tsardom_of_poland }
+				}
+			}
+			
+		}
+		cost = 50
+		days_remove = 30
+		days_re_enable = 180
+		cancel_trigger = {
+			OR = {
+				duma_is_active = no
+				controls_poland = no
+				NOT = {
+					95 = {
 						is_owned_by = ROOT
-						has_dynamic_modifier = {
-							modifier = RUS_tsardom_of_poland
-						}	
+					}
+					11 = {
+						is_owned_by = ROOT
 					}
 				}
 			}
@@ -3598,22 +3779,12 @@ RUS_parliament_gui_decision_category = {
 		visible = {
 			original_tag = RUS
 			duma_is_active = yes
-			
-			any_character = {
-				is_prime_minister = yes
-				is_reformist = no
-			}
 			has_completed_focus = RUS_lesser_rearmament_programme
-			has_country_flag = RUS_completed_lesser_rearmament_programme_focus
 			NOT = {
 				has_country_flag = RUS_lesser_rearmament_programme_passed_in_sd
 				has_country_flag = RUS_lesser_rearmament_programme_passed_in_sc
+				has_country_flag = RUS_failed_army_reforms
 				has_war_with_major = yes
-				
-				has_idea = low_economic_mobilisation
-				has_idea = partial_economic_mobilisation
-				has_idea = war_economy
-				has_idea = tot_economic_mobilisation 
 			}
 		}
 		complete_effect = {
@@ -3656,7 +3827,10 @@ RUS_parliament_gui_decision_category = {
 			custom_effect_tooltip = RUS_if_the_law_passes_in_sc
 			effect_tooltip = {
 				add_political_power = 50
-				upgrade_economy_law = yes
+				add_timed_idea = {
+					idea = RUS_lesser_rearmament_programme
+					days = 1080
+				}
 			}
 			
 		}
@@ -3666,21 +3840,8 @@ RUS_parliament_gui_decision_category = {
 		cancel_trigger = {
 			OR = {
 				duma_is_active = no
-				
-				any_character = {
-					is_prime_minister = yes
-					is_reformist = yes
-				}
-			}
-			hidden_trigger = {
-				OR = {
-					has_war_with_major = yes
-					
-					has_idea = low_economic_mobilisation
-					has_idea = partial_economic_mobilisation
-					has_idea = war_economy
-					has_idea = tot_economic_mobilisation
-				}
+				has_war_with_major = yes
+				has_country_flag = RUS_failed_army_reforms
 			}
 		}
 	}
@@ -3695,22 +3856,12 @@ RUS_parliament_gui_decision_category = {
 		visible = {
 			original_tag = RUS
 			duma_is_active = yes
-			
-			any_character = {
-				is_prime_minister = yes
-				is_reformist = no
-			}
 			has_completed_focus = RUS_great_army_programme
-			has_country_flag = RUS_completed_great_army_programme_focus
-			has_idea = low_economic_mobilisation
 			NOT = {
 				has_country_flag = RUS_great_army_programme_passed_in_sd
 				has_country_flag = RUS_great_army_programme_passed_in_sc
+				has_country_flag = RUS_failed_army_reforms
 				has_war_with_major = yes
-				
-				has_idea = partial_economic_mobilisation
-				has_idea = war_economy
-				has_idea = tot_economic_mobilisation 
 			}
 		}
 		complete_effect = {
@@ -3753,7 +3904,10 @@ RUS_parliament_gui_decision_category = {
 			custom_effect_tooltip = RUS_if_the_law_passes_in_sc
 			effect_tooltip = {
 				add_political_power = 50
-				upgrade_economy_law = yes
+				add_timed_idea = {
+					idea = RUS_great_army_programme
+					days = 1080
+				}
 			}
 			
 		}
@@ -3763,21 +3917,69 @@ RUS_parliament_gui_decision_category = {
 		cancel_trigger = {
 			OR = {
 				duma_is_active = no
-				
-				any_character = {
-					is_prime_minister = yes
-					is_reformist = yes
+				has_war_with_major = yes
+				has_country_flag = RUS_failed_army_reforms
+			}
+		}
+	}
+	RUS_secure_funding_for_fortresses = {
+		icon = GFX_decision_eng_trade_unions_support
+		allowed = {
+			original_tag = RUS
+		}
+		available = {
+
+		}
+		visible = {
+			original_tag = RUS
+			duma_is_active = yes
+			has_completed_focus = RUS_reinforce_western_fortresses
+			NOT = {
+				has_country_flag = RUS_has_funding_for_fortresses
+			}
+		}
+		complete_effect = {
+			custom_effect_tooltip = RUS_need_majority_sd
+		}
+		remove_effect = {
+			if = {
+				limit = {
+					check_variable = {
+						total_loyalist_count > 221
+					}
+				}
+				custom_effect_tooltip = RUS_likely_to_pass
+			}
+			else = {
+				custom_effect_tooltip = RUS_likely_to_be_rejected
+			}
+			if = {
+				limit = {
+					check_variable = {
+						total_loyalist_count > 221
+					}
+				}
+				hidden_effect = {
+					set_country_flag = RUS_has_funding_for_fortresses
+					country_event = ww1_russia_common.1
 				}
 			}
-			hidden_trigger = {
-				OR = {
-					has_war_with_major = yes
-					
-					has_idea = partial_economic_mobilisation
-					has_idea = war_economy
-					has_idea = tot_economic_mobilisation
+			else = {
+				hidden_effect = {
+					country_event = ww1_russia_common.3
 				}
 			}
+			custom_effect_tooltip = RUS_if_the_law_passes
+			effect_tooltip = {
+				custom_effect_tooltip = RUS_has_funding_for_fortresses
+			}
+			
+		}
+		cost = 25
+		days_remove = 30
+		days_re_enable = 180
+		cancel_trigger = {
+			duma_is_active = no
 		}
 	}
 	RUS_debug_remove_loyalty = {
