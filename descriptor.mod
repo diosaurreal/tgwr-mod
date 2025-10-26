@@ -1,6 +1,7 @@
 replace_path="common/abilities"
 replace_path="common/ai_areas"
 replace_path="common/ai_equipment"
+replace_path="common/ai_faction_theaters"
 replace_path="common/ai_navy/goals"
 replace_path="common/ai_navy/fleet"
 replace_path="common/ai_navy/taskforce"
