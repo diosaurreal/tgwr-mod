@@ -5901,14 +5901,12 @@ country_event = {
 	desc = ww1_china.30.d
 	id = ww1_china.30
 	picture = GFX_report_event_chinese_street
+	is_triggered_only = yes
 	fire_only_once = yes
 	trigger = {
 		tag = CHI
 		has_global_flag = CHI_government_split_mission
 		NOT = { country_exists = ANC }
-	}
-	mean_time_to_happen = {
-		days = 1
 	}
 	immediate = {
 		hidden_effect = {
@@ -6879,12 +6877,26 @@ country_event = {
 				limit = {
 					is_kuomintang_state = yes
 				}
-				create_dynamic_country = {
-					original_tag = CHI
-					set_politics = {
-						ruling_party = fascism
-						elections_allowed = no
+				check_fascism_civil_war_popularity = yes
+				start_civil_war = {
+					ideology = fascism
+					size = civil_war_size_var
+					states = all
+					states_filter = {
+						NOT = {
+							region = 15
+							region = 144
+							region = 164
+							region = 165
+							state = 615
+							state = 622
+						}
 					}
+					keep_all_characters = yes
+					keep_unit_leaders_trigger = {
+						always = yes
+					}
+
 					set_popularities = {
 						democratic = 0
 						neutrality = 47
@@ -6893,63 +6905,47 @@ country_event = {
 					}
 					set_cosmetic_tag = CHI_uprising
 					set_country_flag = CHI_national_protection_flag
-					reserve_dynamic_country = yes
-				}
-				every_owned_state = {
-					limit = {
-						OR = {
-							region = 143
-							region = 145
-							region = 155
-							region = 200
-							state = 607
-						}
-						NOT = {
-							state = 615
-							state = 622
-						}
-					}
-					transfer_state_to = NPA
-				}
-				NPA = {
+
 					set_capital = { state = 608 }
-					inherit_technology = CHI
 					set_party_name = {
 						ideology = fascism
 						long_name = CHI_neutrality_party
 						name = CHI_neutrality_party
 					}
-					set_rule = {
-						can_join_factions = no
-					}
+					add_ideas = CHI_idea_unstable_republic
 					add_ideas = CHI_idea_army_corruption
-					set_cosmetic_tag = CHI_uprising
-				}
-				transfer_units_fraction = {
-					target = NPA
-					size = 0.5
-					stockpile_ratio = 0.4
-					army_ratio = 0.5
-					navy_ratio = 0.3
-					air_ratio = 0.45
-					keep_unit_leaders_trigger = {
-						OR = {
-							# is_character = CHI_yan_xishan
-							# is_character = CHI_cai_e
-							# is_character = CHI_chen_jiongming
-							has_character_flag = kmt_allegiance
-							NOT = {
-								has_character_flag = beiyang_allegiance
-								has_character_flag = qing_allegiance
-							}
-						}
+					add_ideas = standing_alone
+
+					load_focus_tree = {
+						tree = china_focus
+						copy_completed_from = ROOT
 					}
+					uncomplete_national_focus = {
+						focus = CHI_kuomintang
+						uncomplete_children = yes
+						refund_political_power = no
+					}
+					copy_chinese_ideas = yes
+					unlock_national_focus = CHI_ruling_of_yuan_shikai
+					unlock_national_focus = CHI_reorganization_loans
+					unlock_national_focus = CHI_replace_governors
+					unlock_national_focus = CHI_suppress_nationalists
+					unlock_national_focus = CHI_yuan_president
+					unlock_national_focus = CHI_increase_army_influence
+					unlock_national_focus = CHI_expand_state_arsenals
+					unlock_national_focus = CHI_parliament_liquidation
+					unlock_national_focus = CHI_presidential_loyalty
+					unlock_national_focus = CHI_maintain_status_quo
+					mark_focus_tree_layout_dirty = yes
 				}
 				every_character = {
 					limit = {
 						has_character_flag = beiyang_allegiance
 						NOT = {
 							has_character_flag = kmt_allegiance
+							is_character = CHI_yan_xishan
+							is_character = CHI_cai_e
+							is_character = CHI_chen_jiongming
 						}
 					}
 					set_nationality = NPA
@@ -7008,37 +7004,6 @@ country_event = {
 				add_ideas = standing_alone
 				complete_national_focus = CHI_focus_national_protection_war
 				mark_focus_tree_layout_dirty = yes
-				NPA = {
-					every_character = {
-						limit = {
-							OR = {
-								is_character = CHI_yan_xishan
-								is_character = CHI_cai_e
-								is_character = CHI_chen_jiongming
-							}
-						}
-						set_nationality = ROOT
-					}
-					complete_national_focus = CHI_focus_national_protection_war
-					mark_focus_tree_layout_dirty = yes
-					add_ideas = standing_alone
-					uncomplete_national_focus = {
-						focus = CHI_kuomintang
-						uncomplete_children = yes
-						refund_political_power = no
-					}
-					unlock_national_focus = CHI_ruling_of_yuan_shikai
-					unlock_national_focus = CHI_replace_governors
-					unlock_national_focus = CHI_reorganization_loans
-					unlock_national_focus = CHI_expand_state_arsenals
-					unlock_national_focus = CHI_increase_army_influence
-					unlock_national_focus = CHI_presidential_loyalty
-					unlock_national_focus = CHI_suppress_nationalists
-					unlock_national_focus = CHI_parliament_liquidation
-					unlock_national_focus = CHI_maintain_status_quo
-					mark_focus_tree_layout_dirty = yes
-					copy_chinese_ideas = yes
-				}
 			}
 			else = {
 				YUN = {
@@ -10739,202 +10704,292 @@ country_event = {
 	}
 }
 
-# ZHILI-FENGTIAN-FENGYUSHANG WAR
-#################################
+# Yungfeng Incident
+# Chen Jiongming Tries Coup After Sun Yatsen's Death - Failsafe Alt-history
 country_event = {
 	id = ww1_china.59
-	title = ww1_china.59.t
+	title = ww1_china.48.t
 	desc = ww1_china.59.d
-	picture = GFX_report_event_chinese_soldiers_fighting
-	is_triggered_only = yes
-	option = {
-		name = ww1_china.59.a
-		declare_war_on = {
-			target = GMJ
-			type = annex_everything
+	picture = GFX_report_event_yung_feng_incident
+	fire_only_once = yes
+	trigger = {
+		has_war = no
+		is_china_or_warlord_no_tt = yes
+		has_country_flag = CHI_kuomintang_flag
+		has_global_flag = sun_yatsen_dead
+		has_character = CHI_chen_jiongming
+		NOT = {
+			has_country_flag = reunited_china
+			has_global_flag = northern_expedition
+			has_global_flag = yung_feng_incident
+			has_country_leader = {
+				character = CHI_chen_jiongming
+				ruling_only = yes
+			}
+		}
+	}
+	mean_time_to_happen = {
+		days = 14
+	}
+	immediate = {
+		hidden_effect = {
+			set_global_flag = yung_feng_incident
+			KMT = {
+				retire_character = GDC_deng_keng
+				if = {
+					limit = { has_character = CHI_chen_duxiu }
+					CHI_chen_duxiu = { set_nationality = CHI }
+				}
+				if = {
+					limit = {
+						is_faction_leader = no
+						is_in_faction = yes
+					}
+					leave_faction = yes
+					every_enemy_country = {
+						limit = {
+							is_china_or_warlord_no_tt = yes
+						}
+						white_peace = PREV
+					}
+				}
+				create_dynamic_country = {
+					original_tag = GDC
+					set_politics = {
+						ruling_party = neutrality
+						elections_allowed = no
+					}
+					set_popularities = {
+						democratic = 57
+						neutrality = 38
+						communism = 5
+					}
+					set_cosmetic_tag = ZGP
+					set_country_flag = CHI_zhigongdang_flag
+					every_state = {
+						limit = {
+							region = 165
+							NOT = { state = 599 }
+						}
+						add_core_of = PREV
+					}
+					every_state = {
+						limit = {
+							owner = {
+								OR = {
+									tag = ROOT
+									is_subject_of = ROOT
+								}
+							}
+							region = 165
+							NOT = {
+								state = 593
+								state = 599
+							}
+						}
+						transfer_state_to = PREV
+					}
+					set_state_controller = 593
+					reserve_dynamic_country = yes
+				}
+				# Northwestern Guangdong
+				set_province_controller = 7210
+				set_province_controller = 4092
+				set_province_controller = 11941
+				set_province_controller = 10121
+				set_province_controller = 10080
+				set_province_controller = 12014
+				set_province_controller = 9997
+				# Eastern Guangdong
+				set_province_controller = 7141
+				set_province_controller = 7182
+				set_province_controller = 9938
+				CHI_chen_jiongming = {
+					clr_character_flag = exiled
+					clr_character_flag = kmt_allegiance
+					promote_leader = yes
+					set_nationality = ZGP
+				}
+				transfer_units_fraction = {
+					target = ZGP
+					size = 0.40
+					target_organization = 1
+					source_organization = 1
+					navy_ratio = 0.10
+					keep_unit_leaders_trigger = {
+						NOT = {
+							has_character_flag = federalist_allegiance	
+						}
+					}
+				}
+				every_character = {
+					limit = { has_character_flag = federalist_allegiance }
+					set_nationality = ZGP
+				}
+				ZGP = {
+					CHI_chen_jiongming = {
+						if = {
+							limit = {
+								has_ideology = social_liberalism
+							}
+							promote_character = social_liberalism
+						}
+						else = {
+							add_country_leader_role = {
+								promote_leader = yes
+								country_leader = {
+									ideology = social_liberalism
+									traits = { CHI_revolutionary_lawyer decentralist_liberal }
+									desc = CHI_chen_jiongming_desc
+								}
+							}
+						}
+						if = {
+							limit = {
+								has_ideology = authoritarian_democracy
+							}
+							promote_character = authoritarian_democracy
+						}
+						else = {
+							add_country_leader_role = {
+								promote_leader = yes
+								country_leader = {
+									ideology = authoritarian_democracy
+									traits = { CHI_revolutionary_lawyer decentralist_liberal }
+									desc = CHI_chen_jiongming_desc
+								}
+							}
+						}
+						if = {
+							limit = {
+								has_ideology = stratocracy
+							}
+							promote_character = stratocracy
+						}
+						else = {
+							add_country_leader_role = {
+								promote_leader = yes
+								country_leader = {
+									ideology = stratocracy
+									traits = { CHI_revolutionary_lawyer decentralist_liberal }
+									desc = CHI_chen_jiongming_desc
+								}
+							}
+						}
+						if = {
+							limit = {
+								has_ideology = reformist_socialism
+							}
+							promote_character = reformist_socialism
+						}
+						else = {
+							add_country_leader_role = {
+								promote_leader = yes
+								country_leader = {
+									ideology = reformist_socialism
+									traits = { CHI_revolutionary_lawyer decentralist_liberal }
+									desc = CHI_chen_jiongming_desc
+								}
+							}
+						}
+					}
+					set_party_name = {
+						ideology = democratic
+						long_name = CHI_zhigong_party_long
+						name = CHI_zhigong_party
+					}
+					set_party_name = {
+						ideology = neutrality
+						long_name = CHI_zhigong_party_long
+						name = CHI_zhigong_party
+					}
+					set_party_name = {
+						ideology = fascism
+						long_name = CHI_zhigong_party_long
+						name = CHI_zhigong_party
+					}
+					set_party_name = {
+						ideology = communism
+						long_name = CHI_zhigong_party_long
+						name = CHI_zhigong_party
+					}
+					set_rule = {
+						can_join_factions = no
+					}
+					add_ideas = CHI_idea_federalist_movement
+					unlock_national_focus = CHI_secure_internal_politics
+					unlock_national_focus = CHI_opposition
+					add_ideas = CHI_idea_inflation2
+					add_ideas = CHI_idea_army_corruption
+					add_ideas = CHI_idea_merchant_army
+				}
+				every_owned_state = {
+					limit = {
+						has_border_war = yes
+					}
+					set_border_war = no
+				}
+				mark_focus_tree_layout_dirty = yes
+			}
 		}
 	}
 	option = {
-		name = ww1_china.59.b
-		add_war_support = -0.10
-		ai_chance = { factor = 0 }
+		name = ww1_china.48.a
+		custom_effect_tooltip = ww1_china.48.a.tt
+		ZGP = {
+			declare_war_on = {
+				target = PREV
+				type = annex_everything
+			}
+			every_other_country = {
+				limit = {
+					is_subject_of = PREV.PREV
+				}
+				PREV = {
+					declare_war_on = {
+						target = PREV
+						type = annex_everything
+					}
+				}
+			}
+		}
+	}
+	option = {
+		name = ww1_china.48.b
+		custom_effect_tooltip = ww1_china.48.b.tt
+		trigger = { is_ai = no }
+		ZGP = {
+			declare_war_on = {
+				target = PREV
+				type = annex_everything
+			}
+			every_other_country = {
+				limit = {
+					is_subject_of = PREV.PREV
+				}
+				PREV = {
+					declare_war_on = {
+						target = PREV
+						type = annex_everything
+					}
+				}
+			}
+			change_tag_from = PREV
+		}
 	}
 }
 
-# END OF ZHILI-FENGTIAN-FENGYUSHAGN WAR
-#########################################
-country_event = {
-	id = ww1_china.60
-	title = ww1_china.60.t
-	desc = ww1_china.60.t
-	picture = GFX_report_event_chinese_soldiers_fighting
-	is_triggered_only = yes
-	immediate = {
-		every_country = {
-			limit = {
-				has_war_with = GMJ
-				NOT = {
-					has_country_flag = CHI_kuomintang_flag
-					has_country_flag = CHI_zhigongdang_flag
-					has_cosmetic_tag = GXC_KMT
-				}
-			}
-			white_peace = GMJ
-			set_truce = {
-				target = GMJ
-				days = 180
-			}
-			set_country_flag = zhili_fengtian_fengyushang_war_participants
-		}
-		every_country = {
-			limit = {
-				has_war_with = JNC
-				NOT = {
-					has_country_flag = CHI_kuomintang_flag
-					has_country_flag = CHI_zhigongdang_flag
-					has_cosmetic_tag = GXC_KMT
-				}
-			}
-			white_peace = JNC
-			set_truce = {
-				target = JNC
-				days = 180
-			}
-		}
-		every_country = {
-			limit = {
-				has_war_with = FJN
-				NOT = {
-					has_country_flag = CHI_kuomintang_flag
-					has_country_flag = CHI_zhigongdang_flag
-					has_cosmetic_tag = GXC_KMT
-				}
-			}
-			white_peace = FJN
-			set_truce = {
-				target = FJN
-				days = 180
-			}
-		}
-		every_state = {
-			limit = {
-				OR = {
-					is_owned_by = FNG
-					is_owned_by = GMJ
-				}
-				OR = {
-					region = 144
-					region = 164
-					region = 165
-				}
-			}
-			ZHC = {
-				transfer_state = PREV
-			}
-		}
-		if = {
-			limit = {
-				SHX = { has_country_flag = zhili_fengtian_fengyushang_war_participants }
-			}
-			every_state = {
-				limit = {
-					is_owned_by = GMJ
-					OR = {
-						state = 621
-					}
-				}
-				SHX = {	
-					transfer_state = PREV
-				}
-			}
-			if = {
-				limit = {
-					country_exists = SHN
-				}
-				SHN = {
-					if = {
-						limit = { is_subject = yes }
-						OVERLORD = {
-							end_puppet = PREV
-						}
-					}
-					get_current_government_type = yes
-				}
-				SHX = {
-					set_autonomy = {
-						target = SHN
-						autonomy_state = autonomy_tgwr_regional_government
-					}
-				}
-				SHN = {
-					restore_previous_government_type = yes
-					SHN_liu_zhenhua = {
-						promote_character = warlordism
-						promote_character = stratocracy
-					}
-				}
-			}
-		}
-		every_state = {
-			limit = {
-				OR = {
-					is_owned_by = GMJ
-					is_owned_by = ZHC
-				}
-				OR = {
-					state = 610
-					state = 611
-					state = 612
-					state = 983
-				}
-			}
-			FNG = {
-				transfer_state = PREV
-			}
-		}
-		every_state = {
-			limit = {
-				owner = { is_china_or_warlord_no_tt = yes }
-				OR = {
-					state = 283
-				}
-			}
-			GMJ = {
-				transfer_state = PREV
-			}
-		}
-		every_state = {
-			limit = {
-				NOT = { is_owned_by = GMJ }
-				is_core_of = GMJ
-			}
-			remove_core_of = GMJ
-		}
-		every_state = {
-			limit = {
-				NOT = { is_owned_by = GMJ }
-				is_claimed_by = GMJ
-			}
-			remove_claim_by = GMJ
-		}
-		set_global_flag = zhili_fengtian_fengyushang_war_end
-		GMJ = {
-			random_other_country = {
-				limit = {
-					owns_state = 609
-				}
-				PREV = {
-					transfer_navy = {
-						target = PREV
-					}
-				}
-			}
-		}
-	}
-	option = {
-		name = ww1_china.60.a
-	}
-}
+# reuse
+# country_event = {
+# 	id = ww1_china.60
+# 	title = ww1_china.60.t
+# 	desc = ww1_china.60.t
+# 	picture = GFX_report_event_chinese_soldiers_fighting
+# 	is_triggered_only = yes
+# 	option = {
+# 		name = ww1_china.60.a
+# 	}
+# }
 
 # END OF NORTHERN EXPEDITION
 #########################################
@@ -13573,6 +13628,7 @@ country_event = {
 		add_country_leader_trait = generallissimo
 		set_global_flag = shanghai_massacre
 		set_global_flag = wuhan_nanjing_split
+		set_country_flag = dont_trigger_political_event
 		clr_country_flag = wuhan_government
 		set_country_flag = nanjing_government
 		set_cosmetic_tag = KMT_NANJING
@@ -13635,6 +13691,11 @@ country_event = {
 			}
 		}
 		hidden_effect = {
+			set_popularities = {
+				democratic = 44
+				neutrality = 51
+				fascism = 5
+			}
 			608 = {
 				owner = {
 					country_event = {
@@ -20988,8 +21049,16 @@ country_event = {
 		}
 		any_neighbor_country = {
 			is_kuomintang_state = yes
+			OR = {
+				tag = CHI
+				has_country_flag = CHI_kuomintang_flag
+			}
+			NOT = {
+				any_enemy_country = {
+					is_china_or_warlord_no_tt = yes
+				}
+			}
 		}
-		has_global_flag = second_constitutional_protection_movement
 	}
 	mean_time_to_happen = {
 		days = 365
