@@ -569,6 +569,50 @@ foreign_politics = {
 	}
 	# Agreement Between Great Britain and Sweden Relating to the Suppression of the Capitulations in Egypt
 		# Only if Sweden didn't go  to war with UK and UK has egypt
+	# Other
+	SWE_call_for_support_of_russian_democracy = {
+		allowed = {
+			original_tag = SWE
+		}
+		visible = {
+			has_completed_focus = SWE_address_the_russian_revolution
+			NOT = {
+				has_completed_focus = SWE_ties_with_revolution
+			}
+		}
+		available = {
+			OR = {
+				RUS = {
+					exists = yes
+					has_government = democratic
+				}
+				USS = {
+					exists = yes
+					has_government = democratic
+				}
+			}
+			OR = {
+				has_completed_focus = SWE_condemn_the_bolshevik
+				has_completed_focus = SWE_careful_approach_to_russia
+			}
+		}
+		
+		cost = 10
+		
+		fire_only_once = yes
+		
+		complete_effect = {
+			
+		}
+		
+		ai_will_do = {
+			base = 0
+			modifier = {
+				add = 1
+				has_completed_focus = SWE_condemn_the_bolshevik
+			}
+		}
+	}
 }
 operations = {
 	SWE_join_german_war_effort_over_aland = {
@@ -651,7 +695,11 @@ operations = {
 		}
 		available = {
 			FIN = {
-				has_civil_war = yes
+				NOT = {
+					any_enemy_country = {
+						original_tag = FIN
+					}
+				}
 			}
 		}
 		visible = {
@@ -660,11 +708,13 @@ operations = {
 		
 		fire_only_once = yes
 		
-		is_good = yes
-		
-		days_mission_timeout = 120
+		days_mission_timeout = 40
 		
 		timeout_effect = {
+			add_timed_idea = {
+				idea = SWE_bogged_down_in_finland
+				days = 70
+			}
 			# If Sweden is socialist:
 				# Germany will threaten intervention (if they won war)
 				# UK will pressure to end war (if they won war)
@@ -674,6 +724,57 @@ operations = {
 			# If Sweden is not:
 				# Protests about the war will occur and instead an armistice will occur between the countries
 				# Sweden will be forced to pull out their soldiers due to public backlash
+			if = {
+				limit = {
+					has_government = communism
+				}
+				if = {
+					limit = {
+						ENG = {
+							NOT = { has_government = communism }
+							NOT = { has_country_flag = great_war_loser }
+						}
+					}
+					ENG = {
+						country_event = { id = ww_sverige_general.1604 days = 1 }
+					}
+				}
+				else_if = {
+					limit = {
+						GER = {
+							NOT = { has_government = communism }
+							NOT = { has_country_flag = great_war_loser }
+						}
+					}
+					GER = {
+						country_event = { id = ww_sverige_general.1604 days = 1 }
+					}
+				}
+			}
+			else = {
+				if = {
+					limit = {
+						ENG = {
+							NOT = { has_country_flag = great_war_loser }
+						}
+					}
+					ENG = {
+						country_event = { id = ww_sverige_general.1604 days = 1 }
+					}
+				}
+				else_if = {
+					limit = {
+						GER = {
+							has_government = communism
+						}
+						has_global_flag = great_war_ends
+					}
+					GER = {
+						country_event = { id = ww_sverige_general.1604 days = 1 }
+					}
+				}
+			}
+			country_event = { id = ww_sverige_general.1603 }
 		}
 		
 		complete_effect = {
@@ -685,6 +786,14 @@ operations = {
 						original_tag = FIN
 						NOT = { has_country_flag = supported_by_swe }
 					}
+				}
+				every_other_country = {
+					limit = {
+						exists = yes
+						original_tag = FIN
+						has_war_with = SWE
+					}
+					white_peace = SWE
 				}
 				# Peace time
 			}
@@ -819,21 +928,37 @@ operations = {
 			}
 		}
 		remove_effect = {
-			hidden_effect = {
-				random_other_country = {
-					limit = {
-						NOT = { tag = FROM }
-						original_tag = FIN
+			add_threat = 1
+			set_country_flag = swe_intervene_in_finland_cw
+			random_other_country = {
+				limit = {
+					NOT = { has_country_flag = supported_by_swe }
+					original_tag = FIN
+				}
+				save_event_target_as = finland_friend_of_sweden
+				set_country_flag = supported_by_swe
+				ROOT = {
+					add_to_war = {
+						targeted_alliance = PREV
+						enemy = FROM
+						hostility_reason = asked_to_join
 					}
-					save_event_target_as = finland_friend_of_sweden
-					set_country_flag = supported_by_swe
 				}
 			}
-			add_threat = 1
-			add_to_war = {
-				targeted_alliance = event_target:finland_friend_of_sweden
-				enemy = FROM
-				hostility_reason = asked_to_join
+			if = {
+				limit = {
+					event_target:finland_friend_of_sweden = { has_government = communism }
+				}
+				add_timed_idea = {
+					idea = SWE_slow_intervention_finland_alt
+					days = 21
+				}
+			}
+			else = {
+				add_timed_idea = {
+					idea = SWE_slow_intervention_finland
+					days = 21
+				}
 			}
 			# Socialist side if socialist
 			# Otherwise non-socialist side
