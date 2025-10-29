@@ -588,6 +588,11 @@ AUH_fight_ROM = {
 		value = 50
 	}
 	ai_strategy = {
+		type = front_unit_request
+		tag = RUS
+		value = 10
+	}
+	ai_strategy = {
 		type = prepare_for_war
 		id = ROM
 		value = 1
@@ -625,7 +630,7 @@ AUH_destroy_ROM = {
 }
 
 #Serbian Front
-AUH_fight_SER = {
+AUH_fight_SER_before_capitulation = {
 	allowed = {
 		OR = {
 			tag = AUS
@@ -645,6 +650,9 @@ AUH_fight_SER = {
 		OR = {
 			has_global_flag = great_war_ends
 			is_ally_with = SER
+			SER = {
+				has_capitulated = yes
+			}
 		}
 	}
 	abort_when_not_enabled = yes
@@ -652,12 +660,12 @@ AUH_fight_SER = {
 	ai_strategy = {
 		type = front_unit_request
 		tag = SER
-		value = 35
+		value = 45
 	}
 	ai_strategy = {
 		type = front_unit_request
 		tag = MNT
-		value = 25
+		value = 28
 	}
 	ai_strategy = {
 		type = antagonize
@@ -691,13 +699,43 @@ AUH_fight_SER = {
 	}
 }
 
+AUH_fight_balkans_front = {
+	allowed = {
+		OR = {
+			tag = AUS
+			tag = HUN
+		}
+	}
+	enable = {
+		is_great_war_ongoing = yes
+		SER = {
+			has_capitulated = yes
+		}
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = front_unit_request
+		area = balkan
+		value = 300
+	}
+	ai_strategy = {
+		type = front_control
+		area = balkan
+		ratio = 0.5
+		execution_type = balanced
+	}
+}
+
 HUN_help_against_RUS = {
 	allowed = {
 		original_tag = HUN
 	}
 	enable = {
 		is_subject_of = AUS
-		has_war_with = RUS
+		OR = {
+			has_war_with = RUS
+			has_global_flag = crisis_in_progress
+		}	
 	}
 	abort_when_not_enabled = yes
 	ai_strategy = {
@@ -710,6 +748,65 @@ HUN_help_against_RUS = {
 		id = AUS
 		value = 1
 	}
+}
+
+AUH_front_with_RUS = {
+	allowed = {
+		OR = {
+			original_tag = AUS
+			original_tag = HUN
+		}
+	}
+	enable = {
+		OR = {
+			has_war_with = RUS
+			has_global_flag = crisis_in_progress
+		}
+		NOT = {
+			has_idea = RUS_idea_armistice_cp
+		}
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = front_unit_request
+		tag = RUS
+		value = 75
+	}
+}
+
+AUH_passive_against_RUS = {
+	allowed = {
+		OR = {
+			original_tag = AUS
+			original_tag = HUN
+		}
+	}
+	enable = {
+		OR = {
+			has_war_with = RUS
+			has_global_flag = crisis_in_progress
+		}
+		AND = {
+			91 = {
+				is_controlled_by_ROOT_or_ally = yes
+			}
+			war_length_with = {
+				tag = RUS
+				months < 4
+			}
+		}
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = front_control
+		tag = RUS
+		ratio = 0
+		ordertype = front
+		execution_type = careful
+		priority = 1000
+		execute_order = no
+		manual_attack = yes
+	}	
 }
 
 AUH_fight_RUS = {
@@ -749,7 +846,7 @@ AUH_fight_RUS = {
 			AND = {
 				war_length_with = {
 					tag = RUS
-					months > 36
+					months > 40
 				}
 				has_global_flag = russian_revolution
 				NOT = {
@@ -808,7 +905,7 @@ AUH_fight_ITA = {
 	ai_strategy = {
 		type = front_unit_request
 		tag = ITA
-		value = 250
+		value = 240
 	}
 	ai_strategy = {
 		type = strategic_air_importance
@@ -949,7 +1046,9 @@ AUH_defensive_against_ITA_if_lacking_guns = {
 	}
 	ai_strategy = {
 		type = front_control
-		tag = ITA
+		state_trigger = {
+			is_core_of = ITA
+		}
 		ratio = 0.6
 		priority = 1000
 		ordertype = front
@@ -1303,8 +1402,9 @@ AUS_defend_adriatic_ports = {
 			1006
 			163
 		}
-		ratio = 0.2
-		subtract_invasions_from_need = no
+		ratio = 0.1
+		subtract_invasions_from_need = yes
+		subtract_fronts_from_need = yes
 	}
 }
 
@@ -1321,14 +1421,15 @@ HUN_defend_adriatic_ports = {
 	ai_strategy = {
 		type = put_unit_buffers
 		states = {
-			512
+			513
 			208
 			103
 			1206
 			1205
 			44
 		}
-		ratio = 0.4
-		subtract_invasions_from_need = no
+		ratio = 1
+		subtract_invasions_from_need = yes
+		subtract_fronts_from_need = yes
 	}
 }
