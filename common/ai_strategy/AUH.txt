@@ -384,6 +384,11 @@ AUS_crownlands_support_austria = {
 		value = 1000
 	}
 	ai_strategy = {
+		type = force_defend_ally_borders
+		id = AUS
+		value = 1
+	}
+	ai_strategy = {
 		type = support
 		id = AUS
 		value = 400
@@ -410,11 +415,11 @@ AUS_crownlands_support_austria = {
 	}
 	ai_strategy = {
 		type = garrison_reinforcement_priority
-		value = -100
+		value = -1000
 	}
 	ai_strategy = {
 		type = garrison
-		value = -100
+		value = -1000
 	}
 }
 
@@ -648,7 +653,6 @@ AUH_fight_SER_before_capitulation = {
 	}
 	abort = {
 		OR = {
-			has_global_flag = great_war_ends
 			is_ally_with = SER
 			SER = {
 				has_capitulated = yes
@@ -660,22 +664,26 @@ AUH_fight_SER_before_capitulation = {
 	ai_strategy = {
 		type = front_unit_request
 		tag = SER
-		value = 45
+		value = 50
+	}
+	ai_strategy = {
+		type = front_control
+		tag = SER
+		ratio = 0.7
+		priority = 100
+		execution_type = careful
 	}
 	ai_strategy = {
 		type = front_unit_request
 		tag = MNT
-		value = 28
+		value = 30
 	}
 	ai_strategy = {
-		type = antagonize
-		id = SER
-		value = 300
-	}
-	ai_strategy = {
-		type = conquer
-		id = SER
-		value = 150
+		type = front_control
+		tag = MNT
+		ratio = 0.7
+		priority = 100
+		execution_type = careful
 	}
 	ai_strategy = {
 		type = prepare_for_war
@@ -683,19 +691,52 @@ AUH_fight_SER_before_capitulation = {
 		value = 1
 	}
 	ai_strategy = {
-		type = contain
-		id = SER
-		value = 50
-	}
-	ai_strategy = {
-		type = antagonize
-		id = MNT
-		value = 200
-	}
-	ai_strategy = {
 		type = prepare_for_war
 		id = MNT
 		value = 1
+	}
+}
+
+AUH_kill_SER = {
+	allowed = {
+		OR = {
+			tag = AUS
+			tag = HUN
+		}
+	}
+	enable = {
+		OR = {
+			has_global_flag = AUH_franz_ferdinand_killed_in_sarajevo
+			has_war_with = SER
+		}
+		OR = {
+			is_in_faction_with = BUL
+			war_length_with = {
+				tag = SER
+				months > 12
+			}
+		}
+		NOT = {
+			has_global_flag = great_war_ends
+		}
+		SER = {
+			has_capitulated = no
+		}
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = front_control
+		tag = SER
+		ratio = 0.2
+		priority = 1000
+		execution_type = rush
+	}
+	ai_strategy = {
+		type = front_control
+		tag = MNT
+		ratio = 0.2
+		priority = 1000
+		execution_type = rush
 	}
 }
 
@@ -715,37 +756,22 @@ AUH_fight_balkans_front = {
 	abort_when_not_enabled = yes
 	ai_strategy = {
 		type = front_unit_request
-		area = balkan
-		value = 300
+		strategic_region = 24
+		strategic_region = 14
+		strategic_region = 25
+		value = 140
 	}
 	ai_strategy = {
 		type = front_control
-		area = balkan
+		strategic_region = 24
+		strategic_region = 14
+		strategic_region = 25
 		ratio = 0.5
 		execution_type = balanced
 	}
-}
-
-HUN_help_against_RUS = {
-	allowed = {
-		original_tag = HUN
-	}
-	enable = {
-		is_subject_of = AUS
-		OR = {
-			has_war_with = RUS
-			has_global_flag = crisis_in_progress
-		}	
-	}
-	abort_when_not_enabled = yes
-	ai_strategy = {
-		type = front_unit_request
-		tag = RUS
-		value = 50
-	}
 	ai_strategy = {
 		type = force_defend_ally_borders
-		id = AUS
+		id = BUL
 		value = 1
 	}
 }
@@ -803,7 +829,7 @@ AUH_passive_against_RUS = {
 		ratio = 0
 		ordertype = front
 		execution_type = careful
-		priority = 1000
+		priority = 1300
 		execute_order = no
 		manual_attack = yes
 	}	
@@ -894,6 +920,9 @@ AUH_fight_ITA = {
 		}
 		ITA = {
 			has_capitulated = no
+			NOT = {
+				has_idea = idea_armistice
+			}
 		}
 	}
 	abort_when_not_enabled = yes
@@ -1048,6 +1077,12 @@ AUH_defensive_against_ITA_if_lacking_guns = {
 		type = front_control
 		state_trigger = {
 			is_core_of = ITA
+			NOT = {
+				OR = {
+					is_core_of = AUS
+					is_core_of = HUN
+				}
+			}
 		}
 		ratio = 0.6
 		priority = 1000
@@ -1427,6 +1462,78 @@ HUN_defend_adriatic_ports = {
 			1206
 			1205
 			44
+		}
+		ratio = 1
+		subtract_invasions_from_need = yes
+		subtract_fronts_from_need = yes
+	}
+}
+
+AUS_prsemysl_backline = {
+	allowed = {
+		original_tag = AUS
+	}
+	enable = {
+		OR = {
+			has_war_with = RUS
+			has_global_flag = crisis_in_progress
+		}
+		562 = {
+			is_controlled_by_ROOT_or_subject = yes
+		}
+		war_length_with = {
+			tag = RUS
+			months < 4
+		}
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = put_unit_buffers
+		states = {
+			562
+		}
+		ratio = 0.2
+		subtract_invasions_from_need = yes
+		subtract_fronts_from_need = yes
+	}
+}
+
+# i dont like make ai stupid, i hope austria rework will do austria much worser
+AUS_backlike_troops = {
+	allowed = {
+		original_tag = AUS
+	}
+	enable = {
+		OR = {
+			has_war_with = RUS
+			has_global_flag = crisis_in_progress
+		}
+		91 = {
+			is_controlled_by = AUS
+		}
+		89 = {
+			is_fully_controlled_by = AUS
+		}
+		RUS = {
+			is_ai = yes
+		}
+		war_length_with = {
+			tag = RUS
+			months < 4
+		}
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = put_unit_buffers
+		states = {
+			43
+			664
+			71
+			83
+			76
+			155
+			70
+			4
 		}
 		ratio = 1
 		subtract_invasions_from_need = yes
