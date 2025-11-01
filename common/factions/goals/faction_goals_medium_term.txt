@@ -24,19 +24,17 @@ faction_goal_undo_versailles = {
 	name = undo_versailles_goal_name
 	description = undo_versailles_goal_desc
 	category = medium_term
+	group = FOCUS_FILTER_WAR_SUPPORT
 	visible = {
 		FROM = { original_tag = GER }
 	}
 	completed = {
-		any_allied_country = {
-			original_tag = GER
-			has_army_manpower = {
-				size > 1000000
-			}
-		}
 		OR = {
 			AND = {
 				original_tag = GER
+				has_army_manpower = {
+					size > 1000000
+				}
 				controls_state = 28
 				controls_state = 85
 				controls_state = 86
@@ -47,6 +45,9 @@ faction_goal_undo_versailles = {
 			}
 			any_allied_country = {
 				original_tag = GER
+				has_army_manpower = {
+					size > 1000000
+				}
 				controls_state = 28
 				controls_state = 85
 				controls_state = 86
@@ -92,6 +93,7 @@ faction_goal_secure_european_continent = {
 	name = secure_european_continent_goal_name
 	description = secure_european_continent_goal_desc
 	category = medium_term
+	group = FOCUS_FILTER_ANNEXATION
 	visible = {
 		FROM = {
 			original_tag = GER
@@ -100,7 +102,7 @@ faction_goal_secure_european_continent = {
 	completed = {
 		collection_size = {
 			input = {
-				input = constant:country_groups.continental_europe_1910
+				input = constant:country_groups.continental_europe_1936
 				operators = {
 					limit = {
 						OR = {
@@ -137,9 +139,64 @@ faction_goal_secure_european_continent = {
 	}
 }
 
+faction_goal_secure_north_africa = {
+	name = secure_north_africa_goal_name
+	description = secure_north_africa_goal_desc
+	group = FOCUS_FILTER_ANNEXATION
+	category = medium_term
+	visible = {
+		OR = {
+			FROM = { original_tag = ITA }
+			any_allied_country = {
+				original_tag = ITA 
+			}
+		}
+	}
+	available = {
+		OR = {
+			# FROM = { has_completed_focus = ITA_italian_irredentism }
+			any_allied_country = {
+				# has_completed_focus = ITA_italian_irredentism
+			}
+		}
+	}
+	completed = {
+		AND = {
+			446 = {  is_controlled_by_ROOT_or_ally = yes } # Suez
+			448 = {  is_controlled_by_ROOT_or_ally = yes } # Tripoli
+			116 = {  is_controlled_by_ROOT_or_ally = yes } # Malta
+		}
+		OR = {
+			118 = {  is_controlled_by_ROOT_or_ally = yes } # Gibraltar
+			183 = {  is_controlled_by_ROOT_or_ally = yes } # Cyprus
+			182 = {  is_controlled_by_ROOT_or_ally = yes } # Crete
+		}
+	}
+	complete_effect = {
+		add_faction_power_projection = 500
+		custom_effect_tooltip = generic_skip_one_line_tt
+		custom_effect_tooltip = INFLUENCE_TOP_TWO
+		every_faction_member = {
+			limit = {
+				faction_influence_rank < 3
+			}
+			add_faction_initiative = 1
+			add_political_power = 100 
+		}
+	}
+	ai_will_do = {
+		base = 0
+		modifier = {
+			add = 10
+			is_historical_focus_on = yes
+		}
+	}
+}
+
 faction_goal_high_seas_fleet = {
 	name = high_seas_fleet_goal_name
 	description = high_seas_fleet_goal_desc
+	group = FOCUS_FILTER_NAVY_XP
 	category = medium_term
 	allowed = {
 	}
@@ -214,6 +271,7 @@ faction_goal_imperial_glory = {
 	name = imperial_glory_goal_name
 	description = imperial_glory_goal_desc
 	category = medium_term
+	group = FOCUS_FILTER_WAR_SUPPORT
 	allowed = {
 	}
 	visible = {
@@ -320,6 +378,7 @@ faction_goal_guardians_of_peace = {
 	name = guardians_of_peace_goal_name
 	description = guardians_of_peace_goal_desc
 	category = medium_term
+	group = FOCUS_FILTER_INTERNAL_AFFAIRS
 	visible = {
 		date < 1939.1.1
 		FROM = {
@@ -372,27 +431,36 @@ faction_goal_guardians_of_peace = {
 faction_goal_control_the_chinese_coast = {
 	name = control_the_chinese_coast_goal_name
 	description = control_the_chinese_coast_goal_desc
+	group = FOCUS_FILTER_ANNEXATION
 	category = medium_term
 	allowed = {
 	}
 	visible = {
 		FROM = {
-			is_china_or_warlord = yes
+			is_china = yes
 			has_war = yes
 			OR = {
-				has_faction_template = faction_template_chinese_united_front
-				has_faction_template = faction_template_wang_front
+				# has_faction_template = faction_template_chinese_united_front
+				# has_faction_template = faction_template_wang_front
 			}
 		}
 	}
 	completed = {
-		has_war = yes 
-		any_enemy_country = {
-			war_length_with = {
-				tag = ROOT
-				months > 36
+		OR = {
+			AND = {
+				has_war = yes 
+				any_enemy_country = {
+					war_length_with = {
+						tag = ROOT
+						months > 36
+					}
+				}
 			}
-		}	
+			AND = {
+				date > 1939.6.1
+				has_war = no
+			}
+		}
 		count_triggers = {
 			amount = 5
 			1033 = { is_controlled_by_ROOT_or_ally = yes }
@@ -448,6 +516,205 @@ faction_goal_control_the_chinese_coast = {
 	}
 }
 
+faction_goal_the_northern_mandate = {
+	name = faction_goal_the_northern_mandate_name
+	description = faction_goal_the_northern_mandate_desc
+	category = medium_term
+	group = FOCUS_FILTER_ANNEXATION
+	allowed = {
+	}
+	visible = {
+		FROM = {
+			original_tag = CHI
+			has_government = fascism
+		}
+	}
+	available = {
+		# FROM = { has_completed_focus = CHI_the_northern_mandate }
+	}
+	ratio_progress = {
+		total_amount_collection = collection:the_northern_mandate_states
+		completed_amount_collection = {
+			input = collection:the_northern_mandate_states
+			operators = {
+				limit = {
+					is_controlled_by_ROOT_or_ally = yes
+				}
+			}
+			name = COLLECTION_FACTION_CONTROLS_NORTHERN_MANDATE
+		}
+	}
+	auto_complete = yes
+	complete_effect = {
+		add_faction_power_projection = 100
+		every_state = {
+			limit = {
+				CHI_northern_mandate_states = yes
+			}
+			add_dynamic_modifier = {
+				modifier = NORDIC_efficient_resource_extraction
+			}
+		}
+	}
+	ai_will_do = {
+		base = 1
+	}
+}
+
+faction_goal_the_southern_mandate = {
+	name = faction_goal_the_southern_mandate_name
+	description = faction_goal_the_southern_mandate_desc
+	category = medium_term
+	group = FOCUS_FILTER_ANNEXATION
+	allowed = {
+	}
+	visible = {
+		FROM = {
+			original_tag = CHI
+			has_government = fascism
+		}
+	}
+	available = {
+		# FROM = { has_completed_focus = CHI_the_southern_mandate }
+	}
+	ratio_progress = {
+		total_amount_collection = collection:the_southern_mandate_states
+		completed_amount_collection = {
+			input = collection:the_southern_mandate_states
+			operators = {
+				limit = {
+					is_controlled_by_ROOT_or_ally = yes
+				}
+			}
+			name = COLLECTION_FACTION_CONTROLS_SOUTHERN_MANDATE
+		}
+	}
+	auto_complete = yes
+	complete_effect = {
+		add_faction_power_projection = 100
+		every_state = {
+			limit = {
+				CHI_southern_mandate_states = yes
+			}
+			add_dynamic_modifier = {
+				modifier = NORDIC_efficient_resource_extraction
+			}
+		}
+	}
+	ai_will_do = {
+		base = 1
+	}
+}
+
+faction_goal_the_greater_game = {
+	name = faction_goal_the_greater_game_name
+	description = faction_goal_the_greater_game_desc
+	category = medium_term
+	group = FOCUS_FILTER_ANNEXATION
+	allowed = {
+	}
+	visible = {
+		FROM = {
+			original_tag = CHI
+			has_government = fascism
+		}
+	}
+	available = {
+		# FROM = { has_completed_focus = CHI_the_greater_game }
+	}
+	ratio_progress = {
+		total_amount_collection = collection:the_greater_game_states
+		completed_amount_collection = {
+			input = collection:the_greater_game_states
+			operators = {
+				limit = {
+					is_controlled_by_ROOT_or_ally = yes
+				}
+			}
+			name = COLLECTION_FACTION_CONTROLS_GREATER_GAME
+		}
+	}
+	auto_complete = yes
+	complete_effect = {
+		add_faction_power_projection = 50
+		every_state = {
+			limit = {
+				CHI_greater_game_states = yes
+			}
+			add_dynamic_modifier = {
+				modifier = NORDIC_efficient_resource_extraction
+			}
+		}
+	}
+	ai_will_do = {
+		base = 1
+	}
+}
+
+faction_goal_subjugate_the_faction = {
+	name = faction_goal_subjugate_the_faction_name
+	description = faction_goal_subjugate_the_faction_desc
+	category = medium_term
+	group = FOCUS_FILTER_POLITICAL
+	allowed = {
+		is_china = yes
+	}
+	visible = {
+		FROM = { 
+			is_china = yes
+			# has_faction_template = faction_template_chinese_united_front 
+		}
+	}
+	available = {
+		FROM = {
+			is_faction_leader = yes
+			# has_completed_focus = CHI_from_many_to_one
+		}
+	}
+	completed = {
+		collection_size = {
+			input = {
+				input = game:scope
+				operators = {
+					faction_members
+					limit = {
+						is_subject_of = ROOT # Should be checking faction leader
+					}
+				}
+				name = COLLECTION_AMOUNT_OF_SUBJECTS_TO_FACTION_LEADER
+			}
+			value > 7
+		}
+	}
+	complete_effect = {
+		add_faction_power_projection = 100
+		custom_effect_tooltip = generic_skip_one_line_tt
+		custom_effect_tooltip = THE_FACTION_LEADER
+		add_faction_initiative = 1
+		every_collection_element = {
+			input = {
+				input = game:scope
+				operators =  { 
+					faction_members 
+				}
+				
+				name = ALL_FACTION_MEMBERS
+			}
+			custom_effect_tooltip = ALL_FACTION_MEMBERS
+			add_war_support = 0.15
+			every_unit_leader = {
+				add_timed_unit_leader_trait = {
+					trait = motivated
+					days = 270
+				}
+			}
+		}
+	}
+	ai_will_do = {
+		base = 10 # Do itttt!
+	}
+}
+
  ###  ##  ###   ##  #  # 
    # #  # #  # #  # ## # 
    # #### ###  #### # ## 
@@ -459,6 +726,7 @@ faction_goal_control_the_chinese_capitals = {
 	name = control_the_chinese_capitals_goal_name
 	description = control_the_chinese_capitals_goal_desc
 	category = medium_term
+	group = FOCUS_FILTER_ANNEXATION
 	allowed = {
 	}
 	visible = {
@@ -502,6 +770,7 @@ faction_goal_secure_the_oil_supply = {
 	name = secure_the_oil_supply_goal_name
 	description = secure_the_oil_supply_goal_desc
 	category = medium_term
+	group = resources_to_market_icon
 	allowed = {
 		
 	}
@@ -564,6 +833,7 @@ faction_goal_indifference_is_a_threat = {
 	name = indifference_is_a_threat_goal_name
 	description = indifference_is_a_threat_goal_desc
 	category = medium_term
+	group = FOCUS_FILTER_INTERNAL_AFFAIRS
 	allowed = {
 		
 	}
@@ -602,12 +872,13 @@ faction_goal_undoing_brest_litowsk = {
 	name = undoing_brest_litowsk_goal_name
 	description = undoing_brest_litowsk_goal_desc
 	category = medium_term
+	group = FOCUS_FILTER_ANNEXATION
 	allowed = {
 		
 	}
 	visible = {
 		FROM = {
-			original_tag = JAP
+			original_tag = SOV
 		}
 	}
 	completed = {
@@ -656,6 +927,60 @@ faction_goal_undoing_brest_litowsk = {
 	}
 }  
 
+
+
+
+###   ##  #    ##  #  # ###  
+#  # #  # #   #  # ## # #  # 
+###  #  # #   #### # ## #  # 
+#    #  # #   #  # #  # #  # 
+#     ##  ### #  # #  # ###  
+
+
+faction_goal_the_two_seas = {
+	name = the_two_seas_goal_name
+	description = the_two_seas_goal_desc
+	category = medium_term
+	group = FOCUS_FILTER_NAVY_XP
+	visible = {
+		FROM = { original_tag = POL }
+	}
+	
+	completed = {
+		has_naval_control = 206
+		has_naval_control = 279
+		has_naval_control = 9
+		has_naval_control = 30
+		OR = {
+			807 = { 
+				naval_base > 7 
+				is_controlled_by_ROOT_or_ally = yes 
+			}
+			85 = { 
+				naval_base > 7 
+				is_controlled_by_ROOT_or_ally = yes 
+			}
+		}
+	}
+	complete_effect = {
+		add_faction_power_projection = 50 
+		custom_effect_tooltip = generic_skip_one_line_tt
+		custom_effect_tooltip = THE_FACTION_LEADER
+		add_faction_initiative = 1
+	}
+	ai_will_do = {
+		base = 0
+		modifier = {
+			add = 10
+			OR = {
+				# has_completed_focus = POL_the_between_the_seas_concept
+				# has_completed_focus = POL_sea_to_sea
+			}
+		}
+	}
+}
+
+
 ###########################################################
 
  ##  ### #  # ### ###  ###  ##       ##   ##   ##  #    ## 
@@ -673,6 +998,7 @@ faction_goal_a_large_faction = {
 	name = a_large_faction_goal_name
 	description = a_large_faction_goal_desc
 	category = medium_term
+	group = FOCUS_FILTER_POLITICAL_CHARACTER
 	visible = {
 		num_faction_members > 4
 	}
@@ -696,6 +1022,7 @@ faction_goal_marine_corps = {
 	name = marine_corps_goal_name
 	description = marine_corps_goal_desc
 	category = medium_term
+	group = FOCUS_FILTER_NAVY_XP
 	available = {
 		count_in_collection = {
 			collection = {
@@ -703,7 +1030,7 @@ faction_goal_marine_corps = {
 				operators = { faction_members }
 				name = FACTION
 			}
-			unit = amphibious
+			unit_category = category_amphibious_tanks
 			size < 10
 		}
 	}
@@ -714,7 +1041,7 @@ faction_goal_marine_corps = {
 				operators = { faction_members }
 				name = FACTION
 			}
-			unit = amphibious
+			unit_category = category_amphibious_tanks
 			size > 9
 		}
 	}
@@ -729,7 +1056,7 @@ faction_goal_marine_corps = {
 					limit = {
 						has_army_size = {
 							size > 0
-							type = amphibious
+							unit_category = category_amphibious_tanks
 						}
 					}
 				}
@@ -784,6 +1111,7 @@ faction_goal_submarine_force = {
 	name = submarine_force_goal_name
 	description = submarine_force_goal_desc
 	category = medium_term
+	group = FOCUS_FILTER_NAVY_XP
 	available = {
 		count_in_collection = {
 			collection = {
@@ -879,6 +1207,7 @@ faction_goal_convoy_escort_force = {
 	name = convoy_escort_force_goal_name
 	description = convoy_escort_force_goal_desc
 	category = medium_term
+	group = FOCUS_FILTER_NAVY_XP
 	available = {
 		count_in_collection = {
 			collection = {
@@ -971,6 +1300,7 @@ faction_goal_air_superiority = {
 	name = air_superiority_goal_name
 	description = air_superiority_goal_desc
 	category = medium_term
+	group = FOCUS_FILTER_AIR_XP
 	available = {
 		count_in_collection = {
 			collection = {
@@ -1054,6 +1384,7 @@ faction_goal_industrial_expansion = {
 	name = industrial_expansion_goal_name
 	description = industrial_expansion_goal_desc
 	category = medium_term
+	group = FOCUS_FILTER_INDUSTRY
 	visible = {
 		count_in_collection = {
 			collection = {
@@ -1115,6 +1446,7 @@ faction_goal_industrial_research = {
 	name = industrial_research_goal_name
 	description = industrial_research_goal_desc
 	category = medium_term
+	group = FOCUS_FILTER_RESEARCH
 	visible = {
 		any_allied_country = {
 			NOT = { has_tech = construction4 }
@@ -1176,6 +1508,7 @@ faction_goal_a_military_base = {
 	name = a_military_base_goal_name
 	description = a_military_base_goal_desc
 	category = medium_term
+	group = FOCUS_FILTER_INDUSTRY
 	visible = {
 		count_in_collection = {
 			collection = {
@@ -1233,6 +1566,7 @@ faction_goal_a_military_base = {
 faction_goal_aggressive_defense = {
 	name = aggressive_defense_goal_name
 	description = aggressive_defense_goal_desc
+	group = FOCUS_FILTER_WAR_SUPPORT
 	category = medium_term
 	visible = {
 		FROM = { has_defensive_war = yes }
@@ -1296,7 +1630,7 @@ faction_goal_control_mexican_oil = {
 	name = control_mexican_oil_goal_name
 	description = control_mexican_oil_goal_desc
 	category = medium_term
-
+	group = resources_to_market_icon
 	allowed = {
 		
 	}
@@ -1425,7 +1759,7 @@ faction_goal_control_curacao_oil = {
 	name = control_curacao_oil_goal_name
 	description = control_curacao_oil_goal_desc
 	category = medium_term
-
+	group = resources_to_market_icon
 	allowed = {
 		
 	}
@@ -1533,7 +1867,7 @@ faction_goal_control_venezuelan_oil = {
 	name = control_venezuelan_oil_goal_name
 	description = control_venezuelan_oil_goal_desc
 	category = medium_term
-
+	group = resources_to_market_icon
 	allowed = {
 		
 	}
@@ -1654,7 +1988,7 @@ faction_goal_control_guyanan_bauxite = {
 	name = control_guyanan_bauxite_goal_name
 	description = control_guyanan_bauxite_goal_desc
 	category = medium_term
-
+	group = resources_to_market_icon
 	allowed = {
 		
 	}
@@ -1756,7 +2090,7 @@ faction_goal_control_suriname_bauxite = {
 	name = control_suriname_bauxite_goal_name
 	description = control_suriname_bauxite_goal_desc
 	category = medium_term
-
+	group = resources_to_market_icon
 	allowed = {
 		
 	}
@@ -1858,7 +2192,7 @@ faction_goal_control_lappland_metals = {
 	name = control_lappland_metals_goal_name
 	description = control_lappland_metals_goal_desc
 	category = medium_term
-
+	group = resources_to_market_icon
 	allowed = {
 		
 	}
@@ -2025,7 +2359,7 @@ faction_goal_control_ploiesti_oil_fields = {
 	name = control_ploiesti_oil_fields_goal_name
 	description = control_ploiesti_oil_fields_goal_desc
 	category = medium_term
-
+	group = resources_to_market_icon
 	allowed = {
 		
 	}
@@ -2133,7 +2467,7 @@ faction_goal_control_baku_oil_fields = {
 	name = control_baku_oil_fields_goal_name
 	description = control_baku_oil_fields_goal_desc
 	category = medium_term
-
+	group = resources_to_market_icon
 	allowed = {
 		
 	}
@@ -2210,7 +2544,7 @@ faction_goal_control_iraqi_oil = {
 	name = control_iraqi_oil_goal_name
 	description = control_iraqi_oil_goal_desc
 	category = medium_term
-
+	group = resources_to_market_icon
 	allowed = {
 		
 	}
@@ -2287,7 +2621,7 @@ faction_goal_control_persian_oil = {
 	name = control_persian_oil_goal_name
 	description = control_persian_oil_goal_desc
 	category = medium_term
-
+	group = resources_to_market_icon
 	allowed = {
 		
 	}
@@ -2364,7 +2698,7 @@ faction_goal_control_chinese_metals = {
 	name = control_chinese_metals_goal_name
 	description = control_chinese_metals_goal_desc
 	category = medium_term
-
+	group = resources_to_market_icon
 	allowed = {
 		is_independent_china_or_warlord = no
 	}
@@ -2533,7 +2867,7 @@ faction_goal_control_malayan_riches = {
 	name = control_malayan_riches_goal_name
 	description = control_malayan_riches_goal_desc
 	category = medium_term
-
+	group = resources_to_market_icon
 	allowed = {
 		
 	}
@@ -2742,7 +3076,7 @@ faction_goal_control_indonesian_riches = {
 	name = control_indonesian_riches_goal_name
 	description = control_indonesian_riches_goal_desc
 	category = medium_term
-
+	group = resources_to_market_icon
 	allowed = {
 		
 	}
@@ -2827,7 +3161,7 @@ faction_goal_control_indonesian_riches = {
 					state = 335
 					state = 667
 					state = 672
-					state = 773
+					state = 673
 				}
 			}
 			if = {
@@ -2933,7 +3267,7 @@ faction_goal_control_newfoundland_bases = {
 	name = control_newfoundland_bases_goal_name
 	description = control_newfoundland_bases_goal_desc
 	category = medium_term
-
+	group = FOCUS_FILTER_ANNEXATION
 	allowed = {
 		
 	}
@@ -3063,7 +3397,7 @@ faction_goal_control_bermuda = {
 	name = control_bermuda_goal_name
 	description = control_bermuda_goal_desc
 	category = medium_term
-
+	group = FOCUS_FILTER_ANNEXATION
 	allowed = {
 		
 	}
@@ -3193,7 +3527,7 @@ faction_goal_control_bahamas_bases = {
 	name = control_bahamas_bases_goal_name
 	description = control_bahamas_bases_goal_desc
 	category = medium_term
-
+	group = FOCUS_FILTER_NAVY_XP
 	allowed = {
 		
 	}
@@ -3340,7 +3674,7 @@ faction_goal_control_panama_canal = {
 	name = control_panama_canal_goal_name
 	description = control_panama_canal_goal_desc
 	category = medium_term
-
+	group = FOCUS_FILTER_NAVY_XP
 	allowed = {
 		
 	}
@@ -3480,7 +3814,7 @@ faction_goal_control_trinidad = {
 	name = control_trinidad_goal_name
 	description = control_trinidad_goal_desc
 	category = medium_term
-
+	group = FOCUS_FILTER_ANNEXATION
 	allowed = {
 		
 	}
@@ -3616,7 +3950,7 @@ faction_goal_control_azores = {
 	name = control_azores_goal_name
 	description = control_azores_goal_desc
 	category = medium_term
-
+	group = FOCUS_FILTER_ANNEXATION
 	allowed = {
 		
 	}
@@ -3752,7 +4086,7 @@ faction_goal_control_iceland = {
 	name = control_iceland_goal_name
 	description = control_iceland_goal_desc
 	category = medium_term
-
+	group = FOCUS_FILTER_ANNEXATION
 	allowed = {
 		
 	}
@@ -3890,7 +4224,7 @@ faction_goal_control_faroe_islands = {
 	name = control_faroe_islands_goal_name
 	description = control_faroe_islands_goal_desc
 	category = medium_term
-
+	group = FOCUS_FILTER_NAVY_XP
 	allowed = {
 		
 	}
@@ -4026,7 +4360,7 @@ faction_goal_control_narvik = {
 	name = control_narvik_goal_name
 	description = control_narvik_goal_desc
 	category = medium_term
-
+	group = FOCUS_FILTER_ANNEXATION
 	allowed = {
 		
 	}
@@ -4125,7 +4459,7 @@ faction_goal_control_danish_belts = {
 	name = control_danish_belts_goal_name
 	description = control_danish_belts_goal_desc
 	category = medium_term
-
+	group = FOCUS_FILTER_NAVY_XP
 	allowed = {
 		
 	}
@@ -4265,7 +4599,7 @@ faction_goal_control_brittany_bases = {
 	name = control_brittany_bases_goal_name
 	description = control_brittany_bases_goal_desc
 	category = medium_term
-
+	group = FOCUS_FILTER_ANNEXATION
 	allowed = {
 		
 	}
@@ -4360,7 +4694,7 @@ faction_goal_control_gibraltar = {
 	name = control_gibraltar_goal_name
 	description = control_gibraltar_goal_desc
 	category = medium_term
-
+	group = FOCUS_FILTER_NAVY_XP
 	allowed = {
 		
 	}
@@ -4467,7 +4801,7 @@ faction_goal_control_malta = {
 	name = control_malta_goal_name
 	description = control_malta_goal_desc
 	category = medium_term
-
+	group = FOCUS_FILTER_ANNEXATION
 	allowed = {
 		
 	}
@@ -4595,7 +4929,7 @@ faction_goal_control_crete = {
 	name = control_crete_goal_name
 	description = control_crete_goal_desc
 	category = medium_term
-
+	group = FOCUS_FILTER_ANNEXATION
 	allowed = {
 		
 	}
@@ -4723,7 +5057,7 @@ faction_goal_control_cyprus = {
 	name = control_cyprus_goal_name
 	description = control_cyprus_goal_desc
 	category = medium_term
-
+	group = FOCUS_FILTER_ANNEXATION
 	allowed = {
 		
 	}
@@ -4857,7 +5191,7 @@ faction_goal_control_bosporus = {
 	name = control_bosporus_goal_name
 	description = control_bosporus_goal_desc
 	category = medium_term
-
+	group = FOCUS_FILTER_ANNEXATION
 	allowed = {
 		
 	}
@@ -4964,7 +5298,7 @@ faction_goal_control_dardanelles = {
 	name = control_dardanelles_goal_name
 	description = control_dardanelles_goal_desc
 	category = medium_term
-
+	group = FOCUS_FILTER_ANNEXATION
 	allowed = {
 		
 	}
@@ -5091,7 +5425,7 @@ faction_goal_control_suez_canal = {
 	name = control_suez_canal_goal_name
 	description = control_suez_canal_goal_desc
 	category = medium_term
-
+	group = FOCUS_FILTER_NAVY_XP
 	allowed = {
 		
 	}
@@ -5213,7 +5547,7 @@ faction_goal_control_gulf_of_aden_bases = {
 	name = control_gulf_of_aden_bases_goal_name
 	description = control_gulf_of_aden_bases_goal_desc
 	category = medium_term
-
+	group = FOCUS_FILTER_ANNEXATION
 	allowed = {
 		
 	}
@@ -5337,7 +5671,7 @@ faction_goal_control_strait_of_hormuz = {
 	name = control_strait_of_hormuz_goal_name
 	description = control_strait_of_hormuz_goal_desc
 	category = medium_term
-
+	group = FOCUS_FILTER_NAVY_XP
 	allowed = {
 		always = yes
 	}
@@ -5510,7 +5844,7 @@ faction_goal_control_ceylon = {
 	name = control_ceylon_goal_name
 	description = control_ceylon_goal_desc
 	category = medium_term
-
+	group = FOCUS_FILTER_ANNEXATION
 	allowed = {
 		
 	}
@@ -5634,7 +5968,7 @@ faction_goal_control_singapore = {
 	name = control_singapore_goal_name
 	description = control_singapore_goal_desc
 	category = medium_term
-
+	group = FOCUS_FILTER_ANNEXATION
 	allowed = {
 		
 	}
@@ -5758,7 +6092,7 @@ faction_goal_control_manila = {
 	name = control_manila_goal_name
 	description = control_manila_goal_desc
 	category = medium_term
-
+	group = FOCUS_FILTER_ANNEXATION
 	allowed = {
 		
 	}
@@ -5858,7 +6192,7 @@ faction_goal_control_okinawa = {
 	name = control_okinawa_goal_name
 	description = control_okinawa_goal_desc
 	category = medium_term
-
+	group = FOCUS_FILTER_ANNEXATION
 	allowed = {
 		
 	}
@@ -5951,7 +6285,7 @@ faction_goal_control_iwo_jima = {
 	name = control_iwo_jima_goal_name
 	description = control_iwo_jima_goal_desc
 	category = medium_term
-
+	group = FOCUS_FILTER_NAVY_XP
 	allowed = {
 		
 	}
@@ -6044,7 +6378,7 @@ faction_goal_control_caroline_islands = {
 	name = control_caroline_islands_goal_name
 	description = control_caroline_islands_goal_desc
 	category = medium_term
-
+	group = FOCUS_FILTER_ANNEXATION
 	allowed = {
 		
 	}
@@ -6179,7 +6513,7 @@ faction_goal_control_guadalcanal = {
 	name = control_guadalcanal_goal_name
 	description = control_guadalcanal_goal_desc
 	category = medium_term
-
+	group = FOCUS_FILTER_ANNEXATION
 	allowed = {
 		
 	}
@@ -6311,7 +6645,7 @@ faction_goal_control_wake_island = {
 	name = control_wake_island_goal_name
 	description = control_wake_island_goal_desc
 	category = medium_term
-
+	group = FOCUS_FILTER_ANNEXATION
 	allowed = {
 		
 	}
@@ -6447,7 +6781,7 @@ faction_goal_control_midway_island = {
 	name = control_midway_island_goal_name
 	description = control_midway_island_goal_desc
 	category = medium_term
-
+	group = FOCUS_FILTER_ANNEXATION
 	allowed = {
 		
 	}
@@ -6583,7 +6917,7 @@ faction_goal_control_hawaii = {
 	name = control_hawaii_goal_name
 	description = control_hawaii_goal_desc
 	category = medium_term
-
+	group = FOCUS_FILTER_ANNEXATION
 	allowed = {
 		
 	}
@@ -6726,7 +7060,7 @@ faction_goal_control_attu_island = {
 	name = control_attu_island_goal_name
 	description = control_attu_island_goal_desc
 	category = medium_term
-
+	group = FOCUS_FILTER_ANNEXATION
 	allowed = {
 		
 	}
