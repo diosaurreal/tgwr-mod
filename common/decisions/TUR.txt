@@ -15095,6 +15095,32 @@ TUR_mehmed_V_resad = {
 }
 
 TUR_harbiye_nezareti_decision_category = {
+	TUR_rapid_army_modernization_decision = {
+		allowed = { tag = TUR }
+		icon = generic_ottoman_officer
+		fire_only_once = no
+		days_mission_timeout = 70
+		available = {
+			custom_trigger_tooltip = {
+				tooltip = TUR_rapid_army_modernization_decision_tt
+				check_variable = {
+					var = TUR_aoabe_army_org_factor
+					value = 0
+					compare = greater_than_or_equals
+				}
+			}
+		}
+		activation = { always = no }
+		timeout_effect = {
+			custom_effect_tooltip = TUR_modernize_the_high_command_tt
+			if = {
+				limit = { check_variable = { TUR_aoabe_army_org_factor < -0.01 } }
+				activate_mission = TUR_rapid_army_modernization_decision
+			}
+			hidden_effect = { add_to_variable = { TUR_aoabe_army_org_factor = 0.01 } }
+			custom_effect_tooltip = TUR_harbiye_nezareti_decision_category_tt
+		}
+	}
 	TUR_modernize_the_high_command = {
 		allowed = { tag = TUR }
 		icon = generic_ottoman_officer
@@ -15125,8 +15151,11 @@ TUR_harbiye_nezareti_decision_category = {
 				army_experience = -15
 				add_command_power = -30
 			}
-			custom_effect_tooltip = TUR_modernize_the_high_command_tt
-			add_to_variable = { TUR_aoabe_army_org_factor = 0.01 }
+			if = {
+				limit = { NOT = { has_completed_focus = TUR_rapid_army_modernization } }
+				custom_effect_tooltip = TUR_modernize_the_high_command_tt
+				add_to_variable = { TUR_aoabe_army_org_factor = 0.01 }
+			}
 			TUR_promote_officers_effect = yes
 		}
 		ai_will_do = {
@@ -17058,6 +17087,184 @@ foreign_politics = {
 		}
 		ai_will_do = {
 			base = 10
+		}
+	}
+	TUR_ottoman_backed_blockade_evasion = {
+		icon = generic_naval
+		allowed = { NOT = { original_tag = TUR } }
+		visible = {
+			TUR = {
+				has_completed_focus = TUR_breaking_the_blockades
+				all_enemy_country = { NOT = { has_country_flag = TUR_revolting_country } }
+			}
+			NOT = { 
+				has_country_flag = TUR_evade_blockade_flag 
+				has_country_flag = TUR_cancel_evade_blockade_flag 
+			}
+			OR = {
+				alliance_naval_strength_ratio < 1
+				has_idea = GER_famine
+				has_idea = GER_food_shortages
+				has_dynamic_modifier = { modifier = AUH_famine_effect }
+			}
+			NOT = { has_war_with = TUR }
+			has_war = yes
+		}
+		available = {
+			num_of_civilian_factories > 1
+			TUR = {
+				has_navy_size = {
+				    size > 49
+				    type = convoy
+				}
+				has_opinion = { target = ROOT value > -10 }
+			}
+		}
+		cost = 25
+		fire_only_once = yes
+		cancel_trigger = {
+			OR = {
+				AND = {
+					alliance_naval_strength_ratio > 1
+					if = {
+						limit = { tag = GER }
+						NOT = {
+							has_idea = GER_famine
+							has_idea = GER_food_shortages
+						}
+					}
+					if = {
+						limit = { tag = AUS }
+						has_dynamic_modifier = { modifier = AUH_famine_effect }
+					}
+				}
+				has_war_with = TUR
+				has_country_flag = TUR_cancel_evade_blockade_flag
+				has_capitulated = yes
+			}
+		}
+		days_remove = -1
+		modifier = { civilian_factory_use = 1 }
+		cancel_effect = {
+			add_stability = -0.1
+			TUR = {
+				add_equipment_to_stockpile = {
+		            type = convoy_1
+		            amount = 50
+	       		}
+				add_offsite_building = { type = industrial_complex level = -1 }
+			}
+			set_country_flag = TUR_cancel_evade_blockade_flag
+			clr_country_flag = TUR_evade_blockade_flag
+		}
+		complete_effect = {
+			add_stability = 0.1
+			if = {
+				limit = { has_idea = GER_famine }
+				swap_ideas = {
+					remove_idea = GER_famine
+					add_idea = GER_food_shortages
+				}
+				set_country_flag = GER_ottoman_avoid_famine
+			}
+			set_country_flag = TUR_evade_blockade_flag
+			effect_tooltip = {
+				TUR = { 
+					add_equipment_to_stockpile = {
+			            type = convoy_1
+			            amount = -50
+		       		}
+					add_offsite_building = { type = industrial_complex level = 1 }
+				}
+			}
+			hidden_effect = { 
+				TUR = { 
+					country_event = lar_TURtugal_naval_blockade.2 
+					activate_targeted_decision = { 
+						target = ROOT 
+						decision = TUR_TURtugal_cancel_blockade_evasion_for_country
+					}
+				}
+			}
+		}
+		ai_will_do = { base = 1 }
+	}
+	TUR_cancel_ottoman_blockade_evasion = {
+		icon = generic_break_treaty
+		available = { has_country_flag = TUR_evade_blockade_flag }
+		fire_only_once = yes
+		visible = {
+			has_country_flag = TUR_evade_blockade_flag
+			NOT = { has_country_flag = TUR_cancel_evade_blockade_flag }
+		}
+		complete_effect = {
+			add_stability = -0.1
+			if = {
+				limit = { has_country_flag = GER_ottoman_avoid_famine }
+				if = {
+					limit = { has_idea = GER_food_shortages }
+					swap_ideas = {
+						remove_idea = GER_food_shortages
+						add_idea = GER_famine
+					}
+				}
+				else = { add_ideas = GER_food_shortages }
+			}
+			set_country_flag = TUR_cancel_evade_blockade_flag
+			clr_country_flag = TUR_evade_blockade_flag
+		}
+		ai_will_do = {
+			base = 0
+			modifier = {
+				add = 1
+				num_of_civilian_factories < 6
+			}
+		}
+	}
+	TUR_ottoman_cancel_blockade_evasion_for_country = {
+		icon = generic_break_treaty
+		fire_only_once = yes
+		visible = {
+			original_tag = TUR
+			country_exists = FROM
+			FROM = {
+           		has_country_flag = TUR_evade_blockade_flag
+           		NOT = { 
+           			has_country_flag = TUR_cancel_evade_blockade_flag
+           			has_war_with = TUR
+           		}
+           	}
+		}
+		complete_effect = {
+			FROM = {
+				add_stability = -0.1
+				if = {
+					limit = { has_country_flag = GER_ottoman_avoid_famine }
+					if = {
+						limit = { has_idea = GER_food_shortages }
+						swap_ideas = {
+							remove_idea = GER_food_shortages
+							add_idea = GER_famine
+						}
+					}
+					else = { add_ideas = GER_food_shortages }
+				}
+				set_country_flag = TUR_cancel_evade_blockade_flag
+				clr_country_flag = TUR_evade_blockade_flag
+			}
+		}
+		ai_will_do = {
+			base = 0
+			modifier = {
+				add = 1
+				OR = {
+					has_equipment = { convoy_1 < 5 }
+					AND = {
+						has_opinion = { target = FROM value < -10 }
+						NOT = { has_war_with = FROM }
+					}
+				}
+			}
 		}
 	}
 }
