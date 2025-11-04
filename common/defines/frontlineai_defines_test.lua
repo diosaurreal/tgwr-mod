@@ -197,7 +197,7 @@ NDefines.NAI.COMMAND_POWER_BEFORE_SPEND_ON_TRAITS = 30.0
 --------------------------------------------------------------------------------------------------------------
 
 NDefines.NAI.MIN_AI_UNITS_PER_TILE_FOR_STANDARD_COHESION = 2.0	-- How many units should we have for each tile along a front in order to switch to standard cohesion (less moving around)
---NDefines.NAI.MIN_FRONT_SIZE_TO_CONSIDER_STANDARD_COHESION = 2000	-- How long should fronts be before we consider switching to standard cohesion (under this, standard cohesion fronts will switch back to relaxed)
+NDefines.NAI.MIN_FRONT_SIZE_TO_CONSIDER_STANDARD_COHESION = 2000	-- How long should fronts be before we consider switching to standard cohesion (under this, standard cohesion fronts will switch back to relaxed)
 
 NDefines.NMilitary.PLAN_EXECUTE_RUSH = -10									-- When looking for an attach target, this score limit is required in the battle plan to consider province for attack
 
@@ -234,7 +234,7 @@ NDefines.NAI.AI_FRONT_MOVEMENT_FACTOR_FOR_READY = 0.5			                -- If le
 NDefines.NAI.PLAN_ACTIVATION_MAJOR_WEIGHT_FACTOR = 1		                    -- AI countries will hold on activating plans if stronger countries have plans in the same location. Majors count extra (value of 1 will negate this)
 NDefines.NAI.PLAN_ACTIVATION_PLAYER_WEIGHT_FACTOR = 1 		                -- AI countries will hold on activating plans if player controlled countries have plans in the same location. Majors count extra (value of 1 will negate this)
 
---NDefines.NAI.PLAN_MIN_SIZE_FOR_FALLBACK = 5000					                -- A country with less provinces than this will not draw fallback plans  but rather station their troops along the front
+NDefines.NAI.PLAN_MIN_SIZE_FOR_FALLBACK = 5000					                -- A country with less provinces than this will not draw fallback plans  but rather station their troops along the front
 
 NDefines.NAI.RECON_PLANES_NAVAL = 0.1
 NDefines.NAI.RECON_PLANES_LAND_COMBAT = 100
@@ -389,8 +389,8 @@ NDefines.NAI.STR_BOMB_PLANES_PER_CIV_FACTORY = 0				-- Amount of planes requeste
 NDefines.NAI.STR_BOMB_PLANES_PER_MIL_FACTORY = 0				-- Amount of planes requested per enemy military factory
 NDefines.NAI.STR_BOMB_PLANES_PER_NAV_FACTORY = 0				-- Amount of planes requested per enemy naval factory
 NDefines.NAI.STR_BOMB_CIVIL_FACTORY_IMPORTANCE = 0				-- Amount of planes requested per enemy naval factory
-NDefines.NAI.STR_BOMB_PLANES_PER_MIL_FACTORY = 0				-- Amount of planes requested per enemy naval factory
-NDefines.NAI.STR_BOMB_PLANES_PER_NAV_FACTORY = 0				-- Amount of planes requested per enemy naval factory
+NDefines.NAI.STR_BOMB_MILITARY_FACTORY_IMPORTANCE = 0				-- Amount of planes requested per enemy naval factory
+NDefines.NAI.STR_BOMB_NAVAL_FACTORY_IMPORTANCE = 0				-- Amount of planes requested per enemy naval factory
 --NDefines.NAI.STR_BOMB_PLANES_PER_SUPPLY_HUB = 3                 -- Amount of planes requested per enemy supply node
 NDefines.NAI.STR_BOMB_MIN_EXCORT_PLANES = 0					-- Min amount of planes requested to excort operations
 	
@@ -400,9 +400,9 @@ NDefines.NAI.STR_BOMB_MIN_EXCORT_PLANES = 0					-- Min amount of planes requeste
 
 
 NDefines.NAI.NAVAL_STRIKE_PLANES_PER_SHIP = 40					-- Amount of bombers requested per enemy ship
-NDefines.NAI.SUPPLY_PRIO_FACTOR = 0 --100 						--	AI is bad with that
+NDefines.NAI.SUPPLY_PRIO_FACTOR = -100 --100 						--	AI is bad with that
 NDefines.NAI.NAVAL_SHIP_AIR_IMPORTANCE = 1 --2.0					-- Naval ship air importance
-NDefines.NAI.STR_BOMB_IMPORTANCE_SCALE = 1 --1.0
+NDefines.NAI.STR_BOMB_IMPORTANCE_SCALE = 5 --1.0
 NDefines.NAI.NAVAL_IMPORTANCE_SCALE = 0.5 --0.65						-- Naval total importance scale (every naval score get's multiplied by it)
 
 --- Land Defines
@@ -473,4 +473,6 @@ NDefines.NAI.ASSIGN_TANKS_TO_NON_WAR_FRONT = 0
 
 NDefines.NAI.AIFC_UNIT_OFFENSIVE_SCORE_FACTOR_HARD_ATTACK = 0
 NDefines.NAI.AIFC_UNIT_OFFENSIVE_SCORE_FACTOR_HARDNESS = 0
-NDefines.NAI.AIFC_UNIT_OFFENSIVE_SCORE_FACTOR_ARMOR = 10000
+NDefines.NAI.AIFC_UNIT_OFFENSIVE_SCORE_FACTOR_ARMOR = 1000
+
+NDefines.NAI.ASSIGN_INVASION_AMPHIBIOUS_ATTACK_FACTOR = 100
