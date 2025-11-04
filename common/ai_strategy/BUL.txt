@@ -6,30 +6,34 @@ BUL_defend_thessaloniki = {
 		is_great_war_ongoing = yes
 		has_war = yes
 		is_in_faction_with = GER
+		SER = {
+			has_capitulated = yes
+			has_war_with = ROOT
+		}
 		any_neighbor_country = {
-			has_war_with = FROM
-			OR = {
-				is_in_faction_with = ENT
-				tag = ENT
-			}
-			NOT = {
-				tag = ROM
-				tag = RUS
-			}
+			is_in_faction_with = ENT
 		}
 	}
 	abort_when_not_enabled = yes
 	ai_strategy = {
-		type = front_control	
-		country_trigger = {
-			has_war_with = BUL
-			is_neighbor_of = BUL
-			NOT = {
-				tag = ROM
-				tag = RUS
+		type = front_unit_request	
+		state_trigger = {
+			OR = {
+				is_core_of = GRE
+				is_core_of = BUL
 			}
 		}
-		ratio = 0.4
+		value = 300
+	}
+	ai_strategy = {
+		type = front_control	
+		state_trigger = {
+			OR = {
+				is_core_of = GRE
+				is_core_of = BUL
+			}
+		}
+		ratio = 0.8
 		execution_type = balanced
 	}
 	ai_strategy = {
@@ -38,7 +42,7 @@ BUL_defend_thessaloniki = {
 	}
 }
 
-BUL_dont_send_volunteers = {
+BUL_do_not_help_cp = {
 	allowed = {
 		original_tag = BUL
 	}
@@ -47,6 +51,26 @@ BUL_dont_send_volunteers = {
 		is_in_faction_with = GER
 	}
 	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = dont_defend_ally_borders
+		id = GER
+		value = 1
+	}
+	ai_strategy = {
+		type = dont_defend_ally_borders
+		id = AUS
+		value = 1
+	}
+	ai_strategy = {
+		type = dont_defend_ally_borders
+		id = HUN
+		value = 1
+	}
+	ai_strategy = {
+		type = dont_defend_ally_borders
+		id = BOS
+		value = 1
+	}
 	ai_strategy = {
 		type = send_volunteers_desire
 		id = AUS
@@ -73,6 +97,12 @@ BUL_dont_help_turks = {
 		is_in_faction_with = TUR
 	}
 	abort_when_not_enabled = yes
+
+	ai_strategy = {
+		type = spare_unit_factor
+		value = -9999
+	}
+
 	ai_strategy = {
 		type = send_volunteers_desire
 		id = TUR
@@ -80,9 +110,9 @@ BUL_dont_help_turks = {
 	}
 
 	ai_strategy = {
-		type = front_unit_request
-		area = middle_east
-		value = -1000
+		type = dont_defend_ally_borders
+		id = TUR
+		value = 1
 	}
 }
 
@@ -92,7 +122,7 @@ BUL_do_not_help_entente = {
 	}
 	enable = {
 		is_great_war_ongoing = yes
-		is_in_faction_with = ENT
+		is_in_faction_with = FRA
 	}
 	abort_when_not_enabled = yes
 	ai_strategy = {
@@ -156,21 +186,6 @@ BUL_kill_serbia_when_great_war_broke = {
 		value = 500
 	}
 	ai_strategy = {
-		type = prepare_for_war
-		id = SER
-		value = 1
-	}
-	ai_strategy = {
-		type = front_unit_request
-		tag = AUS
-		value = -500
-	}
-	ai_strategy = {
-		type = front_unit_request
-		tag = HUN
-		value = -500
-	}
-	ai_strategy = {
 		type = dont_defend_ally_borders # BUL cant push serbia when all around states are austrian
 		id = AUS
 		value = -100
@@ -179,16 +194,6 @@ BUL_kill_serbia_when_great_war_broke = {
 		type = dont_defend_ally_borders # BUL cant push serbia when all around states are austrian
 		id = HUN
 		value = -100
-	}
-	ai_strategy = {
-		type = force_defend_ally_borders # BUL cant push serbia when all around states are austrian
-		id = AUS
-		value = 1
-	}
-	ai_strategy = {
-		type = force_defend_ally_borders # BUL cant push serbia when all around states are austrian
-		id = HUN
-		value = 1
 	}
 	ai_strategy = {
 		type = antagonize
@@ -202,6 +207,29 @@ BUL_kill_serbia_when_great_war_broke = {
 	ai_strategy = {
 		type = garrison_reinforcement_priority
 		value = -100
+	}
+}
+
+BUL_TUR_is_our_friend = { # dunno reason why BUL do front against TUR if it has war with RUS, so BUL has no troops on serbian front before war
+	allowed = {
+		original_tag = BUL
+	}
+	enable = {
+		is_great_war_ongoing = yes
+		TUR = {
+			is_in_faction_with = GER
+		}
+		focus_progress = {
+			focus = BUL_join_central_powers
+			progress > 0
+		}
+		has_war = no
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = front_unit_request
+		tag = TUR
+		value = -1000
 	}
 }
 
@@ -456,7 +484,7 @@ BUL_winner_plan_ROM_retired = {
 	}
 }
 
-BUL_fight_ROM = {
+BUL_fight_romania = {
 	allowed = {
 		original_tag = BUL
 	}
@@ -485,19 +513,6 @@ BUL_fight_ROM = {
 				}
 			}
 		}
-		NOT = {
-			AND = {
-				NOT = {
-					has_war_with = ROM
-				}
-				ROM = {
-					OR = {
-						has_completed_focus = ROM_our_call_to_arms
-						has_completed_focus = ROM_turn_west
-					}					
-				}
-			}
-		}
 	}
 	abort_when_not_enabled = yes
 	ai_strategy = {
@@ -506,13 +521,19 @@ BUL_fight_ROM = {
 		value = 1
 	}
 	ai_strategy = {
-		type = front_control
-		ratio = 0.6
+		type = front_unit_request
 		tag = ROM
-		execution_type = rush
+		value = 100
+	}
+	ai_strategy = {
+		type = front_control
+		ratio = 0.3
+		tag = ROM
+		execution_type = balanced
 	}
 	ai_strategy = {
 		type = garrison	
-		value = -1000
+		value = -200
 	}
 }
+
