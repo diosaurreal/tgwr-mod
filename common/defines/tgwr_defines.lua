@@ -130,7 +130,7 @@ NDefines.NSupply.CAPITAL_SUPPLY_DOCKYARDS = 0.3
 
 NDefines.NDiplomacy.EMBARGO_COST = 0 -- Vanilla is 100
 NDefines.NDiplomacy.EMBARGO_THREAT_THRESHOLD = 0 -- Vanilla is 30
-NDefines.NAI.EMBARGO_WORLD_TENSION_THREAT_DIVISOR = 0 -- Vanilla is 2.5
+NDefines.NAI.EMBARGO_WORLD_TENSION_THREAT_DIVISOR = 10000 -- Vanilla is 2.5
 
 -- Navy
 NDefines.NNavy.TRAINING_MAX_DAILY_COUNTRY_EXP = 1.0 -- Vanilla is 3.5
