@@ -1700,40 +1700,25 @@ BEL_the_colony = {
 			original_tag = BEL
 		}
 		available = {
-			hidden_trigger = {
-				always = no
-			}
-		}
-		cancel_trigger = {
-			if = {
-				limit = {
-					295 = {
-						has_dynamic_modifier = {
-							modifier = BEL_luba_resistance_modifier
-						}
-					}
-				}
+			all_controlled_state = {
 				NOT = {
-					295 = {
-						has_dynamic_modifier = {
-							modifier = BEL_luba_resistance_modifier
+					custom_trigger_tooltip = {
+						tooltip = BEL_luba_activity_trigger
+						OR = {
+							has_dynamic_modifier = { modifier = BEL_luba_resistance_modifier }
+							has_dynamic_modifier = { modifier = BEL_luba_resistance_modifier2 }
 						}
 					}
 				}
 			}
-			else_if = {
-				limit = {
-					295 = {
-						has_dynamic_modifier = {
-							modifier = BEL_luba_resistance_modifier2
-						}
-					}
-				}
-				NOT = {
-					295 = {
-						has_dynamic_modifier = {
-							modifier = BEL_luba_resistance_modifier2
-						}
+		}
+		activation = {
+			any_controlled_state = {
+				custom_trigger_tooltip = {
+					tooltip = BEL_luba_activity_trigger
+					OR = {
+						has_dynamic_modifier = { modifier = BEL_luba_resistance_modifier }
+						has_dynamic_modifier = { modifier = BEL_luba_resistance_modifier2 }
 					}
 				}
 			}
@@ -1744,9 +1729,8 @@ BEL_the_colony = {
 		selectable_mission = no
 		timeout_effect = {
 			country_event = ww1_belgium.116
-			hidden_effect = {
-				activate_mission = BEL_luba_activity
-			}
+			event_option_tooltip = ww1_belgium.116.a
+			hidden_effect = { activate_mission = BEL_luba_activity }
 		}
 	}
 	BEL_rubber_crisis = {
@@ -1792,7 +1776,16 @@ BEL_the_colony = {
 		visible = {
 			tag = BEL
 			has_country_flag = BEL_luba_rebellion
-			295 = {
+			FROM = {
+				OR = {
+					has_dynamic_modifier = { modifier = BEL_luba_resistance_modifier2 }
+					has_dynamic_modifier = { modifier = BEL_luba_resistance_modifier }
+				}
+			}
+		}
+		state_target = yes
+		target_trigger = {
+			FROM = {
 				OR = {
 					has_dynamic_modifier = { modifier = BEL_luba_resistance_modifier2 }
 					has_dynamic_modifier = { modifier = BEL_luba_resistance_modifier }
@@ -1801,17 +1794,20 @@ BEL_the_colony = {
 		}
 		available = {
 			owns_state = 295
-			num_divisions_in_states = {
-    			count > 1
-    			states = { 295 }
+			divisions_in_state = {
+				size > 1
+				state = FROM
 			}
 			has_war_support > 0.1
 		}
-		
 		remove_effect = {
-			if = {
-				limit = { 295 = { has_dynamic_modifier = { modifier = BEL_luba_resistance_modifier } } }
-				295 = {
+			FROM = {
+				if = {
+					limit = { has_dynamic_modifier = { modifier = BEL_luba_resistance_modifier2 } }
+					custom_effect_tooltip = BEL_tooltip_reduces_luba
+					remove_dynamic_modifier = { modifier = BEL_luba_resistance_modifier2 }
+				}
+				else = {
 					custom_effect_tooltip = BEL_tooltip_reduces_luba
 					hidden_effect = {
 						remove_dynamic_modifier = { modifier = BEL_luba_resistance_modifier }
@@ -1819,7 +1815,6 @@ BEL_the_colony = {
 					}
 				}
 			}
-			else = { 295 = { remove_dynamic_modifier = { modifier = BEL_luba_resistance_modifier2 } } }
 		}
 	}
 	BEL_link_major_cities_wireless_telegraph = {
@@ -1842,6 +1837,7 @@ BEL_the_colony = {
 			owns_state = 295
 			owns_state = 718
 			owns_state = 538
+			owns_state = 1221
 			has_tech = radio
 		}
 		remove_effect = {
@@ -1866,7 +1862,14 @@ BEL_the_colony = {
 					instant_build = yes
 				}
 			}
-	}
+			1221 = {
+				add_building_construction = {
+					type = infrastructure
+					level = 1
+					instant_build = yes
+				}
+			}
+		}
 	}
 	BEL_oil_in_matadi = {
 		icon = GFX_decision_oil
@@ -1925,7 +1928,7 @@ BEL_the_colony = {
 			}
 		}
 	}
-	BEL_expand_lumbumbashi_railways = {
+	BEL_extend_the_mayumbe_line = {
 		icon = GFX_decision_generic_train
 		fire_only_once = yes
 		days_remove = 70
@@ -1939,23 +1942,25 @@ BEL_the_colony = {
 		visible = {
 			tag = BEL
 			has_country_flag = BEL_congo_investment_unlocked
-			
 		}
 		available = { owns_state = 295 }
-		
 		remove_effect = {
+			build_railway = {
+				level = 1
+				build_only_on_allied = yes
+				fallback = yes
+				path = { 10968 13407 }
+				start_province = 10968
+				target_province = 13407
+			}
 			295 = {
 				add_building_construction = {
-					type = infrastructure
+					type = supply_node
 					level = 1
 					instant_build = yes
+					province = 13407
 				}
 			}
-			#set_victory_points = {
-			#	province = 4515
-			#	value = 1
-			#}
-			#when somebody fixes
 		}
 	}
 	BEL_apply_belgian_worker_protections = {
@@ -1977,6 +1982,7 @@ BEL_the_colony = {
 			owns_state = 295
 			owns_state = 718
 			owns_state = 538
+			owns_state = 1221
 		}
 		
 		remove_effect = {
@@ -1986,13 +1992,13 @@ BEL_the_colony = {
 						state = 295
 						state = 718
 						state = 538
+						state = 1221
 					}
 				}
 				remove_dynamic_modifier = { modifier = BEL_belgian_colonial_policy }
 			}
 		}
 	}
-
 	BEL_recover_from_rubber_crisis = {
 		icon = GFX_decision_rubber
 		fire_only_once = yes
@@ -2013,6 +2019,7 @@ BEL_the_colony = {
 			owns_state = 295
 			owns_state = 718
 			owns_state = 538
+			owns_state = 1221
 		}
 		
 		remove_effect = {
@@ -2124,17 +2131,16 @@ BEL_the_colony = {
 		visible = {
 			tag = BEL
 			has_country_flag = BEL_congo_decisions_unlocked
-			
-		}
-		available = {
-			
-		}
-		modifier = {
-			
+			owns_state = 1221
 		}
 		remove_effect = {
-			add_political_power = 10
+			1221 = {
+				add_compliance = 15
+				add_resistance = -10
+				add_core_of = KAT
+			}
 			set_country_flag = BEL_completed_decision_ck
+			unlock_decision_tooltip = BEL_take_over_katanga_services
 		}
 	}
 	BEL_take_over_katanga_services = {
@@ -2152,22 +2158,54 @@ BEL_the_colony = {
 			tag = BEL
 			has_country_flag = BEL_congo_decisions_unlocked
 			has_country_flag = BEL_completed_decision_ck
+			owns_state = 1221
 		}
-		available = {
-			
-		}
-		modifier = {
-			research_speed_factor = 0.03
-		}
+		available = { controls_state = 1221 }
+		modifier = { research_speed_factor = 0.03 }
 		remove_effect = {
 			add_stability = 0.02
-			295 = {
+			1221 = {
 				add_extra_state_shared_building_slots = 1
 			}
 		}
 	}
-	
+	BEL_expand_lumbumbashi_railways = {
+		icon = GFX_decision_generic_train
+		fire_only_once = yes
+		days_remove = 70
+		cost = 50
+		allowed = { original_tag = BEL }
+		ai_will_do = {
+			factor = 50
+			modifier = {
+				date < 1914.1.1
+				factor = 0
+			}
+		}
+		visible = { has_completed_focus = BEL_BCK_works }
+		available = { controls_state = 1221 }
+
+		remove_effect = {
+			build_railway = {
+				level = 1
+				build_only_on_allied = yes
+				fallback = yes
+				path = { 1221 4515 }
+				start_province = 1221
+				target_province = 4515
+			}
+			1221 = {
+				add_building_construction = {
+					type = supply_node
+					level = 1
+					instant_build = yes
+					province = 4515
+				}
+			}
+			set_victory_points = {
+				province = 4515
+				value = 1
+			}
+		}
+	}
 }
-
-
-
