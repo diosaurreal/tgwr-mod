@@ -2282,11 +2282,37 @@ country_event = {
 }
 
 
-# War with Hungary
+#Historical war with Hungary (Entente ROM)
 country_event = {
 	id = ww1_romania.81
-	title = ww1_romania.81.t
-	desc = ww1_romania.81.d
+	title = { #historical
+		text = ww1_romania.81.t
+		trigger = {
+			has_country_flag = great_war_winner
+		}
+	}
+	title = { #a-hist invasion
+		text = ww1_romania.81.t2
+		trigger = {
+			NOT = {
+				has_country_flag = great_war_winner
+			}
+		}
+	}
+	desc = { #historical
+		text = ww1_romania.81.d
+		trigger = {
+			has_country_flag = great_war_winner
+		}
+	}
+	desc = { #a-hist invasion
+		text = ww1_romania.81.d2
+		trigger = {
+			NOT = {
+				has_country_flag = great_war_winner
+			}
+		}
+	}
 	picture = GFX_report_event_romanian_soldiers
 	fire_only_once = yes
 	trigger = {
@@ -2321,17 +2347,6 @@ country_event = {
 		hidden_effect = {
 			news_event = ww1_romania.208
 		}
-	#	if = { # spawns in armisitce effect now so romania can deploy troops to front
-	#		limit = {
-	#			has_army_manpower = {
-	#				size < 70000
-	#			}
-	#		}
-	#		hidden_effect = {
-	#			load_oob = "ROM_1918"
-	#		}
-	#		custom_effect_tooltip = ROM_spawn_1918_army
-	#	}
 		trigger = {
 			ROM = {
 				has_capitulated = no
@@ -2340,17 +2355,29 @@ country_event = {
 		}
 		name = ww1_romania.81.a
 		ai_chance = {
-			factor = 100
+			base = 100
 		}
 		hidden_effect = {
-			country_event = {
-				id = ww1_romania.192
-				days = 2
-			}
-			HUN = {
+			if = {
+				limit = {
+					has_country_flag = great_war_winner
+				}
 				country_event = {
 					id = ww1_romania.192
 					days = 2
+				}
+			}
+			HUN = {
+				if = {
+					limit = {
+						ROM = {
+							has_country_flag = great_war_winner
+						}
+					}
+					country_event = {
+						id = ww1_romania.192
+						days = 2
+					}
 				}
 				add_ideas = ROM_hungarian_war_surrender_limit
 				add_ideas = HUN_disorganized_army
@@ -2545,29 +2572,18 @@ country_event = {
 					}
 					add_core_of = CZE
 				}
-				#no, they join when soviet hungary spawn
-				# CZE = {
-				# 	declare_war_on = {
-				# 		target = HUN
-				# 		type = take_core_state
-				# 	}
-				# }
 			}
 		}
-		#no, no and no !
-		# if = {
-		# 	limit = {
-		# 		NOT = {
-		# 			has_completed_focus = ROM_form_the_little_entente
-		# 		}
-		# 	}
-		# 	complete_national_focus = ROM_form_the_little_entente
-		# }
 	}
 	option = {
 		name = ww1_romania.81.b
+		trigger = {
+			NOT = {
+				has_country_flag = great_war_winner
+			}
+		}
 		ai_chance = {
-			factor = 0
+			base = 0
 		}
 	}
 }
@@ -2582,9 +2598,6 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_romania.82.a
-		ai_chance = {
-			factor = 100
-		}
 		if = {
 			limit = {
 				has_focus_tree = romania_focus
@@ -2624,7 +2637,6 @@ country_event = {
 		HUN = {
 			hidden_effect = {
 				set_country_flag = hungarian_romanian_war_loser
-				remove_ideas = ROM_hungarian_war_surrender_limit
 			}
 			if = {
 				limit = {
@@ -7020,20 +7032,7 @@ news_event = {
 	desc = ww1_romania.209.d
 	picture = GFX_news_event_hun_cze_war
 	major = yes
-	trigger = {
-		NOT = {
-			has_global_flag = hungarian_czech_war_news
-		}
-		has_global_flag = ROM_HUN_war_1919
-		original_tag = HUN
-		has_war_with = CZE
-	}
-	immediate = {
-		set_global_flag = hungarian_czech_war_news
-	}
-	mean_time_to_happen = {
-		days = 0
-	}
+	is_triggered_only = yes
 	option = {
 		name = ww1_romania.209.a
 		trigger = {
@@ -7074,6 +7073,16 @@ country_event = {
 		NOT = {
 			has_country_flag = great_war_loser
 		}
+		RUS = {
+			if = {
+				limit = {
+					has_country_flag = great_war_winner
+				}
+				NOT = {
+					has_completed_focus = RUS_unite_ruthenia
+				}
+			}
+		}
 		WUK = {
 			exists = yes
 			owns_state = 1007
@@ -7106,6 +7115,70 @@ country_event = {
 		effect_tooltip = {
 			1007 = {
 				transfer_state_to = ROM
+			}
+		}
+	}
+}
+#a-hist invasion of transylvania - hungarian surrender
+country_event = {
+	id = ww1_romania.212
+	title = ww1_romania.212.t
+	desc = ww1_romania.212.d
+	picture = GFX_report_event_romanian_soldiers
+	is_triggered_only = yes
+	immediate = {
+		hidden_effect = {
+			clr_global_flag = ROM_HUN_war_1919
+			HUN = {
+				set_country_flag = hungarian_romanian_war_loser
+				remove_ideas = HUN_socialist_unrest
+				remove_ideas = HUN_disorganized_army
+				every_owned_state = {
+					limit = {
+						OR = {
+							state = 778
+							state = 84
+							state = 76
+							state = 1044
+							state = 82 #take banat if its not banat republic/serbian
+						}
+					}
+					transfer_state_to = ROM
+				}
+			}
+		}
+	}
+	option = {
+		name = ww1_romania.212.a
+		if = {
+			limit = {
+				has_focus_tree = romania_focus
+			}
+			complete_national_focus = ROM_victory_in_hungarian_war
+		}
+		if = {
+			limit = {
+				has_focus_tree = romania_focus
+				NOT = {
+					has_completed_focus = ROM_anti_hungarian_propaganda
+				}
+			}
+			unlock_national_focus = ROM_anti_hungarian_propaganda
+		}
+		effect_tooltip = {
+			HUN = {
+				every_owned_state = {
+					limit = {
+						OR = {
+							state = 778
+							state = 84
+							state = 76
+							state = 1044
+							state = 82 #take banat if its not banat republic/serbian
+						}
+					}
+					transfer_state_to = ROM
+				}
 			}
 		}
 	}

@@ -9,116 +9,100 @@
 # garrison
 # protect
 # influence
-
 FRA_area_priority = {
 	allowed = {
-		original_tag = FRA	
-	}
-	enable = {
 		original_tag = FRA
 	}
-	abort = { always = no }
-	
-	ai_strategy = {
-		type = front_unit_request
-		area = europe
-		value = 250 #more focus here
+	enable = {
+		always = yes
 	}
-
+	abort = {
+		always = no
+	}
 	ai_strategy = {
 		type = area_priority
 		id = europe
-		value = 500 #more focus here
+		value = 500		#more focus here
 	}
-
-	ai_strategy = {
-		type = front_unit_request
-		area = africa
-		value = 50
-	}
-
 	ai_strategy = {
 		type = area_priority
 		id = africa
-		value = 400
+		value = 50
 	}
-	
-	ai_strategy = {
-		type = area_priority
-		id = asia
-		value = 200
-	}
-	
 	ai_strategy = {
 		type = area_priority
 		id = middle_east
-		value = 200
+		value = 50
 	}
-
+	ai_strategy = {
+		type = front_unit_request
+		area = middle_east
+		value = -50
+	}
 	ai_strategy = {
 		type = front_unit_request
 		strategic_region = 184
 		value = -200
 	}
-
+	ai_strategy = {
+		type = front_unit_request
+		strategic_region = 217
+		value = -200
+	}
+	ai_strategy = {
+		type = area_priority
+		id = oceania
+		value = -1000
+	}
+	ai_strategy = {
+		type = area_priority
+		id = north_america
+		value = -1000
+	}
+	ai_strategy = {
+		type = area_priority
+		id = south_america
+		value = -1000
+	}
+	ai_strategy = {
+		type = front_unit_request
+		area = south_america
+		value = -1000
+	}
+	ai_strategy = {
+		type = area_priority
+		id = pacific
+		value = -1000
+	}
 	ai_strategy = {
 		type = garrison_reinforcement_priority
-		value = -25
+		value = -1000
 	}
-}
-
-FRA_fill_cambrai_and_reims_gaps = {
-	allowed = {
-		original_tag = FRA
-	}
-	enable = {
-		NOT = {
-			has_global_flag = great_war_ends
-			is_subject = yes
-		}
-		NOT = {
-			has_global_flag = WW1_is_stuck
-		}
-	}
-	abort_when_not_enabled = yes
-
 	ai_strategy = {
-		type = put_unit_buffers
-		ratio = 0.05
-		states = {
-			18
-		}
-		subtract_fronts_from_need = yes
+		type = garrison
+		value = -1000
 	}
 }
 
-FRA_defensive_if_lack_of_guns_against_GER = {
+FRA_lack_of_guns = {
 	allowed = {
 		original_tag = FRA
 	}
 	enable = {
 		has_war_with = GER
-		longest_war_length > 6
 		has_equipment = {
 			infantry_equipment < 500
-		}
-		NOT = {
-			has_global_flag = WW1_is_stuck
 		}
 	}
 	abort = {
 		OR = {
-			surrender_progress > 0.15
 			has_equipment = {
-				infantry_equipment > 5000
+				infantry_equipment > 2500
 			}
-			longest_war_length > 48
 			has_global_flag = WW1_is_stuck
-		}		
-		
-		
+			has_idea = FRA_plan_xvii
+		}
 	}
-
 	ai_strategy = {
 		type = front_control
 		tag = GER
@@ -131,182 +115,110 @@ FRA_defensive_if_lack_of_guns_against_GER = {
 	}
 }
 
-FRA_buildup_right_before_ww1 = {
-	allowed = { 
-		original_tag = FRA 
+FRA_build_army = {
+	allowed = {
+		original_tag = FRA
 	}
-
 	enable = {
-		date > 1911.1.1
-		date < 1915.1.1
+		has_army_manpower = {
+			size < 1700000
+		}
 		NOT = {
+			AND = {
+				has_war_with_major = yes
+				OR = {
+					stockpile_ratio = {
+						archetype = infantry_equipment
+						ratio < 0.1
+					}
+					stockpile_ratio = {
+						archetype = field_gun_equipment
+						ratio < 0.1
+					}
+				}
+			}
+			has_global_flag = great_war_ends
+			has_global_flag = crisis_in_progress
+		}
+	}
+	abort = {
+		has_game_rule = {
+			rule = battle_of_france_outcome
+			option = FRENCH_EARLY_DEFEAT
+		}
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = build_army
+		id = infantry
+		value = 1000
+	}
+	ai_strategy = {
+		type = force_build_armies
+		value = 1000
+	}
+}
+
+FRA_build_bunkers = {
+	allowed = {
+		original_tag = FRA
+	}
+	enable = {
+		date > 1911.6.1
+		is_historical_focus_on = yes
+		NOT = {
+			has_global_flag = great_war
 			has_global_flag = great_war_ends
 		}
 	}
 	abort = {
-		has_army_manpower = {
-			size > 1600000
-		}
+		has_game_rule = {
+			rule = battle_of_france_outcome
+			option = FRENCH_EARLY_DEFEAT
+		}		
 	}
-
-	ai_strategy = {
-		type = build_army
-		id = infantry
-		value = 500
-	}
-	ai_strategy = {
-		type = force_build_armies
-		value = 500
-	}
-	ai_strategy = {
-		type = role_ratio
-		id = infantry
-		value = 100
-	}
-
-	#protect gerardmer
+	abort_when_not_enabled = yes
 	ai_strategy = {
 		type = build_building
-		id = bunker  # Type of building
+		id = bunker
 		target = 2923
-		value = 20000  # AI weight, used for weighted random selection of what to build. The AI gathers all build_building strategies (including the ones created dynamically) with non-zero values, and selects one of them.
+		value = 400
 	}
-	#protect dunkerque
 	ai_strategy = {
 		type = build_building
-		id = bunker  # Type of building
-		target = 575
-		value = 20000  # AI weight, used for weighted random selection of what to build. The AI gathers all build_building strategies (including the ones created dynamically) with non-zero values, and selects one of them.
+		id = bunker
+		target = 454
+		value = 400
 	}
-	#protect lille
 	ai_strategy = {
 		type = build_building
-		id = bunker  # Type of building
-		target = 11483
-		value = 20000  # AI weight, used for weighted random selection of what to build. The AI gathers all build_building strategies (including the ones created dynamically) with non-zero values, and selects one of them.
+		id = bunker
+		target = 11420
+		value = 400
 	}
-	#protect northern France (northern verdun)
 	ai_strategy = {
 		type = build_building
-		id = bunker  # Type of building
+		id = bunker
 		target = 3560
-		value = 20000  # AI weight, used for weighted random selection of what to build. The AI gathers all build_building strategies (including the ones created dynamically) with non-zero values, and selects one of them.
+		value = 400
 	}
-	#protect northern France (sedan)
 	ai_strategy = {
 		type = build_building
-		id = bunker  # Type of building
-		target = 2900
-		value = 20000  # AI weight, used for weighted random selection of what to build. The AI gathers all build_building strategies (including the ones created dynamically) with non-zero values, and selects one of them.
+		id = bunker
+		target = 3402
+		value = 400
 	}
-	#protect northern France (Nancy)
 	ai_strategy = {
 		type = build_building
-		id = bunker  # Type of building
+		id = bunker
 		target = 11516
-		value = 20000  # AI weight, used for weighted random selection of what to build. The AI gathers all build_building strategies (including the ones created dynamically) with non-zero values, and selects one of them.
-	}
-}
-
-FRA_gerardmer_gap = {
-	allowed = { 
-		original_tag = FRA 
-	}
-
-	enable = {
-		original_tag = FRA
-		controls_province = 2923
-		NOT = {
-			has_global_flag = great_war_ends
-		}
-	}
-	abort_when_not_enabled = yes
-	ai_strategy = {
-		type = front_unit_request
-		state = 864
-		value = 90
-	}
-	ai_strategy = {
-		type = front_control
-		state_trigger = {
-        	is_core_of = ALS
-    	}
-		ratio = 0.3
-		priority = 9999
-		ordertype = front
-		execution_type = careful
-		execute_order = no
-		manual_attack = yes
-	}
-}
-
-FRA_stockpile_more_early_game_and_war = {
-	allowed = { 
-		original_tag = FRA 
-	}
-
-	enable = {
-		OR = { 
-			date < 1911.1.1
-			has_equipment = {
-				infantry_equipment < 1000
-			}
-			AND = {
-				any_country = {
-					is_major = yes
-					has_war_with = ROOT
-				}
-				stockpile_ratio = {	## 5% of the armies equipment must be in reserves
-					archetype = infantry_equipment
-					ratio < 0.10
-				}
-				has_army_manpower = {
-					size > 1500000
-				}
-			}
-		}
-		
-	}
-	abort_when_not_enabled = yes
-
-	# avoid troops spam that cause colonial resistance
-
-	ai_strategy = {
-		type = equipment_stockpile_surplus_ratio
-		value = 50 
-	}
-
-	ai_strategy = {
-		type = garrison_reinforcement_priority
-		value = 9999
-	}
-
-	ai_strategy = {
-		type = build_army
-		id = garrison
-		value = -9999
-	}
-
-	ai_strategy = {
-		type = role_ratio
-		id = garrison
-		value = -9999
-	}
-
-	ai_strategy = {
-		type = build_army
-		id = infantry
-		value = -500
-	}
-	ai_strategy = {
-		type = force_build_armies
-		value = -500
+		value = 400
 	}
 }
 
 FRA_dont_help_austria = {
 	allowed = {
-		original_tag = FRA	
+		original_tag = FRA
 	}
 	enable = {
 		is_in_faction_with = AUS
@@ -314,25 +226,22 @@ FRA_dont_help_austria = {
 			has_global_flag = WW1_is_stuck
 		}
 	}
-	abort = {
-		threat > 0.7
-	}
-	
+	abort_when_not_enabled = yes
 	ai_strategy = {
 		type = protect
-		id = "AUS"
+		id = AUS
 		value = -1000
 	}
 	ai_strategy = {
 		type = dont_defend_ally_borders
-		id = "AUS"
+		id = AUS
 		value = 1000
 	}
 }
 
 FRA_dont_help_italy = {
 	allowed = {
-		original_tag = FRA	
+		original_tag = FRA
 	}
 	enable = {
 		has_war_with = GER
@@ -340,21 +249,21 @@ FRA_dont_help_italy = {
 		NOT = {
 			has_global_flag = WW1_is_stuck
 		}
-		ITA = { surrender_progress < 0.20 }
+		ITA = {
+			surrender_progress < 0.2
+		}
 	}
-	
 	abort_when_not_enabled = yes
-
 	ai_strategy = {
 		type = dont_defend_ally_borders
-		id = "ITA"
+		id = ITA
 		value = 1000
 	}
 }
 
 FRA_dont_help_serbia = {
 	allowed = {
-		original_tag = FRA	
+		original_tag = FRA
 	}
 	enable = {
 		has_war_with = GER
@@ -363,248 +272,318 @@ FRA_dont_help_serbia = {
 			has_global_flag = WW1_is_stuck
 		}
 	}
-	
 	abort = {
 		OR = {
 			AND = {
 				is_neighbor_of = SER
-				SER = { surrender_progress > 0.5 }
+				SER = {
+					surrender_progress > 0.5
+				}
 			}
 			has_global_flag = great_war_ends
 		}
 	}
-	
 	ai_strategy = {
 		type = dont_defend_ally_borders
-		id = "SER"
+		id = SER
 		value = 1000
 	}
 	ai_strategy = {
 		type = dont_defend_ally_borders
-		id = "MNT"
+		id = MNT
 		value = 1000
 	}
 }
 
 FRA_dont_help_on_eastern_front = {
 	allowed = {
-		original_tag = FRA	
+		original_tag = FRA
 	}
 	enable = {
 		NOT = {
 			is_in_faction_with = GER
 			has_global_flag = great_war_ends
 		}
-		is_in_faction_with = RUS
 	}
-	
 	abort_when_not_enabled = yes
-	
 	ai_strategy = {
 		type = dont_defend_ally_borders
-		id = "ROM"
+		id = MOL
 		value = 1000
 	}
 	ai_strategy = {
 		type = dont_defend_ally_borders
-		id = "RUS"
+		id = POL
 		value = 1000
 	}
 	ai_strategy = {
 		type = dont_defend_ally_borders
-		id = "MOL"
+		id = UKR
 		value = 1000
 	}
 	ai_strategy = {
 		type = dont_defend_ally_borders
-		id = "POL"
+		id = EST
 		value = 1000
 	}
 	ai_strategy = {
 		type = dont_defend_ally_borders
-		id = "UKR"
+		id = LAT
 		value = 1000
 	}
 	ai_strategy = {
 		type = dont_defend_ally_borders
-		id = "EST"
+		id = LIT
 		value = 1000
 	}
 	ai_strategy = {
 		type = dont_defend_ally_borders
-		id = "LAT"
-		value = 1000
-	}
-	ai_strategy = {
-		type = dont_defend_ally_borders
-		id = "LIT"
-		value = 1000
-	}
-	ai_strategy = {
-		type = dont_defend_ally_borders
-		id = "FIN"
+		id = FIN
 		value = 1000
 	}
 }
 
-
 FRA_russian_alliance = {
 	allowed = {
-		original_tag = FRA	
+		original_tag = FRA
 	}
 	enable = {
 		is_in_faction_with = RUS
 	}
-	abort = {
-		NOT = {is_in_faction_with = RUS }
-	}	
+	abort_when_not_enabled = yes
 	ai_strategy = {
 		type = alliance
-		id = "RUS"
+		id = RUS
 		value = 500
 	}
 }
 
 #AI is surprised and wont really help
-FRA_early_defense_of_belgium = {
+FRA_defense_of_belgium_border = {
 	allowed = {
-		OR = {
-			original_tag = FRA	
-		}
+		original_tag = FRA
 	}
 	enable = {
-		# always = no
-		date > 1914.1.1
-		date < 1915.1.1
+		OR = {
+			GER = {
+				OR = {
+					is_justifying_wargoal_against = ROOT
+					has_wargoal_against = ROOT
+				}
+			}
+			has_global_flag = great_war
+			has_global_flag = crisis_in_progress
+		}
 		BEL = {
 			NOT = {
-				has_war_with = FRA
+				has_war_with = ROOT
 				is_in_faction_with = GER
+				has_country_flag = BEL_tripartite_security_meeting
 			}
 			has_capitulated = no
-			surrender_progress < 0.80
+			surrender_progress < 0.8
 		}
 		NOT = {
-			BEL = {
-				has_country_flag = BEL_tripartite_security_meeting
+			has_game_rule = {
+				rule = battle_of_france_outcome
+				option = FRENCH_EARLY_DEFEAT
+			}
+			has_global_flag = great_war_ends
+		}
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = put_unit_buffers
+		states = {
+			785
+		}
+		ratio = 1
+		subtract_invasions_from_need = yes
+		subtract_fronts_from_need = yes
+	}
+	ai_strategy = {
+		type = put_unit_buffers
+		states = {
+			29
+		}
+		ratio = 1
+		subtract_invasions_from_need = yes
+		subtract_fronts_from_need = yes
+	}
+	ai_strategy = {
+		type = put_unit_buffers
+		states = {
+			865
+		}
+		ratio = 1
+		subtract_invasions_from_need = yes
+		subtract_fronts_from_need = yes
+	}
+	ai_strategy = {
+		type = put_unit_buffers
+		states = {
+			18
+		}
+		ratio = 1
+		subtract_invasions_from_need = no
+		subtract_fronts_from_need = no
+	}
+	ai_strategy = {
+		type = front_unit_request
+		tag = BEL
+		value = -500
+	}
+}
+
+FRA_dont_go_belgium = {
+	allowed = {
+		original_tag = FRA
+	}
+	enable = {
+		is_in_faction_with = BEL
+		has_war_with = GER
+		NOT = {
+			war_length_with = {
+				tag = GER
+				months > 6
 			}
 		}
 	}
 	abort_when_not_enabled = yes
-
-
-
-	ai_strategy = {
-		type = put_unit_buffers
-		
-		order_id = 1
-		
-		states = {
-			865 785 29
-		}
-		ratio = 0.80
-		area = europe
-		subtract_invasions_from_need = yes
-		subtract_fronts_from_need = yes
-	}
-
-	#this is important
-	ai_strategy = {
-		type = put_unit_buffers
-		
-		order_id = 1
-		
-		states = {
-			18
-		}
-		ratio = 0.50
-		area = europe
-		subtract_invasions_from_need = yes
-		subtract_fronts_from_need = yes
-	}
-
-	#protect verdun
-	ai_strategy = {
-		type = put_unit_buffers
-		
-		order_id = 1
-		
-		states = {
-			17
-		}
-		ratio = 0.25
-		area = europe
-		subtract_invasions_from_need = yes
-		subtract_fronts_from_need = yes
-	}
-
 	ai_strategy = {
 		type = dont_defend_ally_borders
 		id = BEL
 		value = 1
 	}
-
-	ai_strategy = {	#to avoid having 20 divs pinned on a single tiles, and so uncapable of moving to belgium
-		type = front_unit_request
-		tag = GER
-		value = -300
-	}
-
-	ai_strategy = {
-		type = front_unit_request
-		tag = BEL
-		value = -100
-	}
-
-	
-
-	ai_strategy = {
-		type = prepare_for_war
-		id = GER
-		value = 1
-	}
-
-	ai_strategy = {
-		type = prepare_for_war
-		id = BEL
-		value = 1
-	}
-
 }
 
-ALL_protect_FRA_at_all_prices = {
+FRA_backline_picardy = {
 	allowed = {
+		original_tag = FRA
+	}
+	enable = {
 		OR = {
-			original_tag = FRA	
-			original_tag = USA #come here comarade
-			original_tag = CAN
-			original_tag = SAF
-			original_tag = BEL
-			original_tag = POR
-			original_tag = MEX
+			has_war_with_major = yes
+			has_global_flag = crisis_in_progress
+		}
+		is_in_faction_with = BEL
+		controls_province = 11420
+		BEL = {
+			OR = {
+				has_capitulated = yes
+				surrender_progress > 0.8
+			}
+		}
+		NOT = {
+			has_game_rule = {
+				rule = battle_of_france_outcome
+				option = FRENCH_EARLY_DEFEAT
+			}
+			war_length_with = {
+				# stabilzed front
+				tag = GER
+				months > 7
+			}
 		}
 	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = put_unit_buffers
+		states = {
+			785
+		}
+		ratio = 1
+		subtract_invasions_from_need = yes
+		subtract_fronts_from_need = yes
+	}
+	ai_strategy = {
+		type = put_unit_buffers
+		states = {
+			18
+		}
+		ratio = 1
+		subtract_invasions_from_need = yes
+		subtract_fronts_from_need = yes
+	}
+}
 
+FRA_backline_belfort = {
+	allowed = {
+		original_tag = FRA
+	}
 	enable = {
-		NOT = {
-			has_global_flag = WW1_is_stuck
-		}
+		controls_province = 9642
 		OR = {
-			original_tag = FRA	
-			original_tag = USA #come here comarade
-			original_tag = CAN
-			original_tag = SAF
-			original_tag = BEL
-			original_tag = POR
-			original_tag = MEX
-		}
-		has_war_with = GER
-		FRA = {
-			surrender_progress > 0.20
+			has_war_with_major = yes
+			has_global_flag = crisis_in_progress
 		}
 		NOT = {
-			has_war_with = ITA
-			has_war_with = SPR
+			has_game_rule = {
+				rule = battle_of_france_outcome
+				option = FRENCH_EARLY_DEFEAT
+			}
+			war_length_with = {
+				# stabilzed front
+				tag = GER
+				months > 36
+			}
+		}
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = put_unit_buffers
+		states = {
+			20
+		}
+		ratio = 0.9
+		subtract_invasions_from_need = yes
+		subtract_fronts_from_need = yes
+	}
+}
+
+FRA_paris_garrison = {
+	allowed = {
+		original_tag = FRA
+	}
+	enable = {
+		OR = {
+			has_war_with_major = yes
+			has_global_flag = crisis_in_progress
+		}
+		NOT = {
+			has_game_rule = {
+				rule = battle_of_france_outcome
+				option = FRENCH_EARLY_DEFEAT
+			}
+			war_length_with = {
+				# stabilzed front
+				tag = GER
+				months > 8
+			}
+		}
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = put_unit_buffers
+		states = {
+			16
+		}
+		ratio = 0.8
+		subtract_invasions_from_need = yes
+		subtract_fronts_from_need = yes
+	}
+}
+
+#"Verdun is the symbol and the summit of the Great War. It is arguably the only name that will survive the oblivion of centuries." - Guy Pedroncini
+FRA_on_ne_passe_pas = {
+	allowed = {
+		original_tag = FRA
+	}
+	enable = {
+		controls_province = 5291
+		OR = {
+			has_war_with_major = yes
+			has_global_flag = crisis_in_progress
 		}
 		NOT = {
 			has_game_rule = {
@@ -613,75 +592,70 @@ ALL_protect_FRA_at_all_prices = {
 			}
 		}
 	}
-	abort = {
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = put_unit_buffers
+		states = {
+			17
+		}
+		ratio = 0.6
+		subtract_invasions_from_need = yes
+		subtract_fronts_from_need = yes
+	}
+}
+
+ALL_protect_FRA_at_all_prices = {
+	allowed = {
 		OR = {
-			has_global_flag = great_war_ends
-			FRA = {
-				has_war = no
-			}
-			has_war_with = ITA
-			has_war_with = SPR
-			has_global_flag = WW1_is_stuck
+			original_tag = FRA
+			original_tag = USA			#come here comarade
+			original_tag = CAN
+			original_tag = SAF
+			original_tag = BEL
+			original_tag = POR
+			original_tag = MEX
 		}
 	}
-	
+	enable = {
+		is_in_faction_with = FRA
+		has_war_with = GER
+		FRA = {
+			surrender_progress > 0.2
+		}
+		NOT = {
+			has_global_flag = WW1_is_stuck
+			has_game_rule = {
+				rule = battle_of_france_outcome
+				option = FRENCH_EARLY_DEFEAT
+			}
+		}
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = front_unit_request
+		tag = GER
+		value = 1000
+	}
+	ai_strategy = {
+		type = front_unit_request
+		tag = AUS
+		value = 1000
+	}
 	ai_strategy = {
 		type = front_control
 		tag = GER
 		ratio = 0.9
-		
-		priority = 100000
 		ordertype = front
-	}
-
-	ai_strategy = {
-		type = front_control
-		tag = AUS	# in case they get trough italy
-		ratio = 0.2
-		
-		priority = 500
-		ordertype = front
-	}
-
-}
-
-die_wadai = {
-	allowed = {
-		tag = CHA
-	}
-	enable = {
-		has_war_with = FRA
-		FRA = {
-			is_ai = yes
-		}
-	}
-	abort = {
-		OR = {
-			date > 1910.8.1
-			surrender_progress > 0.2
-		}
 	}
 	ai_strategy = {
 		type = front_control
-	
-		tag = FRA
-		
-		ratio = 0.5
-		
-		priority = 100 
+		tag = AUS
+		ratio = 0.4
 		ordertype = front
-		execution_type = balanced 
-		execute_order = yes 
-		manual_attack = yes
-	}	
-	ai_strategy = {
-		type = front_unit_request
-		tag = CHA
-		value = 6000
 	}
 }
 
-wadai_low_prio = {
+FRA_wadai_low_prio = {
 	allowed = {
 		tag = FRA
 	}
@@ -696,17 +670,14 @@ wadai_low_prio = {
 	}
 	ai_strategy = {
 		type = front_control
-	
 		tag = CHA
-		
 		ratio = 0.5
-		
-		priority = 100 
+		priority = 100
 		ordertype = front
-		execution_type = balanced 
-		execute_order = yes 
+		execution_type = balanced
+		execute_order = yes
 		manual_attack = yes
-	}	
+	}
 }
 
 IND_stay_in_asia = {
@@ -717,54 +688,19 @@ IND_stay_in_asia = {
 		is_subject_of = FRA
 	}
 	abort_when_not_enabled = yes
-
 	ai_strategy = {
 		type = front_unit_request
 		area = asia
 		value = 2000
 	}
 	ai_strategy = {
+		type = front_unit_request
+		area = globally
+		value = -2000
+	}
+	ai_strategy = {
 		type = area_priority
 		id = asia
-		value = 2000
-	}
-}
-
-FRA_ignore_serbian_war = {
-	allowed = {
-		original_tag = FRA
-	}
-	enable = {
-		NOT = {
-			has_war_with = SER
-		}
-		SER = {
-			has_capitulated = no
-		}
-		NOT = {
-			has_global_flag = WW1_is_stuck
-		}
-	}
-	abort_when_not_enabled = yes
-
-	ai_strategy = {
-		type = front_unit_request
-		tag = BUL
-		value = -2000
-	}
-	ai_strategy = {
-		type = front_unit_request
-		tag = TUR
-		value = -2000
-	}
-	ai_strategy = {
-		type = dont_defend_ally_borders
-		id = "TUR"
-		value = 2000
-	}
-	ai_strategy = {
-		type = dont_defend_ally_borders
-		id = "BUL"
 		value = 2000
 	}
 }
@@ -774,27 +710,13 @@ FRA_ignore_romania = {
 		original_tag = FRA
 	}
 	enable = {
-		is_subject_of = FRA
-		is_in_faction_with = FRA
-		NOT = {
-			original_tag = ROM
-			is_neighbor_of = ROM
-			has_global_flag = great_war_ends
-		}
-		NOT = {
-			has_global_flag = WW1_is_stuck
-		}
+		is_in_faction_with = ROM
 	}
 	abort_when_not_enabled = yes
 	ai_strategy = {
 		type = dont_defend_ally_borders
 		id = ROM
 		value = 2000
-	}
-	ai_strategy = {
-		type = front_unit_request
-		tag = ROM
-		value = -2000
 	}
 }
 
@@ -804,15 +726,8 @@ FRA_ignore_russia = {
 	}
 	enable = {
 		is_in_faction_with = RUS
-		has_war_with = GER
 	}
-	abort = {
-		NOT = {
-			has_war_with = GER
-			has_idea = FRA_interim_government
-		}
-	}
-
+	abort_when_not_enabled = yes
 	ai_strategy = {
 		type = dont_defend_ally_borders
 		id = RUS
@@ -822,21 +737,18 @@ FRA_ignore_russia = {
 
 FRA_prepare_crisis = {
 	allowed = {
-		original_tag = FRA	
+		original_tag = FRA
 	}
 	enable = {
 		is_subject = no
 		NOT = {
 			has_global_flag = great_war_ends
-		}
-		NOT = {
 			has_war_with = GER
 			has_war_together_with = GER
 			is_in_faction_with = GER
 		}
 		OR = {
 			has_global_flag = crisis_in_progress
-			threat > 0.3
 			has_wargoal_against = GER
 			is_justifying_wargoal_against = GER
 			any_allied_country = {
@@ -848,50 +760,223 @@ FRA_prepare_crisis = {
 						OR = {
 							is_justifying_wargoal_against = PREV
 							has_wargoal_against = PREV
-						}				
+						}
 					}
 				}
 			}
 			GER = {
-				is_justifying_wargoal_against = ROOT
-				has_wargoal_against = ROOT
+				OR = {
+					is_justifying_wargoal_against = ROOT
+					has_wargoal_against = ROOT
+				}
 			}
 		}
 	}
 	abort_when_not_enabled = yes
-
 	ai_strategy = {
-		type = put_unit_buffers
-		
-		order_id = 1
-		
-		# Prior Alsace Lorraine
-		states = {
-			17
-			28
-			1107
-		}
-		ratio = 0.25
-		area = europe
-		subtract_invasions_from_need = no
-	}
-	ai_strategy = {
-		type = prepare_for_war 
+		type = prepare_for_war
 		id = GER
 		value = 1
 	}
 }
 
-FRA_prepare_italian_joining = {
+FRA_keep_divivisions_in_main = {
 	allowed = {
 		original_tag = FRA
 	}
 	enable = {
+		NOT = {
+			has_war = yes
+			has_global_flag = crisis_in_progress
+			any_country = {
+				is_justifying_wargoal_against = ROOT
+			}
+		}
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = put_unit_buffers
+		ratio = 1
+		states = {
+			16
+		}
+	}
+	ai_strategy = {
+		type = put_unit_buffers
+		ratio = 1
+		states = {
+			27
+		}
+	}
+	ai_strategy = {
+		type = put_unit_buffers
+		ratio = 1
+		states = {
+			26
+		}
+	}
+	ai_strategy = {
+		type = put_unit_buffers
+		ratio = 1
+		states = {
+			25
+		}
+	}
+	ai_strategy = {
+		type = put_unit_buffers
+		ratio = 1
+		states = {
+			30
+		}
+	}
+	ai_strategy = {
+		type = put_unit_buffers
+		ratio = 1
+		states = {
+			32
+		}
+	}
+}
+
+ENTENTE_less_prio_balkans = {
+	allowed = {
+		NOT = {
+			tag = ROM
+			tag = RUS
+			tag = SER
+			tag = BUL
+			tag = GRE
+			tag = TUR
+		}
+	}
+	enable = {
+		is_in_faction_with = ENT
+		has_war_with = GER
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = area_priority
+		id = balkan
+		value = -400
+	}
+	ai_strategy = {
+		type = front_unit_request
+		strategic_region = 25
+		value = -70
+	}
+	ai_strategy = {
+		type = front_unit_request
+		strategic_region = 26
+		value = -70
+	}
+	ai_strategy = {
+		type = front_unit_request
+		strategic_region = 24
+		value = -70
+	}
+	ai_strategy = {
+		type = front_unit_request
+		strategic_region = 14
+		value = -70
+	}
+	ai_strategy = {
+		type = front_control
+		strategic_region = 14
+		ratio = 0.7
+		execution_type = balanced
+	}
+	ai_strategy = {
+		type = front_control
+		strategic_region = 25
+		ratio = 0.7
+		execution_type = balanced
+	}
+	ai_strategy = {
+		type = front_control
+		strategic_region = 26
+		ratio = 0.7
+		execution_type = balanced
+	}
+	ai_strategy = {
+		type = front_control
+		strategic_region = 24
+		ratio = 0.7
+		execution_type = balanced
+	}
+}
+
+FRA_defend_ports_in_great_war = {
+	allowed = {
 		original_tag = FRA
+	}
+	enable = {
+		has_war_with_major = yes
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = put_unit_buffers
+		ratio = 0.9
+		states = {
+			15
+		}
+		subtract_invasions_from_need = yes
+		subtract_fronts_from_need = yes
+	}
+	ai_strategy = {
+		type = put_unit_buffers
+		ratio = 0.5
+		states = {
+			14
+		}
+		subtract_invasions_from_need = yes
+		subtract_fronts_from_need = yes
+	}
+	ai_strategy = {
+		type = put_unit_buffers
+		ratio = 0.35
+		states = {
+			23
+		}
+		subtract_invasions_from_need = yes
+		subtract_fronts_from_need = yes
+	}
+	ai_strategy = {
+		type = put_unit_buffers
+		ratio = 0.2
+		states = {
+			1108
+		}
+		subtract_invasions_from_need = yes
+		subtract_fronts_from_need = yes
+	}
+	ai_strategy = {
+		type = put_unit_buffers
+		ratio = 0.35
+		states = {
+			19
+		}
+		subtract_invasions_from_need = yes
+		subtract_fronts_from_need = yes
+	}
+	ai_strategy = {
+		type = garrison
+		value = -100
+	}
+}
+
+FRA_italy_guarantee_GER = {
+	allowed = {
+		original_tag = FRA
+	}
+	enable = {
 		has_wargoal_against = GER
-		NOT = { has_war_with = GER }
+		NOT = {
+			has_war_with = GER
+		}
 		ITA = {
-			NOT = { is_in_faction_with = ROOT }
+			NOT = {
+				is_in_faction_with = ROOT
+			}
 			has_guaranteed = GER
 		}
 	}
@@ -904,22 +989,24 @@ FRA_prepare_italian_joining = {
 	}
 	abort_when_not_enabled = yes
 	ai_strategy = {
-		type = front_unit_request
-		tag = ITA
-		value = 25
+		type = prepare_for_war
+		id = ITA
+		value = 1
 	}
 }
 
-FRA_italy_endangers_south = {
+FRA_front_against_italy = {
 	allowed = {
 		original_tag = FRA
 	}
 	enable = {
-		original_tag = FRA
 		has_war_with = GER
 		ITA = {
 			OR = {
-				has_completed_focus = ITA_negotiations_with_germany
+				focus_progress = {
+					focus = ITA_our_traditional_allies
+					progress > 0
+				}
 				has_war_with = FRA
 			}
 		}
@@ -931,22 +1018,19 @@ FRA_italy_endangers_south = {
 	ai_strategy = {
 		type = front_unit_request
 		tag = ITA
-		value = -25
+		value = -20
 	}
 	ai_strategy = {
-		type = prepare_for_war 
+		type = prepare_for_war
 		id = ITA
 		value = 1
 	}
 	ai_strategy = {
 		type = front_control
 		tag = ITA
-		ratio = 0.35
-		
-		priority = 100
+		ratio = 0.4
 		ordertype = front
 		execution_type = balanced
-		execute_order = yes
 	}
 }
 
@@ -956,61 +1040,11 @@ FRA_THE_garnison = {
 	}
 	abort_when_not_enabled = yes
 	enable = {
-		any_controlled_state = {
-			is_coastal = yes
-			OR = {
-				region = 25
-				region = 129
-			}
-		}
-		NOT = {
-			has_global_flag = WW1_is_stuck
-			has_global_flag = great_war_ends
-		}
-		NOT = {
-			any_allied_country = {
-				capital_scope = {
-					OR = {
-						region = 25
-						region = 129
-					}
-				}
-			}
-		}
-		surrender_progress < 0.1
-	}	
-	ai_strategy = {
-		type = front_unit_request
-		tag = GRE
-		value = -300
-	}
-	ai_strategy = {
-		type = prepare_for_war
-		id = GRE
-		value = 1
-	}
-	ai_strategy = {
-		type = put_unit_buffers
-		ratio = 0.15
-		states = {
-			345
-			731
-			184
-		}
-		subtract_fronts_from_need = no
-	}
-}
-FRA_GRE_low_prio = {
-	allowed = {
-		original_tag = FRA
-	}
-	abort_when_not_enabled = yes
-	enable = {
-		original_tag = FRA
 		OR = {
 			any_allied_country = {
 				capital_scope = {
 					OR = {
+						region = 14
 						region = 25
 						region = 129
 					}
@@ -1020,47 +1054,23 @@ FRA_GRE_low_prio = {
 				is_coastal = yes
 				OR = {
 					region = 25
+					region = 14
 					region = 129
 				}
 			}
 		}
-		any_enemy_country = {
-			capital_scope = {
-				OR = {
-					region = 25
-					region = 129
-				}
-			}
+		is_great_war_ongoing = yes
+		surrender_progress < 0.2
+	}
+	ai_strategy = {
+		type = put_unit_buffers
+		ratio = 1
+		states = {
+			345
 		}
-		NOT = {
-			has_global_flag = WW1_is_stuck
-			has_global_flag = great_war_ends
-		}
-	}	
-
-	ai_strategy = {
-		type = spare_unit_factor	
-		value = -9999
+		subtract_fronts_from_need = yes
+		subtract_invasions_from_need = yes
 	}
-
-	ai_strategy = {
-		type = front_unit_request
-		strategic_region = 26
-		value = -200
-	}
-
-	ai_strategy = {
-		type = front_unit_request
-		strategic_region = 25
-		value = -200
-	}
-
-	ai_strategy = {
-		type = front_unit_request
-		strategic_region = 24
-		value = -200
-	}
-
 }
 
 FRA_GER_against_FRC_NFA = {
@@ -1073,7 +1083,7 @@ FRA_GER_against_FRC_NFA = {
 			is_in_faction_with = GER
 		}
 		is_in_faction_with = GER
-	}	
+	}
 	ai_strategy = {
 		type = prepare_for_war
 		id = FRC
@@ -1092,7 +1102,6 @@ FRA_hate_other_frances = {
 		original_tag = FRA
 	}
 	enable = {
-		original_tag = FRA
 		any_other_country = {
 			original_tag = FRA
 		}
@@ -1101,7 +1110,7 @@ FRA_hate_other_frances = {
 			has_war_with = BEL
 			has_war_with = ITA
 		}
-	}	
+	}
 	abort_when_not_enabled = yes
 	ai_strategy = {
 		type = prepare_for_war
@@ -1144,136 +1153,26 @@ FRA_hate_other_frances = {
 	}
 }
 
-
 #### france loser plan
-FRA_illogical_rush_to_GER = {
+FRA_defeat = {
 	allowed = {
 		original_tag = FRA
 	}
 	enable = {
-		original_tag = FRA
 		has_game_rule = {
 			rule = battle_of_france_outcome
 			option = FRENCH_EARLY_DEFEAT
 		}
-		NOT = {
-			has_global_flag = FRA_capitulation_alone
-		}
-		has_war_with = GER
-		date < 1915.4.4
-	}
-	abort = {
 		OR = {
-			has_global_flag = FRA_capitulation_alone
-			has_global_flag = great_war_ends
-			FRA = {
-				has_capitulated = yes
-			}
+			has_global_flag = crisis_in_progress
+			has_war_with = GER
 		}
-		
 	}
-	ai_strategy = {
-		type = front_control
-		tag = GER
-		ratio = 0.3
-		priority = 150
-		ordertype = front
-		execution_type = rush
-		execute_order = yes
-	}
-
+	abort_when_not_enabled = yes
 	ai_strategy = {
 		type = front_unit_request
 		tag = GER
-		value = -100
-	}
-}
-
-#### france loser plan
-GER_destroy_FRA = {
-	allowed = {
-		original_tag = GER
-	}
-	enable = {
-		tag = GER
-		has_game_rule = {
-			rule = battle_of_france_outcome
-			option = FRENCH_EARLY_DEFEAT
-		}
-		NOT = {
-			has_global_flag = FRA_capitulation_alone
-		}
-		date < 1915.4.4
-	}
-	abort = {
-		OR = {
-			has_global_flag = FRA_capitulation_alone
-			has_global_flag = great_war_ends
-			FRA = {
-				has_capitulated = yes
-			}
-		}
-		
-	}
-	ai_strategy = {
-		type = front_control
-		tag = FRA
-		ratio = 0.9
-		priority = 5000
-		ordertype = front
-		execution_type = rush
-		execute_order = yes
-	}
-	ai_strategy = {
-		type = front_unit_request
-		tag = GER
-		value = 100
-	}
-	ai_strategy = {
-		type = front_unit_request
-		tag = RUS
-		value = -25
-	}
-}
-
-#### grande armee cant be so big
-FRA_limit_army_size = {
-	allowed = {
-		original_tag = FRA
-	}
-	enable = {
-		original_tag = FRA
-		has_army_manpower = {
-			size > 2000000
-		}
-	}
-	abort = {
-		has_army_manpower = {
-			size < 1750000
-		}
-		
-	}
-
-	ai_strategy = {
-		type = build_army
-		id = garrison
-		value = -9999
-	}
-
-	ai_strategy = {
-		type = role_ratio
-		id = garrison
-		value = -9999
-	}
-
-	ai_strategy = {
-		type = build_army
-		id = infantry
-		value = -9999
-	}
-	ai_strategy = {
-		type = force_build_armies
-		value = -9999
+		value = -500
 	}
 }
 
@@ -1289,7 +1188,6 @@ FRA_VIN_fight_long_mission = {
 		surrender_progress < 0.1
 	}
 	abort_when_not_enabled = yes
-
 	ai_strategy = {
 		type = put_unit_buffers
 		ratio = 0.15
@@ -1304,12 +1202,10 @@ FRA_VIN_fight_long_mission = {
 
 FRA_ITA_prepare_in_moutains = {
 	allowed = {
-		OR = {
-			original_tag = FRA 
-		}
+		original_tag = FRA
 	}
 	enable = {
-		has_war_together_with = ITA 
+		has_war_together_with = ITA
 		surrender_progress < 0.3
 		ITA = {
 			surrender_progress > 0.05
@@ -1330,7 +1226,6 @@ FRA_ITA_prepare_in_moutains = {
 		}
 	}
 	abort_when_not_enabled = yes
-
 	ai_strategy = {
 		type = put_unit_buffers
 		ratio = 0.15
@@ -1338,6 +1233,7 @@ FRA_ITA_prepare_in_moutains = {
 			735
 			1210
 			21
+			834
 		}
 		subtract_fronts_from_need = no
 	}
@@ -1368,7 +1264,7 @@ FRA_MOR_protect = {
 							OR = {
 								is_justifying_wargoal_against = PREV
 								has_wargoal_against = PREV
-							}				
+							}
 						}
 					}
 				}
@@ -1384,10 +1280,9 @@ FRA_MOR_protect = {
 		}
 	}
 	abort_when_not_enabled = yes
-
 	ai_strategy = {
 		type = put_unit_buffers
-		ratio = 0.50
+		ratio = 0.2
 		states = {
 			462
 			108
@@ -1415,7 +1310,7 @@ FRA_RMO_low_prio = {
 	ai_strategy = {
 		type = front_unit_request
 		strategic_region = 182
-		value = -100
+		value = -40
 	}
 }
 
@@ -1440,7 +1335,6 @@ FRA_MOR_is_thicc = {
 		}
 	}
 	abort_when_not_enabled = yes
-
 	ai_strategy = {
 		type = put_unit_buffers
 		ratio = 0.15
@@ -1455,7 +1349,6 @@ FRA_MOR_is_thicc = {
 	# 	tag = GER
 	# 	value = -200
 	# }
-
 	ai_strategy = {
 		type = front_unit_request
 		strategic_region = 140
@@ -1466,7 +1359,6 @@ FRA_MOR_is_thicc = {
 		strategic_region = 184
 		value = -1000
 	}
-
 	ai_strategy = {
 		type = front_unit_request
 		strategic_region = 182
@@ -1482,26 +1374,26 @@ FRA_MOR_is_thicc2 = {
 		country_exists = MOR
 		has_war_with_major = no
 		MOR = {
-			has_idea = MOR_guerilla_warfare
+			OR = {
+				has_idea = MOR_guerilla_warfare
+				has_idea = MOR_guerilla_warfare2
+			}
+			
 			NOT = {
 				is_subject_of = FRA
 			}
 		}
 		NOT = {
 			has_war_with = MOR
-		}
-		NOT = {
 			has_global_flag = FRA_MOR_moroccan_victory
 		}
 	}
 	abort_when_not_enabled = yes
-
 	ai_strategy = {
 		type = front_unit_request
 		tag = GER
 		value = -150
 	}
-
 	ai_strategy = {
 		type = put_unit_buffers
 		ratio = 0.15
@@ -1511,13 +1403,11 @@ FRA_MOR_is_thicc2 = {
 		}
 		subtract_fronts_from_need = no
 	}
- 
 	ai_strategy = {
 		type = prepare_for_war
 		id = MOR
 		value = 5
 	}
-
 	ai_strategy = {
 		type = front_unit_request
 		strategic_region = 140
@@ -1528,7 +1418,6 @@ FRA_MOR_is_thicc2 = {
 		strategic_region = 184
 		value = -1000
 	}
-
 	ai_strategy = {
 		type = front_unit_request
 		strategic_region = 182
@@ -1536,303 +1425,168 @@ FRA_MOR_is_thicc2 = {
 	}
 }
 
-
 FRA_unit_production = {
 	allowed = {
-		original_tag = FRA	
+		original_tag = FRA
 	}
 	enable = {
-		original_tag = FRA
+		always = yes
 	}
 	abort = {
 		always = no
 	}
-	
 	ai_strategy = {
 		type = role_ratio
 		id = garrison
-		value = 0
+		value = -10
 	}
-
-	ai_strategy = {
-		type = role_ratio
-		id = paratroopers
-		value = 0
-	}
-
 	ai_strategy = {
 		type = role_ratio
 		id = mountaineers
 		value = 2
 	}
-
 	ai_strategy = {
 		type = role_ratio
 		id = marines
 		value = 1
 	}
-
 	ai_strategy = {
 		type = role_ratio
 		id = cavalry
 		value = 1
 	}
-
-	ai_strategy = {
-		type = role_ratio
-		id = armored_car
-		value = 1
-	}
-
 	ai_strategy = {
 		type = template_prio
 		id = medium_armor
 		value = 20
 	}
-
-	ai_strategy = {
-		type = role_ratio
-		id = light_armor
-		value = 0
-	}
-
-	ai_strategy = {
-		type = role_ratio
-		id = armor
-		value = 0
-	}
-
-	ai_strategy = {
-		type = role_ratio
-		id = medium_armor
-		value = 0
-	}
-
-	ai_strategy = {
-		type = role_ratio
-		id = heavy_armor
-		value = 0
-	}
-	
 	ai_strategy = {
 		type = template_prio
 		id = light_armor
 		value = 4000
 	}
-
 	ai_strategy = {
 		type = template_prio
 		id = light_armor_artillery
 		value = 4000
 	}
-
 	ai_strategy = {
 		type = template_prio
 		id = heavy_armor
 		value = 20
 	}
-
 	ai_strategy = {
 		type = role_ratio
 		id = infantry
 		value = 80
 	}
-	
 	#Air unit factors
 	ai_strategy = {
 		type = unit_ratio
 		id = fighter
-		value = 50 # From 70 to 75
+		value = 50		# From 70 to 75
 	}
-
 	ai_strategy = {
 		type = unit_ratio
 		id = maritime_patrol_plane
 		value = -100
 	}
-	
 	ai_strategy = {
 		type = unit_ratio
 		id = tactical_bomber
 		value = 5
 	}
-	
 	ai_strategy = {
 		type = unit_ratio
 		id = strategic_bomber
 		value = 5
 	}
-	
 	ai_strategy = {
 		type = unit_ratio
 		id = naval_bomber
 		value = 5
 	}
-
 	ai_strategy = {
 		type = unit_ratio
 		id = scout_plane
 		value = 5
 	}
-	
-	
 	# Naval unit factors
 	ai_strategy = {
 		type = unit_ratio
 		id = capital_ship
-		value = 25 # from 15 to 25
+		value = 25		# from 15 to 25
 	}
-
 	ai_strategy = {
 		type = unit_ratio
 		id = submarine
-		value = 40 #from 50 to 40
+		value = 40		#from 50 to 40
 	}
-
 	ai_strategy = {
 		type = unit_ratio
 		id = screen_ship
 		value = 20
 	}
-
 	ai_strategy = {
 		type = unit_ratio
 		id = convoy
 		value = 20
 	}
-	
 	ai_strategy = {
 		type = equipment_production_factor
 		id = fighter
 		value = 20
 	}
-	
 	ai_strategy = {
 		type = equipment_production_factor
 		id = infantry
-		value = 25 #focus on infantry
+		value = 25		#focus on infantry
 	}
-	
 	ai_strategy = {
 		type = equipment_production_factor
 		id = artillery
 		value = 25
 	}
-	
-	
 }
 
-armored_car_production = {
-	
+FRA_early_tank_production = {
 	allowed = {
-		original_tag = FRA	
+		original_tag = FRA
 	}
 	enable = {
-		original_tag = FRA
-		NOT = {
-			has_global_flag = great_war_ends
-		}
-		has_war_with = GER
-		NOT = {
-			has_tech = basic_light_tank_chassis
-			has_tech = basic_medium_tank_chassis
-		}
-	}
-	abort = {
-		OR = {
-			has_global_flag = great_war_ends
-			has_tech = basic_light_tank_chassis
-		}
-
-	}
-	#it will force AI to produce armored cars and schneider tanks
-	ai_strategy = {
-		type = equipment_production_factor
-		id = armor
-		value = 200 #build some
-	}
-}
-
-armored_car_production_stop_after_tank = {
-	
-	allowed = {
-		original_tag = FRA	
-	}
-	enable = {
-		original_tag = FRA
-		OR = {
-			has_tech = basic_light_tank_chassis
-			has_global_flag = great_war_ends
-			has_tech = basic_medium_tank_chassis
-		}
-	}
-	abort_when_not_enabled = yes
-	ai_strategy = {
-		type = role_ratio
-		id = armored_car
-		value = -10
-	}
-	ai_strategy = {
-		type = equipment_production_factor
-		id = motorized	#armored cars
-		value = -9999
-	}
-}
-
-early_tank_production = {
-	
-	allowed = {
-		original_tag = FRA	
-	}
-	enable = {
-		original_tag = FRA
 		NOT = {
 			has_global_flag = great_war_ends
 		}
 		OR = {
 			has_active_mission = FRA_fufill_schneider_contract
 			NOT = {
-				check_variable = { num_equipment_in_armies@light_tank_chassis > 59 }
+				check_variable = {
+					num_equipment_in_armies@light_tank_chassis > 59
+				}
 			}
 		}
 		has_tech = basic_medium_tank_chassis
 	}
 	abort = {
-		NOT = {
-			has_active_mission = FRA_fufill_schneider_contract
-		}
-		OR = {
-			has_global_flag = great_war_ends
-			has_completed_focus = FRA_ww1_form_the_armored_spearhead
-			check_variable = { num_equipment_in_armies@light_tank_chassis > 59 }
-		}
-
+		has_completed_focus = FRA_ww1_form_the_armored_spearhead
 	}
+	abort_when_not_enabled = yes
 	#it will force AI to produce armored cars and schneider tanks
 	ai_strategy = {
 		type = equipment_production_factor
 		id = armor
-		value = 800 #build some
+		value = 800		#build some
 	}
-
 	ai_strategy = {
 		type = equipment_production_factor
 		id = fighter
-		value = -100 #no concurrency over steel cars
+		value = -100		#no concurrency over steel cars
 	}
-
-	ai_strategy = {
-		type = role_ratio
-		id = garrison
-		value = -1
-	}
-
 	ai_strategy = {
 		type = role_ratio
 		id = medium_armor
-		value = 1
+		value = 10
 	}
-
 	ai_strategy = {
 		type = role_ratio
 		id = armored_car
@@ -1840,33 +1594,11 @@ early_tank_production = {
 	}
 }
 
-constant_tank_production = {
+FRA_renault_tank_production = {
 	allowed = {
-		original_tag = FRA	
+		original_tag = FRA
 	}
 	enable = {
-		original_tag = FRA
-		NOT = {
-			has_global_flag = great_war_ends
-		}
-		num_of_military_factories > 15
-	}
-	abort_when_not_enabled = yes
-
-	ai_strategy = {
-		type = equipment_production_min_factories
-		id = armor
-		value = 1
-	}
-}
-
-renault_tank_production = {
-	
-	allowed = {
-		original_tag = FRA	
-	}
-	enable = {
-		original_tag = FRA
 		NOT = {
 			has_global_flag = great_war_ends
 		}
@@ -1877,64 +1609,55 @@ renault_tank_production = {
 	}
 	abort_when_not_enabled = yes
 	#it will force AI to produce armored cars and schneider tanks
-
 	ai_strategy = {
 		type = role_ratio
 		id = medium_armor
 		value = -2
 	}
-
 	ai_strategy = {
 		type = role_ratio
 		id = light_armor
 		value = 2
 	}
-
 	ai_strategy = {
 		type = role_ratio
 		id = light_armor_artillery
 		value = 2
 	}
-
 	ai_strategy = {
 		type = role_ratio
 		id = armor
-		value = 3
+		value = 6
 	}
-
 	ai_strategy = {
 		type = role_ratio
 		id = armored_car
 		value = -1
 	}
-
-
 	ai_strategy = {
 		type = equipment_production_factor
 		id = armor
-		value = 500 #build some
+		value = 500		#build some
 	}
 }
 
-FRA_chamond_production = { 	#st chamond stays while sex
+FRA_chamond_production = {
+	#st chamond stays while sex
 	allowed = {
-		original_tag = FRA	
+		original_tag = FRA
 	}
 	enable = {
-		original_tag = FRA
 		has_tech = basic_heavy_tank_chassis
 		NOT = {
 			has_global_flag = great_war_ends
 		}
 	}
 	abort_when_not_enabled = yes
-
 	ai_strategy = {
 		type = build_army
 		id = heavy_armor
 		value = 2
 	}
-
 	ai_strategy = {
 		type = role_ratio
 		id = heavy_armor
@@ -1942,41 +1665,33 @@ FRA_chamond_production = { 	#st chamond stays while sex
 	}
 }
 
-renault_mission_focus = {
-	
+FRA_renault_mission_focus = {
 	allowed = {
-		original_tag = FRA	
+		original_tag = FRA
 	}
 	enable = {
-		original_tag = FRA
 		NOT = {
 			has_global_flag = great_war_ends
 		}
 		has_tech = basic_light_tank_chassis
 		has_tech = basic_medium_tank_chassis
-		
 	}
 	abort = {
-		OR = {
-			has_global_flag = great_war_ends
-			NOT = {
-				has_active_mission = FRA_fufill_renault_contract
-			}
+		NOT = {
+			has_active_mission = FRA_fufill_renault_contract
 		}
 	}
-
+	abort_when_not_enabled = yes
 	ai_strategy = {
 		type = equipment_production_factor
 		id = armor
-		value = 400 #build some
+		value = 400		#build some
 	}
-
 	ai_strategy = {
 		type = role_ratio
 		id = medium_armor
 		value = -20
 	}
-
 	ai_strategy = {
 		type = role_ratio
 		id = light_armor
@@ -1984,38 +1699,35 @@ renault_mission_focus = {
 	}
 }
 
-duval_plan_mission_focus_fighters = {
-	
+FRA_duval_plan_mission_focus_fighters = {
 	allowed = {
-		original_tag = FRA	
+		original_tag = FRA
 	}
 	enable = {
-		original_tag = FRA
 		NOT = {
 			has_global_flag = great_war_ends
 		}
 		has_active_mission = FRA_duval_plan
 		surrender_progress < 0.15
 		NOT = {
-			check_variable = { num_deployed_planes_with_type@fighter_equipment > 999 }
+			check_variable = {
+				num_deployed_planes_with_type@fighter_equipment > 999
+			}
 			has_equipment = {
 				fighter_equipment > 999
 			}
 		}
 	}
 	abort_when_not_enabled = yes
-
 	ai_strategy = {
 		type = equipment_production_factor
 		id = fighter
-		value = 600 #bfighuild some
+		value = 600		#bfighuild some
 	}
-
 	ai_strategy = {
-		type = air_factory_balance # focus on air
+		type = air_factory_balance		# focus on air
 		value = 20
 	}
-
 	ai_strategy = {
 		type = equipment_production_min_factories
 		id = fighter
@@ -2023,38 +1735,35 @@ duval_plan_mission_focus_fighters = {
 	}
 }
 
-duval_plan_mission_focus_bombers = {
-	
+FRA_duval_plan_mission_focus_bombers = {
 	allowed = {
-		original_tag = FRA	
+		original_tag = FRA
 	}
 	enable = {
-		original_tag = FRA
 		NOT = {
 			has_global_flag = great_war_ends
 		}
 		has_active_mission = FRA_duval_plan
 		surrender_progress < 0.15
 		NOT = {
-			check_variable = { num_deployed_planes_with_type@tac_bomber_equipment > 499 }
+			check_variable = {
+				num_deployed_planes_with_type@tac_bomber_equipment > 499
+			}
 			has_equipment = {
 				tac_bomber_equipment > 499
 			}
 		}
 	}
 	abort_when_not_enabled = yes
-
 	ai_strategy = {
-		type = air_factory_balance # focus on air
+		type = air_factory_balance		# focus on air
 		value = 20
 	}
-
 	ai_strategy = {
 		type = equipment_production_factor
 		id = tactical_bomber
 		value = 800
 	}
-
 	ai_strategy = {
 		type = equipment_production_min_factories
 		id = tactical_bomber
@@ -2062,34 +1771,28 @@ duval_plan_mission_focus_bombers = {
 	}
 }
 
-interwar_tank_production = {
-	
+FRA_interwar_tank_production = {
 	allowed = {
-		original_tag = FRA	
+		original_tag = FRA
 	}
 	enable = {
-		original_tag = FRA
 		has_global_flag = great_war_ends
-		has_war = no 
+		has_war = no
 	}
 	abort = {
 		has_war = yes
-
 	}
 	#it will force AI to produce armored cars and schneider tanks
-
 	ai_strategy = {
 		type = role_ratio
 		id = medium_armor
 		value = 1
 	}
-
 	ai_strategy = {
 		type = role_ratio
 		id = light_armor
 		value = 6
 	}
-
 	ai_strategy = {
 		type = role_ratio
 		id = armor
@@ -2099,13 +1802,12 @@ interwar_tank_production = {
 
 FRA_rape_hainan = {
 	allowed = {
-		original_tag = FRA	
-	}
-	enable = {
 		OR = {
 			original_tag = FRA
-			tag = IND
+			original_tag = IND
 		}
+	}
+	enable = {
 		has_country_flag = FRA_war_on_hainan_flag
 		NOT = {
 			IND = {
@@ -2124,53 +1826,147 @@ FRA_rape_hainan = {
 		value = 300
 	}
 	ai_strategy = {
-        type = invasion_unit_request
-        country_trigger = { owns_state = 591 }
-        value = 200
-    }
-}
-keep_djibouti = {
-	enable = {
-		owns_state = 268
-	}
-	abort_when_not_enabled = yes
-	ai_strategy = {
-		type = put_unit_buffers
-		ratio = 0.05
-		states = { 268 }
-		subtract_fronts_from_need = yes
+		type = invasion_unit_request
+		country_trigger = {
+			owns_state = 591
+		}
+		value = 200
 	}
 }
+# fuck djibouti
+#FRA_keep_djibouti = {
+#	allowed = {
+#		original_tag = FRA
+#	}
+#	enable = {
+#		owns_state = 268
+#	}
+#	abort_when_not_enabled = yes
+#	ai_strategy = {
+#		type = put_unit_buffers
+#		ratio = 0.05
+#		states = {
+#			268
+#		}
+#		subtract_fronts_from_need = yes
+#	}
+#}
 
-FRA_industrial_ai_smartness_1910_1911 = {
+FRA_dont_develop_agency = {
 	allowed = {
 		original_tag = FRA
 	}
 	enable = {
-		NOT = {
-			has_global_flag = great_war_ends
+		OR = {
+			has_war_with_major = no
+			date < 1914.1.1
 		}
-		date < 1912.1.1
 	}
-	abort = {
-		has_global_flag = great_war_ends
-	}
-	ai_strategy = {
-		type = equipment_market_spend_factories
-		value = -999  # dont buy at game start
-	}
+	abort_when_not_enabled = yes
 	ai_strategy = {
 		type = intelligence_agency_usable_factories
 		value = -5
 	}
 	ai_strategy = {
 		type = agency_ai_base_num_factories_factor
-		value = -100    # -50% on the define
+		value = -100
 	}
-
 	ai_strategy = {
 		type = agency_ai_per_upgrade_factories_factor
-		value = -100    # -25% on the define
+		value = -100
+	}
+}
+
+FRA_build_civs = {
+	allowed = {
+		original_tag = FRA
+	}
+	enable = {
+		NOT = {
+			has_global_flag = great_war_ends
+			has_war_with_major = yes
+		}
+		date < 1911.6.1
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = equipment_market_spend_factories
+		value = -999
+	}
+	ai_strategy = {
+		type = building_target
+		id = industrial_complex
+		value = 200
+	}
+}
+
+FRA_build_mils = {
+	allowed = {
+		original_tag = FRA
+	}
+	enable = {
+		OR = {
+			has_war_with_major = yes
+			date > 1911.6.1
+		}
+		NOT = {
+			has_global_flag = great_war_ends
+		}
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = build_building
+		id = arms_factory
+		target = 16
+		value = 200
+	}
+	ai_strategy = {
+		type = build_building
+		id = arms_factory
+		target = 30
+		value = 200
+	}
+	ai_strategy = {
+		type = build_building
+		id = arms_factory
+		target = 31
+		value = 200
+	}
+	ai_strategy = {
+		type = build_building
+		id = arms_factory
+		target = 24
+		value = 200
+	}
+	ai_strategy = {
+		type = build_building
+		id = arms_factory
+		target = 25
+		value = 200
+	}
+	ai_strategy = {
+		type = build_building
+		id = arms_factory
+		target = 27
+		value = 200
+	}
+	ai_strategy = {
+		type = build_building
+		id = arms_factory
+		target = 15
+		value = 200
+	}
+	ai_strategy = {
+		type = build_building
+		id = arms_factory
+		target = 19
+		value = 200
+	}
+	ai_strategy = {
+		type = build_building
+		id = air_base
+		target = 16
+		value = 300
 	}
 }
 
@@ -2199,91 +1995,80 @@ FRA_TUN_MOR_mobilization = {
 					OR = {
 						is_justifying_wargoal_against = PREV
 						has_wargoal_against = PREV
-					}				
+					}
 				}
 			}
 			AND = {
-				date > 1914.4.4 #be ready
+				date > 1914.4.4				#be ready
 				is_historical_focus_on = yes
 			}
 		}
-		OR = {
-			tag = TUN
-			tag = MOR
+	}
+	abort = {
+		any_neighbor_country = {
+			has_war_with = ROOT
 		}
 	}
 	abort_when_not_enabled = yes
 	ai_strategy = {
 		type = front_unit_request
-		country_trigger = { 
-			OR = { 
-				has_war_with = FRA
-			} 
+		country_trigger = {
+			has_war_with = FRA
 		}
 		value = 2000
 	}
-
 	ai_strategy = {
 		type = area_priority
 		id = europe
 		value = 4000
 	}
-
 	ai_strategy = {
 		type = front_unit_request
 		strategic_region = 19
 		value = 9000
 	}
-	
 	ai_strategy = {
 		type = dont_defend_ally_borders
 		id = FRA
 		value = -100
 	}
-
 	ai_strategy = {
 		type = force_defend_ally_borders
 		id = FRA
 		value = 100
 	}
-
 	ai_strategy = {
 		type = garrison
 		value = -50
 	}
-
 	ai_strategy = {
 		type = garrison_reinforcement_priority
 		value = -25
 	}
-
 }
 
 FRA_protect_tunisia = {
 	allowed = {
-		always = yes
+		original_tag = FRA
 	}
 	enable = {
-		tag = FRA
 		has_subject = TUN
-		any_state = {
-			region = 225
-			CONTROLLER = {
-				has_war_with = FRA
+		TUN = {
+			any_owned_state = {
+				any_neighbor_state = {
+					controller = {
+						has_war_with = FRA
+					}
+				}
 			}
 		}
 		surrender_progress < 0.25
 	}
 	abort_when_not_enabled = yes
 	ai_strategy = {
-		type = front_unit_request
-		strategic_region = 126
-		value = 1200
-	}
-	ai_strategy = {
-		type = front_unit_request
-		strategic_region = 225
-		value = 1200
+		type = dont_defend_ally_borders
+		id = TUN
+		value = -100
 	}
 }
 
@@ -2291,19 +2076,18 @@ FRA_prepare_for_morocco_crisis = {
 	allowed = {
 		original_tag = FRA
 	}
-	enable = {	
+	enable = {
 		has_global_flag = MOR_crisis_mission
-		tag = FRA
 	}
 	abort_when_not_enabled = yes
 	ai_strategy = {
 		type = prepare_for_war
-		id = GER			
+		id = GER
 		value = 1
 	}
 	ai_strategy = {
 		type = prepare_for_war
-		id = MOR			
+		id = MOR
 		value = 1
 	}
 	ai_strategy = {
@@ -2312,7 +2096,8 @@ FRA_prepare_for_morocco_crisis = {
 		value = -100
 	}
 }
-LBA_take_nothern_chad = {
+
+FRA_take_nothern_chad = {
 	allowed = {
 		original_tag = FRA
 	}
@@ -2326,33 +2111,36 @@ LBA_take_nothern_chad = {
 				OR = {
 					tag = ROOT
 					is_subject_of = ROOT
-				}			
+				}
 			}
 		}
 	}
 	abort = {
 		has_war_with_major = yes
 		if = {
-			limit = { 
+			limit = {
 				NOT = {
 					has_global_flag = great_war_ends
 				}
 			}
 			OR = {
-				has_global_flag = july_crisis_alert		
-				has_global_flag = great_war			
+				has_global_flag = crisis_in_progress
+				has_global_flag = great_war
 			}
 		}
 	}
 	abort_when_not_enabled = yes
 	ai_strategy = {
 		type = front_unit_request
-		tag = LBA
-		value = 5
+		state_trigger = {
+			is_owned_by = LBA
+			is_claimed_by = FRA
+		}
+		value = 100
 	}
 	ai_strategy = {
 		type = prepare_for_war
 		id = LBA
 		value = 1
-	} 
+	}
 }
