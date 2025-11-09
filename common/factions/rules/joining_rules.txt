@@ -8,12 +8,6 @@
 
 ########################################################################################## 
 
-# joining_rule_non_fascist
-# joining_rule_non_democratic
-# joining_rule_non_communist
-# joining_rule_fascist_only
-# joining_rule_same_ideology
-
 joining_rule_non_fascist = {
 	type = joining_rules
 	visible = {
@@ -33,6 +27,10 @@ joining_rule_non_fascist = {
 	trigger = {
 		NOT = {
 			has_government = fascism
+		}
+		IF = {
+			limit = { NOT = { has_rule = can_join_opposite_factions } }
+			has_government = FROM
 		}
 	}
 }
@@ -57,6 +55,10 @@ joining_rule_non_democratic = {
 		NOT = {
 			has_government = democratic 
 		}
+		IF = {
+			limit = { NOT = { has_rule = can_join_opposite_factions } }
+			has_government = FROM
+		}
 	}
 }
 
@@ -77,17 +79,17 @@ joining_rule_non_communist = {
 		}
 	}
 	available = {
-		# IF = {
-		# 	limit = {
-		# 		has_faction_template = faction_template_allies
-		# 	}
-		# 	NOT = {
-		# 		any_enemy_country = {
-		# 			is_major = yes
-		# 			has_government = fascism
-		# 		}
-		# 	}
-		# }
+		IF = {
+			limit = {
+				has_faction_template = faction_template_entente
+			}
+			NOT = {
+				any_enemy_country = {
+					is_major = yes
+					has_government = fascism
+				}
+			}
+		}
 	}
 	can_remove = {
 		IF = {
@@ -105,6 +107,10 @@ joining_rule_non_communist = {
 		NOT = {
 			has_government = communism 
 		}
+		IF = {
+			limit = { NOT = { has_rule = can_join_opposite_factions } }
+			has_government = FROM
+		}
 	}
 }
 
@@ -118,6 +124,10 @@ joining_rule_fascist_only = {
 	}
 	trigger = {
 		has_government = fascism
+		IF = {
+			limit = { NOT = { has_rule = can_join_opposite_factions } }
+			has_government = FROM
+		}
 	}
 }
 
@@ -133,6 +143,10 @@ joining_rule_democratic_non_aligned = {
 		OR = {
 			has_government = democratic
 			has_government = neutrality
+		}
+		IF = {
+			limit = { NOT = { has_rule = can_join_opposite_factions } }
+			has_government = FROM
 		}
 	}
 }
@@ -157,6 +171,50 @@ joining_rule_communist_only = {
 	}
 	trigger = {
 		has_government = communism
+		IF = {
+			limit = { NOT = { has_rule = can_join_opposite_factions } }
+			has_government = FROM
+		}
+	}
+}
+
+joining_rule_support_percentage = {
+	type = joining_rules
+	ai_will_do = {
+		base = 0
+	}
+	visible = {
+
+	}
+	trigger = {
+		compare_ideology_with_faction = {
+			value > 0.3
+			leader = FROM
+		}
+		IF = {
+			limit = { NOT = { has_rule = can_join_opposite_factions } }
+			has_government = FROM
+		}
+	}
+}
+
+joining_rule_puppets_only = {
+	type = joining_rules
+	can_remove = {
+		faction_manifest_fulfillment > 0.95
+	}
+	ai_will_do = {
+		base = 0
+	}
+	trigger = {
+		ROOT = { is_subject_of = FROM }
+		IF = {
+			limit = { NOT = { has_rule = can_join_opposite_factions } }
+			has_government = FROM
+		}
+	}
+	modifier= {
+		subjects_autonomy_gain = -0.05
 	}
 }
 
@@ -618,19 +676,27 @@ joining_rule_hispanic_only = {
 	}
 }
 
-joining_rule_puppets_only = {
+joining_rule_east_asia_only = {
 	type = joining_rules
-	can_remove = {
-		faction_manifest_fulfillment > 0.95
-	}
 	ai_will_do = {
 		base = 0
 	}
-	trigger = {
-		ROOT = { is_subject_of = FROM }
+	visible = {
+		OR = {
+			original_tag = JAP
+			original_tag = KOR
+			is_china_or_warlord_no_tt = yes
+		}
 	}
-	modifier= {
-		subjects_autonomy_gain = -0.05
+	can_remove = {
+		faction_manifest_fulfillment > 0.95	
+	}
+	trigger = {
+		OR = {
+			original_tag = JAP
+			original_tag = KOR
+			is_china_or_warlord_no_tt = yes
+		}
 	}
 }
 

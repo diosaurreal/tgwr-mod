@@ -102,7 +102,7 @@ faction_goal_secure_european_continent = {
 	completed = {
 		collection_size = {
 			input = {
-				input = constant:country_groups.constant:sp_time.continental_europe_1910
+				input = constant:country_groups.continental_europe_1936
 				operators = {
 					limit = {
 						OR = {
@@ -115,7 +115,7 @@ faction_goal_secure_european_continent = {
 				}
 				name = COLLECTION_CONTINENTAL_EUROPE_DEFEATED_OR_FACTION_MEMBERS
 			}
-			value > 16
+			value > 8
 		}
 	}
 	complete_effect = {
@@ -154,9 +154,9 @@ faction_goal_secure_north_africa = {
 	}
 	available = {
 		OR = {
-			# FROM = { has_completed_focus = ITA_italian_irredentism }
+			FROM = { has_completed_focus = ITA_italian_irredentism }
 			any_allied_country = {
-				# has_completed_focus = ITA_italian_irredentism
+				has_completed_focus = ITA_italian_irredentism
 			}
 		}
 	}
@@ -266,12 +266,73 @@ faction_goal_high_seas_fleet = {
  #  #  # #       #  # #   #    #  #     # 
  #  #  # ###     #  # ### ### ### ### ## 
 
+faction_goal_the_arteries_of_trade = {
+	name = the_arteries_of_trade_goal_name
+	description = the_arteries_of_trade_goal_desc
+	category = medium_term
+	group = FOCUS_FILTER_CONSOLIDATION
+	allowed = {
+	}
+	visible = {
+		FROM = {
+			has_war = yes
+			OR = {
+				tag = ENG
+				tag = CAN
+				tag = RAJ
+				tag = MAL
+				tag = USA
+			}
+		}
+	}
+	completed = {
+		count_triggers = {
+			amount = 10
+			has_naval_control = 43
+			has_naval_control = 49
+			has_naval_control = 51
+			has_naval_control = 56
+			has_naval_control = 57
+			has_naval_control = 68
+			has_naval_control = 29
+			has_naval_control = 69
+			has_naval_control = 72
+			has_naval_control = 100
+			has_naval_control = 104
+			has_naval_control = 71
+			has_naval_control = 60	
+			has_naval_control = 48
+			has_naval_control = 61
+			has_naval_control = 62
+		}
+	}
+	complete_effect = {
+		add_faction_power_projection = 100
+		every_faction_member = {
+			add_stability = 0.05
+		}
+	}
+	ai_will_do = {
+		base = 1
+		modifier = {
+			add = 1 # Extra eager to do this as the main trade nations
+			OR = {
+				original_tag = ENG
+				original_tag = USA
+			}
+		}
+		modifier = {
+			factor = 2
+			is_historical_focus_on = yes
+		}
+	}
+}
 
 faction_goal_imperial_glory = {
 	name = imperial_glory_goal_name
 	description = imperial_glory_goal_desc
 	category = medium_term
-	group = FOCUS_FILTER_WAR_SUPPORT
+	group = FOCUS_FILTER_CONSOLIDATION
 	allowed = {
 	}
 	visible = {
@@ -378,18 +439,17 @@ faction_goal_guardians_of_peace = {
 	name = guardians_of_peace_goal_name
 	description = guardians_of_peace_goal_desc
 	category = medium_term
-	group = FOCUS_FILTER_INTERNAL_AFFAIRS
+	group = FOCUS_FILTER_CONSOLIDATION
 	visible = {
 		date < 1939.1.1
 		FROM = {
 			NOT = { has_government = fascism }
 			NOT = { has_government = communism }
+			NOT = { has_country_flag = guardians_of_peace_been_at_war_flag }
 		}
 	}
 	available = {
-		FROM = {
-			NOT = { has_country_flag = guardians_of_peace_been_at_war_flag }
-		}
+
 	}
 	cancel = {
 		FROM = {
@@ -431,17 +491,17 @@ faction_goal_guardians_of_peace = {
 faction_goal_control_the_chinese_coast = {
 	name = control_the_chinese_coast_goal_name
 	description = control_the_chinese_coast_goal_desc
-	group = FOCUS_FILTER_ANNEXATION
+	group = FOCUS_FILTER_CONSOLIDATION
 	category = medium_term
 	allowed = {
 	}
 	visible = {
 		FROM = {
-			is_china = yes
+			is_literally_china = yes
 			has_war = yes
 			OR = {
-				# has_faction_template = faction_template_chinese_united_front
-				# has_faction_template = faction_template_wang_front
+				has_faction_template = faction_template_chinese_united_front
+				has_faction_template = faction_template_wang_front
 			}
 		}
 	}
@@ -513,6 +573,205 @@ faction_goal_control_the_chinese_coast = {
 	}
 	ai_will_do = {
 		base = 10 # Pretty much everyone should want to do this
+	}
+}
+
+faction_goal_the_northern_mandate = {
+	name = faction_goal_the_northern_mandate_name
+	description = faction_goal_the_northern_mandate_desc
+	category = medium_term
+	group = FOCUS_FILTER_ANNEXATION
+	allowed = {
+	}
+	visible = {
+		FROM = {
+			original_tag = CHI
+			has_government = fascism
+		}
+	}
+	available = {
+		FROM = { has_completed_focus = CHI_the_northern_mandate }
+	}
+	ratio_progress = {
+		total_amount_collection = collection:the_northern_mandate_states
+		completed_amount_collection = {
+			input = collection:the_northern_mandate_states
+			operators = {
+				limit = {
+					is_controlled_by_ROOT_or_ally = yes
+				}
+			}
+			name = COLLECTION_FACTION_CONTROLS_NORTHERN_MANDATE
+		}
+	}
+	auto_complete = yes
+	complete_effect = {
+		add_faction_power_projection = 100
+		every_state = {
+			limit = {
+				CHI_northern_mandate_states = yes
+			}
+			add_dynamic_modifier = {
+				modifier = NORDIC_efficient_resource_extraction
+			}
+		}
+	}
+	ai_will_do = {
+		base = 1
+	}
+}
+
+faction_goal_the_southern_mandate = {
+	name = faction_goal_the_southern_mandate_name
+	description = faction_goal_the_southern_mandate_desc
+	category = medium_term
+	group = FOCUS_FILTER_ANNEXATION
+	allowed = {
+	}
+	visible = {
+		FROM = {
+			original_tag = CHI
+			has_government = fascism
+		}
+	}
+	available = {
+		FROM = { has_completed_focus = CHI_the_southern_mandate }
+	}
+	ratio_progress = {
+		total_amount_collection = collection:the_southern_mandate_states
+		completed_amount_collection = {
+			input = collection:the_southern_mandate_states
+			operators = {
+				limit = {
+					is_controlled_by_ROOT_or_ally = yes
+				}
+			}
+			name = COLLECTION_FACTION_CONTROLS_SOUTHERN_MANDATE
+		}
+	}
+	auto_complete = yes
+	complete_effect = {
+		add_faction_power_projection = 100
+		every_state = {
+			limit = {
+				CHI_southern_mandate_states = yes
+			}
+			add_dynamic_modifier = {
+				modifier = NORDIC_efficient_resource_extraction
+			}
+		}
+	}
+	ai_will_do = {
+		base = 1
+	}
+}
+
+faction_goal_the_greater_game = {
+	name = faction_goal_the_greater_game_name
+	description = faction_goal_the_greater_game_desc
+	category = medium_term
+	group = FOCUS_FILTER_ANNEXATION
+	allowed = {
+	}
+	visible = {
+		FROM = {
+			original_tag = CHI
+			has_government = fascism
+		}
+	}
+	available = {
+		FROM = { has_completed_focus = CHI_the_greater_game }
+	}
+	ratio_progress = {
+		total_amount_collection = collection:the_greater_game_states
+		completed_amount_collection = {
+			input = collection:the_greater_game_states
+			operators = {
+				limit = {
+					is_controlled_by_ROOT_or_ally = yes
+				}
+			}
+			name = COLLECTION_FACTION_CONTROLS_GREATER_GAME
+		}
+	}
+	auto_complete = yes
+	complete_effect = {
+		add_faction_power_projection = 50
+		every_state = {
+			limit = {
+				CHI_greater_game_states = yes
+			}
+			add_dynamic_modifier = {
+				modifier = NORDIC_efficient_resource_extraction
+			}
+		}
+	}
+	ai_will_do = {
+		base = 1
+	}
+}
+
+faction_goal_subjugate_the_faction = {
+	name = faction_goal_subjugate_the_faction_name
+	description = faction_goal_subjugate_the_faction_desc
+	category = medium_term
+	group = FOCUS_FILTER_POLITICAL
+	allowed = {
+		is_literally_china = yes
+	}
+	visible = {
+		FROM = { 
+			is_literally_china = yes
+			has_faction_template = faction_template_chinese_united_front 
+		}
+	}
+	available = {
+		FROM = {
+			is_faction_leader = yes
+			has_completed_focus = CHI_from_many_to_one
+		}
+	}
+	completed = {
+		collection_size = {
+			input = {
+				input = game:scope
+				operators = {
+					faction_members
+					limit = {
+						is_subject_of = ROOT # Should be checking faction leader
+					}
+				}
+				name = COLLECTION_AMOUNT_OF_SUBJECTS_TO_FACTION_LEADER
+			}
+			value > 7
+		}
+	}
+	complete_effect = {
+		add_faction_power_projection = 100
+		custom_effect_tooltip = generic_skip_one_line_tt
+		custom_effect_tooltip = THE_FACTION_LEADER
+		add_faction_initiative = 1
+		every_collection_element = {
+			input = {
+				input = game:scope
+				operators =  { 
+					faction_members 
+				}
+				
+				name = ALL_FACTION_MEMBERS
+			}
+			custom_effect_tooltip = ALL_FACTION_MEMBERS
+			add_war_support = 0.15
+			every_unit_leader = {
+				add_timed_unit_leader_trait = {
+					trait = motivated
+					days = 270
+				}
+			}
+		}
+	}
+	ai_will_do = {
+		base = 10 # Do itttt!
 	}
 }
 
@@ -634,7 +893,7 @@ faction_goal_indifference_is_a_threat = {
 	name = indifference_is_a_threat_goal_name
 	description = indifference_is_a_threat_goal_desc
 	category = medium_term
-	group = FOCUS_FILTER_INTERNAL_AFFAIRS
+	group = FOCUS_FILTER_CONSOLIDATION
 	allowed = {
 		
 	}
@@ -774,8 +1033,8 @@ faction_goal_the_two_seas = {
 		modifier = {
 			add = 10
 			OR = {
-				# has_completed_focus = POL_the_between_the_seas_concept
-				# has_completed_focus = POL_sea_to_sea
+				has_completed_focus = POL_the_between_the_seas_concept
+				has_completed_focus = POL_sea_to_sea
 			}
 		}
 	}
@@ -825,15 +1084,6 @@ faction_goal_marine_corps = {
 	category = medium_term
 	group = FOCUS_FILTER_NAVY_XP
 	available = {
-		count_in_collection = {
-			collection = {
-				input = game:scope
-				operators = { faction_members }
-				name = FACTION
-			}
-			unit_category = category_amphibious_tanks
-			size < 10
-		}
 	}
 	completed = {
 		count_in_collection = {
@@ -914,15 +1164,7 @@ faction_goal_submarine_force = {
 	category = medium_term
 	group = FOCUS_FILTER_NAVY_XP
 	available = {
-		count_in_collection = {
-			collection = {
-				input = game:scope
-				operators = { faction_members }
-				name = FACTION
-			}
-			unit = submarine
-			size < 100
-		}
+
 	}
 	completed = {
 		count_in_collection = {
@@ -1010,15 +1252,7 @@ faction_goal_convoy_escort_force = {
 	category = medium_term
 	group = FOCUS_FILTER_NAVY_XP
 	available = {
-		count_in_collection = {
-			collection = {
-				input = game:scope
-				operators = { faction_members }
-				name = FACTION
-			}
-			unit = screen_ship
-			size < 100
-		}
+
 	}
 	completed = {
 		count_in_collection = {
@@ -1103,15 +1337,7 @@ faction_goal_air_superiority = {
 	category = medium_term
 	group = FOCUS_FILTER_AIR_XP
 	available = {
-		count_in_collection = {
-			collection = {
-				input = game:scope
-				operators = { faction_members }
-				name = FACTION
-			}
-			unit = fighter
-			size < 1000
-		}
+
 	}
 	completed = {
 		count_in_collection = {
@@ -1455,12 +1681,7 @@ faction_goal_control_mexican_oil = {
 		}
 	}
 	available = {
-		OR = {
-			480 = { is_controlled_by_ROOT_or_ally = no }
-			479 = {	is_controlled_by_ROOT_or_ally = no }
-			477 = {	is_controlled_by_ROOT_or_ally = no }
-			476 = {	is_controlled_by_ROOT_or_ally = no }	
-		}
+
 	}
 	completed = {
 		480 = { is_controlled_by_ROOT_or_ally = yes }
@@ -1584,7 +1805,7 @@ faction_goal_control_curacao_oil = {
 		}
 	}
 	available = {
-		695 = { is_controlled_by_ROOT_or_ally = no }
+
 	}
 	completed = {
 		695 = { is_controlled_by_ROOT_or_ally = yes }	
@@ -1692,10 +1913,7 @@ faction_goal_control_venezuelan_oil = {
 		}
 	}
 	available = {
-		OR = {
-			489 = { is_controlled_by_ROOT_or_ally = no }
-			307 = {	is_controlled_by_ROOT_or_ally = no }	
-		}
+
 	}
 	completed = {
 		489 = { is_controlled_by_ROOT_or_ally = yes }
@@ -1813,17 +2031,7 @@ faction_goal_control_guyanan_bauxite = {
 		}
 	}
 	available = {
-		687 = { is_controlled_by_ROOT_or_ally = no }
-		has_resources_in_collection = {
-			collection = {
-					input = game:scope
-					operators =  { faction_members }
-					name = FACTION
-			}
-			resource = aluminium
-			amount < 50
-			extracted = no # (optional, default: no) checks extracted amount instead of country balance
-		}
+
 	}
 	completed = {
 		687 = { is_controlled_by_ROOT_or_ally = yes }
@@ -1915,17 +2123,7 @@ faction_goal_control_suriname_bauxite = {
 		}
 	}
 	available = {
-		309 = { is_controlled_by_ROOT_or_ally = no }
-		has_resources_in_collection = {
-			collection = {
-					input = game:scope
-					operators =  { faction_members }
-					name = FACTION
-			}
-			resource = aluminium
-			amount < 50
-			extracted = no # (optional, default: no) checks extracted amount instead of country balance
-		}
+
 	}
 	completed = {
 		309 = { is_controlled_by_ROOT_or_ally = yes }
@@ -2017,42 +2215,7 @@ faction_goal_control_lappland_metals = {
 		}
 	}
 	available = {
-		OR = {
-			666 = { is_controlled_by_ROOT_or_ally = no }
-			918 = {	is_controlled_by_ROOT_or_ally = no }
-		}
-		OR = {
-			has_resources_in_collection = {
-				collection = {
-						input = game:scope
-						operators =  { faction_members }
-						name = FACTION
-				}
-				resource = tungsten
-				amount < 50
-				extracted = no # (optional, default: no) checks extracted amount instead of country balance
-			}
-			has_resources_in_collection = {
-				collection = {
-						input = game:scope
-						operators =  { faction_members }
-						name = FACTION
-				}
-				resource = steel
-				amount < 50
-				extracted = no # (optional, default: no) checks extracted amount instead of country balance
-			}
-			has_resources_in_collection = {
-				collection = {
-						input = game:scope
-						operators =  { faction_members }
-						name = FACTION
-				}
-				resource = chromium
-				amount < 25
-				extracted = no # (optional, default: no) checks extracted amount instead of country balance
-			}
-		}
+		
 	}
 	completed = {
 		666 = { is_controlled_by_ROOT_or_ally = yes }
@@ -2184,7 +2347,7 @@ faction_goal_control_ploiesti_oil_fields = {
 		}
 	}
 	available = {
-		46 = { is_controlled_by_ROOT_or_ally = no }
+
 	}
 	completed = {
 		46 = { is_controlled_by_ROOT_or_ally = yes }
@@ -2292,11 +2455,7 @@ faction_goal_control_baku_oil_fields = {
 		}
 	}
 	available = {
-		OR = {
-			229 = { is_controlled_by_ROOT_or_ally = no }
-			232 = {	is_controlled_by_ROOT_or_ally = no }
-			821 = { is_controlled_by_ROOT_or_ally = no }
-		}
+
 	}
 	completed = {
 		229 = { is_controlled_by_ROOT_or_ally = yes }
@@ -2338,6 +2497,54 @@ faction_goal_control_baku_oil_fields = {
 			}
 		}
 	}
+	ai_will_do = {
+		base = 1 # Everyone should always kiiiinda care about oil
+		modifier = {
+			factor = 2 # Target of opportunity - already at war anyway
+			479 = {
+				owner = {
+					has_war_with = ROOT
+				}
+			}
+		}
+		modifier = {
+			add = -1 # If the alliance is doing well with fuel avoid taking this...
+			fuel_ratio > 0.9
+			all_allied_country = {
+				fuel_ratio > 0.9
+			}
+		}
+		modifier = {
+			add = 1 # ...except if the faction has very few sources of oil to start with (might be full storages cuz not using their vehicles)
+			has_resources_in_collection = {
+				collection = {
+						input = game:scope
+						operators =  { faction_members }
+						name = FACTION
+				}
+				resource = oil
+				amount < 10
+				extracted = yes
+			}
+		}
+		modifier = {
+			add = 1 # Powers with low fuel should care about oil a bit more
+			fuel_ratio < 0.4
+		}
+		modifier = {
+			add = 1 # Powers with very low fuel should care about oil A LOT
+			fuel_ratio < 0.1
+		}
+		modifier = {
+			add = 5 # Massive boost in case low fuel and already at war anyway
+			fuel_ratio < 0.1
+			479 = {
+				owner = {
+					has_war_with = ROOT
+				}
+			}
+		}
+	}
 }
 
 # Iraqi Oil
@@ -2369,11 +2576,7 @@ faction_goal_control_iraqi_oil = {
 		}
 	}
 	available = {
-		OR = {
-			291 = { is_controlled_by_ROOT_or_ally = no }
-			676 = {	is_controlled_by_ROOT_or_ally = no }
-			1010 = { is_controlled_by_ROOT_or_ally = no }	
-		}
+
 	}
 	completed = {
 		291 = { is_controlled_by_ROOT_or_ally = yes }
@@ -2415,6 +2618,54 @@ faction_goal_control_iraqi_oil = {
 			}
 		}
 	}
+	ai_will_do = {
+		base = 1 # Everyone should always kiiiinda care about oil
+		modifier = {
+			factor = 2 # Target of opportunity - already at war anyway
+			479 = {
+				owner = {
+					has_war_with = ROOT
+				}
+			}
+		}
+		modifier = {
+			add = -1 # If the alliance is doing well with fuel avoid taking this...
+			fuel_ratio > 0.9
+			all_allied_country = {
+				fuel_ratio > 0.9
+			}
+		}
+		modifier = {
+			add = 1 # ...except if the faction has very few sources of oil to start with (might be full storages cuz not using their vehicles)
+			has_resources_in_collection = {
+				collection = {
+						input = game:scope
+						operators =  { faction_members }
+						name = FACTION
+				}
+				resource = oil
+				amount < 10
+				extracted = yes
+			}
+		}
+		modifier = {
+			add = 1 # Powers with low fuel should care about oil a bit more
+			fuel_ratio < 0.4
+		}
+		modifier = {
+			add = 1 # Powers with very low fuel should care about oil A LOT
+			fuel_ratio < 0.1
+		}
+		modifier = {
+			add = 5 # Massive boost in case low fuel and already at war anyway
+			fuel_ratio < 0.1
+			479 = {
+				owner = {
+					has_war_with = ROOT
+				}
+			}
+		}
+	}
 }
 
 # Persian Oil
@@ -2446,11 +2697,7 @@ faction_goal_control_persian_oil = {
 		}
 	}
 	available = {
-		OR = {
-			411 = { is_controlled_by_ROOT_or_ally = no }
-			412 = {	is_controlled_by_ROOT_or_ally = no }
-			413 = { is_controlled_by_ROOT_or_ally = no }	
-		}
+
 	}
 	completed = {
 		411 = { is_controlled_by_ROOT_or_ally = yes }
@@ -2492,6 +2739,54 @@ faction_goal_control_persian_oil = {
 			}
 		}
 	}
+	ai_will_do = {
+		base = 1 # Everyone should always kiiiinda care about oil
+		modifier = {
+			factor = 2 # Target of opportunity - already at war anyway
+			479 = {
+				owner = {
+					has_war_with = ROOT
+				}
+			}
+		}
+		modifier = {
+			add = -1 # If the alliance is doing well with fuel avoid taking this...
+			fuel_ratio > 0.9
+			all_allied_country = {
+				fuel_ratio > 0.9
+			}
+		}
+		modifier = {
+			add = 1 # ...except if the faction has very few sources of oil to start with (might be full storages cuz not using their vehicles)
+			has_resources_in_collection = {
+				collection = {
+						input = game:scope
+						operators =  { faction_members }
+						name = FACTION
+				}
+				resource = oil
+				amount < 10
+				extracted = yes
+			}
+		}
+		modifier = {
+			add = 1 # Powers with low fuel should care about oil a bit more
+			fuel_ratio < 0.4
+		}
+		modifier = {
+			add = 1 # Powers with very low fuel should care about oil A LOT
+			fuel_ratio < 0.1
+		}
+		modifier = {
+			add = 5 # Massive boost in case low fuel and already at war anyway
+			fuel_ratio < 0.1
+			479 = {
+				owner = {
+					has_war_with = ROOT
+				}
+			}
+		}
+	}
 }
 
 # Chinese Metals
@@ -2501,9 +2796,14 @@ faction_goal_control_chinese_metals = {
 	category = medium_term
 	group = resources_to_market_icon
 	allowed = {
-		is_independent_china_or_warlord = no
 	}
 	visible = {
+		FROM = {
+			is_independent_china_or_warlord = no
+		}
+		all_allied_country = {
+			is_independent_china_or_warlord = no
+		}
 		any_collection_element = {
 			collection = {
 				 input = game:scope
@@ -2517,44 +2817,7 @@ faction_goal_control_chinese_metals = {
 		}
 	}
 	available = {
-		OR = {
-			592 = { is_controlled_by_ROOT_or_ally = no }
-			593 = {	is_controlled_by_ROOT_or_ally = no }
-			594 = { is_controlled_by_ROOT_or_ally = no }
-			599 = { is_controlled_by_ROOT_or_ally = no }
-		}
-		OR = {
-			has_resources_in_collection = {
-				collection = {
-						input = game:scope
-						operators =  { faction_members }
-						name = FACTION
-				}
-				resource = tungsten
-				amount < 50
-				extracted = no # (optional, default: no) checks extracted amount instead of country balance
-			}
-			has_resources_in_collection = {
-				collection = {
-						input = game:scope
-						operators =  { faction_members }
-						name = FACTION
-				}
-				resource = steel
-				amount < 50
-				extracted = no # (optional, default: no) checks extracted amount instead of country balance
-			}
-			has_resources_in_collection = {
-				collection = {
-						input = game:scope
-						operators =  { faction_members }
-						name = FACTION
-				}
-				resource = chromium
-				amount < 25
-				extracted = no # (optional, default: no) checks extracted amount instead of country balance
-			}
-		}
+		
 	}
 	completed = {
 		592 = { is_controlled_by_ROOT_or_ally = yes }
@@ -2692,54 +2955,7 @@ faction_goal_control_malayan_riches = {
 		}
 	}
 	available = {
-		OR = {
-			333 = { is_controlled_by_ROOT_or_ally = no }
-			336 = {	is_controlled_by_ROOT_or_ally = no }
-			1021 = { is_controlled_by_ROOT_or_ally = no }
-			1024 = { is_controlled_by_ROOT_or_ally = no }
-		}
-		OR = {
-			has_resources_in_collection = {
-				collection = {
-						input = game:scope
-						operators =  { faction_members }
-						name = FACTION
-				}
-				resource = rubber
-				amount < 50
-				extracted = no # (optional, default: no) checks extracted amount instead of country balance
-			}
-			has_resources_in_collection = {
-				collection = {
-						input = game:scope
-						operators =  { faction_members }
-						name = FACTION
-				}
-				resource = tungsten
-				amount < 50
-				extracted = no # (optional, default: no) checks extracted amount instead of country balance
-			}
-			has_resources_in_collection = {
-				collection = {
-						input = game:scope
-						operators =  { faction_members }
-						name = FACTION
-				}
-				resource = steel
-				amount < 15
-				extracted = no # (optional, default: no) checks extracted amount instead of country balance
-			}
-			has_resources_in_collection = {
-				collection = {
-						input = game:scope
-						operators =  { faction_members }
-						name = FACTION
-				}
-				resource = aluminium
-				amount < 10
-				extracted = no # (optional, default: no) checks extracted amount instead of country balance
-			}
-		}
+		
 	}
 	completed = {
 		333 = { is_controlled_by_ROOT_or_ally = yes }
@@ -2901,35 +3117,7 @@ faction_goal_control_indonesian_riches = {
 		}
 	}
 	available = {
-		OR = {
-			334 = { is_controlled_by_ROOT_or_ally = no }
-			335 = {	is_controlled_by_ROOT_or_ally = no }
-			667 = {	is_controlled_by_ROOT_or_ally = no }
-			672 = { is_controlled_by_ROOT_or_ally = no }
-			673 = { is_controlled_by_ROOT_or_ally = no }
-		}
-		OR = {
-			has_resources_in_collection = {
-				collection = {
-						input = game:scope
-						operators =  { faction_members }
-						name = FACTION
-				}
-				resource = rubber
-				amount < 50
-				extracted = no # (optional, default: no) checks extracted amount instead of country balance
-			}
-			has_resources_in_collection = {
-				collection = {
-						input = game:scope
-						operators =  { faction_members }
-						name = FACTION
-				}
-				resource = aluminium
-				amount < 20
-				extracted = no # (optional, default: no) checks extracted amount instead of country balance
-			}
-		}
+		
 	}
 	completed = {
 		334 = { is_controlled_by_ROOT_or_ally = yes }
@@ -3092,7 +3280,7 @@ faction_goal_control_newfoundland_bases = {
 		}
 	}
 	available = {
-		331 = { is_controlled_by_ROOT_or_ally = no }
+
 	}
 	completed = {
 		331 = { is_controlled_by_ROOT_or_ally = yes }
@@ -3222,7 +3410,7 @@ faction_goal_control_bermuda = {
 		}
 	}
 	available = {
-		696 = { is_controlled_by_ROOT_or_ally = no }
+
 	}
 	completed = {
 		696 = { is_controlled_by_ROOT_or_ally = yes }
@@ -3352,10 +3540,7 @@ faction_goal_control_bahamas_bases = {
 		}
 	}
 	available = {
-		OR = {
-			690 = { is_controlled_by_ROOT_or_ally = no }
-			693 = { is_controlled_by_ROOT_or_ally = no }
-		}
+
 	}
 	completed = {
 		690 = { is_controlled_by_ROOT_or_ally = yes }
@@ -3516,7 +3701,7 @@ faction_goal_control_panama_canal = {
 		}
 	}
 	available = {
-		685 = { is_controlled_by_ROOT_or_ally = no }
+
 	}
 	completed = {
 		685 = { is_controlled_by_ROOT_or_ally = yes }
@@ -3639,7 +3824,7 @@ faction_goal_control_trinidad = {
 		}
 	}
 	available = {
-		691 = { is_controlled_by_ROOT_or_ally = no }
+
 	}
 	completed = {
 		691 = { is_controlled_by_ROOT_or_ally = yes }
@@ -3775,7 +3960,7 @@ faction_goal_control_azores = {
 		}
 	}
 	available = {
-		698 = { is_controlled_by_ROOT_or_ally = no }
+
 	}
 	completed = {
 		698 = { is_controlled_by_ROOT_or_ally = yes }
@@ -3913,7 +4098,7 @@ faction_goal_control_iceland = {
 		}
 	}
 	available = {
-		100 = { is_controlled_by_ROOT_or_ally = no }
+
 	}
 	completed = {
 		100 = { is_controlled_by_ROOT_or_ally = yes }
@@ -4049,7 +4234,7 @@ faction_goal_control_faroe_islands = {
 		}
 	}
 	available = {
-		337 = { is_controlled_by_ROOT_or_ally = no }
+
 	}
 	completed = {
 		337 = { is_controlled_by_ROOT_or_ally = yes }
@@ -4185,7 +4370,7 @@ faction_goal_control_narvik = {
 		}
 	}
 	available = {
-		144 = { is_controlled_by_ROOT_or_ally = no }
+
 	}
 	completed = {
 		144 = { is_controlled_by_ROOT_or_ally = yes }
@@ -4284,11 +4469,7 @@ faction_goal_control_danish_belts = {
 		}
 	}
 	available = {
-		OR = {
-			37 = { is_controlled_by_ROOT_or_ally = no }
-			911 = { is_controlled_by_ROOT_or_ally = no }
-			99 = { is_controlled_by_ROOT_or_ally = no }
-		}
+
 	}
 	completed = {
 		37 = { is_controlled_by_ROOT_or_ally = yes }
@@ -4302,9 +4483,11 @@ faction_goal_control_danish_belts = {
 		every_faction_member = { 
 			visible_when_empty = yes
 			limit = {
-				controls_state = 37
-				controls_state = 911
-				controls_state = 99
+				OR = {
+					controls_state = 37
+					controls_state = 911
+					controls_state = 99
+				}
 			}
 			add_faction_initiative = 1
 		}
@@ -4424,7 +4607,7 @@ faction_goal_control_brittany_bases = {
 		}
 	}
 	available = {
-		14 = { is_controlled_by_ROOT_or_ally = no }
+
 	}
 	completed = {
 		14 = { is_controlled_by_ROOT_or_ally = yes }
@@ -4519,7 +4702,7 @@ faction_goal_control_gibraltar = {
 		}
 	}
 	available = {
-		118 = { is_controlled_by_ROOT_or_ally = no }
+
 	}
 	completed = {
 		118 = { is_controlled_by_ROOT_or_ally = yes }
@@ -4626,7 +4809,7 @@ faction_goal_control_malta = {
 		}
 	}
 	available = {
-		116 = { is_controlled_by_ROOT_or_ally = no }
+
 	}
 	completed = {
 		116 = { is_controlled_by_ROOT_or_ally = yes }
@@ -4686,7 +4869,6 @@ faction_goal_control_malta = {
 							is_on_continent = europe
 						}
 					}
-					name = COLLECTION_FACTION_STATES_IN_NORTH_AMERICA
 				}
 				value > 0
 			}
@@ -4702,7 +4884,6 @@ faction_goal_control_malta = {
 							}
 						}
 					}
-					name = COLLECTION_FACTION_STATES_IN_EUROPE
 				}
 				value > 0
 			}
@@ -4754,7 +4935,7 @@ faction_goal_control_crete = {
 		}
 	}
 	available = {
-		182 = { is_controlled_by_ROOT_or_ally = no }
+
 	}
 	completed = {
 		182 = { is_controlled_by_ROOT_or_ally = yes }
@@ -4882,7 +5063,7 @@ faction_goal_control_cyprus = {
 		}
 	}
 	available = {
-		183 = { is_controlled_by_ROOT_or_ally = no }
+
 	}
 	completed = {
 		183 = { is_controlled_by_ROOT_or_ally = yes }
@@ -5016,7 +5197,7 @@ faction_goal_control_bosporus = {
 		}
 	}
 	available = {
-		797 = { is_controlled_by_ROOT_or_ally = no }
+
 	}
 	completed = {
 		797 = { is_controlled_by_ROOT_or_ally = yes }
@@ -5060,6 +5241,30 @@ faction_goal_control_bosporus = {
 				type = bunker
 				level = 1
 				province = 11829
+				instant_build = yes
+			}
+			add_building_construction = {
+				type = coastal_bunker
+				level = 1
+				province = 1155
+				instant_build = yes
+			}
+			add_building_construction = {
+				type = bunker
+				level = 1
+				province = 1155
+				instant_build = yes
+			}
+			add_building_construction = {
+				type = coastal_bunker
+				level = 1
+				province = 9947
+				instant_build = yes
+			}
+			add_building_construction = {
+				type = bunker
+				level = 1
+				province = 9947
 				instant_build = yes
 			}
 		}
@@ -5123,10 +5328,7 @@ faction_goal_control_dardanelles = {
 		}
 	}
 	available = {
-		OR = {
-			340 = { is_controlled_by_ROOT_or_ally = no }
-			341 = { is_controlled_by_ROOT_or_ally = no }
-		}
+
 	}
 	completed = {
 		340 = { is_controlled_by_ROOT_or_ally = yes }
@@ -5252,7 +5454,7 @@ faction_goal_control_suez_canal = {
 		}
 	}
 	available = {
-		446 = { is_controlled_by_ROOT_or_ally = no }
+
 	}
 	completed = {
 		446 = { is_controlled_by_ROOT_or_ally = yes }
@@ -5372,7 +5574,7 @@ faction_goal_control_gulf_of_aden_bases = {
 		}
 	}
 	available = {
-		992 = { is_controlled_by_ROOT_or_ally = no }
+
 	}
 	completed = {
 		992 = { is_controlled_by_ROOT_or_ally = yes }
@@ -5490,10 +5692,7 @@ faction_goal_control_strait_of_hormuz = {
 		}
 	}
 	available = {
-		OR = {
-			412 = { is_controlled_by_ROOT_or_ally = no }
-			1013 = { is_controlled_by_ROOT_or_ally = no }
-		}
+
 	}
 	completed = {
 		412 = { is_controlled_by_ROOT_or_ally = yes }
@@ -5669,7 +5868,7 @@ faction_goal_control_ceylon = {
 		}
 	}
 	available = {
-		422 = { is_controlled_by_ROOT_or_ally = no }
+
 	}
 	completed = {
 		422 = { is_controlled_by_ROOT_or_ally = yes }
@@ -5793,7 +5992,7 @@ faction_goal_control_singapore = {
 		}
 	}
 	available = {
-		1021 = { is_controlled_by_ROOT_or_ally = no }
+
 	}
 	completed = {
 		1021 = { is_controlled_by_ROOT_or_ally = yes }
@@ -5917,7 +6116,7 @@ faction_goal_control_manila = {
 		}
 	}
 	available = {
-		327 = { is_controlled_by_ROOT_or_ally = no }
+
 	}
 	completed = {
 		327 = { is_controlled_by_ROOT_or_ally = yes }
@@ -6017,7 +6216,7 @@ faction_goal_control_okinawa = {
 		}
 	}
 	available = {
-		526 = { is_controlled_by_ROOT_or_ally = no }
+
 	}
 	completed = {
 		526 = { is_controlled_by_ROOT_or_ally = yes }
@@ -6110,7 +6309,7 @@ faction_goal_control_iwo_jima = {
 		}
 	}
 	available = {
-		645 = { is_controlled_by_ROOT_or_ally = no }
+
 	}
 	completed = {
 		645 = { is_controlled_by_ROOT_or_ally = yes }
@@ -6205,7 +6404,7 @@ faction_goal_control_caroline_islands = {
 		}
 	}
 	available = {
-		684 = { is_controlled_by_ROOT_or_ally = no }
+
 	}
 	completed = {
 		684 = { is_controlled_by_ROOT_or_ally = yes }
@@ -6340,7 +6539,7 @@ faction_goal_control_guadalcanal = {
 		}
 	}
 	available = {
-		634 = { is_controlled_by_ROOT_or_ally = no }
+
 	}
 	completed = {
 		634 = { is_controlled_by_ROOT_or_ally = yes }
@@ -6470,7 +6669,7 @@ faction_goal_control_wake_island = {
 		}
 	}
 	available = {
-		632 = { is_controlled_by_ROOT_or_ally = no }
+
 	}
 	completed = {
 		632 = { is_controlled_by_ROOT_or_ally = yes }
@@ -6606,7 +6805,7 @@ faction_goal_control_midway_island = {
 		}
 	}
 	available = {
-		631 = { is_controlled_by_ROOT_or_ally = no }
+
 	}
 	completed = {
 		631 = { is_controlled_by_ROOT_or_ally = yes }
@@ -6742,7 +6941,7 @@ faction_goal_control_hawaii = {
 		}
 	}
 	available = {
-		629 = { is_controlled_by_ROOT_or_ally = no }
+
 	}
 	completed = {
 		629 = { is_controlled_by_ROOT_or_ally = yes }
@@ -6885,7 +7084,7 @@ faction_goal_control_attu_island = {
 		}
 	}
 	available = {
-		650 = { is_controlled_by_ROOT_or_ally = no }
+
 	}
 	completed = {
 		650 = { is_controlled_by_ROOT_or_ally = yes }
