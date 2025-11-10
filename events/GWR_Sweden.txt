@@ -94,6 +94,7 @@ country_event = {
 			}
 		}
 		add_ideas = SWE_liberal_social_government
+		SWE_communist_tension_increase = yes
 	}
 }
 
@@ -594,7 +595,6 @@ country_event = {
 			modifier = {
 				add = 1
 				OR = {
-					is_historical_focus_on = no
 					has_country_flag = SWE_AI_MONARCHIST
 					has_game_rule = {
 						rule = SWE_ai_behavior 
@@ -604,6 +604,11 @@ country_event = {
 					has_game_rule = {
 						rule = SWE_ai_behavior 
 						option = FASCIST
+					}
+					has_country_flag = SWE_AI_CENTRAL_POWERS
+					has_game_rule = {
+						rule = SWE_ai_behavior 
+						option = CENTRAL_POWERS
 					}
 					has_country_flag = SWE_AI_SYNDICALIST
 					has_game_rule = {
@@ -641,13 +646,27 @@ country_event = {
 			}
 		}
 	}
-
+	
 	fire_only_once = yes
 
 	option = {	# No
 		name = ww_sverige.10.a
 		ai_chance = {
 			base = 2
+			modifier = {
+				factor = 0
+				OR = {
+					has_country_flag = SWE_AI_DEMOCRATIC_ALT
+					has_game_rule = {
+						rule = SWE_ai_behavior 
+						option = DEMOCRATIC_ALT
+					}
+					has_game_rule = {
+						rule = SWE_ai_behavior 
+						option = CENTRAL_POWERS
+					}
+				}
+			}
 		}
 		custom_effect_tooltip = historical_tt
 		promote_character = SWE_hjalmar_hammarskjold
@@ -678,20 +697,15 @@ country_event = {
 			base = 0
 			modifier = {
 				add = 1
-				is_historical_focus_on = no
-			}
-			modifier = {
-				add = 1
 				OR = {
-					has_country_flag = SWE_AI_MONARCHIST
+					has_country_flag = SWE_AI_DEMOCRATIC_ALT
 					has_game_rule = {
 						rule = SWE_ai_behavior 
-						option = MONARCHIST
+						option = DEMOCRATIC_ALT
 					}
-					has_country_flag = SWE_AI_FASCIST
 					has_game_rule = {
 						rule = SWE_ai_behavior 
-						option = FASCIST
+						option = CENTRAL_POWERS
 					}
 				}
 			}
@@ -701,11 +715,11 @@ country_event = {
 			promote_character = conservatism
 		}
 		add_popularity = {
-				ideology = neutrality
+			ideology = neutrality
 			popularity = 0.02
 		}
 		add_popularity = {
-				ideology = fascism
+			ideology = fascism
 			popularity = 0.01
 		}
 		remove_ideas = SWE_anti_war_promises
@@ -719,6 +733,7 @@ country_event = {
 			idea = SWE_courtyard_regime
 			days = 730
 		}
+		SWE_increase_socialist_radicalisation = yes
 		hidden_effect = {
 			set_party_name = { 
 				ideology = democratic 
@@ -818,7 +833,29 @@ country_event = {
 	option = {	# Execute the coup!
 		name = ww_sverige.11.a
 		ai_chance = {
-			base = 4
+			base = 0
+			modifier = {
+				add = 1
+				NOT = {
+					AND = {
+						is_historical_focus_on = yes
+						has_game_rule = {
+							rule = SWE_ai_behavior 
+							option = DEFAULT
+						}
+					}
+					has_country_flag = SWE_AI_RANDOM_HISTORICAL
+					has_game_rule = {
+						rule = SWE_ai_behavior 
+						option = HISTORICAL
+					}
+					has_country_flag = SWE_AI_DEMOCRATIC_ALT
+					has_game_rule = {
+						rule = SWE_ai_behavior 
+						option = DEMOCRATIC_ALT
+					}
+				}
+			}
 		}
 		add_political_power = -50
 		add_command_power = -50
@@ -862,11 +899,25 @@ country_event = {
 			base = 0
 			modifier = {
 				add = 1
-				has_stability < 0.5
-			}
-			modifier = {
-				add = 1
-				communism > 0.30
+				OR = {
+					AND = {
+						is_historical_focus_on = yes
+						has_game_rule = {
+							rule = SWE_ai_behavior 
+							option = DEFAULT
+						}
+					}
+					has_country_flag = SWE_AI_RANDOM_HISTORICAL
+					has_game_rule = {
+						rule = SWE_ai_behavior 
+						option = HISTORICAL
+					}
+					has_country_flag = SWE_AI_DEMOCRATIC_ALT
+					has_game_rule = {
+						rule = SWE_ai_behavior 
+						option = DEMOCRATIC_ALT
+					}
+				}
 			}
 		}
 		country_event = { id = ww_sverige.10 days = 4 }
@@ -1800,6 +1851,32 @@ country_event = {
 	}
 }
 
+# Unemployment Rises
+country_event = {
+	id = ww_sverige.33
+	title = ww_sverige.33.t
+	desc = ww_sverige.33.d
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		hidden_effect = {
+			add_ideas = SWE_unemployment_crisis_10
+			activate_mission = SWE_return_of_employment
+		}
+	}
+	
+	option = {	# Oh no
+		name = ww_sverige.33.a
+		effect_tooltip = {
+			add_ideas = SWE_unemployment_crisis_10
+			activate_mission = SWE_return_of_employment
+		}
+		unlock_decision_tooltip = SWE_create_emergency_jobs_in_infrastructure
+		unlock_decision_tooltip = SWE_create_emergency_jobs_in_forest_clearing
+	}
+}
+
 
 # Hungerskjöld Warning
 country_event = {
@@ -2444,9 +2521,10 @@ country_event = {
 				popularity = 0.07
 				ideology = communism
 			}
-			swap_ideas = {
-				add_idea = SWE_betrayed_interests_of_businessowners
-				remove_idea = SWE_protecting_interests_of_businessowners
+			remove_ideas = SWE_protecting_interests_of_businessowners
+			add_timed_idea = {
+				idea = SWE_betrayed_interests_of_businessowners
+				days = 365
 			}
 			SWE_small_riksdag_increase = yes
 		}
@@ -2484,7 +2562,7 @@ country_event = {
 	option = {	# Wait what?
 		name = ww_sverige_demo_crisis.8.a
 		add_manpower = -3
-		add_stability = -0.07
+		add_stability = -0.08
 		remove_ideas = SWE_great_strike_again
 		SWE_increase_socialist_radicalisation = yes
 	}
@@ -2671,6 +2749,7 @@ country_event = {
 			name = SWE_democratic_liberal_party 
 		}
 		custom_effect_tooltip = snap_elections_will_be_held_in_a_month
+		SWE_communist_tension_increase = yes
 	}
 }
 # Snap-Elections
@@ -3209,6 +3288,149 @@ country_event = {
 	}
 }
 
+# Communism in Sweden
+country_event = {
+	id = ww_sverige_riksdag.15
+	title = ww_sverige_riksdag.15.t
+	desc = ww_sverige_riksdag.15.d
+	
+	is_triggered_only = yes
+	fire_only_once = yes
+	
+	trigger = {
+		NOT = { has_country_flag = swe_communist_split }
+	}
+	
+	immediate = {
+		hidden_effect = {
+			set_country_flag = swe_communist_split
+		}
+	}
+		
+	option = {	# Okay then
+		name = ww_sverige_riksdag.15.a
+		set_temp_variable = {
+			var = v_split_f_var
+			value = SAP_f
+		}
+		set_temp_variable = {
+			var = v_split_a_var
+			value = SAP_a
+		}
+		if = {
+			limit = {
+				has_idea = SWE_socialist_radicalisation_max
+			}
+			multiply_temp_variable = {
+				var = v_split_f_var
+				value = -0.175
+			}
+			multiply_temp_variable = {
+				var = v_split_a_var
+				value = -0.2
+			}
+		}
+		else_if = {
+			limit = {
+				has_idea = SWE_socialist_radicalisation_high
+			}
+			multiply_temp_variable = {
+				var = v_split_f_var
+				value = -0.15
+			}
+			multiply_temp_variable = {
+				var = v_split_a_var
+				value = -0.175
+			}
+		}
+		else_if = {
+			limit = {
+				has_idea = SWE_socialist_radicalisation_average
+			}
+			multiply_temp_variable = {
+				var = v_split_f_var
+				value = -0.125
+			}
+			multiply_temp_variable = {
+				var = v_split_a_var
+				value = -0.15
+			}
+		}
+		else = {
+			multiply_temp_variable = {
+				var = v_split_f_var
+				value = -0.1
+			}
+			multiply_temp_variable = {
+				var = v_split_a_var
+				value = -0.1
+			}
+		}
+		round_variable = v_split_f_var
+		add_to_variable = {
+			tooltip = SAP_f_mandates_tt
+			var = SAP_f
+			value = v_split_f_var
+		}
+		multiply_temp_variable = {
+			var = v_split_f_var
+			value = -1
+		}
+		add_to_variable = {
+			tooltip = V_f_mandates_tt
+			var = V_f
+			value = v_split_f_var
+		}
+		SWE_init_second_chamber = yes
+		round_variable = v_split_a_var
+		add_to_variable = {
+			tooltip = SAP_a_mandates_tt
+			var = SAP_a
+			value = v_split_a_var
+		}
+		multiply_temp_variable = {
+			var = v_split_a_var
+			value = -1
+		}
+		add_to_variable = {
+			tooltip = V_a_mandates_tt
+			var = V_a
+			value = v_split_a_var
+		}
+		SWE_init_first_chamber = yes
+	}
+}
+
+# Undo the Ban?
+country_event = {
+	id = ww_sverige_riksdag.16
+	title = ww_sverige_riksdag.16.t
+	desc = ww_sverige_riksdag.16.d
+	
+	is_triggered_only = yes
+	fire_only_once = yes
+	
+	trigger = {
+		has_idea = communism_banned
+	}
+	
+	option = {	# Keep the ban
+		name = ww_sverige_riksdag.16.a
+		ai_chance = {
+			base = 3
+		}
+		add_stability = -0.07
+		add_war_support = -0.07
+	}
+	option = {	# Unban
+		name = ww_sverige_riksdag.16.b
+		ai_chance = {
+			base = 1
+		}
+		add_political_power = -50
+		remove_ideas = communism_banned
+	}
+}
 
 
 
@@ -3404,156 +3626,137 @@ country_event = {
 	}
 }
 
-# Sweden Seeks Investment From CP/Entente
+# Focus on Army
 country_event = {
 	id = ww_sverige_general.5
 	title = ww_sverige_general.5.t
 	desc = ww_sverige_general.5.d
-	picture = GFX_report_event_election_vote
 	
 	is_triggered_only = yes
+	fire_only_once = yes
 	
-	option = {	# Ye
+	option = {	# Knut's reforms
 		name = ww_sverige_general.5.a
 		ai_chance = {
-			base = 4
+			base = 3
 		}
-		add_political_power = 25
-		SWE = {
-			country_event = { id = ww_sverige_general.6 days = 1 }
-			effect_tooltip = {
-				if = {
-					limit = { ROOT = { original_tag = FRA } }
-					add_ideas = idea_entente_investments
-				}
-				else = {
-					add_ideas = idea_cp_investments
-				}
-			}
-		}
+		unlock_national_focus = SWE_knut_bildts_reforms
 	}
-	option = {	# No
-		name = ww_sverige_general.5.a
+	option = {	# Hammarskjöld
+		name = ww_sverige_general.5.b
+		trigger = {
+			NOT = { has_government = communism }
+		}
 		ai_chance = {
 			base = 1
 			modifier = {
 				factor = 0
-				has_government = SWE
+				is_historical_focus_on = yes
 			}
 		}
-		SWE = {
-			country_event = { id = ww_sverige_general.7 days = 1 }
-		}
+		unlock_national_focus = SWE_favor_gustaf_hammarskjold
 	}
 }
 
-# Sweden Got Investment From CP/Entente
+# 6-9 available for events
+# Conservative Gamble - Start
 country_event = {
 	id = ww_sverige_general.6
 	title = ww_sverige_general.6.t
 	desc = ww_sverige_general.6.d
-	picture = GFX_report_event_election_vote
 	
 	is_triggered_only = yes
 	
-	option = {	# Ye
+	immediate = {
+		country_event = { id = ww_sverige_general.7 days = 5 }
+	}
+	
+	option = {
 		name = ww_sverige_general.6.a
-		if = {
-			limit = { FROM = { original_tag = FRA } }
-			add_ideas = idea_entente_investments
-			#SWE_increase_entente_point_amount = yes
-		}
-		else = {
-			add_ideas = idea_cp_investments
-			#SWE_increase_cp_point_amount = yes
+		custom_effect_tooltip = if_formation_is_successful
+		effect_tooltip = {
+			promote_character = SWE_johan_widen
+			add_to_variable = {
+				tooltip = swe_lib_dem_vote_a_tt
+				var = SWE_lib_dem_votes_a
+				value = -0.02
+			}
+			add_to_variable = {
+				tooltip = swe_agr_dem_vote_a_tt
+				var = SWE_agr_dem_votes_a
+				value = 0.02
+			}
 		}
 	}
 }
-
-# Sweden Didn't Get Investment From CP/Entente
+# Right Don't Back Coalition
 country_event = {
 	id = ww_sverige_general.7
 	title = ww_sverige_general.7.t
 	desc = ww_sverige_general.7.d
-	picture = GFX_report_event_election_vote
 	
 	is_triggered_only = yes
 	
-	option = {	# Ye
+	option = {
 		name = ww_sverige_general.7.a
-		add_political_power = 75	# Refund
+		ai_chance = {
+			base = 1
+		}
+		custom_effect_tooltip = historical_tt
+		hidden_effect = {
+			country_event = { id = ww_sverige_general.8 days = 7 }
+		}
+	}
+	option = {
+		name = ww_sverige_general.7.a
+		ai_chance = {
+			base = 0
+		}
+		add_political_power = -75
+		hidden_effect = {
+			country_event = { id = ww_sverige_general.9 days = 7 }
+		}
 	}
 }
-
-# Sweden Seeks Offcers From CP/Entente
+# Right Don't Back Coalition
 country_event = {
 	id = ww_sverige_general.8
 	title = ww_sverige_general.8.t
 	desc = ww_sverige_general.8.d
-	picture = GFX_report_event_election_vote
 	
 	is_triggered_only = yes
 	
-	option = {	# Ye
-		name = ww_sverige_general.5.a
-		ai_chance = {
-			base = 4
-		}
-		add_political_power = 25
-		SWE = {
-			country_event = { id = ww_sverige_general.9 days = 1 }
-			effect_tooltip = {
-				if = {
-					limit = { ROOT = { original_tag = FRA } }
-					add_ideas = french_advisors
-				}
-				else = {
-					add_ideas = SWE_german_advisors
-				}
-			}
-		}
-	}
-	option = {	# No
-		name = ww_sverige_general.5.a
-		ai_chance = {
-			base = 1
-			modifier = {
-				factor = 0
-				has_government = SWE
-			}
-			modifier = {
-				factor = 0
-				is_in_faction_with = SWE
-			}
-		}
-		SWE = {
-			country_event = { id = ww_sverige_general.7 days = 1 }
-		}
+	option = {
+		name = ww_sverige_general.8.a
+		set_country_flag = sweden_failed_con_gamble
 	}
 }
-# Sweden Got Offcers From CP/Entente
+# Some Conservatives Back Coalition
 country_event = {
 	id = ww_sverige_general.9
 	title = ww_sverige_general.9.t
 	desc = ww_sverige_general.9.d
-	picture = GFX_report_event_election_vote
 	
 	is_triggered_only = yes
+	trigger = {
+		NOT = { has_completed_focus = SWE_riksdagens_breakthrough }
+	}
 	
-	option = {	# Good
+	option = {
 		name = ww_sverige_general.9.a
-		if = {
-			limit = { ROOT = { original_tag = FRA } }
-			add_ideas = french_advisors
-			#SWE_increase_entente_point_amount = yes
+		add_popularity = {
+			ideology = neutrality
+			popularity = 0.02
 		}
-		else = {
-			add_ideas = SWE_german_advisors
-			#SWE_increase_cp_point_amount = yes
+		add_popularity = {
+			ideology = communism
+			popularity = 0.02
 		}
-		army_experience = 5
+		SWE_increase_socialist_radicalisation = yes
 	}
 }
+
+
 # General Strike in Response to joining CP
 country_event = {
 	id = ww_sverige_general.10
@@ -5433,6 +5636,7 @@ country_event = {
 			var = SWE_com_soc_votes_f
 			value = 0.01
 		}
+		SWE_communist_tension_increase = yes
 		# Something about increasing tensions in SAP
 	}
 }

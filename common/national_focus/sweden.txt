@@ -1475,6 +1475,8 @@ focus_tree = {
 			always = no
 		}
 		
+		search_filters = { FOCUS_FILTER_HISTORICAL }
+		
 		completion_reward = {
 			custom_effect_tooltip = courtyard_speech_government_tt
 		}
@@ -1903,10 +1905,13 @@ focus_tree = {
 	focus = {
 		id = SWE_swartz_government
 		icon = GFX_goal_generic_political_pressure
-		prerequisite = { focus = SWE_balance_of_royal_support }
+		prerequisite = {
+			focus = SWE_balance_of_royal_support
+			focus = SWE_block_the_problems
+		}
 		relative_position_id = SWE_hammarskjold_government
 		cost = 4.00
-		x = 0
+		x = 2
 		y = 4
 		
 		available = {
@@ -2051,7 +2056,7 @@ focus_tree = {
 		mutually_exclusive = { focus = SWE_riksdagens_breakthrough }
 		relative_position_id = SWE_swartz_government
 		cost = 5.00
-		x = 2
+		x = 1
 		y = 1
 		
 		available = {
@@ -2060,13 +2065,63 @@ focus_tree = {
 				character = SWE_carl_swartz
 				ruling_only = yes
 			}
+			NOT = { has_country_flag = sweden_failed_con_gamble }
 		}
 		
 		search_filters = { FOCUS_FILTER_HISTORICAL FOCUS_FILTER_POLITICAL }
 		
+		select_effect = {
+			country_event = { id = ww_sverige_general.6 days = 5 }
+		}
+		
 		completion_reward = {
-			# Will keep the conservative government if successful
-				# Historically it fails though, autocompletes other focus
+			# Outcomes:
+				# Swarts forms government after liberals fail to form government
+				# Johan Widén forms government, but needs king's intervention
+				# Fail leads to historical outcome, mutually exclusive focus is completed
+			# Mission will activate to push through Suffrage
+			promote_character = SWE_johan_widen
+			add_to_variable = {
+				tooltip = swe_lib_dem_vote_a_tt
+				var = SWE_lib_dem_votes_a
+				value = -0.02
+			}
+			add_to_variable = {
+				tooltip = swe_agr_dem_vote_a_tt
+				var = SWE_agr_dem_votes_a
+				value = 0.02
+			}
+			activate_mission = SWE_conservative_promises_of_suffrage
+		}
+	}
+	focus = {	# Temporary
+		id = SWE_strengthen_border_control
+		icon = GFX_goal_generic_political_pressure
+		prerequisite = { focus = SWE_the_conservative_gamble }
+		relative_position_id = SWE_the_conservative_gamble
+		cost = 5.00
+		x = 0
+		y = 1
+		
+		available = {
+			has_dynamic_modifier = { modifier = SWE_emigration_problem }
+		}
+		
+		search_filters = { FOCUS_FILTER_MANPOWER }
+		
+		completion_reward = {
+			custom_effect_tooltip = adjust_emigration_problem_tt
+			add_to_variable = {
+				tooltip = stability_factor_tt
+				var = SWE_emigration_stability_factor
+				value = -0.04
+			}
+			add_to_variable = {
+				tooltip = monthly_population_tt
+				var = SWE_emigration_monthly_population
+				value = 0.05
+			}
+			custom_effect_tooltip = enables_further_riksdag_decisions
 		}
 	}
 	# Reactionary Government
@@ -2155,6 +2210,21 @@ focus_tree = {
 			show_ideas_tooltip = SWE_rudolf_kjellen
 			show_ideas_tooltip = SWE_axel_hultkrantz
 			show_ideas_tooltip = SWE_otto_jarte
+		}
+	}
+	focus = {
+		id = SWE_block_the_problems
+		icon = GFX_goal_generic_intelligence_exchange
+		prerequisite = { focus = SWE_allies_in_unlikely_places }
+		relative_position_id = SWE_foreign_policy_of_the_king
+		cost = 5.00
+		x = 0
+		y = 2
+		
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		
+		completion_reward = {
+			
 		}
 	}
 	focus = {
@@ -2577,6 +2647,10 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_POLITICAL }
 		
 		completion_reward = {
+			swap_ideas = {
+				add_idea = SWE_royal_dictatorship_mild
+				remove_idea = SWE_royal_dictatorship
+			}
 			SWE_small_riksdag_increase = yes
 			add_political_power = 120
 			if = {
@@ -2602,6 +2676,24 @@ focus_tree = {
 		available = {
 			has_idea = SWE_class_conflict
 			NOT = { has_completed_focus = SWE_restoration_of_democracy }
+			custom_trigger_tooltip = {
+				tooltip = socialist_cant_block_this_in_rikdagen_tt
+				OR = {
+					has_completed_focus = SWE_solidify_military_control
+					AND = {
+						NOT = {
+							check_variable = {
+								var = sweden_f_mandate_requirement
+								value = socialist_f_riksdag
+							}
+							check_variable = {
+								var = sweden_a_mandate_requirement
+								value = socialist_a_riksdag
+							}
+						}
+					}
+				}
+			}
 		}
 		
 		search_filters = { FOCUS_FILTER_POLITICAL FOCUS_FILTER_INTERNAL_AFFAIRS }
@@ -2609,9 +2701,9 @@ focus_tree = {
 		completion_reward = {
 			custom_effect_tooltip = lose_stability_based_on_socialist_support
 			set_temp_variable = { communism_temp = party_popularity@communism }
-			multiply_temp_variable = { communism_temp = -0.30 }
+			multiply_temp_variable = { communism_temp = -0.50 }
 			add_stability = communism_temp
-			multiply_temp_variable = { communism_temp = 0.50 }
+			multiply_temp_variable = { communism_temp = 0.20 }
 			add_popularity = {
 				ideology = communism
 				popularity = communism_temp
@@ -2682,8 +2774,7 @@ focus_tree = {
 			show_ideas_tooltip = SWE_carl_bennedich
 		}
 	}
-	# Another focus here (mut exclusive with paramilitaries)
-		# Prob industrial
+	# Another focus here, prob industrial
 	focus = {
 		id = SWE_creation_of_paramilitaries
 		icon = GFX_focus_generic_manpower
@@ -2804,6 +2895,7 @@ focus_tree = {
 				limit = {
 					has_idea = communism_banned
 				}
+				country_event = { id = ww_sverige_riksdag.16 hours = 1 }
 				# Event about unbanning socialist parties
 					# Lose 75 pp, but keep the ban
 					# Lose 5% stability/war support, remove ban and gain 1% socialism support
@@ -3167,7 +3259,7 @@ focus_tree = {
 		x = -1
 		y = 1
 		
-		search_filters = { FOCUS_FILTER_POLITICAL }
+		search_filters = { FOCUS_FILTER_STABILITY }
 		
 		completion_reward = {
 			add_stability = 0.05
@@ -3486,6 +3578,7 @@ focus_tree = {
 				value = -0.05
 			}
 			# Decision to make it possible to slowly increase communist/syndaclist popularity
+			SWE_communist_tension_increase = yes
 		}
 	}
 	focus = {	# Add something for syndaclist (bop?)
@@ -3588,7 +3681,6 @@ focus_tree = {
 		
 		completion_reward = {
 			add_ideas = SWE_antimiliatirism
-			
 			custom_effect_tooltip = adjust_swe_political_tt
 			add_to_variable = {
 				tooltip = political_power_factor_tt
@@ -3652,7 +3744,7 @@ focus_tree = {
 				days = 365
 			}
 			every_military_industrial_organization = {
-				add_mio_funds = 100
+				add_mio_funds = 50
 			}
 			custom_effect_tooltip = adjust_swe_economic_tt
 			add_to_variable = {
@@ -4062,16 +4154,81 @@ focus_tree = {
 			}
 			custom_effect_tooltip = SWE_unlock_decisions_to_improve_army_spirit
 			set_country_flag = SWE_army_decisions
+			if = {
+				limit = {
+					OR = {
+						has_government = communism
+						has_country_leader_ideology = social_democracy
+					}
+				}
+				unlock_national_focus = SWE_knut_bildts_reforms
+			}
+			else = {
+				country_event = { id = ww_sverige_general.5 }
+			}
+		}
+	}
+	focus = {
+		id = SWE_knut_bildts_reforms
+		icon = GFX_goal_generic_army_artillery
+		prerequisite = { focus = SWE_modernise_the_army }
+		mutually_exclusive = { focus = SWE_favor_gustaf_hammarskjold }
+		relative_position_id = SWE_swedish_rearmament
+		x = -1
+		y = 4
+		
+		cost = 0
+		
+		available = {
+			custom_trigger_tooltip = {
+				tooltip = SWE_army_path_decided_in_event
+				always = no
+			}
+		}
+		
+		available_if_capitulated = yes
+		
+		search_filters = { FOCUS_FILTER_HISTORICAL }
+		
+		completion_reward = {
+			custom_effect_tooltip = SWE_unlocks_decisions_to_focus_on_longterm_conflict
+		}
+	}
+	focus = {
+		id = SWE_favor_gustaf_hammarskjold
+		icon = GFX_focus_generic_manpower
+		prerequisite = { focus = SWE_modernise_the_army }
+		mutually_exclusive = { focus = SWE_knut_bildts_reforms }
+		relative_position_id = SWE_swedish_rearmament
+		x = 1
+		y = 4
+		
+		cost = 0
+		
+		available = {
+			custom_trigger_tooltip = {
+				tooltip = SWE_army_path_decided_in_event
+				always = no
+			}
+		}
+		
+		available_if_capitulated = yes
+		
+		completion_reward = {
+			custom_effect_tooltip = SWE_unlocks_decisions_to_focus_on_expansion_of_army_size
 		}
 	}
 	focus = {
 		id = SWE_improve_research
 		text = extra_tech_slot
 		icon = GFX_focus_generic_university_3
-		prerequisite = { focus = SWE_modernise_the_army }
+		prerequisite = {
+			focus = SWE_knut_bildts_reforms
+			focus = SWE_favor_gustaf_hammarskjold
+		}
 		relative_position_id = SWE_swedish_rearmament
 		x = 0
-		y = 4
+		y = 5
 		
 		cost = 10
 		
@@ -5392,7 +5549,7 @@ focus_tree = {
 			}
 		}
 	}
-	focus = {
+	focus = {	# To be replaced
 		id = SWE_entente_corridor_for_food_security
 		icon = GFX_focus_generic_price_controls
 		prerequisite = { focus = SWE_pro_entente_stance }
@@ -5571,7 +5728,6 @@ focus_tree = {
 			}
 			owns_state = 145
 			has_government = democratic
-			democratic > 0.5
 			NOT = { has_global_flag = great_war_ends }
 		}
 		
@@ -5920,6 +6076,7 @@ focus_tree = {
 				days = 180
 				value = 1
 			}
+			SWE_communist_tension_increase = yes
 		}
 	}
 	focus = {	# Gustaf Steffen's attempt
@@ -5967,6 +6124,14 @@ focus_tree = {
 		}
 		
 		search_filters = { FOCUS_FILTER_HISTORICAL }
+		
+		historical_ai = {
+			date > 1916.1.1
+			GER = {
+				has_war_with = FRA
+				has_war_with = RUS
+			}
+		}
 		
 		completion_reward = {
 			country_event = { id = ww_sverige.28 }
@@ -6042,10 +6207,7 @@ focus_tree = {
 			}
 			OR = {
 				has_completed_focus = SWE_foreign_policy_of_the_king
-				AND = {
-					has_completed_focus = SWE_creation_of_nationalistiskt_arbetarparti
-					has_completed_focus = SWE_restoration_of_order
-				}
+				has_completed_focus = SWE_restoration_of_order
 			}
 		}
 		
