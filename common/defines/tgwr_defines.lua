@@ -147,3 +147,6 @@ NDefines.NCountry.FEMALE_UNIT_LEADER_BASE_CHANCE = {
     0.3, -- operatives
     0.1, -- scientists
 }
+
+NDefines.NMilitary.LAND_COMBAT_COLLATERAL_FORT_FACTOR = 0.003 --0.005
+NDefines.NMilitary.LAND_COMBAT_FORT_DAMAGE_CHANCE = 3 -- out of 100 - vanilla is 5
