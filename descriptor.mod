@@ -82,6 +82,6 @@ tags={
 	"Technologies"
 }
 name="The Great War Redux - 1.17.*"
-version="0.15.6"
+version="0.15.7"
 supported_version="1.17.*"
 remote_file_id="3365515312"
