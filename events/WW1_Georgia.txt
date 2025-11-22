@@ -1,4 +1,5 @@
 add_namespace = ww1_georgia
+add_namespace = ww1_abkhazia
 
 #GEO_TSCN comsetic_tag drop
 country_event = {
@@ -89,10 +90,22 @@ country_event = {
 country_event = {
 	id = ww1_georgia.2
 	title = ww1_russia.33.t
-	desc = ww1_russia.33.d
+	desc = {
+		text = ww1_russia.33.d
+		trigger = {
+			has_war_with = TUR
+		}
+	}
+	desc = {
+		text = ww1_georgia.2.d
+		trigger = {
+			NOT = { has_war_with = TUR }
+		}
+	}
 	fire_only_once = yes
 	is_triggered_only = yes
 	trigger = {
+		has_cosmetic_tag = GEO_TSCN_commissariat
 		has_government = neutrality
 		NOT = {
 			has_country_leader = {
@@ -136,7 +149,7 @@ country_event = {
 	picture = GFX_report_event_SOV_cossack_cavalry
 	trigger = {
 		tag = GEO
-		has_global_flag = versallies_treaty
+		has_global_flag = versailles_treaty
 		has_country_flag = german_protection_on_georgia
 		OR = {
 			is_subject = no
@@ -390,34 +403,6 @@ country_event = {
 	desc = ww1_georgia.11.d
 	picture = GFX_report_event_generic_parliament
 	is_triggered_only = yes
-	# trigger = {
-	# 	tag = GEO
-	# 	OR = {
-	# 		has_cosmetic_tag = GEO_TSCN
-	# 		has_cosmetic_tag = GEO_TSCN_commissariat
-	# 	}
-	# 	NOT = {
-	# 		has_global_flag = caucasus_collapsed
-	# 	}
-	# 	OR = {
-	# 		surrender_progress > 0.3
-	# 		any_enemy_country = {
-	# 			original_tag = TUR
-	# 		}
-	# 	}
-	# }
-	# fire_only_once = yes
-	# mean_time_to_happen = {
-	# 	days = 34
-	# 	modifier = {
-	# 		factor = 0
-	# 		surrender_progress > 0.5
-	# 	}
-	# 	modifier = {
-	# 		factor = 0
-	# 		has_global_flag = brest_litovsk_finished
-	# 	}
-	# }
 	immediate = {
 		hidden_effect = {
 			set_global_flag = caucasus_collapsed
@@ -442,7 +427,10 @@ country_event = {
 			# Remove cores
 			every_state = {
 				limit = {
-					is_core_of = GEO
+					OR = {
+						is_core_of = GEO
+						is_claimed_by = GEO
+					}
 					NOT = {
 						state = 855
 						state = 816
@@ -453,8 +441,10 @@ country_event = {
 						state = 1069
 					}
 				}
+				remove_claim_by = ROOT
 				remove_core_of = ROOT
 			}
+			restore_transcaucasian_cores = yes
 			# Armenia
 			if = {
 				limit = {
@@ -473,7 +463,6 @@ country_event = {
 					}
 					NOT = { is_core_of = ROOT }
 				}
-				add_core_of = ARM #why armenian cores got remove always????
 				if = {
 					limit = {
 						OR = {
@@ -537,7 +526,7 @@ country_event = {
 				}
 			}
 			transfer_ship = {
-				prefer_name = "Kars"
+				prefer_name = "Kars II"
 				type = destroyer
 				target = AZR
 			}
@@ -568,7 +557,7 @@ country_event = {
 				# to make sure they wont surrender and call vanilla peace
 				# only affects when in the great war as you see
 				# with batum they anyway leaves
-				FRA = {
+				ENT = {
 					add_to_faction = ROOT
 					add_to_faction = ARM
 					add_to_faction = AZR
@@ -716,6 +705,7 @@ country_event = {
 			GEO = {
 				restore_previous_government_type = yes
 				set_country_flag = german_protection_on_georgia
+				set_country_flag = released_by_germany #needed for peace conference to not count them as a winner nor a loser
 			}
 			reverse_add_opinion_modifier = {
 				target = GEO
@@ -825,7 +815,7 @@ country_event = {
 		has_global_flag = mudros_armistice
 		NOT = {
 			has_global_flag = GER_capitulation
-			has_global_flag = FRA_capitulation
+			has_global_flag = ENT_capitulation
 			has_global_flag = compiegne_armistice
 			has_global_flag = frankfurt_armistice
 			has_cosmetic_tag = GEO_kingdom
@@ -845,6 +835,339 @@ country_event = {
 		}
 		ENG = {
 			give_guarantee = PREV
+		}
+	}
+}
+
+# Armistice of Erzincan
+country_event = {
+	id = ww1_georgia.18
+	title = ww1_georgia.18.t
+	desc = ww1_georgia.18.d
+	picture = GFX_report_event_generic_conference
+	trigger = {
+		tag = GEO
+		is_subject = no
+		has_capitulated = no
+		is_great_war_ongoing = yes
+		OR = {
+			has_cosmetic_tag = GEO_TSCN_commissariat
+			has_cosmetic_tag = GEO_TSCN
+			has_cosmetic_tag = GEO_TSCN_committee
+			has_cosmetic_tag = GEO_TSCN_communism
+		}
+		NOT = {
+			has_global_flag = mudros_armistice
+			has_global_flag = treaty_of_batum
+			has_idea = RUS_idea_armistice_rus
+		}
+		TUR = {
+			has_war_with = ROOT
+			has_idea = RUS_idea_armistice_cp
+			NOT = {
+				has_country_flag = great_war_loser
+			}
+		}
+	}
+	fire_only_once = yes
+	mean_time_to_happen = {
+		days = 0
+	}
+	option = {
+		name = ww1_georgia.18.a
+		custom_effect_tooltip = if_they_accept_newline_tt
+		effect_tooltip = {
+			add_ideas = GEO_erzincan_armistice
+			TUR = {
+				add_ideas = GEO_erzincan_armistice_tur
+			}
+		}
+		hidden_effect = {
+			TUR = {
+				country_event = ww1_georgia.19
+			}
+		}
+	}
+}
+
+# Armistice of Erzincan - Turkish Answer
+country_event = {
+	id = ww1_georgia.19
+	title = ww1_georgia.19.t
+	desc = ww1_georgia.19.d
+	picture = GFX_report_event_generic_conference
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_georgia.19.a
+		add_ideas = GEO_erzincan_armistice_tur
+		FROM = {
+			add_ideas = GEO_erzincan_armistice
+		}
+	}
+}
+
+# The Treaty of Brest-Litovsk Aftermath - Transcaucasia Does Not Approve
+country_event = {
+	id = ww1_georgia.20
+	title = ww1_georgia.20.t
+	desc = ww1_georgia.20.d
+	picture = GFX_report_event_generic_conference
+	trigger = {
+		tag = GEO
+		has_idea = GEO_erzincan_armistice
+		is_subject = no
+		has_global_flag = brest_litovsk_finished
+		has_war_with = TUR
+	}
+	fire_only_once = yes
+	mean_time_to_happen = {
+		days = 0
+	}
+	option = {
+		name = ww1_georgia.20.a
+		TUR = {
+			country_event = ww1_georgia.21
+		}
+	}
+}
+
+# Ottomans Demand Brest-Litovsk Territory
+country_event = {
+	id = ww1_georgia.21
+	title = ww1_georgia.21.t
+	desc = ww1_georgia.21.d
+	picture = GFX_report_event_generic_conference
+	is_triggered_only = yes
+	fire_only_once = yes
+	trigger = {
+		TUR = { has_war_with = GEO }
+	}
+	option = {
+		name = ww1_georgia.21.a
+		effect_tooltip = {
+			remove_ideas = GEO_erzincan_armistice_tur
+		}
+		FROM = {
+			effect_tooltip = {
+				remove_ideas = GEO_erzincan_armistice
+			}
+			country_event = {
+				id = ww1_georgia.22
+				days = 3
+			}
+		}
+	}
+}
+
+# Transcaucasia Rejects Turkish Demand
+country_event = {
+	id = ww1_georgia.22
+	title = ww1_georgia.22.t
+	desc = ww1_georgia.22.d
+	picture = GFX_report_event_generic_conference
+	is_triggered_only = yes
+	fire_only_once = yes
+	trigger = {
+		TUR = { has_war_with = GEO }
+	}
+	option = {
+		name = ww1_georgia.22.a
+		hidden_effect = {
+			country_event = {
+				id = ww1_georgia.2
+				days = 10
+			}
+		}
+		remove_ideas = GEO_erzincan_armistice
+		FROM = {
+			remove_ideas = GEO_erzincan_armistice_tur
+			hidden_effect = {
+				country_event = {
+					id = ww1_georgia.23
+					days = 20
+				}
+			}
+		}
+	}
+}
+
+# Batum Peace Conference: Turkish Demand Armenia
+country_event = {
+	id = ww1_georgia.23
+	title = ww1_georgia.23.t
+	desc = ww1_georgia.23.d
+	picture = GFX_report_event_generic_conference
+	is_triggered_only = yes
+	trigger = {
+		TUR = { has_war_with = GEO }
+	}
+	option = {
+		name = ww1_georgia.23.a
+		custom_effect_tooltip = if_they_accept
+		effect_tooltip = {
+			every_state = {
+				limit = {
+					is_owned_by = FROM
+					OR = {
+						region = 129
+						state = 230
+						state = 748
+						state = 787
+						state = 806
+						state = 816
+						state = 855
+						state = 939
+					}
+				}
+				transfer_state_to = ROOT
+			}
+		}
+		hidden_effect = {
+			FROM = {
+				country_event = {
+					id = ww1_georgia.24
+					days = 10
+				}
+			}
+		}
+	}
+}
+
+# Batum Peace Conference: Conclusion
+country_event = {
+	id = ww1_georgia.24
+	title = ww1_georgia.24.t
+	desc = ww1_georgia.24.d
+	picture = GFX_report_event_generic_conference
+	is_triggered_only = yes
+	trigger = {
+		TUR = { has_war_with = GEO }
+	}
+	option = {
+		name = ww1_georgia.24.a
+		country_event = {
+			id = ww1_georgia.11
+			days = 10
+		}
+	}
+}
+
+
+
+#### ABKHAZIA ###
+
+# Abkhaz People's Council
+country_event = {
+	id = ww1_abkhazia.1
+	title = ww1_abkhazia.1.t
+	desc = ww1_abkhazia.1.d
+
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_abkhazia.1.a
+		set_politics = {
+			ruling_party = democratic
+			elections_allowed = no
+		}	
+		promote_character = ABK_simon_basaria
+	}
+}
+
+# Treaty with Georgia
+country_event = {
+	id = ww1_abkhazia.2
+	title = ww1_abkhazia.2.t
+	desc = ww1_abkhazia.2.d
+	trigger = {
+		tag = ABK
+		is_subject = no
+		has_government = democratic
+		has_global_flag = october_revolution
+		GEO = {
+			is_neighbor_of = ROOT
+			NOT = {
+				has_war_with = ROOT
+				has_government = communism
+			}
+		}
+	}
+	mean_time_to_happen = {
+		days = 70
+	}
+	fire_only_once = yes
+	option = {
+		name = ww1_abkhazia.2.a
+		GEO = {
+			country_event = ww1_abkhazia.3
+		}
+	}
+}
+
+# Treaty with Abkhazia
+country_event = {
+	id = ww1_abkhazia.3
+	title = ww1_abkhazia.3.t
+	desc = ww1_abkhazia.3.d
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_abkhazia.3.a
+		FROM = {
+			diplomatic_relation = {
+				country = ROOT
+				relation = non_aggression_pact
+				active = yes
+			}
+		}
+		give_guarantee = FROM
+	}
+}
+
+# Socialist Revolt
+country_event = {
+	id = ww1_abkhazia.4
+	title = ww1_abkhazia.4.t
+	desc = ww1_abkhazia.4.d
+	is_triggered_only = yes
+	fire_only_once = yes
+	is_triggered_only = yes
+	option = {
+		name = ww1_abkhazia.4.a
+		set_politics = {
+			ruling_party = communism
+			elections_allowed = no
+		}
+		clear_all_relations = yes
+		hidden_effect = {
+			FROM = {
+				add_to_faction = ROOT
+			}
+			GEO = {
+				country_event = ww1_abkhazia.5
+			}
+		}
+	}
+}
+
+# Attack Abkhazian Bolsheviks
+country_event = {
+	id = ww1_abkhazia.5
+	title = ww1_abkhazia.5.t
+	desc = ww1_abkhazia.5.d
+	is_triggered_only = yes
+	fire_only_once = yes
+	trigger = {
+		NOT = {
+			has_government = communism
+		}
+	}
+	option = {
+		name = ww1_abkhazia.5.a
+		declare_war_on = {
+			target = FROM
+			type = annex_everything
 		}
 	}
 }

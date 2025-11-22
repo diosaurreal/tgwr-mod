@@ -95,7 +95,7 @@ country_event = {
 				# 	}
 				# 	support = {
 				# 		engineer = { x = 0 y = 0 }
-				# 		artillery = { x = 0 y = 1 }
+				# 		field_gun = { x = 0 y = 1 }
 				# 	}
 				# }
 				division_template = {
@@ -109,7 +109,7 @@ country_event = {
 						militia = { x = 1 y = 0 }
 					}
 					support = {
-						artillery = { x = 0 y = 0 }
+						field_gun = { x = 0 y = 0 }
 					}
 				}
 				229 = {
@@ -133,8 +133,13 @@ country_event = {
 					producer = SOV
 				}
 				add_equipment_to_stockpile = {
-					type = artillery_equipment
-					amount = 25
+					type = field_gun_equipment
+					amount = 20
+					producer = SOV
+				}
+				add_equipment_to_stockpile = {
+					type = howitzer_equipment
+					amount = 5
 					producer = SOV
 				}
 				country_event = {
@@ -223,7 +228,7 @@ country_event = {
 				militia = { x = 1 y = 0 }
 			}
 			support = {
-				artillery = { x = 0 y = 0 }
+				field_gun = { x = 0 y = 0 }
 			}
 		}
 		
@@ -243,22 +248,27 @@ country_event = {
 						is_subject = yes
 						OVERLORD = {
 							has_war_with = ROOT
-							any_enemy_country = {
-								original_tag = ENG
+							ENG = {
+								has_war_with = PREV
 								is_subject = no
 								is_in_faction = yes
 								has_capitulated = no
 								OR = {
 									has_subject = PER
-									any_owned_state = { is_core_of = PER }
+									any_owned_state = { region = 116 }
+								}
+								NOT = {
+									has_government = communism
 								}
 							}
 						}
 					}
 				}
-				country_event = {
-					id = ww1_azerbaijan.4
-					hours = 12
+				ENG = {
+					country_event = {
+						id = ww1_azerbaijan.4
+						hours = 12
+					}
 				}
 			}
 		}
@@ -290,7 +300,7 @@ country_event = {
 				}
 				support = {
 					engineer = { x = 0 y = 0 }
-					artillery = { x = 0 y = 1 }
+					field_gun = { x = 0 y = 1 }
 				}
 			}
 			823 = {
@@ -313,8 +323,13 @@ country_event = {
 				producer = FROM
 			}
 			add_equipment_to_stockpile = {
-				type = artillery_equipment
-				amount = 50
+				type = field_gun_equipment
+				amount = 40
+				producer = FROM
+			}
+			add_equipment_to_stockpile = {
+				type = howitzer_equipment
+				amount = 10
 				producer = FROM
 			}
 		}
@@ -354,91 +369,206 @@ country_event = {
 	desc = ww1_azerbaijan.4.d
 	picture = GFX_report_event_dunsterforce
 	is_triggered_only = yes
-	# fire_only_once = yes
-	# trigger = {
-	# 	tag = BAK
-	# 	has_civil_war = yes
-	# 	is_subject = no
-	# 	has_government = neutrality
-	# 	is_in_faction = no
-	# 	any_enemy_country = {
-	# 		original_tag = AZR
-	# 		is_subject = yes
-	# 		OVERLORD = {
-	# 			has_war_with = ROOT
-	# 			any_enemy_country = {
-	# 				original_tag = ENG
-	# 				is_subject = no
-	# 				is_in_faction = yes
-	# 				has_capitulated = no
-	# 				OR = {
-	# 					has_subject = PER
-	# 					any_owned_state = { is_core_of = PER }
-	# 				}
-	# 			}
-	# 		}
-	# 	}
-	# }
-	# mean_time_to_happen = { days = 0 }
+	fire_only_once = yes
 	option = {
 		name = ww1_azerbaijan.4.a
-		random_enemy_country = {
+		if = {
 			limit = {
-				original_tag = AZR
-				is_subject = yes
+				is_faction_leader = yes
 			}
-			OVERLORD = {
-				random_enemy_country = {
-					limit = {
-						original_tag = ENG
-						is_subject = no
-						is_in_faction = yes
-						has_capitulated = no
-						OR = {
-							has_subject = PER
-							any_owned_state = { is_core_of = PER }
-						}
+			add_to_faction = FROM
+		}
+		else_if = {
+			limit = {
+				is_in_faction = yes
+			}
+			faction_leader = {
+				add_to_faction = FROM
+			}
+		}
+		else = {
+			give_guarantee = FROM
+			FROM = {
+				give_military_access = PREV
+			}
+			diplomatic_relation = {
+				country = FROM
+				relation = non_aggression_pact
+				active = yes
+			}
+		}
+
+		division_template = {
+			name = "Dunsterforce"
+			is_locked = yes
+			template_counter = 69
+			division_names_group = ENG_INF_01
+			regiments = {
+				infantry = { x = 0 y = 0 }
+			}
+			support = {
+				engineer = { x = 0 y = 0 }
+				field_gun = { x = 0 y = 1 }
+			}
+		}
+		229 = {
+			create_unit = {
+				division = "name = \"Dunsterforce\" division_template = \"Dunsterforce\" start_experience_factor = 1"
+				owner = ROOT
+				prioritize_location = 7661
+				allow_spawning_on_enemy_provs = yes
+			}
+		}
+
+		FROM = {
+			add_equipment_to_stockpile = {
+				type = infantry_equipment
+				amount = 500
+				producer = ROOT
+			}
+			add_equipment_to_stockpile = {
+				type = field_gun_equipment
+				amount = 8
+				producer = ROOT
+			}
+			add_equipment_to_stockpile = {
+				type = howitzer_equipment
+				amount = 2
+				producer = ROOT
+			}
+			add_equipment_to_stockpile = {
+				type = armored_car_chassis
+				amount = 4
+				producer = ROOT
+			}
+		}
+
+		if = {
+			limit = {
+				has_dlc = "Man the Guns"
+			}
+			hidden_effect = {
+				create_equipment_variant = {
+					name = "Kruger Class"
+					type = ship_hull_gunboat
+					name_group = ENG_DD_HISTORICAL
+					parent_version = 0
+					modules = {
+						fixed_ship_battery_slot = ship_light_battery_1
+						fixed_ship_engine_slot = light_ship_engine_0
+						mid_1_custom_slot = ship_light_battery_1
 					}
-					add_to_faction = ROOT
-					ROOT = {
-						division_template = {
-							name = "Dunsterforce"
-							is_locked = yes
-							template_counter = 69
-							regiments = {
-								infantry = { x = 0 y = 0 }
-							}
-							support = {
-								engineer = { x = 0 y = 0 }
-								artillery = { x = 0 y = 1 }
-							}
-						}
-						229 = {
-							create_unit = {
-								division = "name = \"Dunsterforce\" division_template = \"Dunsterforce\" start_experience_factor = 1"
-								owner = ROOT
-								prioritize_location = 7661
-								allow_spawning_on_enemy_provs = yes
-							}
-						}
-						add_equipment_to_stockpile = {
-							type = infantry_equipment
-							amount = 500
-							producer = PREV
-						}
-						add_equipment_to_stockpile = {
-							type = artillery_equipment
-							amount = 10
-							producer = PREV
-						}
-						add_equipment_to_stockpile = {
-							type = armored_car_chassis
-							amount = 4
-							producer = PREV
-						}
+					obsolete = yes
+				}
+				create_equipment_variant = {
+					name = "Venture Class"
+					type = ship_hull_gunboat
+					name_group = ENG_DD_HISTORICAL
+					parent_version = 0
+					modules = {
+						fixed_ship_battery_slot = ship_light_battery_1
+						fixed_ship_engine_slot = light_ship_engine_0
+						mid_1_custom_slot = ship_light_battery_1
 					}
+					obsolete = yes
+				}
+				create_equipment_variant = {
+					name = "Asia Class"
+					type = ship_hull_gunboat
+					name_group = ENG_DD_HISTORICAL
+					parent_version = 0
+					modules = {
+						fixed_ship_battery_slot = ship_light_battery_1
+						fixed_ship_engine_slot = light_ship_engine_0
+						mid_1_custom_slot = ship_light_battery_1
+					}
+					obsolete = yes
+				}
+				create_equipment_variant = {
+					name = "Windsor Castle Class"
+					type = ship_hull_gunboat
+					name_group = ENG_DD_HISTORICAL
+					parent_version = 0
+					modules = {
+						fixed_ship_battery_slot = ship_light_battery_1
+						fixed_ship_engine_slot = light_ship_engine_0
+						mid_1_custom_slot = ship_light_battery_1
+					}
+					obsolete = yes
+				}
+				create_equipment_variant = {
+					name = "Emile Nobel Class"
+					type = ship_hull_gunboat
+					name_group = ENG_DD_HISTORICAL
+					parent_version = 0
+					modules = {
+						fixed_ship_battery_slot = ship_light_battery_1
+						fixed_ship_engine_slot = light_ship_engine_0
+						mid_1_custom_slot = ship_light_battery_1
+					}
+					obsolete = yes
+				}
+				create_equipment_variant = {
+					name = "Orlionoch Class"
+					type = ship_hull_gunboat
+					name_group = ENG_DD_HISTORICAL
+					parent_version = 0
+					modules = {
+						fixed_ship_battery_slot = ship_light_battery_1
+						fixed_ship_engine_slot = light_ship_engine_0
+						mid_1_custom_slot = ship_light_battery_1
+					}
+					obsolete = yes
 				}
 			}
+			load_oob = ENG_caspian_flotilla_mtg
+		}
+		else = {
+			hidden_effect = {
+				create_equipment_variant = {
+					name = "Kruger Class"
+					type = gunboat
+					name_group = ENG_DD_HISTORICAL
+					parent_version = 0
+					obsolete = yes
+				}
+				create_equipment_variant = {
+					name = "Venture Class"
+					type = gunboat
+					name_group = ENG_DD_HISTORICAL
+					parent_version = 0
+					obsolete = yes
+				}
+				create_equipment_variant = {
+					name = "Asia Class"
+					type = gunboat
+					name_group = ENG_DD_HISTORICAL
+					parent_version = 0
+					obsolete = yes
+				}
+				create_equipment_variant = {
+					name = "Windsor Castle Class"
+					type = gunboat
+					name_group = ENG_DD_HISTORICAL
+					parent_version = 0
+					obsolete = yes
+				}
+				create_equipment_variant = {
+					name = "Emile Nobel Class"
+					type = gunboat
+					name_group = ENG_DD_HISTORICAL
+					parent_version = 0
+					obsolete = yes
+				}
+				create_equipment_variant = {
+					name = "Orlionoch Class"
+					type = gunboat
+					name_group = ENG_DD_HISTORICAL
+					parent_version = 0
+					obsolete = yes
+				}
+			}
+			load_oob = ENG_caspian_flotilla_legacy
 		}
 	}
 }
@@ -463,6 +593,7 @@ country_event = {
 			limit = {
 				is_owned_by = KRS
 			}
+			remove_core_of = KRS
 			if = {
 				limit = {
 					is_core_of = GEO
@@ -497,6 +628,15 @@ country_event = {
 		name = ww1_azerbaijan.5.b
 		ai_chance = { base = 0 }
 		end_puppet = KRS
+		KRS = {
+			remove_ideas = standing_alone
+			every_core_state = {
+				limit = {
+					NOT = { is_core_of = TUR }
+				}
+				remove_core_of = TUR
+			}
+		}
 	}
 }
 
