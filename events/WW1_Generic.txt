@@ -403,7 +403,8 @@ country_event = {
 		add_state_core = 548
 		add_state_core = 118
 		leave_faction = yes
-		create_faction = Monkey
+		create_faction_from_template = faction_template_generic
+		set_faction_name = Monkey
 	}
 	option = {
 		name = "No"
@@ -1287,48 +1288,20 @@ country_event = {
 	}
 }
 
-# NAVAL TREATY
+# 1930 NAVAL TREATY
 country_event = {
 	id = ww1_generic.34
 	title = ww1_generic.34.t
 	desc = ww1_generic.34.d
 	picture = GFX_report_event_generic_sign_treaty1
+	is_triggered_only = yes
 	trigger = {
-		has_dlc = "Man the Guns"
-		has_global_flag = great_war_ends
-		has_country_flag = great_war_winner
-		all_country = {
-			is_major = yes
-			has_war = no
-		}
-		OR = {
-			has_navy_size = {
-				size > 5
-				type = carrier
-			}
-			has_navy_size = {
-				size > 10
-				type = capital_ship
-			}
-			has_navy_size = {
-				size > 100
-				type = screen_ship
-			}
-			has_navy_size = {
-				size > 100
-				type = submarine
-			}
-		}
-		date > 1930.4.1
+		has_naval_treaty_trigger = yes
 	}
-	mean_time_to_happen = {
-		days = 20
-	}
-	fire_only_once = yes
 	option = {
 		name = ww1_generic.34.a
 		ai_chance = {
-			factor = 70
+			base = 70
 			modifier = {
 				has_government = democratic
 				factor = 5
@@ -1338,44 +1311,16 @@ country_event = {
 				factor = 0.25
 			}
 		}
-		hidden_effect = {
-			set_global_flag = naval_treaty_signed
-		}
-		add_ideas = idea_naval_treaty_adherent
-		if = {
-			limit = {
-				has_global_flag = {
-					flag = MTG_naval_treaty_signatories
-					value > 0
-				}
-			}
-			modify_global_flag = {
-				flag = MTG_naval_treaty_signatories
-				value = 1
-			}
-		}
-		else = {
-			set_global_flag = {
-				flag = MTG_naval_treaty_signatories
-				value = 1
-			}
-		}
-		every_other_country = {
-			limit = {
-				has_naval_treaty_trigger = yes
-			}
-			country_event = { id = MTG_naval_treaty.2 days = 3 }
-			add_ai_strategy = {
-				type = protect
-				id = PREV
-				value = 100
-			}
-		}
+		#I don't know how to change the actual value
 	}
 	option = { #refuse
 		name = ww1_generic.34.b
 		ai_chance = {
-			factor = 30
+			base = 30
+			modifier = {
+				factor = 0
+				is_historical_focus_on = yes
+			}
 		}
 		custom_effect_tooltip = ww1_generic.34.b.tt
 		set_country_flag = MTG_refused_naval_treaty
@@ -1904,176 +1849,28 @@ country_event = {
 	picture = GFX_report_event_generic_sign_treaty1
 	trigger = {
 		has_country_flag = interbellum
+		has_global_flag = great_war_ends
+		has_war = no
 		NOT = {
 			AND = {
 				tag = AUS # Austria-hungary will be dismantled and puppies will have the event
 				has_country_flag = great_war_loser
 			}
-		}
-		NOT = {
 			is_china_or_warlord_no_tt = yes #chinese civil war
 			#is_major = no
-		}
-		NOT = {
 			any_other_country = {	#dont demobilize twice
 				original_tag = ROOT
 				has_country_flag = WW1_demobilization
 			}
-		}
-		has_global_flag = great_war_ends
-		has_war = no
-		NOT = {
 			has_country_flag = WW1_demobilization
 		}
-		NOT = {
-			has_global_flag = end_of_demobilization_period
-		}
-		NOT = {
-			tag = ROM
-		}
 	}
 	mean_time_to_happen = {
 		days = 2
 	}
 	option = {
 		name = ww1_generic.113.a
-		if = {
-			limit = {
-				NOT = {
-					has_global_flag = demobilization_period_timer
-				}
-			}
-			country_event = {
-				id = ww1_generic.115
-				days = 360
-			}
-			set_global_flag = demobilization_period_timer
-		}
 		post_ww1_demobilization_effect = yes
-	}
-}
-
-###great war is finished, destruction of old equipment types
-country_event = {
-	title = ww1_generic.114.t
-	desc = ww1_generic.114.d
-	id = ww1_generic.114
-	picture = GFX_report_event_generic_sign_treaty1
-	trigger = {
-		NOT = {
-			any_other_country = {	#dont demobilize twice
-				original_tag = ROOT
-				has_country_flag = WW1_old_equipment_destruction
-			}
-		}
-		NOT = {
-			#tag = ROM
-			is_china_or_warlord_no_tt = yes #chinese civil war
-		}
-		has_global_flag = great_war_ends
-		has_war = no
-		has_country_flag = WW1_demobilization
-		NOT = {
-			has_country_flag = WW1_old_equipment_destruction
-		}
-		has_global_flag = end_of_demobilization_period
-		
-	}
-	mean_time_to_happen = {
-		days = 2
-	}
-	option = {
-		name = ww1_generic.113.a
-		set_country_flag = WW1_old_equipment_destruction
-		##everyone lose old equipment
-		add_equipment_to_stockpile = {
-			type = infantry_equipment
-			amount = -850000
-		}
-		add_equipment_to_stockpile = {
-			type = field_gun_equipment
-			amount = -850000
-		}
-		add_equipment_to_stockpile = {
-			type = howitzer_equipment
-			amount = -850000
-		}
-		add_equipment_to_stockpile = {
-			type = anti_air_equipment
-			amount = -350000
-		}
-		add_equipment_to_stockpile = {
-			type = anti_tank_equipment
-			amount = -350000
-		}
-		add_equipment_to_stockpile = {
-			type = support_equipment
-			amount = -850000
-		}
-		add_equipment_to_stockpile = {
-			type = motorized_equipment
-			amount = -850000
-		}
-		add_equipment_to_stockpile = {
-			type = armored_car_chassis
-			amount = -450000
-		}
-		#air forces
-		add_equipment_to_stockpile = {
-			type = fighter_equipment
-			amount = -450000
-		}
-		add_equipment_to_stockpile = {
-			type = cv_fighter_equipment
-			amount = -450000
-		}
-		add_equipment_to_stockpile = {
-			type = CAS_equipment
-			amount = -450000
-		}
-		add_equipment_to_stockpile = {
-			type = nav_bomber_equipment
-			amount = -450000
-		}
-		add_equipment_to_stockpile = {
-			type = tac_bomber_equipment
-			amount = -450000
-		}
-		add_equipment_to_stockpile = {
-			type = strat_bomber_equipment
-			amount = -450000
-		}
-		add_equipment_to_stockpile = {
-			type = scout_plane_equipment
-			amount = -450000
-		}
-		#misc
-		add_equipment_to_stockpile = {
-			type = railway_gun_equipment
-			amount = -450000
-		}
-		add_equipment_to_stockpile = {
-			type = super_heavy_railway_gun_equipment
-			amount = -450000
-		}		
-		add_equipment_to_stockpile = {
-			type = super_heavy_artillery_equipment
-			amount = -450000
-		}
-	}
-
-}
-
-###end of demobilization period
-country_event = {
-	title = ww1_generic.115.t
-	desc = ww1_generic.115.d
-	id = ww1_generic.115
-	hidden = yes
-	picture = GFX_report_event_generic_sign_treaty1
-	is_triggered_only = yes
-	immediate = {
-		set_global_flag = end_of_demobilization_period
 	}
 }
 
