@@ -127,6 +127,7 @@ NDefines.NSupply.CAPITAL_SUPPLY_MILITARY_FACTORIES = 0.5
 NDefines.NSupply.CAPITAL_SUPPLY_DOCKYARDS = 0.3
 
 -- Production AI
+NDefines.NProduction.BASE_COUNTRY_ENERGY_PRODUCTION = 0		-- The base energy production of a country (Vanilla is 10)
 
 NDefines.NDiplomacy.EMBARGO_COST = 0 -- Vanilla is 100
 NDefines.NDiplomacy.EMBARGO_THREAT_THRESHOLD = 0 -- Vanilla is 30
