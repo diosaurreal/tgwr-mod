@@ -130,7 +130,7 @@ NDefines.NSupply.CAPITAL_SUPPLY_DOCKYARDS = 0.3
 
 NDefines.NDiplomacy.EMBARGO_COST = 0 -- Vanilla is 100
 NDefines.NDiplomacy.EMBARGO_THREAT_THRESHOLD = 0 -- Vanilla is 30
-NDefines.NAI.EMBARGO_WORLD_TENSION_THREAT_DIVISOR = 0 -- Vanilla is 2.5
+NDefines.NAI.EMBARGO_WORLD_TENSION_THREAT_DIVISOR = 10000 -- Vanilla is 2.5
 
 -- Navy
 NDefines.NNavy.TRAINING_MAX_DAILY_COUNTRY_EXP = 1.0 -- Vanilla is 3.5
@@ -147,3 +147,6 @@ NDefines.NCountry.FEMALE_UNIT_LEADER_BASE_CHANCE = {
     0.3, -- operatives
     0.1, -- scientists
 }
+
+NDefines.NMilitary.LAND_COMBAT_COLLATERAL_FORT_FACTOR = 0.003 --0.005
+NDefines.NMilitary.LAND_COMBAT_FORT_DAMAGE_CHANCE = 3 -- out of 100 - vanilla is 5
