@@ -41,7 +41,7 @@ country_event = {
 					retire = yes
 				}
 			}
-			SCC = {
+			SIC = {
 				add_state_core = 605
 				add_state_core = 1064
 				add_state_core = 1066
@@ -78,7 +78,7 @@ country_event = {
 				}
 				QIN = { puppet = PREV }
 				load_oob = PRC_1911_uprising2_sichuan
-				# set_cosmetic_tag = QIN_provinces_SCC
+				# set_cosmetic_tag = QIN_provinces_SIC
 				every_character = {
 					retire = yes
 				}
@@ -251,7 +251,7 @@ country_event = {
 					retire = yes
 				}
 			}
-			SDC = {
+			SND = {
 				every_state = {
 					limit = {
 						is_owned_by = QIN
@@ -264,7 +264,7 @@ country_event = {
 					add_core_of = PREV
 				}
 				QIN = { puppet = PREV }
-				# set_cosmetic_tag = QIN_provinces_SDC
+				# set_cosmetic_tag = QIN_provinces_SND
 				every_character = {
 					retire = yes
 				}
@@ -374,7 +374,7 @@ country_event = {
 					retire = yes
 				}
 			}
-			SCC = {
+			SIC = {
 				add_state_core = 605
 				add_state_core = 1064
 				add_state_core = 1066
@@ -414,7 +414,7 @@ country_event = {
 				}
 				QIN = { puppet = PREV }
 				load_oob = PRC_1911_uprising2_sichuan
-				# set_cosmetic_tag = QIN_provinces_SCC
+				# set_cosmetic_tag = QIN_provinces_SIC
 				every_character = {
 					retire = yes
 				}
@@ -724,7 +724,7 @@ country_event = {
 					retire = yes
 				}
 			}
-			SHN = {
+			XIC = {
 				if = {
 					limit = {
 						NOT = { has_template = "Geming Qiyijun" }
@@ -761,12 +761,12 @@ country_event = {
 				QIN = { puppet = PREV }
 				set_province_controller = 4256
 				load_oob = PRC_1911_uprising2_shaanxi
-				# set_cosmetic_tag = QIN_provinces_SHN
+				# set_cosmetic_tag = QIN_provinces_XIC
 				every_character = {
 					retire = yes
 				}
 			}
-			SDC = {
+			SND = {
 				every_state = {
 					limit = {
 						is_owned_by = QIN
@@ -779,7 +779,7 @@ country_event = {
 					add_core_of = PREV
 				}
 				QIN = { puppet = PREV }
-				# set_cosmetic_tag = QIN_provinces_SDC
+				# set_cosmetic_tag = QIN_provinces_SND
 				every_character = {
 					retire = yes
 				}
@@ -2402,34 +2402,31 @@ country_event = {
 	}
 }
 
+# Fate of Beiyang Army
 country_event = {
 	id = ww1_qing.2
 	title = ww1_qing.2.t
 	desc = ww1_qing.2.d
 	picture = GFX_report_event_generic_military_parade
-
-	fire_only_once = yes	
-	trigger = {
-		tag = QIN
-		has_completed_focus = QIN_pacify_beiyang_army
-		has_completed_focus = QIN_reform_ministries
-		has_completed_focus = QIN_loyal_parliament
-		has_completed_focus = QIN_appeal_to_the_militarists
-	}
-	mean_time_to_happen = {
-		days = 10
-	}
+	fire_only_once = yes
+	is_triggered_only = yes
 	option = {
 		name = ww1_qing.2.a
 		custom_effect_tooltip = QIN_warlord_era_warning_tt
 		remove_ideas = QIN_idea_beiyang_army
-		if = {
-			limit = {
-				has_character = CHI_yuan_shikai
-			}
-			country_event = {
-				id = ww1_qing.13
-				days = 3
+		hidden_effect = {
+			if = {
+				limit = {
+					has_character = CHI_yuan_shikai
+					NOT = {
+						has_global_flag = yuan_shikai_dead
+					}
+				}
+				country_event = {
+					id = ww1_qing.13
+					days = 2
+					random_days = 5
+				}
 			}
 		}
 		add_popularity = {
@@ -2437,7 +2434,7 @@ country_event = {
 			popularity = -0.1
 		}
 		add_timed_idea = { idea = QIN_idea_purge days = 720 }
-		ai_chance = { factor = 90 }
+		ai_chance = { base = 90 }
 
 		hidden_effect = {
 			if = {
@@ -2447,12 +2444,17 @@ country_event = {
 						has_country_flag = great_war_winner
 					}
 				}
+				QIN_legitimacy_increase = yes
 				add_political_power = 100
 			}
 			else = {
 				set_global_flag = qing_oppress_cliques
 				set_global_flag = chinese_warlord_crisis
 				activate_mission_tooltip = QIN_warlord_era_mission
+				country_event = {
+					id = ww1_china.55
+					days = 75
+				}
 			}
 		}
 	}
@@ -2463,6 +2465,34 @@ country_event = {
 			remove_idea = QIN_idea_beiyang_army
 			add_idea = QIN_idea_beiyang_army_2
 		}
+		
+		set_politics = {
+			ruling_party = fascism
+			elections_allowed = no
+		}
+		add_popularity = {
+			ideology = fascism
+			popularity = 0.15
+		}
+		if = {
+			limit = {
+				has_character = CHI_yuan_shikai
+				NOT = {
+					has_global_flag = yuan_shikai_dead
+				}
+			}
+			CHI_yuan_shikai = {
+				promote_character = stratocracy
+				add_country_leader_trait = CHI_trait_dictator
+			}
+		}
+		else = {
+			CHI_duan_qirui = {
+				promote_character = stratocracy
+				add_country_leader_trait = CHI_trait_dictator
+			}
+		}
+
 		if = {
 			limit = { has_idea = QIN_idea_low_legitimacy_5 }
 			swap_ideas = {
@@ -2470,29 +2500,32 @@ country_event = {
 				add_idea = QIN_idea_low_legitimacy
 			}
 		}
-		if = {
+		else_if = {
 			limit = { has_idea = QIN_idea_low_legitimacy_4 }
 			swap_ideas = {
 				remove_idea = QIN_idea_low_legitimacy_4
 				add_idea = QIN_idea_low_legitimacy
 			}
 		}
-		if = {
+		else_if = {
 			limit = { has_idea = QIN_idea_low_legitimacy_3 }
 			swap_ideas = {
 				remove_idea = QIN_idea_low_legitimacy_3
 				add_idea = QIN_idea_low_legitimacy
 			}
 		}
-		if = {
+		else_if = {
 			limit = { has_idea = QIN_idea_low_legitimacy_2 }
 			swap_ideas = {
 				remove_idea = QIN_idea_low_legitimacy_2
 				add_idea = QIN_idea_low_legitimacy
 			}
 		}
+		else = {
+			add_ideas = QIN_idea_low_legitimacy
+		}
 		hidden_effect = { set_country_flag = warlord_compromise }
-		ai_chance = { factor = 10 }
+		ai_chance = { base = 10 }
 	}
 }
 
@@ -2722,28 +2755,83 @@ country_event = {
 	desc = ww1_qing.6.d
 	is_triggered_only = yes
 	fire_only_once = yes
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = {
+					has_character = CHI_liang_qichao
+				}
+				CHI_liang_qichao = {
+					if = {
+						limit = {
+							has_ideology = classical_liberalism
+						}
+						promote_character = classical_liberalism
+					}
+					else = {
+						add_country_leader_role = {
+							promote_leader = yes
+							country_leader = {
+								ideology = classical_liberalism
+							}
+						}
+					}
+				}
+			}
+			if = {
+				limit = {
+					has_character = QIN_kang_youwei
+				}
+				QIN_kang_youwei = {
+					if = {
+						limit = {
+							has_ideology = conservatism
+						}
+						promote_character = conservatism
+					}
+					else = {
+						add_country_leader_role = {
+							promote_leader = yes
+							country_leader = {
+								ideology = conservatism
+							}
+						}
+					}
+					if = {
+						limit = {
+							has_ideology = religious_communism
+						}
+						promote_character = religious_communism
+					}
+					else = {
+						add_country_leader_role = {
+							promote_leader = yes
+							country_leader = {
+								ideology = religious_communism
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 	option = {
 		name = ww1_qing.6.a
-		ai_chance = { factor = 60 }
+		ai_chance = { base = 60 }
 		add_stability = 0.05
 		add_political_power = -100
 	}
 	option = {
 		name = ww1_qing.6.b
-		ai_chance = { factor = 40 }
+		trigger = {
+			has_character = CHI_liang_qichao
+		}
+		ai_chance = { base = 40 }
 		add_stability = -0.05
 		add_political_power = 100
 		set_politics = {
 			ruling_party = democratic
-			elections_allowed = no
-		}
-		CHI_liang_qichao = {
-			add_country_leader_role = {
-				promote_leader = yes
-				country_leader = {
-					ideology = conservatism
-				}
-			}
+			elections_allowed = yes
 		}
 		QIN_restore_xuantong = yes
 		if = {
@@ -2753,58 +2841,50 @@ country_event = {
 					NOT = { has_global_flag = warlord_era }
 					AND = {
 						has_global_flag = warlord_era
-						CHI = {
-							exists = no
-						}
-						PRC = {
-							exists = no
-						}
-						SHX = {
-							exists = no
-						}
-						XSM = {
-							exists = no
-						}
-						GXC = {
-							exists = no
-						}
-						YUN = {
-							exists = no
-						}
-						SIK = {
-							exists = no
-						}
-						ANC = {
-							exists = no
-						}
-						FNG = {
-							exists = no
-						}
-						GDC = {
-							exists = no
-						}
-						GMJ = {
-							exists = no
-						}
-						GZC = {
-							exists = no
-						}
-						HNC = {
-							exists = no
-						}
-						JNC = {
-							exists = no
-						}
-						JXC = {
-							exists = no
-						}
-						SCC = {
-							exists = no
+						NOT = {
+							has_cosmetic_tag = QIN_government
+							has_cosmetic_tag = QIN_disunited
 						}
 					}
 				}
 			}
 			set_cosmetic_tag = QIN_democratic
+		}
+		CHI_liang_qichao = {
+			promote_character = classical_liberalism
+		}
+	}
+	option = {
+		name = ww1_qing.6.c
+		trigger = {
+			date < 1927.3.31
+		}
+		ai_chance = { base = 30 }
+		add_stability = 0.05
+		add_political_power = 50
+		set_politics = {
+			ruling_party = democratic
+			elections_allowed = yes
+		}
+		QIN_restore_xuantong = yes
+		if = {
+			limit = {
+				OR = {
+					has_global_flag = warlord_era_end
+					NOT = { has_global_flag = warlord_era }
+					AND = {
+						has_global_flag = warlord_era
+						NOT = {
+							has_cosmetic_tag = QIN_government
+							has_cosmetic_tag = QIN_disunited
+						}
+					}
+				}
+			}
+			set_cosmetic_tag = QIN_democratic
+		}
+		QIN_kang_youwei = {
+			promote_character = conservatism
 		}
 	}
 }
@@ -3290,8 +3370,7 @@ country_event = {
 					has_war_with = FROM
 					OR = {
 						tag = ROOT
-						is_in_faction_with = ROOT
-						is_subject_of = ROOT
+						is_ally_with = ROOT
 					}
 				}
 				clr_country_flag = concessions_war
@@ -3300,8 +3379,7 @@ country_event = {
 						has_war_with = PREV
 						OR = {
 							tag = FROM
-							is_in_faction_with = FROM
-							is_subject_of = FROM
+							is_ally_with = FROM
 						}
 					}
 					white_peace = PREV

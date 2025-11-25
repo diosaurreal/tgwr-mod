@@ -12,14 +12,37 @@ RAJ_prepare_aden_front = {
 						focus = TUR_german_ottoman_alliance
 						progress > 0
 					}
-					has_war_with = GER
+					ROOT = {
+						has_war_with = GER
+					}
 				}
 				AND = {
 					focus_progress = {
 						focus = TUR_our_traditional_allies
 						progress > 0
 					}
-					has_war_with = ENT
+					ROOT = {
+						has_war_with = ENT
+					}
+				}
+				any_allied_country = {
+					OR = {
+						has_wargoal_against = TUR
+						has_war_with = TUR
+						is_justifying_wargoal_against = TUR
+						TUR = {
+							OR = {
+								is_justifying_wargoal_against = PREV
+								has_wargoal_against = PREV
+							}
+						}
+					}
+				}
+				TUR = {
+					OR = {
+						is_justifying_wargoal_against = ROOT
+						has_wargoal_against = ROOT
+					}
 				}
 			}
 		}
@@ -31,11 +54,14 @@ RAJ_prepare_aden_front = {
 	}
 	abort_when_not_enabled = yes
 	ai_strategy = {
-		type = put_unit_buffers
-		states = {
-			659
-		}
-		ratio = 1		# раз и навсегда пишу людям на будущее, ratio - коэффициент желаемой заполненности стейта дивизиями, это не процент от армии, который нужно поставить(use translate if you want to understand)
+		type = prepare_for_war
+		id = TUR 
+		value = 1
+	}
+	ai_strategy = { # shitty hoi AI think front with NAJ is the same as front with TUR
+		type = prepare_for_war
+		id = NAJ
+		value = 1
 	}
 	ai_strategy = {
 		type = area_priority
@@ -52,8 +78,8 @@ RAJ_prepare_aden_front = {
 	}
 	ai_strategy = {
 		type = front_unit_request
-		tag = TUR
-		value = 1
+		strategic_region = 196
+		value = 350
 	}
 	ai_strategy = {
 		type = front_unit_request
@@ -92,13 +118,16 @@ RAJ_fight_aden_front = {
 	}
 	ai_strategy = {
 		type = front_unit_request
-		tag = TUR
 		strategic_region = 196
 		value = 1000
 	}
 	ai_strategy = {
+		type = front_unit_request
+		tag = NAJ
+		value = -100
+	}
+	ai_strategy = {
 		type = front_control
-		tag = TUR
 		strategic_region = 196
 		ratio = 0.6
 		priority = 500
@@ -154,33 +183,6 @@ RAJ_enemy_invade_us = {
 			is_core_of = RAJ
 		}
 		value = 1000
-	}
-}
-
-RAJ_ignore_arabs = { # i cant imagine situation where arabs join the great war in any alliance, if they does, tweak it
-	allowed = {
-		original_tag = RAJ
-	}
-	enable = {
-		always = yes
-	}
-	abort = {
-		always = no
-	}
-	ai_strategy = {
-		type = front_unit_request
-		tag = NAJ
-		value = -10000
-	}
-	ai_strategy = {
-		type = front_unit_request
-		tag = JBS
-		value = -10000
-	}
-	ai_strategy = {
-		type = front_unit_request
-		tag = RWL
-		value = -10000
 	}
 }
 
@@ -273,7 +275,7 @@ RAJ_dont_help_AST = {
 	ai_strategy = {
 		type = dont_defend_ally_borders
 		id = AST
-		value = 100
+		value = 1
 	}
 }
 
@@ -288,7 +290,7 @@ RAJ_dont_help_SAF = {
 	ai_strategy = {
 		type = dont_defend_ally_borders
 		id = SAF
-		value = 100
+		value = 1
 	}
 }
 
@@ -301,11 +303,6 @@ RAJ_build_civs = {
 		has_war = no
 	}
 	abort_when_not_enabled = yes
-	ai_strategy = {
-		type = building_target
-		id = rail_way
-		value = -1000
-	}
 	ai_strategy = {
 		type = building_target
 		id = industrial_complex
