@@ -1407,6 +1407,8 @@ country_event = {
 		has_war_with = TUR
 		NOT = {
 			has_global_flag = libyan_crisis_resolved
+			has_global_flag = great_war
+			has_war_with = AUS
 		}
 	}
 	mean_time_to_happen = {
@@ -2668,17 +2670,44 @@ country_event = {
 		set_global_flag = ITA_treaty_of_ouchy
 		clr_global_flag = ITA_not_done_libya_war
 		set_global_flag = libyan_crisis_resolved
+		set_global_flag = italo_turkish_war_ends
 		hidden_effect = {
 			white_peace = TUR
 			white_peace = LBA
-			TUR = {
+			every_country = {
+				limit = {
+					OR = {
+						is_ally_with = TUR
+						AND = {
+							tag = LBA
+							has_war_with = ITA
+						}
+					}
+				}
+				white_peace = ITA
+			}
+			every_country = {
+				limit = {
+					is_ally_with = ITA
+				}
+				white_peace = TUR
+			}
+			# TUR = {
+			# 	diplomatic_relation = {
+			# 		country = LBA
+			# 		relation = guarantee
+			# 		active = no
+			# 	}
+			# }
+			LBA = {
 				diplomatic_relation = {
-					country = LBA
-					relation = guarantee
+					country = TUR
+					relation = military_access
 					active = no
 				}
 			}
 			ITA = {
+				set_country_flag = italo_turkish_war_winner
 				country_event = {
 					id = ww1_libya.6
 					days = 5
@@ -2686,12 +2715,18 @@ country_event = {
 			}
 			every_state = {
 				limit = {
-					is_owned_and_controlled_by = TUR
+					is_owned_by = TUR
 					has_state_flag = fallen_to_italy_ITA_TUR_war
 				}
 				transfer_state_to = ITA
 				add_claim_by = ITA
-				add_claim_by = TUR
+				if = {
+					limit = { 
+						is_core_of = TUR 
+					}
+					remove_core_of = TUR
+					add_claim_by = TUR				
+				}
 			}
 			if = {
 				limit = {
@@ -2704,7 +2739,7 @@ country_event = {
 			}
 			every_state = {
 				limit = {
-					is_owned_and_controlled_by = TUR
+					is_owned_by = TUR
 					OR = {
 						state = 448
 						state = 450
@@ -2717,8 +2752,13 @@ country_event = {
 				}
 				transfer_state_to = ITA
 				add_claim_by = ITA
-				remove_core_of = TUR
-				add_claim_by = TUR
+				if = {
+					limit = { 
+						is_core_of = TUR 
+					}
+					remove_core_of = TUR
+					add_claim_by = TUR				
+				}
 				if = {
 					limit = {
 						has_resistance = yes
@@ -2729,37 +2769,55 @@ country_event = {
 			}
 			every_state = {
 				limit = {
-					is_owned_and_controlled_by = TUR
-					OR = {
-						state = 1121
-						state = 450
-						state = 273
-						state = 1122
-						state = 1124
-						state = 1128
-						state = 1123
-						state = 567
-						state = 661
-						state = 754
-						state = 1155
-						state = 1154
-					}
+					is_owned_by = TUR
+					is_core_of = LBA
 				}
 				if = {
 					limit = { 
 						is_core_of = TUR 
 					}
-					remove_core_of = TUR					
+					remove_core_of = TUR
+					add_claim_by = TUR				
 				}
-				add_claim_by = TUR
 				transfer_state_to = LBA
 			}
 			LBA = {
 				add_opinion_modifier = {
 					target = ITA
-					modifier = large_decrease
+					modifier = hostile_status
+				}
+			}			
+			TUR = {
+			    if = {
+				    limit = {
+					    has_country_flag = TUR_italo_turkish_war_arab_minorities
+				    }
+			        every_state = {
+				        limit = {
+					        is_core_of = LBA
+					        has_state_flag = TUR_removed_libyan_minority
+				        }
+				        set_state_flag = TUR_arab_state
+			        }
+			    }
+			    #delete_unit_template_and_units = { division_template = "Trablusgarp Milisi" }
+				diplomatic_relation = {
+					country = LBA
+					relation = military_access
+					active = no
+				}
+				country_event = { id = ww1_ottoman.138 days = 90 }
+			}
+			every_state = {
+				limit = {
+					region = 225
+				}
+				teleport_armies = {
+					limit = { original_tag = TUR }
+					to_state_array = owned_controlled_states
 				}
 			}
+			ottoman_minority_variable_check = yes
 		}
 	}
 	option = {
@@ -2780,6 +2838,7 @@ country_event = {
 				}
 			}
 		}
+		news_event = ww1_italianturkish.10
 	}
 }
 
@@ -3005,8 +3064,7 @@ news_event = {
 		name = ww1_italy.106.a
 		trigger = {
 			OR = {
-				is_in_faction_with = AUS
-				is_subject_of = AUS
+				is_ally_with = AUS
 				tag = AUS
 			}
 		}
@@ -3026,8 +3084,7 @@ news_event = {
 			NOT = {
 				is_subject_of = ITA
 				tag = ITA
-				is_in_faction_with = AUS
-				is_subject_of = AUS
+				is_ally_with = AUS
 				tag = AUS
 			}
 		}
@@ -3169,9 +3226,7 @@ news_event = {
 			is_controlled_by = ITA
 			is_owned_by = TUR
 		}
-		TUR = {
-			has_war_with = ITA
-		}
+		TUR = { has_war_with = ITA }
 		NOT = {
 			has_global_flag = libyan_crisis_resolved
 			has_global_flag = great_war
@@ -3180,9 +3235,7 @@ news_event = {
 	}
 	immediate = {
 		set_global_flag = fall_of_rhodes
-		899 = {
-			set_state_flag = fallen_to_italy_ITA_TUR_war
-		}
+		899 = { set_state_flag = fallen_to_italy_ITA_TUR_war }
 	}
 	mean_time_to_happen = {
 		days = 0
@@ -4101,7 +4154,6 @@ news_event = {
 	desc = ww1_italy.147.d
 	picture = GFX_news_event_election_vote
 	major = yes
-	fire_only_once = yes
 	is_triggered_only = yes
 	option = {
 		name = ww1_italy.147.a
@@ -4330,10 +4382,9 @@ country_event = {
 	picture = GFX_report_event_ITA_tripolitania
 	fire_only_once = yes
 	trigger = {
+		original_tag = ITA
 		TUR = {
-			NOT = {
-				owns_state = 184
-			}
+			has_country_flag = BW1_loser
 		}
 		controls_state = 448
 	}
@@ -4350,6 +4401,7 @@ country_event = {
 	picture = GFX_report_event_picture_ottoman_balkan_war
 	fire_only_once = yes
 	trigger = {
+		original_tag = ITA
 		SER = {
 			controls_state = 44
 		}
@@ -4398,7 +4450,7 @@ country_event = {
 		}
 	}
 	mean_time_to_happen = {
-		days = 200
+		days = 150
 	}
 	option = {
 		name = ww1_italy.167.a
@@ -4454,14 +4506,15 @@ country_event = {
 	trigger = {
 		original_tag = ITA
 		SER = {
-			owns_state = 847
+			has_country_flag = BW1_winner
 		}
 		NOT = {
+			has_war_with = SER
 			has_completed_focus = ITA_arise_workers_of_italy
 		}
 	}
 	mean_time_to_happen = {
-		days = 80
+		days = 60
 	}
 	option = {
 		name = ww1_italy.169.a
@@ -4491,11 +4544,11 @@ country_event = {
 		}
 	}
 	mean_time_to_happen = {
-		days = 100
+		days = 60
 	}
 	option = {
 		name = ww1_italy.170.a
-		add_political_power = -55
+		add_political_power = -30
 		MNT = {
 			country_event = ww1_italy.172
 		}
@@ -4525,7 +4578,7 @@ country_event = {
 		original_tag = ITA
 	}
 	mean_time_to_happen = {
-		days = 180
+		days = 130
 	}
 	option = {
 		name = ww1_italy.171.a
@@ -4537,15 +4590,10 @@ country_event = {
 				instant_build = yes
 			}
 		}
-		IF = {
-			limit = {
-				original_tag = ITA
-			}
-			custom_effect_tooltip = ITA_consumer_goods_2_5
-			add_political_power = 20
-			add_to_variable = {
-				ITA_ind_consumer_goods = -0.025
-			}
+		custom_effect_tooltip = ITA_consumer_goods_2_5
+		add_political_power = 20
+		add_to_variable = {
+			ITA_ind_consumer_goods = -0.025
 		}
 	}
 }
@@ -4582,7 +4630,7 @@ country_event = {
 		original_tag = ITA
 	}
 	mean_time_to_happen = {
-		days = 230
+		days = 180
 	}
 	option = {
 		name = ww1_italy.173.a
@@ -4626,12 +4674,10 @@ country_event = {
 		has_global_flag = ITA_investing_in_balkans
 		NOT = {
 			has_war_with = MNT
+			has_war_with = SER
 		}
 		MNT = {
 			has_capitulated = no
-		}
-		NOT = {
-			has_war_with = SER
 		}
 		SER = {
 			has_capitulated = no
@@ -4653,36 +4699,21 @@ country_event = {
 		}
 		build_railway = {
 			level = 1
-			build_only_on_allied = no
-			controller_priority = {
-				base = 1
-				modifier = {
-					tag = ITA
-					add = 2
-				}
-			}
-			fallback = yes
 			path = {
+				13354
 				9809
 				11858
-				761
+				937
 				3922
 				3956
 				9599
 				11586
 			}
-			start_state = 105
-			target_state = 107
 		}
-		IF = {
-			limit = {
-				original_tag = ITA
-			}
-			custom_effect_tooltip = ITA_consumer_goods_2_5
-			add_political_power = 20
-			add_to_variable = {
-				ITA_ind_consumer_goods = -0.025
-			}
+		custom_effect_tooltip = ITA_consumer_goods_2_5
+		add_political_power = 20
+		add_to_variable = {
+			ITA_ind_consumer_goods = -0.025
 		}
 	}
 }
@@ -5104,7 +5135,6 @@ country_event = {
 	title = ww1_italy.194.t
 	desc = ww1_italy.194.d
 	picture = GFX_report_event_generic_read_write
-	fire_only_once = no
 	is_triggered_only = yes
 	option = {
 		name = ww1_italy.194.a
@@ -5145,6 +5175,7 @@ country_event = {
 		trigger = {
 			OR = {			
 				AND = {
+					has_global_flag = ITA_won_against_ottomans
 					FRA = {
 						is_in_faction_with = ENT
 						OR = {
@@ -5545,6 +5576,7 @@ country_event = {
 	option = {
 		name = ww1_italy.189.h
 		trigger = {
+			has_global_flag = ITA_won_against_ottomans
 			NOT = {
 				has_global_flag = ITA_london_ubari
 			}
@@ -7153,9 +7185,36 @@ country_event = {
 	fire_only_once = yes
 	option = {
 		name = ww1_italy.233.a
-		add_timed_idea = {
-			idea = ITA_unknown_lands
-			days = 365
+		every_state = {
+			limit = {
+				NOT = {
+					state = 448
+					state = 450
+				}
+				OR = {
+					is_core_of = LBA
+					is_core_of = TRP
+				}
+				impassable = no
+				owner = {
+					OR = {
+						has_war_with = ITA
+						tag = LBA
+					}
+				}
+			}
+			add_dynamic_modifier = { modifier = unknown_lands scope = ITA }
+			hidden_effect = {
+				if = {
+					limit = { is_controlled_by = ITA }
+					remove_dynamic_modifier = { modifier = unknown_lands scope = ITA }
+					add_dynamic_modifier = {
+						modifier = unknown_lands_2
+						scope = ITA
+						days = 180
+					}
+				}
+			}
 		}
 	}
 }
@@ -7297,8 +7356,7 @@ news_event = {
 		name = ww1_italy.238.a
 		trigger = {
 			OR = {
-				is_in_faction_with = AUS
-				is_subject_of = AUS
+				is_ally_with = AUS
 				tag = AUS
 			}
 		}
@@ -7318,9 +7376,10 @@ news_event = {
 			NOT = {
 				is_subject_of = ITA
 				tag = ITA
-				is_in_faction_with = AUS
-				is_subject_of = AUS
+				is_ally_with = AUS
 				tag = AUS
+				is_ally_with = ENT
+				tag = ENT
 			}
 		}
 	}
@@ -7328,9 +7387,8 @@ news_event = {
 		name = ww1_italy.238.f
 		trigger = {
 			OR = {
-				is_in_faction_with = FRA
-				is_subject_of = FRA
-				tag = FRA
+				is_ally_with = ENT
+				tag = ENT
 			}
 		}
 	}
@@ -7561,6 +7619,7 @@ country_event = {
 	picture = GFX_report_event_ITA_markets
 	fire_only_once = yes
 	trigger = {
+		original_tag = ITA
 		date > 1914.2.1
 		NOT = {
 			has_completed_focus = ITA_arise_workers_of_italy
@@ -7985,48 +8044,35 @@ country_event = {
 	desc = ww1_italy.281.d
 	picture = GFX_report_event_ITA_army_ww1
 	fire_only_once = yes
-	mean_time_to_happen = {
-		days = 150
-	}
 	trigger = {
 		tag = ITA
 		is_great_war_ongoing = yes
 		OR = {
 			AND = {
 				has_war_with = AUS
-				OR = {
-					NOT = {
-						controls_province = 9598
-					}
-					NOT = {
-						controls_province = 6675
-					}
-					NOT = {
-						controls_province = 6626
-					}
-					NOT = {
-						controls_province = 3674
-					}
-					NOT = {
-						controls_province = 12888
-					}
+				war_length_with = {
+					tag = AUS
+					months > 5
+				}
+				NOT = {
+					controls_province = 9598
+					controls_province = 6675
+					controls_province = 6626
+					controls_province = 3674
+					controls_province = 12888
 				}
 			}
 			AND = {
 				has_war_with = FRA
-				OR = {
-					NOT = {
-						controls_province = 9603
-					}
-					NOT = {
-						controls_province = 3768
-					}
-					NOT = {
-						controls_province = 9909
-					}
-					NOT = {
-						controls_province = 11969
-					}
+				war_length_with = {
+					tag = FRA
+					months > 5
+				}
+				NOT = {
+					controls_province = 9603
+					controls_province = 3768
+					controls_province = 9909
+					controls_province = 11969
 				}
 			}
 		}
@@ -8343,7 +8389,7 @@ country_event = {
 			has_completed_focus = ITA_demobilize_the_army
 		}
 	}
-	fire_only_once = yes
+	is_triggered_only = yes
 	option = {
 		name = ww1_italy.292.a
 		custom_effect_tooltip = ITA_bread_shortages_1_minus
@@ -8358,33 +8404,33 @@ country_event = {
 	}
 }
 
-country_event = {
-	id = ww1_italy.293
-	title = ww1_italy.293.t
-	desc = ww1_italy.293.d
-	picture = GFX_report_ship_bombing_athens
-	trigger = {
-		tag = ITA
-		is_great_war_ongoing = yes
-		has_war_with = AUS
-	}
-	fire_only_once = yes
-	option = {
-		name = ww1_italy.293.a
-		160 = {
-			add_dynamic_modifier = {
-				modifier = ITA_aus_shell
-				scope = ITA
-				days = 180
-			}
-		}
-		custom_effect_tooltip = ITA_radio_prevents_shelling
-		custom_effect_tooltip = ITA_war_score_minus_2
-		add_to_variable = {
-			ITA_percieved_usefulness = -2
-		}
-	}
-}
+# country_event = {
+# 	id = ww1_italy.293
+# 	title = ww1_italy.293.t
+# 	desc = ww1_italy.293.d
+# 	picture = GFX_report_ship_bombing_athens
+# 	trigger = {
+# 		tag = ITA
+# 		is_great_war_ongoing = yes
+# 		has_war_with = AUS
+# 	}
+# 	fire_only_once = yes
+# 	option = {
+# 		name = ww1_italy.293.a
+# 		160 = {
+# 			add_dynamic_modifier = {
+# 				modifier = ITA_aus_shell
+# 				scope = ITA
+# 				days = 180
+# 			}
+# 		}
+# 		custom_effect_tooltip = ITA_radio_prevents_shelling
+# 		custom_effect_tooltip = ITA_war_score_minus_2
+# 		add_to_variable = {
+# 			ITA_percieved_usefulness = -2
+# 		}
+# 	}
+# }
 
 country_event = {
 	id = ww1_italy.294
@@ -8553,6 +8599,12 @@ country_event = {
 		name = ww1_italy.300.a
 		add_stability = -0.03
 		if = {
+			limit = {
+				ITA_government_is_ani = yes
+			}
+			set_country_flag = ITA_ani_government_toppled
+		}
+		if = {
 			limit = { 
 				NOT = {
 					has_country_flag = ITA_collapsed_one
@@ -8684,39 +8736,68 @@ country_event = {
 	fire_only_once = yes
 	option = {
 		name = ww1_italy.304.a
-		FROM = {
-			annex_country = {
-				target = ROOT
-				transfer_troops = no
+		effect_tooltip = {
+			FROM = {
+				annex_country = {
+					target = ROOT
+					transfer_troops = no
+				}
 			}
 		}
 		clr_country_flag = protectorate
-		hidden_effect = {
-			880 = {
-				add_resistance = 15
-				add_compliance = 5
-			}
-		}
-		ai_chance = {
-			base = 10000
-		}
+		custom_effect_tooltip = GAME_OVER_TT
+		hidden_effect = { FROM = { country_event = { id = ww1_italy.305 hours = 8 } } }
+		ai_chance = { base = 100 }
 	}
 	option = {
 		name = ww1_italy.304.b
-		custom_effect_tooltip = does_the_same_thing_lmao
 		FROM = {
-			annex_country = {
-				target = ROOT
-				transfer_troops = no
+			end_puppet = ROOT
+			effect_tooltip = {
+				create_wargoal = {
+					type = annex_everything
+					target = ROOT
+				}
 			}
 		}
 		clr_country_flag = protectorate
-		hidden_effect = {
-			880 = {
-				add_resistance = 15
-				add_compliance = 5
-			}
+		hidden_effect = { FROM = { country_event = { id = ww1_italy.306 hours = 8 } } }
+		ai_chance = { base = 0 }
+	}
+}
+
+country_event = {
+	id = ww1_italy.305
+	title = ww1_italy.305.t
+	desc = ww1_italy.305.d
+	picture = GFX_report_event_generic_sign_treaty1
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_italy.305.a
+		annex_country = {
+			target = FROM
+			transfer_troops = no
 		}
+		ai_chance = { base = 100 }
+	}
+}
+
+country_event = {
+	id = ww1_italy.306
+	title = ww1_italy.306.t
+	desc = ww1_italy.306.d
+	picture = GFX_report_event_generic_sign_treaty1
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_italy.306.a
+		end_puppet = FROM
+		create_wargoal = {
+			type = annex_everything
+			target = FROM
+		}
+		ai_chance = { base = 100 }
 	}
 }
 
@@ -9492,6 +9573,7 @@ country_event = {
 	picture = GFX_report_event_generic_italian_celebration
 	fire_only_once = yes
 	trigger = {
+		original_tag = ITA
 		OR = {
 			has_war_with = AUS
 			has_war_with = FRA
@@ -9651,6 +9733,9 @@ country_event = {
 				days = 2
 			}
 		}
+		ai_chance = {
+			base = 1
+		}
 	}
 	option = {
 		name = ww1_italy.350.b
@@ -9663,6 +9748,13 @@ country_event = {
 			country_event = {
 				id = ww1_italy.351
 				days = 2
+			}
+		}
+		ai_chance = {
+			base = 1
+			modifier = {
+				is_historical_focus_on = yes
+				factor = 0
 			}
 		}
 	}
@@ -9679,6 +9771,13 @@ country_event = {
 			country_event = {
 				id = ww1_italy.351
 				days = 2
+			}
+		}
+		ai_chance = {
+			base = 1
+			modifier = {
+				is_historical_focus_on = yes
+				factor = 0
 			}
 		}
 	}
@@ -10187,7 +10286,6 @@ country_event = {
 	title = ww1_italy.373.t
 	desc = ww1_italy.373.d
 	picture = GFX_report_event_journalists_speech
-	fire_only_once = no
 	is_triggered_only = yes
 	option = {
 		name = ww1_italy.373.a
@@ -10739,16 +10837,19 @@ country_event = {
 	fire_only_once = yes
 	trigger = {
 		OR = {
-			has_war_with = FRA
-			has_war_with = AUS
+			war_length_with = {
+				tag = FRA
+				months > 30
+			}
+			war_length_with = {
+				tag = AUS
+				months > 30
+			}
 		}
 		original_tag = ITA
 		NOT = {
 			has_completed_focus = ITA_demobilize_the_army
 		}
-	}
-	mean_time_to_happen = {
-		days = 920
 	}
 	option = {
 		name = ww1_italy.394.a
@@ -10768,17 +10869,21 @@ country_event = {
 	fire_only_once = yes
 	trigger = {
 		OR = {
-			has_war_with = FRA
-			has_war_with = AUS
+			has_war_with = ENT
+			has_war_with = GER
+		}
+		OR = {
+			is_in_faction_with = GER
+			is_in_faction_with = ENT
 		}
 		original_tag = ITA
-		communism > 0.45
+		OR = {
+			communism > 0.45
+			surrender_progress > 0.6
+		}
 		NOT = {
 			has_completed_focus = ITA_demobilize_the_army
 		}
-	}
-	mean_time_to_happen = {
-		days = 2
 	}
 	option = {
 		name = ww1_italy.395.a
@@ -10787,22 +10892,22 @@ country_event = {
 	}
 	option = {
 		name = ww1_italy.395.b
-		IF = {
+		if = {
 			limit = {
-				has_war_with = FRA
+				has_war_with = ENT
 			}
-			FRA = {
+			ENT = {
 				country_event = {
 					id = ww1_italy.396
 					days = 2
 				}
 			}
 		}
-		IF = {
+		if = {
 			limit = {
-				has_war_with = AUS
+				has_war_with = GER
 			}
-			AUS = {
+			GER = {
 				country_event = {
 					id = ww1_italy.396
 					days = 2
@@ -10823,48 +10928,75 @@ country_event = {
 	option = {
 		name = ww1_italy.396.a
 		add_political_power = 100
-		IF = {
-			limit = {
-				original_tag = AUS
-			}
-			4 = {
-				add_extra_state_shared_building_slots = 5
-				add_building_construction = {
-					type = industrial_complex
-					level = 5
-					instant_build = yes
-				}
-			}
-			AUS = {
-				white_peace = ITA
-			}
-			GER = {
-				white_peace = ITA
-			}
-		}
-		IF = {
-			limit = {
-				original_tag = FRA
-			}
-			16 = {
-				add_extra_state_shared_building_slots = 5
-				add_building_construction = {
-					type = industrial_complex
-					level = 5
-					instant_build = yes
-				}
-			}
-			FRA = {
-				white_peace = ITA
-			}
-			ENG = {
-				white_peace = ITA
-			}
-		}
 		ITA = {
-			country_event = {
-				id = ww1_italy.396
-				days = 2
+			white_peace = ROOT
+		}
+		every_country = {
+			limit = {
+				has_war_with = ITA
+			}
+			every_country = {
+				limit = {
+					OR = {
+						tag = ITA
+						is_subject_of = ITA
+					}
+				}
+				white_peace = PREV
+				set_truce = {
+					target = PREV
+					days = 365
+				}
+			}
+		}
+		every_country = {
+			limit = {
+				OR = {
+					is_subject_of = ITA
+					original_tag = ITA
+				}
+			}
+			leave_faction = yes
+			add_ideas = standing_alone
+			add_ideas = disarmed_nation
+			add_ideas = idea_armistice
+			set_country_flag = great_war_loser
+		}
+		every_country = {
+			limit = {
+				OR = {
+					is_in_faction_with = ROOT
+					is_subject_of = ROOT
+					original_tag = ROOT
+				}
+			}
+			ITA = {
+				give_military_access = PREV
+			}
+		}
+		add_offsite_building = {
+			type = industrial_complex
+			level = 5
+		}
+		hidden_effect = {
+			ITA = {
+				country_event = {
+					id = ww1_italy.397
+					days = 2
+				}
+				for_loop_effect = {
+					start = 0
+					end = 4
+					random_owned_state = {
+						limit = {
+							industrial_complex > 0
+						}
+						remove_building = {
+							type = industrial_complex
+							level = 1
+						}
+					}
+				}
 			}
 		}
 		ai_chance = {
@@ -10896,20 +11028,6 @@ country_event = {
 		add_popularity = {
 			ideology = communism
 			popularity = -0.05
-		}
-		159 = {
-			add_extra_state_shared_building_slots = -5
-			add_building_construction = {
-				type = industrial_complex
-				level = -5
-				instant_build = yes
-			}
-		}
-		hidden_effect = {
-			country_event = {
-				id = ww1_italy.398
-				days = 20
-			}
 		}
 	}
 }
@@ -10951,6 +11069,7 @@ country_event = {
 	picture = GFX_report_event_ITA_PSI_conference
 	fire_only_once = yes
 	trigger = {
+		original_tag = ITA
 		SOV = {
 			exists = yes
 		}
@@ -11109,6 +11228,7 @@ country_event = {
 	picture = GFX_report_event_generic_usa_treaty
 	fire_only_once = yes
 	trigger = {
+		original_tag = ITA
 		OR = {
 			war_length_with = {
 				tag = AUS
@@ -11119,7 +11239,7 @@ country_event = {
 				months = 16
 			}
 		}
-		casualties_k > 20
+		casualties_k > 35
 	}
 	option = {
 		name = ww1_italy.407.a
@@ -11136,6 +11256,7 @@ country_event = {
 	picture = GFX_report_event_generic_usa_treaty
 	fire_only_once = yes
 	trigger = {
+		original_tag = ITA
 		has_country_flag = ITA_douhet_imprisoned
 		OR = {
 			war_length_with = {
@@ -11166,6 +11287,7 @@ country_event = {
 	picture = GFX_report_event_generic_usa_treaty
 	fire_only_once = yes
 	trigger = {
+		original_tag = ITA
 		has_country_flag = ITA_douhet_imprisoned
 		casualties_k > 200
 	}
@@ -11833,26 +11955,18 @@ country_event = {
 	title = ww1_italy.451.t
 	desc = ww1_italy.451.d
 	picture = GFX_report_event_crowd_in_prague
-	trigger = {
-		tag = ITA
-		OR = {
-			has_war_with = GER
-			has_war_with = FRA
-		}
-	}
-	mean_time_to_happen = {
-		days = 365
-	}
-	fire_only_once = no
-	option = {
-		name = ww1_italy.451.a
+	immediate = {
 		add_to_variable = {
 			ITA_war_cost_timer = -5
 		}
 		add_to_variable = {
 			ITA_food_shortage_mission_event = -25
 		}
-		add_war_support = -0.05
+		add_war_support = -0.05		
+	}
+	is_triggered_only = yes
+	option = {
+		name = ww1_italy.451.a
 		custom_effect_tooltip = ITA_the_mission_is_going_to_shit
 	}
 }
@@ -11889,6 +12003,9 @@ country_event = {
 		custom_effect_tooltip = ITA_the_mission_dtdd_10
 		add_to_variable = {
 			ITA_war_end_timer = -10
+		}
+		ai_chance = {
+			base = 50
 		}
 	}
 	option = {
@@ -20670,6 +20787,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 9598		#trento 1
 	}
@@ -20686,6 +20804,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 11598		#bozen 2
 	}
@@ -20701,6 +20820,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 6675		#meran 1
 	}
@@ -20717,6 +20837,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 673		#innsbruck 5
 	}
@@ -20733,6 +20854,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 6680		#bregenz 1
 	}
@@ -20749,6 +20871,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 12888		#gorz 1
 	}
@@ -20765,6 +20888,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 6626		#triest 10
 	}
@@ -20781,6 +20905,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 984		#pola 1
 	}
@@ -20797,6 +20922,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 9627		#laibach 3
 	}
@@ -20812,6 +20938,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 3631		#krainburg 1
 	}
@@ -20828,6 +20955,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 3673		#klagenfurt 1
 	}
@@ -20843,6 +20971,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 11612		#ferlach 1
 	}
@@ -20858,6 +20987,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 3674		#villach 1
 	}
@@ -20874,6 +21004,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 9648		#graz 10
 	}
@@ -20890,6 +21021,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 688		#salzburg 3
 	}
@@ -20906,6 +21038,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 9665		#linz 5
 	}
@@ -20921,6 +21054,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 3684		#steyr 1
 	}
@@ -20937,6 +21071,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 11666		#vienna 50
 	}
@@ -20953,6 +21088,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 596		#marburg 2
 	}
@@ -20969,6 +21105,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 11525		#znaim 1
 	}
@@ -20985,6 +21122,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 3569		#brunn 10
 	}
@@ -21000,6 +21138,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 6562		#olmutz 2
 	}
@@ -21015,6 +21154,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 4859		#ostrau 5
 	}
@@ -21031,6 +21171,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 3583		#troppau 5
 	}
@@ -21047,6 +21188,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 6485		#freiwaldau 1
 	}
@@ -21063,6 +21205,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 13347		#leitomischl 1
 	}
@@ -21079,6 +21222,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 11542		#prag 20
 	}
@@ -21094,6 +21238,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 13355		#kladen 2
 	}
@@ -21109,6 +21254,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 9541		#budweis 1
 	}
@@ -21124,6 +21270,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 6418		#pilsen 5
 	}
@@ -21140,6 +21287,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 3585		#carlsbad 3
 	}
@@ -21155,6 +21303,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 11401		#reichenberg 3
 	}
@@ -21171,6 +21320,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 3943		#zadar 2
 	}
@@ -21187,6 +21337,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 3924		#split 3
 	}
@@ -21203,6 +21354,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 6889		#ragusa 1
 	}
@@ -21222,6 +21374,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 10749		#fiume 1
 	}
@@ -21238,6 +21391,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 11564		#zengg 1
 	}
@@ -21253,6 +21407,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 591		#goszpics 2
 	}
@@ -21269,6 +21424,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 11581		#zagreb 6
 	}
@@ -21284,6 +21440,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 11594		#belovar 1
 	}
@@ -21299,6 +21456,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 6647		#eszek 2
 	}
@@ -21317,6 +21475,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 11899		#sarajevo 4
 	}
@@ -21332,6 +21491,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 9894		#mostar 1
 	}
@@ -21347,6 +21507,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 9588		#banja luka 2
 	}
@@ -21362,6 +21523,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 11573
 	}
@@ -21377,6 +21539,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 6609
 	}
@@ -21392,6 +21555,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 3768
 	}
@@ -21407,6 +21571,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 9909
 	}
@@ -21422,6 +21587,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 991
 	}
@@ -21437,6 +21603,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 956
 	}
@@ -21452,6 +21619,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 11834
 	}
@@ -21467,6 +21635,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 958
 	}
@@ -21482,6 +21651,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 762
 	}
@@ -21497,6 +21667,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 9851
 	}
@@ -21512,6 +21683,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 3838
 	}
@@ -21527,6 +21699,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 12000
 	}
@@ -21542,6 +21715,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 7005
 	}
@@ -21557,6 +21731,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 11921
 	}
@@ -21572,6 +21747,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 7077
 	}
@@ -21587,6 +21763,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 9994
 	}
@@ -21602,6 +21779,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 11969
 	}
@@ -21617,6 +21795,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 7081
 	}
@@ -21632,6 +21811,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 12051
 	}
@@ -21647,6 +21827,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 7065
 	}
@@ -21662,6 +21843,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 10059
 	}
@@ -21677,6 +21859,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 11939
 	}
@@ -21692,6 +21875,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 9964
 	}
@@ -21707,6 +21891,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 12020
 	}
@@ -21722,6 +21907,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 10045
 	}
@@ -21737,6 +21923,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 11923
 	}
@@ -21752,6 +21939,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 7132
 	}
@@ -21767,6 +21955,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 4116
 	}
@@ -21782,6 +21971,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 989
 	}
@@ -21797,6 +21987,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 6613
 	}
@@ -21812,6 +22003,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 989
 	}
@@ -21827,6 +22019,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 11794
 	}
@@ -21842,6 +22035,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 11877
 	}
@@ -21857,6 +22051,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 3594
 	}
@@ -21872,6 +22067,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 9748
 	}
@@ -21887,6 +22083,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 9898
 	}
@@ -21902,6 +22099,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 6960
 	}
@@ -21917,6 +22115,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 9853
 	}
@@ -21932,6 +22131,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 6766
 	}
@@ -21947,6 +22147,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 9734
 	}
@@ -21962,6 +22163,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 6775
 	}
@@ -21977,6 +22179,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 11697
 	}
@@ -21992,6 +22195,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 743
 	}
@@ -22007,6 +22211,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 9737
 	}
@@ -22022,6 +22227,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 11565
 	}
@@ -22037,6 +22243,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 620
 	}
@@ -22052,6 +22259,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 9597
 	}
@@ -22067,6 +22275,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 6657
 	}
@@ -22082,6 +22291,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 655
 	}
@@ -22097,6 +22307,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = FRA
 		controls_province = 629
 	}
@@ -22112,6 +22323,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22136,6 +22348,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22160,6 +22373,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22184,6 +22398,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22208,6 +22423,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22232,6 +22448,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22256,6 +22473,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22280,6 +22498,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22304,6 +22523,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22328,6 +22548,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22352,6 +22573,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22376,6 +22598,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22400,6 +22623,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22424,6 +22648,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22448,6 +22673,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22472,6 +22698,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22496,6 +22723,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22520,6 +22748,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22544,6 +22773,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22568,6 +22798,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22592,6 +22823,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22616,6 +22848,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22640,6 +22873,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22664,6 +22898,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22688,6 +22923,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22712,6 +22948,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22736,6 +22973,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22760,6 +22998,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22784,6 +23023,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22808,6 +23048,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22832,6 +23073,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22856,6 +23098,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22880,6 +23123,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22904,6 +23148,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22928,6 +23173,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22952,6 +23198,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -22976,6 +23223,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -23000,6 +23248,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -23024,6 +23273,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -23048,6 +23298,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -23072,6 +23323,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -23096,6 +23348,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -23120,6 +23373,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -23144,6 +23398,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -23168,6 +23423,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -23192,6 +23448,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -23216,6 +23473,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -23240,6 +23498,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		OR = {
 			has_war_with = FRA
 			has_war_with = AUS
@@ -23264,6 +23523,7 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	trigger = {
+		tag = ITA
 		has_war_with = AUS
 		controls_province = 3654		#cili 1
 	}
@@ -23560,7 +23820,7 @@ country_event = {
 				ITA_alceste_de_ambris = {
 					set_nationality = SRI
 				}
-				ITA_odino_morgari = {
+				ITA_oddino_morgari = {
 					set_nationality = SRI
 				}
 				ITA_giacinto_serrati = {
@@ -23610,7 +23870,7 @@ country_event = {
 					popularity = -0.1
 				}
 				division_template = {
-					name = "Loyalist Militia"
+					name = "Milizia Volontaria"
 					is_locked = yes
 					regiments = {
 						militia = {
@@ -23636,7 +23896,7 @@ country_event = {
 					}
 				}
 				division_template = {
-					name = "Guardia rossa dei contadini"
+					name = "Milizia contadina"
 					is_locked = yes
 					regiments = {
 						militia = {
@@ -24231,13 +24491,13 @@ country_event = {
 					set_province_controller = 6831
 					1217 = {
 						create_unit = {
-							division = "name = \"Guardia rossa dei contadini\" division_template = \"Guardie Rosse\" start_equipment_factor = 0.3 start_experience_factor = 0.2"
+							division = "name = \"Milizia contadina\" division_template = \"Guardie Rosse\" start_equipment_factor = 0.3 start_experience_factor = 0.2"
 							prioritize_location = 883
 							count = 2
 							owner = PREV
 						}
 						create_unit = {
-							division = "name = \"Guardia rossa dei contadini\" division_template = \"Guardie Rosse\" start_equipment_factor = 0.3 start_experience_factor = 0.2"
+							division = "name = \"Milizia contadina\" division_template = \"Guardie Rosse\" start_equipment_factor = 0.3 start_experience_factor = 0.2"
 							prioritize_location = 6843
 							count = 2
 							owner = PREV
@@ -24245,7 +24505,7 @@ country_event = {
 					}
 					157 = {
 						create_unit = {
-							division = "name = \"Guardia rossa dei contadini\" division_template = \"Guardie Rosse\" start_equipment_factor = 0.3 start_experience_factor = 0.2"
+							division = "name = \"Milizia contadina\" division_template = \"Guardie Rosse\" start_equipment_factor = 0.3 start_experience_factor = 0.2"
 							prioritize_location = 6831
 							count = 1
 							owner = PREV
@@ -24277,13 +24537,13 @@ country_event = {
 					}
 					1217 = {
 						create_unit = {
-							division = "name = \"Guardia rossa dei contadini\" division_template = \"Guardia rossa dei contadini\" start_equipment_factor = 0.3 start_experience_factor = 0.2"
+							division = "name = \"Milizia contadina\" division_template = \"Milizia contadina\" start_equipment_factor = 0.3 start_experience_factor = 0.2"
 							prioritize_location = 6939
 							count = 1
 							owner = PREV
 						}
 						create_unit = {
-							division = "name = \"Guardia rossa dei contadini\" division_template = \"Guardia rossa dei contadini\" start_equipment_factor = 0.3 start_experience_factor = 0.2"
+							division = "name = \"Milizia contadina\" division_template = \"Milizia contadina\" start_equipment_factor = 0.3 start_experience_factor = 0.2"
 							prioritize_location = 9784
 							count = 1
 							owner = PREV
@@ -24291,7 +24551,7 @@ country_event = {
 					}
 					1218 = {
 						create_unit = {
-							division = "name = \"Guardia rossa dei contadini\" division_template = \"Guardia rossa dei contadini\" start_equipment_factor = 0.3 start_experience_factor = 0.2"
+							division = "name = \"Milizia contadina\" division_template = \"Milizia contadina\" start_equipment_factor = 0.3 start_experience_factor = 0.2"
 							prioritize_location = 3958
 							count = 1
 							owner = PREV
@@ -24299,7 +24559,7 @@ country_event = {
 					}
 					157 = {
 						create_unit = {
-							division = "name = \"Guardia rossa dei contadini\" division_template = \"Guardia rossa dei contadini\" start_equipment_factor = 0.3 start_experience_factor = 0.2"
+							division = "name = \"Milizia contadina\" division_template = \"Milizia contadina\" start_equipment_factor = 0.3 start_experience_factor = 0.2"
 							prioritize_location = 3910
 							count = 1
 							owner = PREV
@@ -24317,13 +24577,13 @@ country_event = {
 		effect_tooltip = {
 			1217 = {
 				create_unit = {
-					division = "name = \"Guardia rossa dei contadini\" division_template = \"Guardie Rosse\" start_equipment_factor = 0.3 start_experience_factor = 0.2"
+					division = "name = \"Milizia contadina\" division_template = \"Guardie Rosse\" start_equipment_factor = 0.3 start_experience_factor = 0.2"
 					prioritize_location = 883
 					count = 2
 					owner = PREV
 				}
 				create_unit = {
-					division = "name = \"Guardia rossa dei contadini\" division_template = \"Guardie Rosse\" start_equipment_factor = 0.3 start_experience_factor = 0.2"
+					division = "name = \"Milizia contadina\" division_template = \"Guardie Rosse\" start_equipment_factor = 0.3 start_experience_factor = 0.2"
 					prioritize_location = 6843
 					count = 2
 					owner = PREV
@@ -24331,7 +24591,7 @@ country_event = {
 			}
 			157 = {
 				create_unit = {
-					division = "name = \"Guardia rossa dei contadini\" division_template = \"Guardie Rosse\" start_equipment_factor = 0.3 start_experience_factor = 0.2"
+					division = "name = \"Milizia contadina\" division_template = \"Guardie Rosse\" start_equipment_factor = 0.3 start_experience_factor = 0.2"
 					prioritize_location = 6831
 					count = 1
 					owner = PREV
@@ -24347,13 +24607,13 @@ country_event = {
 		effect_tooltip = {
 			1217 = {
 				create_unit = {
-					division = "name = \"Guardia rossa dei contadini\" division_template = \"Guardia rossa dei contadini\" start_equipment_factor = 0.3 start_experience_factor = 0.2"
+					division = "name = \"Milizia contadina\" division_template = \"Milizia contadina\" start_equipment_factor = 0.3 start_experience_factor = 0.2"
 					prioritize_location = 6939
 					count = 1
 					owner = PREV
 				}
 				create_unit = {
-					division = "name = \"Guardia rossa dei contadini\" division_template = \"Guardia rossa dei contadini\" start_equipment_factor = 0.3 start_experience_factor = 0.2"
+					division = "name = \"Milizia contadina\" division_template = \"Milizia contadina\" start_equipment_factor = 0.3 start_experience_factor = 0.2"
 					prioritize_location = 9784
 					count = 1
 					owner = PREV
@@ -24361,7 +24621,7 @@ country_event = {
 			}
 			1218 = {
 				create_unit = {
-					division = "name = \"Guardia rossa dei contadini\" division_template = \"Guardia rossa dei contadini\" start_equipment_factor = 0.3 start_experience_factor = 0.2"
+					division = "name = \"Milizia contadina\" division_template = \"Milizia contadina\" start_equipment_factor = 0.3 start_experience_factor = 0.2"
 					prioritize_location = 3958
 					count = 1
 					owner = PREV
@@ -24369,7 +24629,7 @@ country_event = {
 			}
 			157 = {
 				create_unit = {
-					division = "name = \"Guardia rossa dei contadini\" division_template = \"Guardia rossa dei contadini\" start_equipment_factor = 0.3 start_experience_factor = 0.2"
+					division = "name = \"Milizia contadina\" division_template = \"Milizia contadina\" start_equipment_factor = 0.3 start_experience_factor = 0.2"
 					prioritize_location = 3910
 					count = 1
 					owner = PREV
@@ -28353,7 +28613,7 @@ country_event = {
 			custom_effect_tooltip = AUS_italy_too_good
 		}
 		ITA = {
-			country_event = ww1_iw_br_italy.44
+			country_event = ww1_iw_br_italy.45
 		}
 	}
 	option = {

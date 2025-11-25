@@ -777,13 +777,25 @@ focus_tree = {
 			}
 		}
 		relative_position_id = AUH_integration_of_southern_croatia
-		completion_reward = {	
+		completion_reward = {
 			BOS = {
 				swap_ideas = {
 					remove_idea = BOS_south_slavic_terrorism
 					add_idea = BOS_south_slavic_terrorism2
 					days = 720
 				}
+			}
+			if = {
+				limit = {
+					has_character = AUH_franz_ferdinand
+					NOT = {
+						has_country_leader = {
+							character = AUH_franz_ferdinand
+						}						
+					}
+				}
+				custom_effect_tooltip = AUH_prevent_ferdinand_assasination
+				custom_effect_tooltip = empty_space_tt
 			}
 			unlock_decision_tooltip = BOS_suspend_bosnian_diet
 			set_country_flag = AUH_suppress_slav_opposition
@@ -1461,7 +1473,7 @@ focus = {
 		custom_effect_tooltip = AUH_corruption_reduction_4
 		add_to_variable = {
 			var = AUH_corruption_var
-			value = 0.04
+			value = -0.04
 		}
 		set_variable = {
 			var = AUH_corruption_var_plain
@@ -1928,40 +1940,17 @@ focus = {
 		}
 		NOT = {
 			has_global_flag = AUH_lose_against_hungary
-			HUN = {
-				exists = yes
-				NOT = {
-					is_puppet_of = AUS
-				}
-			}
-			CZE = {
-				exists = yes
-				NOT = {
-					is_puppet_of = AUS
-				}
-			}
-			GAL = {
-				exists = yes
-				NOT = {
-					is_puppet_of = AUS
-				}
-			}
-			CRO = {
-				exists = yes
-				NOT = {
-					is_puppet_of = AUS
-				}
-			}
-			BOS = {
-				exists = yes
-				NOT = {
-					is_puppet_of = AUS
-				}
-			}
+			has_subject = CRO
 		}
 	}
 	bypass = {
-		has_completed_focus = AUH_federalist_reform
+		OR = {
+			has_completed_focus = AUH_federalist_reform
+			AND = {
+				has_subject = CRO
+				has_subject = HUN
+			}
+		}
 	}
 	search_filters = {
 		FOCUS_FILTER_STABILITY
@@ -2151,7 +2140,13 @@ focus = {
 		focus = AUH_economic_liberisation
 	}
 	completion_reward = {
-		remove_ideas = standing_alone
+		if = {
+			limit = { 
+				has_idea = standing_alone
+			}
+			remove_ideas = standing_alone
+		}
+		
 		if = {
 			limit = {
 				NOT = { is_in_faction_with = GER }
@@ -2290,30 +2285,34 @@ focus = {
 			}
 			leave_faction = yes
 		}
-		diplomatic_relation = {
-			country = GER
-			relation = guarantee
-			active = no
-	    }
-		diplomatic_relation = {
-			country = ITA
-			relation = guarantee
-			active = no
-	    }
-		hidden_effect = {
-			GER = {
+		every_other_country = {
+			limit = { 
+				is_guaranteed_by = ROOT 
+				NOT = {
+					original_tag = LIE
+				}
+			}
+			ROOT = {
 				diplomatic_relation = {
-					country = ROOT
+					country = PREV
 					relation = guarantee
 					active = no
 				}
 			}
-			ITA = {
-				diplomatic_relation = {
-					country = ROOT
-					relation = guarantee
-					active = no
+		}
+		every_other_country = {
+			limit = { 
+				has_guaranteed = ROOT 
+				OR = {
+					original_tag = GER
+					original_tag = ITA
+					original_tag = ROM
 				}
+			}
+			diplomatic_relation = {
+				country = PREV
+				relation = guarantee
+				active = no
 			}
 		}
 	}
@@ -2626,6 +2625,8 @@ focus = {
 		focus = AUH_self_defence_doctrines
 	}
 	completion_reward = {
+		add_political_power = 50
+		add_stability = 0.05
 		add_ideas = neutrality_idea
 		
 	}
@@ -4896,7 +4897,7 @@ focus = {
 						}					
 					}
 					create_unit = {
-						division = "name = \"Ukrainski sichovi striltsi\" division_template = \"Ukrainski sichovi striltsi\" start_experience_factor = 0.1 start_equipment_factor = 0.9"
+						division = "name = \"Ukrainski Sichovi Striltsi\" division_template = \"Ukrainski Sichovi Striltsi\" start_experience_factor = 0.1 start_equipment_factor = 0.9"
 						owner = ROOT
 					}
 				}
@@ -4929,7 +4930,7 @@ focus = {
 				bonus = 1
 				uses = 1
 				ahead_reduction = 1
-				category = radar_tech
+				category = radio_tech
 				category = armor
 				category = air_equipment
 			}
@@ -5278,6 +5279,8 @@ focus = {
 			FOCUS_FILTER_NAVY_XP
 		}
 		completion_reward = {
+			unlock_decision_tooltip = AUS_blockade_italy
+			unlock_decision_tooltip = AUS_shell_venice
 			navy_experience = 25
 			add_doctrine_cost_reduction = {
 				name = AUH_expand_pula_base
