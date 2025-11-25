@@ -846,10 +846,7 @@ political_actions = {
 				has_war_with = FRA
 			}
 			is_in_faction = yes
-			has_global_flag = great_war
-			NOT = {
-				has_global_flag = great_war_ends
-			}
+			is_great_war_ongoing = yes
 			FROM = {
 				exists = yes
 				NOT = {
@@ -938,16 +935,14 @@ political_actions = {
 				has_country_flag = FRA_socialist_france_flag
 				is_neighbor_of = PREV
 				NOT = {
-					is_in_faction_with = PREV
-					is_subject_of = PREV
+					is_ally_with = PREV
 				}
 			}
 			any_country = {
 				has_country_flag = FRA_nationalist_france_flag
 				is_neighbor_of = PREV
 				NOT = {
-					is_in_faction_with = PREV
-					is_subject_of = PREV
+					is_ally_with = PREV
 				}
 			}
 			has_country_flag = great_war_winner
@@ -1032,7 +1027,7 @@ political_actions = {
 		visible = {
 			is_in_faction = yes
 			is_subject = no
-			NOT = { has_global_flag = great_war_ends }
+			is_great_war_ongoing = yes
 			FROM = {
 				exists = yes
 				NOT = {
@@ -1165,6 +1160,7 @@ operations = {
 				add_state_claim = 416
 				add_state_claim = 418
 				add_state_claim = 877
+				add_state_claim = 1212
 			}
 			hidden_effect = {
 				every_state = {
@@ -1184,6 +1180,7 @@ operations = {
 							state = 420
 							state = 419
 							state = 877
+							state = 1212
 						}
 					}
 					transfer_state_to = RUS
@@ -1455,7 +1452,7 @@ ENG_interwar_entente_category = {
 					tag = ZIM
 					tag = NIR
 					original_tag = ITA
-					tag = SIC
+					tag = TTS
 					tag = POR
 					AND = {
 						original_tag = RAJ
@@ -1610,7 +1607,7 @@ ENG_interwar_entente_category = {
 }
 
 ENG_british_civil_war_category = {
-	ENG_foreign_support_BRE = {
+	ENG_foreign_support_GBR = {
 		icon = ger_military_buildup
 		allowed = {
 			NOT = { original_tag = ENG }
@@ -1619,7 +1616,7 @@ ENG_british_civil_war_category = {
 			has_global_flag = british_civil_war
 			any_country = {
 				has_country_flag = ENG_socialist_britain_flag
-				has_war_with = BRE
+				has_war_with = GBR
 			}
 			NOT = { has_country_flag = supported_british_civil_war }
 		}
@@ -1647,7 +1644,7 @@ ENG_british_civil_war_category = {
 			}
 		}
 		target_trigger = {
-			FROM = { tag = BRE }
+			FROM = { tag = GBR }
 		}
 		target_root_trigger = {
 			has_global_flag = british_civil_war
@@ -1656,11 +1653,11 @@ ENG_british_civil_war_category = {
 			set_country_flag = supported_british_civil_war
 			army_experience = 5
 			send_equipment = {
-				target = BRE
+				target = GBR
 				type = infantry_equipment
 				amount = 2000
 			}
-			BRE = {
+			GBR = {
 				country_event = garibaldi.32
 			}
 		}
@@ -1674,7 +1671,7 @@ ENG_british_civil_war_category = {
 			has_global_flag = british_civil_war
 			any_country = {
 				has_country_flag = ENG_socialist_britain_flag
-				has_war_with = BRE
+				has_war_with = GBR
 			}
 			NOT = { has_country_flag = supported_british_civil_war }
 		}
@@ -1744,7 +1741,13 @@ ENG_british_civil_war_category = {
 			}
 		}		
 		activation = {
-			SCO = { has_war_with = ENG }
+			SCO = {
+				has_war_with = ENG
+				has_country_flag = scottish_independence_war_based
+				NOT = {
+					has_cosmetic_tag = SCO_provisional
+				}
+			}
 		}
 		timeout_effect = {
 			ENG = { country_event = ww1_england.154 }
@@ -1763,7 +1766,7 @@ ENG_british_civil_war_category = {
 			any_country = {
 				original_tag = ENG
 				has_country_flag = ENG_socialist_britain_flag
-				has_war_with = BRE
+				has_war_with = GBR
 			}
 			has_war = no
 			is_subject = no
@@ -1778,7 +1781,7 @@ ENG_british_civil_war_category = {
 			any_country = {
 				original_tag = ENG
 				has_country_flag = ENG_socialist_britain_flag
-				has_war_with = BRE
+				has_war_with = GBR
 			}
 			is_subject = no
 			FROM = {
@@ -1805,7 +1808,7 @@ ENG_british_civil_war_category = {
 			add_to_faction = FROM
 			add_to_war = {
 				targeted_alliance = FROM
-				enemy = BRE
+				enemy = GBR
 			}
 			add_named_threat = {
 				threat = 3
@@ -2111,7 +2114,7 @@ GER_great_war = {
 		}
 		days_mission_timeout = 70
 		activation = {
-			has_global_flag = great_war
+			is_great_war_ongoing = yes
 			OR = {
 				has_war_with = GER
 				has_war_with = FRA
@@ -2131,14 +2134,13 @@ GER_great_war = {
 					original_tag = ENG
 					has_war_with = ROOT
 				}
-				has_global_flag = great_war_ends
 				has_idea = ENG_homeland_under_attack
 			}
 		}
 		available = {
 			OR = {
 				has_war = no
-				enemies_naval_strength_ratio < 0.75
+				# enemies_naval_strength_ratio < 0.75
 				has_idea = ENG_homeland_under_attack
 				any_other_country = {
 					original_tag = ENG
@@ -2156,17 +2158,6 @@ GER_great_war = {
 					}
 				}
 				surrender_progress < 0.05
-			}
-		}
-		visible = {
-			has_global_flag = great_war
-			OR = {
-				has_war_with = GER
-				has_war_with = FRA
-			}
-			NOT = {
-				has_idea = ENG_homeland_under_attack
-				has_global_flag = great_war_ends
 			}
 		}
 		fire_only_once = no
@@ -2310,10 +2301,7 @@ peace_deals = {
 			hidden_effect = {
 				every_other_country = {
 					limit = {
-						OR = {
-							is_in_faction_with = ROOT
-							is_subject_of = ROOT
-						}
+						is_ally_with = ROOT
 						has_war_with = FROM
 					}
 					white_peace = FROM

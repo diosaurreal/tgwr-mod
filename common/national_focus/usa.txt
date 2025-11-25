@@ -782,12 +782,20 @@ focus_tree = {
 		}
 		cancel_if_invalid = no
 		continue_if_invalid = yes
-		available = { threat > 0.2 }
-		completion_reward = { 
+		available = { 
+			OR = {
+				threat > 0.2
+				is_great_war_ongoing = yes
+			}		
+		}
+		completion_reward = {
 			swap_ideas = {
 				add_idea = isolation
 				remove_idea = undisturbed_isolation
 			}
+		}
+		ai_will_do = {
+			factor = 10
 		}
 		search_filters = {
 			FOCUS_FILTER_HISTORICAL
@@ -802,7 +810,13 @@ focus_tree = {
 		}
 		x = 10
 		y = 3
-		available = { threat > 0.45 }
+		available = { 
+			OR = {
+				has_defensive_war = yes
+				threat > 0.45
+				is_great_war_ongoing = yes
+			}		
+		}
 		completion_reward = {
 			random_owned_controlled_state = {
 				limit = {
@@ -841,7 +855,10 @@ focus_tree = {
 			factor = 1
 			modifier = {
 				factor = 100
-				threat > 0.65
+				OR = {
+					threat > 0.5
+					has_defensive_war = yes
+				}			
 			}
 		}
 		search_filters = {
@@ -857,16 +874,34 @@ focus_tree = {
 		}
 		x = 12
 		y = 3	
-		available = { threat > 0.45 }
+		available = { 
+			OR = {
+				has_defensive_war = yes
+				threat > 0.45
+				is_great_war_ongoing = yes
+			}		
+		}
 		completion_reward = { 
-			add_ideas = civilian_economy 
+			if = {
+				limit = { 
+					has_idea = isolation
+				}
+				swap_ideas = {
+					remove_idea = isolation
+					add_idea = civilian_economy
+				}
+			}
+			else = {
+				effect_tooltip = {
+					add_ideas = civilian_economy
+				}
+			}
 			custom_effect_tooltip = escape_line
 			swap_ideas = {
 				add_idea = USA_idea_neglected_military_budget2
 				remove_idea = USA_idea_neglected_military_budget
 			}
-			country_lock_all_division_template = no
-			
+			country_lock_all_division_template = no		
 		}
 		search_filters = {
 			FOCUS_FILTER_HISTORICAL
@@ -878,7 +913,7 @@ focus_tree = {
 	focus = {
 		id = USA_do_not_stand_aside
 		icon = GFX_focus_generic_little_entente
-		cost = 10
+		cost = 5
 		prerequisite = {
 			focus = USA_arms_tax
 		}
@@ -891,8 +926,14 @@ focus_tree = {
 			OR = {
 				threat > 0.6
 				has_defensive_war = yes
-				has_war_support > 0.95
-				has_global_flag = zimmermann_telegram_received
+				has_war_support > 0.95	
+				GER = {
+					has_unrestricted_submarine_warfare = yes
+				}
+				AND = {
+					is_great_war_ongoing = yes
+					has_country_leader = { character = USA_theodore_roosevelt }
+				}
 			}
 		}
 		completion_reward = {
@@ -907,6 +948,7 @@ focus_tree = {
 					threat > 0.7
 					has_defensive_war = yes
 					has_global_flag = zimmermann_telegram_received
+					has_country_leader = { character = USA_theodore_roosevelt }
 				}
 			}
 		}
@@ -929,6 +971,7 @@ focus_tree = {
 		x = -1
 		y = 1
 		available = {
+			is_great_war_ongoing = yes
 			GER = {
 				has_war =  yes
 			}
@@ -936,15 +979,23 @@ focus_tree = {
 			has_civil_war = no
 			NOT = {
 				is_in_faction_with = GER
-				has_war_with = FRA
+				has_war_with = ENT
 				has_idea = idea_armistice
 				has_idea = idea_army_restrictions
-				has_global_flag = great_war_ends
 			}
-			has_opinion = {
-				target = GER
-				value < -60
-			}
+			OR = {
+				has_opinion = {
+					target = GER
+					value < -60
+				}
+				GER = {
+					has_unrestricted_submarine_warfare = yes
+				}
+				has_global_flag = zimmermann_telegram_received
+				has_country_leader = {
+					character = USA_theodore_roosevelt
+				}
+			}		
 		}
 		will_lead_to_war_with = GER
 		bypass = {
@@ -972,22 +1023,33 @@ focus_tree = {
 				OR = {
 					has_global_flag = brest_litovsk_peace
 					has_global_flag = october_revolution
+					has_global_flag = RUS_surrender_alone
 					RUS = {
 						has_government = communism
 						NOT = {
-							has_war_with = FRA
+							has_war_with = ENT
 						}
 					}
 				}
-			}			
+			}
+			modifier = {
+				factor = 100
+				GER = {
+					has_unrestricted_submarine_warfare = yes
+				}
+			}
+			modifier = {
+				factor = 100
+				has_country_leader = { character = USA_theodore_roosevelt }
+			}
 			modifier = {			
 				factor = -1000
 				has_government = democratic
 				GER = {
-					has_war_with = FRA
+					has_war_with = ENT
 				}
 				GER = { has_government = democratic }
-				FRA = {
+				ENT = {
 					NOT = {
 						has_government = democratic
 					}
@@ -1094,10 +1156,29 @@ focus_tree = {
 		}
 		x = 13
 		y = 2
-		bypass = { has_idea = volunteer_only }
+		available = { 
+			OR = {
+				has_defensive_war = yes
+				threat > 0.2
+				is_great_war_ongoing = yes
+			}		
+		}
 		search_filters = { FOCUS_FILTER_HISTORICAL FOCUS_FILTER_MANPOWER}
-		completion_reward = {
-			add_ideas = volunteer_only
+		completion_reward = {	
+			if = {
+				limit = { 
+					has_idea = disarmed_nation
+				}
+				swap_ideas = {
+					remove_idea = disarmed_nation
+					add_idea = volunteer_only
+				}
+			}
+			else = {
+				effect_tooltip = {
+					add_ideas = volunteer_only
+				}
+			}
 			add_ideas = USA_idea_volunteer_corps
 			if = {
 				limit = {
@@ -1131,7 +1212,9 @@ focus_tree = {
 		x = 15
 		y = 2
 		available = { has_war_support > 0.2 }
-		bypass = { NOT = { has_idea = undisturbed_isolation } }
+		bypass = {
+			NOT = { has_idea = undisturbed_isolation }
+		}
 		completion_reward = { add_ideas = isolation }
 	}
 	focus = {
@@ -1145,7 +1228,7 @@ focus_tree = {
 		y = 3
 		available = { 
 			has_war_support > 0.45 
-			has_idea = USA_idea_defender_of_the_american_sphere2
+			has_idea = USA_idea_defender_of_the_american_sphere
 		}
 		completion_reward = {
 			swap_ideas = {
@@ -1244,10 +1327,19 @@ focus_tree = {
 		bypass = {
 			NOT = { has_idea = undisturbed_isolation }
 			NOT = { has_idea = isolation }
+			NOT = { has_idea = USA_idea_neglected_military_budget }
 		}
 		available = { has_war_support > 0.45 }
 		completion_reward = {
-			add_ideas = civilian_economy
+			if = {
+				limit = {
+					OR = {
+						has_idea = undisturbed_isolation
+						has_idea = isolation
+					}
+				}
+				add_ideas = civilian_economy
+			}
 			remove_ideas = USA_idea_neglected_military_budget
 		}
 	}
@@ -1274,7 +1366,8 @@ focus_tree = {
 				}
 				set_faction_name = pan_american
 				else = {
-					create_faction = pan_american
+					create_faction_from_template = faction_template_pan_american
+					set_faction_name = pan_american
 				}
 			}		
 			set_rule = { can_create_factions = yes }
@@ -1526,9 +1619,15 @@ focus_tree = {
 				has_idea = idea_army_restrictions
 				has_global_flag = great_war_ends
 			}
-			has_opinion = {
-				target = FRA
-				value < -60
+			if = {
+				limit = {
+					has_government = democratic
+				}
+				FRA = {
+					NOT = {
+						has_government = democratic
+					}
+				}
 			}
 		}
 		will_lead_to_war_with = FRA
@@ -1727,6 +1826,7 @@ focus_tree = {
 		cost = 10
 		prerequisite = {
 			focus = USA_protectionist_act
+			focus = USA_american_autarky
 		}
 		x = 19
 		y = 4
@@ -1982,7 +2082,7 @@ focus_tree = {
 				add_extra_state_shared_building_slots = 1
 				add_building_construction = {
 					type = industrial_complex
-					level = 2
+					level = 1
 					instant_build = yes
 				}
 				set_state_flag = USA_henry_ford_conglomerate
@@ -1999,7 +2099,7 @@ focus_tree = {
 				add_extra_state_shared_building_slots = 1
 				add_building_construction = {
 					type = industrial_complex
-					level = 2
+					level = 1
 					instant_build = yes
 				}
 				set_state_flag = USA_henry_ford_conglomerate
@@ -2838,10 +2938,13 @@ focus_tree = {
 		y = 6
 		available = {
 			is_subject = no
-			SOV = { has_war_with = RUS }
+			SOV = {
+				has_russian_civil_war = yes
+			}
 			NOT = { 
-				has_war_with = SOV
-				has_war_with = RUS 
+				any_enemy_country = {
+					is_russian_tag = yes
+				}
 				has_country_flag = great_war_loser
 				has_idea = idea_armistice
 				has_idea = idea_army_restrictions
@@ -2899,7 +3002,7 @@ focus_tree = {
 		x = 42
 		y = 1
 		available = {
-			has_tech = motorised_infantry2
+			has_tech = tech_trucks
 		}
 		search_filters = {FOCUS_FILTER_RESEARCH}
 		completion_reward = {
@@ -3121,7 +3224,7 @@ focus_tree = {
 				name = USA_artillery_support
 				bonus = 1.0
 				uses = 1
-				category = artillery
+				category = cat_artillery
 			}
 		}
 	}
@@ -3570,6 +3673,10 @@ focus_tree = {
 				bonus = 3.0
 				uses = 1
 				category = naval_bomber
+			}
+			add_breakthrough_progress = {
+				value = 0.25
+				specialization = specialization_naval
 			}
 		}
 	}

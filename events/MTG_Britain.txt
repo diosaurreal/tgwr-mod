@@ -1,5 +1,177 @@
 ﻿add_namespace = mtg_britain
 
+# The Fate of the Royal Family event
+country_event = {
+	id = mtg_britain.43
+	title = mtg_britain.43.t
+	desc = {
+		text = canada.69.c
+		trigger = {
+			any_enemy_country = {
+				has_country_flag = has_british_monarchy
+				has_capitulated = yes
+			}
+		}
+	}
+	desc = {
+		text = mtg_britain.43.d
+		trigger = {
+			NOT = {
+				any_other_country = {
+					has_country_flag = has_british_monarchy
+				}
+			}
+		}
+	}
+	picture = GFX_report_event_eng_royal_family
+
+	trigger = {
+		tag = ENG
+		has_civil_war = no
+		has_government = communism
+		# No Where To Run
+		NOT = {
+			any_enemy_country = {
+				original_tag = ROOT
+			}
+		}
+		OR = {
+			any_enemy_country = {
+				has_country_flag = has_british_monarchy
+				has_capitulated = yes
+			}
+			NOT = {
+				any_other_country = {
+					has_country_flag = has_british_monarchy
+				}
+			}
+		}
+	}
+	fire_only_once = yes
+	mean_time_to_happen = {
+		days = 40
+		modifier = {
+			factor = 0.1
+			any_enemy_country = {
+				has_country_flag = has_british_monarchy
+				has_capitulated = yes
+			}
+		}
+	}
+	
+	# Banish them to Canada
+	option = {
+		name = mtg_britain.43.a
+		trigger = {
+			CAN = {
+				exists = yes
+				NOT = {
+					has_government = communism
+					has_country_flag = has_british_monarchy
+				}
+			}
+			NOT = {
+				any_enemy_country = {
+					has_country_flag = has_british_monarchy
+					has_capitulated = yes
+				}
+			}
+		}
+		ai_chance = {
+			factor = 75
+		}
+		add_timed_idea = { idea = ENG_confiscated_royal_wealth days = 365 }
+		CAN = {
+			country_event = { id = mtg_britain.44 }
+			effect_tooltip = {
+				add_ideas = ENG_exiled_royal_family
+			}
+		}
+	}
+
+	# Execute them all
+	option = {
+		name = mtg_britain.43.b
+		ai_chance = {
+			factor = 25
+		}
+		add_timed_idea = { idea = ENG_confiscated_royal_wealth days = 365 }
+		add_stability = -0.1
+		if = {
+			limit = {
+				has_country_leader = {
+					character = ENG_george_v
+					ruling_only = no
+				}
+			}
+			retire_character = ENG_george_v
+		}
+		else_if = {
+			limit = {
+				has_country_leader = {
+					character = ENG_edward_viii
+					ruling_only = no
+				}
+			}
+			retire_character = ENG_edward_viii
+		}
+		else_if = {
+			limit = {
+				has_country_leader = {
+					character = GER_carl_eduard_von_sachsen_coburg_und_gotha
+					ruling_only = no
+				}
+			}
+			retire_character = GER_carl_eduard_von_sachsen_coburg_und_gotha
+		}
+		hidden_effect = {
+			if = {
+				limit = {
+					any_enemy_country = {
+						has_country_flag = has_british_monarchy
+						has_capitulated = yes
+					}
+				}
+				every_other_country = {
+					limit = {
+						has_country_flag = has_british_monarchy
+					}
+					set_politics = {
+						ruling_party = fascism
+						elections_allowed = no
+					}
+					add_popularity = {
+						ideology = fascism
+						popularity = 0.2
+					}
+					remove_ideas = ENG_imperial_refuge
+					news_event = { id = canada.78 days = 1 }
+				}
+			}
+			else = {
+				news_event = { id = mtg_news.35 days = 1 }
+			}
+		}
+	}
+}
+
+# The Fate of the Royal Family event - notification event for exiled Royal Family for Canada
+country_event = {
+	id = mtg_britain.44
+	title = mtg_britain.44.t
+	desc = mtg_britain.44.d
+	picture = GFX_report_event_eng_royal_family
+
+	is_triggered_only = yes
+	
+	# Ok
+	option = {
+		name = mtg_britain.44.a
+		add_ideas = ENG_exiled_royal_family
+		hidden_effect = { news_event = { id = mtg_news.34 days = 1 } }
+	}
+}
+
 # Event for RAJ ending civil war if Pakistan hasn't been dealt with.
 country_event = {
 	id = mtg_britain.74
@@ -86,7 +258,7 @@ country_event = {
 		}
 		every_country = {
 			limit = {
-				is_in_faction_with = RAJ
+				is_ally_with = RAJ
 				has_war_with = PAK
 			}
 			white_peace = PAK
@@ -125,7 +297,7 @@ country_event = {
 		effect_tooltip = {
 			every_country = {
 				limit = {
-					is_in_faction_with = RAJ
+					is_ally_with = RAJ
 					has_war_with = PAK
 				}
 				white_peace = PAK

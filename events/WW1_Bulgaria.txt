@@ -22,14 +22,12 @@ country_event = {
 				}
 			}
 		}
-		GER = {
-			send_equipment = {
-				target = BUL
-				type = infantry_equipment_1
-				amount = 800
-			}
-			add_to_faction = BUL
+		send_equipment = {
+			target = BUL
+			type = infantry_equipment_1
+			amount = 800
 		}
+		add_to_faction = BUL
 		hidden_effect = {
 			BUL = {
 				remove_opinion_modifier = {
@@ -335,7 +333,7 @@ country_event = {
 	trigger = {
 		tag = BUL
 		OR = {
-			has_global_flag = versallies_treaty
+			has_global_flag = versailles_treaty
 			has_global_flag = frankfurt_treaty
 		}
 		has_country_flag = great_war_loser
@@ -385,7 +383,6 @@ news_event = {
 	title = ww1_bulgaria.13.t
 	desc = ww1_bulgaria.13.d
 	picture = ww1_bulgaria_1
-	fire_only_once = yes
 	major = yes
 	is_triggered_only = yes
 	option = {
@@ -752,21 +749,19 @@ country_event = {
 			modifier = {
 				factor = 0.5
 				has_war = no
-				BUL = {
+				FROM = {
 					has_war = yes
 				}
 			}
 			modifier = {
 				factor = 0.75
-				BUL = {
+				FROM = {
 					is_major = no
 				}
 			}
 		}
-		FRA = {
-			add_to_faction = BUL
-		}
-		BUL = {
+		add_to_faction = BUL
+		FROM = {
 			country_event = {
 				id = generic.3
 				hours = 6
@@ -775,7 +770,7 @@ country_event = {
 	}
 	option = {
 		name = ww1_bulgaria.22.b
-		BUL = {
+		FROM = {
 			country_event = {
 				id = generic.4
 				hours = 6
@@ -786,48 +781,48 @@ country_event = {
 			modifier = {
 				factor = 0.5
 				has_opinion = {
-					target = BUL
+					target = FROM
 					value > 65
 				}
 			}
 			modifier = {
 				factor = 0.5
 				has_opinion = {
-					target = BUL
+					target = FROM
 					value > 35
 				}
 			}
 			modifier = {
 				factor = 0.5
 				has_opinion = {
-					target = BUL
+					target = FROM
 					value > 5
 				}
 			}
 			modifier = {
 				factor = 2
 				has_opinion = {
-					target = BUL
+					target = FROM
 					value < 35
 				}
 			}
 			modifier = {
 				factor = 2
 				has_opinion = {
-					target = BUL
+					target = FROM
 					value < 65
 				}
 			}
 			modifier = {
 				factor = 0.1
 				has_war = yes
-				BUL = {
+				FROM = {
 					has_war = no
 				}
 			}
 			modifier = {
 				factor = 0.1
-				BUL = {
+				FROM = {
 					is_major = yes
 				}
 			}
@@ -869,9 +864,7 @@ country_event = {
 				}
 			}
 		}
-		SOV = {
-			add_to_faction = BUL
-		}
+		add_to_faction = BUL
 		BUL = {
 			country_event = {
 				id = generic.3
@@ -966,6 +959,7 @@ country_event = {
 		ai_chance = {
 			factor = 10
 		}
+		custom_effect_tooltip = historical_tt
 		add_political_power = -50
 		set_country_flag = stamboliyski_imprisoned
 	}
@@ -1015,9 +1009,14 @@ country_event = {
 			has_country_flag = stamboliyski_imprisoned
 			has_government = neutrality
 		}
-		country_event = {
-			id = ww1_bulgaria.26
-			days = 14
+		custom_effect_tooltip = historical_tt
+		add_political_power = 25
+		add_war_support = 0.01
+		hidden_effect = {
+			country_event = {
+				id = ww1_bulgaria.26
+				days = 14
+			}
 		}
 	}
 	option = {
@@ -1093,6 +1092,7 @@ country_event = {
 				}
 			}
 		}
+		custom_effect_tooltip = historical_tt
 		set_country_flag = radomir_rebellion_failed
 		add_stability = -0.2
 		add_war_support = -0.3
@@ -1105,35 +1105,8 @@ country_event = {
 			ideology = communism
 			popularity = 0.08
 		}
-
-		# Armistice of Salonika
-		if = {
-			limit = {
-				has_war_with = FRA
-				is_in_faction = yes
-				is_faction_leader = no
-				has_global_flag = great_war
-				NOT = { has_global_flag = great_war_ends }
-			}
-			if = {
-				limit = {
-					OR = {
-						has_war_support < 0.3
-						surrender_progress > 0.10
-						casualties > 150000
-					}
-				}
-				force_capitulate = yes
-				news_event = {
-					id = ww1_bulgaria.65
-					hours = 3
-				}
-			}
-			else = {
-				add_war_support = -0.20
-				add_ideas = mutiny_3
-			}
-		}
+		add_war_support = -0.20
+		add_ideas = mutiny_3
 	}
 	option = {
 		name = ww1_bulgaria.26.b
@@ -1235,6 +1208,7 @@ country_event = {
 	trigger = {
 		tag = GER
 		has_war_with = FRA
+		is_great_war_ongoing = yes
 		has_navy_size = {
 			size > 10
 			type = submarine
@@ -1242,9 +1216,6 @@ country_event = {
 		BUL = {
 			is_in_faction_with = ROOT
 			has_war_with = FRA
-		}
-		NOT = {
-			has_global_flag = great_war_ends
 		}
 	}
 	option = {
@@ -1747,68 +1718,50 @@ country_event = {
 	picture = GFX_report_event_bul_troops_macedonia
 	fire_only_once = yes
 	trigger = {
-		tag= BUL
+		tag = BUL
+		has_capitulated = no
+		is_subject = no
 		NOT = {
 			has_country_flag = orestiada_restitued
 		}
+		OR = {
+			200 = {
+				OWNER = { is_in_faction_with = ROOT }
+			}	
+			has_country_flag = great_war_winner
+		}
 		200 = {
-			is_owned_and_controlled_by = TUR
+			owner = {
+				controls_state = PREV
+				has_war_together_with = ROOT
+				OR = {
+					is_in_faction_with = ROOT
+					has_country_flag = great_war_winner
+				}
+			}
 		}
-		212 = {
-			is_owned_and_controlled_by = BUL
-		}
-		BUL = {
-			is_in_faction_with = TUR
+		451 = {
+			is_owned_and_controlled_by = ROOT
 		}
 	}
 	option = {
 		name = ww1_bulgaria.51.a
-		BUL = {
+		custom_effect_tooltip = if_they_accept
+		effect_tooltip = {
 			transfer_state = 200
 		}
-		if = {
-			limit = {
-				TUR = {
-					any_owned_state = {
-						OR = {
-							is_core_of = BUL
-							is_claimed_by = BUL
-						}
-						is_on_continent = europe
-						NOT = {
-							state = 756
-							state = 849
-							state = 860
-							state = 341
-							state = 347
-							state = 347
-						}
-					}
-				}
-			}
-			every_state = {
-				limit = {
-					OR = {
-						is_core_of = BUL
-						is_claimed_by = BUL
-					}
-					is_on_continent = europe
-					NOT = {
-						state = 756
-						state = 849
-						state = 860
-						state = 341
-						state = 347
-						state = 347
-					}
-					is_owned_by = TUR
-				}
-				transfer_state_to = BUL
+		hidden_effect = {
+			set_country_flag = orestiada_restitued
+			200 = {
+				OWNER = { country_event = ww1_bulgaria.52 }
 			}
 		}
-		set_country_flag = orestiada_restitued
-		TUR = {
-			country_event = ww1_bulgaria.52
+	}
+	option = {
+		name = ww1_bulgaria.51.b
+		add_war_support = -0.01
+		ai_chance = {
+			base = 0
 		}
 	}
 }
@@ -1822,31 +1775,20 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_bulgaria.52.a
-		effect_tooltip = {
-			BUL = {
-				transfer_state = 200
-			}
-			every_state = {
-				limit = {
-					OR = {
-						is_core_of = BUL
-						is_claimed_by = BUL
-					}
-					is_on_continent = europe
-					NOT = {
-						state = 756
-						state = 849
-						state = 860
-						state = 341
-						state = 347
-						state = 347
-					}
-					is_owned_by = TUR
-				}
-				transfer_state_to = BUL
+		FROM = { transfer_state = 200 }
+	}
+	option = {
+		name = ww1_bulgaria.52.b
+		add_war_support = -0.01
+		FROM = {
+			add_opinion_modifier = {
+				target = ROOT
+				modifier = orestiada_malus
 			}
 		}
-
+		ai_chance = {
+			base = 0
+		}
 	}
 }
 
@@ -2005,6 +1947,7 @@ country_event = {
 		capital_scope = {
 			OR = {
 				region = 24
+				region = 14
 				region = 25
 				region = 26
 				region = 202
@@ -2135,7 +2078,7 @@ country_event = {
 			create_wargoal = {
 				target = ROOT
 				type = take_claimed_state
-				generator = {788 451 200 756 849 759 106 203 184 757 345 225 731}
+				generator = {788 451 200 756 849 759 106 203 184 757 345 225 731 1140 1141 1213}
 			}
 		}
 	}
@@ -2160,6 +2103,7 @@ country_event = {
 			limit = {
 				OR = {
 					region = 24
+					region = 14
 					region = 25
 					region = 26
 				}
@@ -2195,6 +2139,7 @@ country_event = {
 								}
 								OR = {
 									region = 24
+									region = 14
 									region = 25
 									region = 26
 								}
@@ -2220,13 +2165,16 @@ news_event = {
 	picture = GFX_news_event_salonika_armistice
 	is_triggered_only = yes
 	major = yes
+	immediate = {
+		hidden_effect = {
+			set_global_flag = salonika_armistice
+		}
+	}
 	option = {
 		name = ww1_bulgaria.65.a
 		trigger = {
 			OR = {
 				tag = FROM
-				is_in_faction_with = FROM
-				is_subject_of = FROM
 				is_ally_with = FROM
 			}
 		}
@@ -2237,11 +2185,7 @@ news_event = {
 			OR = {
 				has_war_with = FROM
 				any_enemy_country = {
-					OR = {
-						is_in_faction_with = FROM
-						is_subject_of = FROM
-						is_ally_with = FROM
-					}
+					is_ally_with = FROM
 				}
 			}
 		}
@@ -2251,18 +2195,245 @@ news_event = {
 		trigger = {
 			NOT = {
 				tag = FROM
-				is_in_faction_with = FROM
-				is_subject_of = FROM
 				is_ally_with = FROM
 				has_war_with = FROM
 				any_enemy_country = {
-					OR = {
-						is_in_faction_with = FROM
-						is_subject_of = FROM
-						is_ally_with = FROM
-					}
+					is_ally_with = FROM
 				}
 			}
+		}
+	}
+}
+
+# Lone Liberator - The Balkan League Has Defeated the Ottomans Before Us!
+country_event = {
+	id = ww1_bulgaria.66
+	title = ww1_bulgaria.66.t
+	desc = ww1_bulgaria.66.d
+	picture = GFX_report_event_bulgarian_soldiers
+	trigger = {
+		tag = BUL
+		is_subject = no
+		has_war = no
+		has_global_flag = balkan_league_fail
+		has_global_flag = kis_firstbalkan_war
+		has_global_flag = TUR_surrender_1st_balkan_war
+		has_global_flag = kis_firstbalkanwar_victory
+		NOT = {
+			has_country_flag = won_balkan_war
+			has_global_flag = lone_liberator_victorious
+		}
+		has_start_date < 1914.1.1
+		TUR = {
+			any_owned_state = {
+				is_core_of = ROOT
+			}
+		}
+	}
+	fire_only_once = yes
+	mean_time_to_happen = {
+		days = 0
+	}
+	option = {
+		name = ww1_bulgaria.66.a
+		TUR = {
+			custom_effect_tooltip = agree_effect_tooltip
+			effect_tooltip = {
+				every_owned_state = {
+					limit = {
+						OR = {
+							is_claimed_by = ROOT
+							is_core_of = ROOT
+						}
+						#east thrace and constantinople
+						NOT = {
+							state = 200
+							state = 341
+							state = 347
+							state = 451
+							state = 756
+							state = 757
+							state = 860
+							state = 1018
+						}
+					}
+					transfer_state_to = ROOT
+				}
+			}
+			hidden_effect = {
+				country_event = {
+					id = ww1_bulgaria.67
+					hours = 10
+				}
+			}
+		}
+	}
+}
+
+# Lone Liberator - Bulgaria Demands Border Strip
+country_event = {
+	id = ww1_bulgaria.67
+	title = ww1_bulgaria.67.t
+	desc = ww1_bulgaria.67.d
+	picture = GFX_report_event_bulgarian_soldiers
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_bulgaria.67.a
+		set_country_flag = won_balkan_war
+		every_state = {
+			limit = {
+				is_owned_by = FROM
+				OR = {
+					is_claimed_by = ROOT
+					is_core_of = ROOT
+				}
+				#east thrace and constantinople
+				NOT = {
+					state = 200
+					state = 341
+					state = 347
+					state = 451
+					state = 756
+					state = 757
+					state = 860
+					state = 1018
+				}
+			}
+			transfer_state_to = ROOT
+		}
+	}
+}
+
+country_event = {
+	id = ww1_bulgaria.68
+	title = ww1_bulgaria.68.t
+	desc = ww1_bulgaria.68.d
+	fire_only_once = yes
+	trigger = {
+		tag = BUL
+		is_great_war_ongoing = yes
+		SER = {
+			has_war_with = AUS
+		}
+		NOT = {
+			has_war_with = SER
+			has_war_with = ENT
+			has_global_flag = kis_secondbalkan_war # we had BW2
+		}
+		country_exists = MAC
+	}
+	option = {
+		name = ww1_bulgaria.68.a
+		SER = {
+			country_event = {
+				id = ww1_bulgaria.69
+				days = 1
+			}
+		}
+		custom_effect_tooltip = if_they_accept
+		effect_tooltip = {
+			annex_country = {
+				target = MAC
+			}			
+		}
+		ai_chance = {
+			base = 10
+		}
+	}
+	option = {
+		name = ww1_bulgaria.68.b
+	}
+}
+
+country_event = {
+	id = ww1_bulgaria.69
+	title = ww1_bulgaria.69.t
+	desc = ww1_bulgaria.69.d
+	fire_only_once = yes
+	is_triggered_only = yes
+	option = {
+		name = ww1_bulgaria.69.a
+		hidden_effect = {
+			BUL = {
+				country_event = {
+					id = ww1_bulgaria.70
+					hours = 10
+				}
+			}			
+		}
+		effect_tooltip = {
+			BUL = {
+				annex_country = {
+					target = MAC
+				}
+			}	
+		}
+		ai_chance = {
+			base = 10
+		}
+	}
+	option = {
+		name = ww1_bulgaria.69.b
+		hidden_effect = {
+			BUL = {
+				country_event = {
+					id = ww1_bulgaria.71
+					hours = 10
+				}
+			}
+		}
+	}
+}
+
+country_event = {
+	id = ww1_bulgaria.70
+	title = ww1_bulgaria.70.t
+	desc = ww1_bulgaria.70.d
+	fire_only_once = yes
+	is_triggered_only = yes
+	option = {
+		name = ww1_bulgaria.70.a
+		annex_country = {
+			target = MAC
+		}
+		set_country_flag = BUL_SER_agreed_annex_MAC
+	}
+}
+
+country_event = {
+	id = ww1_bulgaria.71
+	title = ww1_bulgaria.71.t
+	desc = ww1_bulgaria.71.d
+	fire_only_once = yes
+	is_triggered_only = yes
+	option = {
+		name = ww1_bulgaria.71.a
+		set_country_flag = BUL_SER_refused_annex_MAC
+	}
+}
+
+country_event = {
+	id = ww1_bulgaria.72
+	title = ww1_bulgaria.72.t
+	desc = ww1_bulgaria.72.d
+	fire_only_once = yes
+	trigger = {
+		tag = BUL
+		has_war_with = SER
+		country_exists = MAC
+	}
+	immediate = {
+		annex_country = {
+			target = MAC
+		}		
+	}
+	option = {
+		name = ww1_bulgaria.72.a
+		effect_tooltip = {
+			annex_country = {
+				target = MAC
+			}		
 		}
 	}
 }

@@ -1,4 +1,48 @@
-GRE_update_political_turmoil_tooltip = {
+GRE_update_political_turmoil_stability_tooltip = {
+	if = {
+		limit = {
+			has_dynamic_modifier = { modifier = GRE_political_turmoil_dynamic_modifier }
+			check_variable = {
+				var = GRE_stability_var
+				value = -0.02
+				compare = greater_than_or_equals
+			}
+		}
+		custom_effect_tooltip = GRE_switch_political_turmoil
+		hidden_effect = {
+			remove_dynamic_modifier = { modifier = GRE_political_turmoil_dynamic_modifier }
+			add_dynamic_modifier = { modifier = GRE_political_normality_dynamic_modifier }
+		}
+	}
+	else_if = {
+		limit = { has_dynamic_modifier = { modifier = GRE_political_normality_dynamic_modifier } }
+		custom_effect_tooltip = GRE_modify_political_normality
+	}
+	else = { custom_effect_tooltip = GRE_modify_political_turmoil }
+}
+GRE_update_political_turmoil_political_power_tooltip = {
+	if = {
+		limit = {
+			has_dynamic_modifier = { modifier = GRE_political_turmoil_dynamic_modifier }
+			check_variable = {
+				var = GRE_pp_var
+				value = -0.02
+				compare = greater_than_or_equals
+			}
+		}
+		custom_effect_tooltip = GRE_switch_political_turmoil
+		hidden_effect = {
+			remove_dynamic_modifier = { modifier = GRE_political_turmoil_dynamic_modifier }
+			add_dynamic_modifier = { modifier = GRE_political_normality_dynamic_modifier }
+		}
+	}
+	else_if = {
+		limit = { has_dynamic_modifier = { modifier = GRE_political_normality_dynamic_modifier } }
+		custom_effect_tooltip = GRE_modify_political_normality
+	}
+	else = { custom_effect_tooltip = GRE_modify_political_turmoil }
+}
+GRE_update_political_turmoil_both_tooltip = {
 	if = {
 		limit = {
 			has_dynamic_modifier = { modifier = GRE_political_turmoil_dynamic_modifier }
@@ -20,28 +64,6 @@ GRE_update_political_turmoil_tooltip = {
 		}
 	}
 	else_if = {
-		limit = {
-			has_dynamic_modifier = { modifier = GRE_political_normality_dynamic_modifier }
-			OR = {
-				check_variable = {
-					var = GRE_stability_var
-					value = 0
-					compare = less_than
-				}
-				check_variable = {
-					var = GRE_pp_var
-					value = 0
-					compare = less_than
-				}
-			}
-		}
-		custom_effect_tooltip = GRE_switch_political_turmoil_back
-		hidden_effect = {
-			remove_dynamic_modifier = { modifier = GRE_political_normality_dynamic_modifier }
-			add_dynamic_modifier = { modifier = GRE_political_turmoil_dynamic_modifier }
-		}
-	}
-	else_if = {
 		limit = { has_dynamic_modifier = { modifier = GRE_political_normality_dynamic_modifier } }
 		custom_effect_tooltip = GRE_modify_political_normality
 	}
@@ -49,73 +71,168 @@ GRE_update_political_turmoil_tooltip = {
 }
 
 GRE_create_THE = {
-	set_global_flag = GRE_thessaloniki_state_formed
-	set_country_flag = GRE_national_defense_flag
-	set_cosmetic_tag = GRE_national_defense
-	set_politics = {
-		ruling_party = democratic
-		long_name = GRE_national_defense_party_long
-		name = GRE_national_defense_party
-		elections_allowed = no
-	}
-	add_popularity = {
-		ideology = neutrality
-		popularity = -0.25
-	}
-	set_party_name = {
-		ideology = neutrality
-		long_name = GRE_national_defense_party_long
-		name = GRE_national_defense_party
-	}
-	set_party_name = {
-		ideology = fascism
-		long_name = GRE_national_defense_party_long
-		name = GRE_national_defense_party
-	}
-	clr_country_flag = battle_of_influence
-	clr_country_flag = battle_of_influence_royalist_side
 	if = {
-		limit = { any_other_country = { has_character = GRE_eleftherios_venizelos } }
-		every_possible_country = {
-			limit = { has_character = GRE_eleftherios_venizelos }
-			GRE_eleftherios_venizelos = { set_nationality = THE }
-		}
-	}
-	promote_character = GRE_eleftherios_venizelos
-	activate_advisor = GRE_pavlos_kountouriotis
-	activate_advisor = GRE_panagiotis_danglis
-	remove_power_balance = { id = GRE_venizelos_constantine }
-	remove_ideas = GRE_idea_constantine
-	remove_mission = GRE_escalating_schism
-	random_state = {
-		limit = { has_state_flag = french_salonika }
-		transfer_state_to = ROOT
-		ROOT = { set_capital = { state = PREV } }
-	}
-	731 = { set_border_war = no }
-	custom_effect_tooltip = GRE_form_the_provisional_government_of_national_defence_tt
-	create_dynamic_country = {
-		original_tag = GRE
+		limit = { has_country_flag = battle_of_influence_royalist_side }
+		custom_effect_tooltip = GRE_form_the_provisional_government_of_national_defence_tt
+		set_global_flag = GRE_thessaloniki_state_formed
 		set_country_flag = GRE_monarchist_mainland_flag
+		create_dynamic_country = {
+			original_tag = GRE
+			set_country_flag = GRE_national_defense_flag
+			hidden_effect = {
+				set_cosmetic_tag = GRE_national_defense
+				every_state = {
+					limit = {
+						is_owned_by = GRE
+						OR = {
+							state = 345
+							AND = {
+								has_state_flag = GRE_venizelist_state_flag
+								check_variable = { var = GRE_garrison_control value = 1 compare = greater_than }
+							}
+							AND = {
+								NOT = { has_state_flag = GRE_venizelist_state_flag }
+								check_variable = { var = GRE_garrison_control value = 4 compare = greater_than_or_equals }
+							}
+						}
+					}
+					transfer_state_to = THE
+				}
+				set_party_name = {
+					ideology = neutrality
+					long_name = GRE_national_defense_party_long
+					name = GRE_national_defense_party
+				}
+				set_party_name = {
+					ideology = fascism
+					long_name = GRE_national_defense_party_long
+					name = GRE_national_defense_party
+				}
+				clr_country_flag = battle_of_influence
+				clr_country_flag = battle_of_influence_royalist_side
+				if = {
+					limit = { any_other_country = { has_character = GRE_eleftherios_venizelos } }
+					every_possible_country = {
+						limit = { has_character = GRE_eleftherios_venizelos }
+						GRE_eleftherios_venizelos = { set_nationality = THE }
+					}
+				}
+				promote_character = GRE_eleftherios_venizelos
+				activate_advisor = GRE_pavlos_kountouriotis
+				activate_advisor = GRE_panagiotis_danglis
+				remove_power_balance = { id = GRE_venizelos_constantine }
+				remove_ideas = GRE_idea_constantine
+				remove_mission = GRE_escalating_schism
+				set_politics = {
+					ruling_party = democratic
+					long_name = GRE_national_defense_party_long
+					name = GRE_national_defense_party
+				}
+				uncomplete_national_focus = {
+					focus = GRE_commit_to_neutrality
+					uncomplete_children = yes
+					refund_political_power = no
+				}
+				complete_national_focus = GRE_negotiations_with_entente
+				unlock_national_focus = GRE_national_schism_focus
+				remove_power_balance = { id = GRE_venizelos_constantine }
+				every_state = {
+					teleport_armies = {
+						limit = { tag = THE }
+						to_state_array = owned_controlled_states
+					}
+				}
+				GRE_panagiotis_danglis = {
+					add_country_leader_role = {
+						promote_leader = yes
+						country_leader = { ideology = stratocracy }
+					}
+				}
+				GRE_pavlos_kountouriotis = {
+					add_country_leader_role = {
+						promote_leader = yes
+						country_leader = { ideology = authoritarian_democracy }
+					}
+				}
+				set_capital = { state = 345 }
+				set_popularities = {
+					democratic = 73
+					neutrality = 10
+					fascism = 7
+					communism = 10
+				}
+				GRM = {
+					every_character = {
+						limit = {
+							OR = {
+								is_character = GRE_avraam_benaroya
+								has_character_flag = GRE_venizelist_character
+							}
+						}
+						set_nationality = THE
+					}
+				}
+				add_ideas = gre_the_megali_idea
+				if = {
+					limit = { PREV = { has_idea = GRE_agricultural_education_idea } }
+					add_ideas = GRE_agricultural_education_idea
+				}
+				if = {
+					limit = { PREV = { has_country_flag = GRE_thessaloniki_resources_sold } }
+					set_country_flag = GRE_thessaloniki_resources_sold
+				}
+				copy_laws_of_PREV = yes
+				set_variable = { GRE_IFC_var = GRE.GRE_IFC_var }
+				set_variable = { GRE_stability_var = GRE.GRE_stability_var }
+				set_variable = { GRE_pp_var = GRE.GRE_pp_var }
+				set_variable = { GRE_foreign_cost = GRE.GRE_foreign_cost }
+				if = {
+					limit = { PREV = { has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } } }
+					add_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier }
+				}
+				if = {
+					limit = { PREV = { has_dynamic_modifier = { modifier = GRE_political_turmoil_dynamic_modifier } } }
+					add_dynamic_modifier = { modifier = GRE_political_turmoil_dynamic_modifier }
+					else_if = {
+						limit = { PREV = { has_dynamic_modifier = { modifier = GRE_political_normality_dynamic_modifier } } }
+						add_dynamic_modifier = { modifier = GRE_political_normality_dynamic_modifier }			
+					}
+				}
+				if = {
+					limit = { PREV = { has_dynamic_modifier = { modifier = GRE_agrarian_society_dynamic_modifier } } }
+					add_dynamic_modifier = { modifier = GRE_agrarian_society_dynamic_modifier }
+				}
+				else_if = {
+					limit = { PREV = { has_dynamic_modifier = { modifier = GRE_farmer_focused_culture_dynamic_modifier } } }
+					add_dynamic_modifier = { modifier = GRE_farmer_focused_culture_dynamic_modifier }	
+				}
+				else_if = {
+					limit = { PREV = { has_dynamic_modifier = { modifier = GRE_balanced_approach_dynamic_modifier } } }
+					add_dynamic_modifier = { modifier = GRE_balanced_approach_dynamic_modifier }		
+				}
+				else_if = {
+					limit = { PREV = { has_dynamic_modifier = { modifier = GRE_industrializing_society_dynamic_modifier } } }
+					add_dynamic_modifier = { modifier = GRE_industrializing_society_dynamic_modifier }			
+				}
+				set_variable = { GRE_efficiency_cap_var = GRE.GRE_efficiency_cap_var }
+				set_variable = { GRE_efficiency_growth_var = GRE.GRE_efficiency_growth_var }
+				set_variable = { GRE_construction_speed_var = GRE.GRE_construction_speed_var }
+				set_variable = { GRE_factory_output_var = GRE.GRE_factory_output_var }
+				set_variable = { GRE_military_construction_speed_var = GRE.GRE_military_construction_speed_var }
+				add_ideas = GRE_generous_promotions
+				add_ideas = gre_conscription_plan
+				add_ideas = GRE_epistratoi_cool
+			}
+		}
 		hidden_effect = {
-			set_politics = { 
-				ruling_party = neutrality 
-				long_name = GRE_neutrality_house_party
-				name = GRE_neutrality_house_party
+			add_popularity = {
+				ideology = democratic
+				popularity = -0.25
 			}
-			set_cosmetic_tag = GRE_normal_tag
-			uncomplete_national_focus = {
-				focus = GRE_negotiations_with_entente
-				uncomplete_children = yes
-				refund_political_power = no
-			}
-			complete_national_focus = GRE_commit_to_neutrality
-			unlock_national_focus = GRE_national_schism_focus
-			remove_power_balance = { id = GRE_venizelos_constantine }
 			set_party_name = {
 				ideology = democratic
-				long_name = GRE_neohellenic_party_long
-				name = GRE_neohellenic_party
+				long_name = GRE_gounaris_party_long
+				name = GRE_gounaris_party
 			}
 			set_party_name = {
 				ideology = communism
@@ -127,144 +244,250 @@ GRE_create_THE = {
 				long_name = GRE_epistratoi_party_long
 				name = GRE_epistratoi_party
 			}
-			every_state = {
-				limit = {
-					is_owned_by = GRE
-					OR = {
-						state = 898
-						AND = {
-							has_state_flag = GRE_venizelist_state_flag
-							check_variable = { var = GRE_garrison_control value = 1 compare = equals }
-						}
-						AND = {
-							NOT = { has_state_flag = GRE_venizelist_state_flag }
-							check_variable = { var = GRE_garrison_control value = 4 compare = less_than }
-						}
-					}
-				}
-				transfer_state_to = GRM
-			}
-			set_capital = { state = 898 }
-			set_popularities = {
-				democratic = 10
-				neutrality = 73
-				fascism = 10
-				communism = 7
-			}
-			THE = {
-				every_character = {
-					limit = {
-						NOT = {
-							is_character = GRE_avraam_benaroya
-							has_character_flag = GRE_venizelist_character 
-						}
-					}
-					set_nationality = GRM
-				}
-			}
-			promote_character = GRE_constantine_i
-			promote_character = GRE_ioannis_metaxas
 			promote_character = GRE_platon_drakoulis
-			GRE_alexandros_zaimis = {
-				if = {
-					limit = { has_ideology = conservatism }
-					promote_character = conservatism
-				}
-				else = {
-					add_country_leader_role = {
-						promote_leader = yes
-						country_leader = { ideology = conservatism }
-					}
-				}
-			}
+			GRE_dimitrios_gounaris = { promote_character = conservatism }
 			every_state = {
 				teleport_armies = {
 					limit = { tag = GRM }
 					to_state_array = owned_controlled_states
 				}
 			}
-			add_ideas = gre_the_megali_idea
-			if = {
-				limit = { PREV = { has_idea = GRE_agricultural_education_idea } }
-				add_ideas = GRE_agricultural_education_idea
+			set_temp_variable = { GRE_overall_temp_div_count = GRE_monarchist_civil_war_divisions_counter_var }
+			add_to_temp_variable = { GRE_overall_temp_div_count = GRE_venizelist_civil_war_divisions_counter_var }
+			set_temp_variable = { GRE_thessaloniki_state_temp_div_count = GRE_venizelist_civil_war_divisions_counter_var }
+			set_temp_variable = { GRE_mainland_state_temp_div_count = GRE_monarchist_civil_war_divisions_counter_var }
+			divide_temp_variable = { GRE_thessaloniki_state_temp_div_count = GRE_overall_temp_div_count }
+			transfer_units_fraction = {
+				target = THE
+				size = var:GRE_thessaloniki_state_temp_div_count
+				target_organization = 1
+				source_organization = 1
+				keep_unit_leaders_trigger = { NOT = { has_character_flag = GRE_venizelist_character } }
 			}
-			if = {
-				limit = { PREV = { has_country_flag = GRE_thessaloniki_resources_sold } }
-				set_country_flag = GRE_thessaloniki_resources_sold
-			}
-			THE = { GRM = { copy_laws_of_PREV = yes } }
-			set_variable = { GRE_IFC_var = GRE.GRE_IFC_var }
-			set_variable = { GRE_stability_var = GRE.GRE_stability_var }
-			set_variable = { GRE_pp_var = GRE.GRE_pp_var }
-			set_variable = { GRE_foreign_cost = GRE.GRE_foreign_cost }
-			if = {
-				limit = { PREV = { has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } } }
-				add_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier }
-			}
-			if = {
-				limit = { PREV = { has_dynamic_modifier = { modifier = GRE_political_turmoil_dynamic_modifier } } }
-				add_dynamic_modifier = { modifier = GRE_political_turmoil_dynamic_modifier }
-				else_if = {
-					limit = { PREV = { has_dynamic_modifier = { modifier = GRE_political_normality_dynamic_modifier } } }
-					add_dynamic_modifier = { modifier = GRE_political_normality_dynamic_modifier }			
-				}
-			}
-			if = {
-				limit = { PREV = { has_dynamic_modifier = { modifier = GRE_agrarian_society_dynamic_modifier } } }
-				add_dynamic_modifier = { modifier = GRE_agrarian_society_dynamic_modifier }
-			}
-			else_if = {
-				limit = { PREV = { has_dynamic_modifier = { modifier = GRE_farmer_focused_culture_dynamic_modifier } } }
-				add_dynamic_modifier = { modifier = GRE_farmer_focused_culture_dynamic_modifier }	
-			}
-			else_if = {
-				limit = { PREV = { has_dynamic_modifier = { modifier = GRE_balanced_approach_dynamic_modifier } } }
-				add_dynamic_modifier = { modifier = GRE_balanced_approach_dynamic_modifier }		
-			}
-			else_if = {
-				limit = { PREV = { has_dynamic_modifier = { modifier = GRE_industrializing_society_dynamic_modifier } } }
-				add_dynamic_modifier = { modifier = GRE_industrializing_society_dynamic_modifier }			
-			}
-			set_variable = { GRE_efficiency_cap_var = GRE.GRE_efficiency_cap_var }
-			set_variable = { GRE_efficiency_growth_var = GRE.GRE_efficiency_growth_var }
-			set_variable = { GRE_construction_speed_var = GRE.GRE_construction_speed_var }
-			set_variable = { GRE_factory_output_var = GRE.GRE_factory_output_var }
-			set_variable = { GRE_military_construction_speed_var = GRE.GRE_military_construction_speed_var }
-			add_ideas = GRE_generous_promotions
-			add_ideas = gre_conscription_plan
-			add_ideas = gre_epistratoi_cool
 		}
 	}
-	hidden_effect = {
-		every_state = {
-			teleport_armies = {
-				limit = { tag = THE }
-				to_state_array = owned_controlled_states
+	else = {
+		custom_effect_tooltip = GRE_form_the_provisional_government_of_national_defence_tt
+		set_global_flag = GRE_thessaloniki_state_formed
+		set_country_flag = GRE_national_defense_flag
+		set_cosmetic_tag = GRE_national_defense
+		set_politics = {
+			ruling_party = democratic
+			long_name = GRE_national_defense_party_long
+			name = GRE_national_defense_party
+			elections_allowed = no
+		}
+		random_state = {
+			limit = { has_state_flag = french_salonika }
+			transfer_state_to = ROOT
+			ROOT = { set_capital = { state = PREV } }
+		}
+		hidden_effect = {
+			731 = { set_border_war = no }
+			add_popularity = {
+				ideology = neutrality
+				popularity = -0.25
+			}
+			set_party_name = {
+				ideology = neutrality
+				long_name = GRE_national_defense_party_long
+				name = GRE_national_defense_party
+			}
+			set_party_name = {
+				ideology = fascism
+				long_name = GRE_national_defense_party_long
+				name = GRE_national_defense_party
+			}
+			clr_country_flag = battle_of_influence
+			clr_country_flag = battle_of_influence_royalist_side
+			if = {
+				limit = { any_other_country = { has_character = GRE_eleftherios_venizelos } }
+				every_possible_country = {
+					limit = { has_character = GRE_eleftherios_venizelos }
+					GRE_eleftherios_venizelos = { set_nationality = THE }
+				}
+			}
+			promote_character = GRE_eleftherios_venizelos
+			activate_advisor = GRE_pavlos_kountouriotis
+			activate_advisor = GRE_panagiotis_danglis
+			remove_power_balance = { id = GRE_venizelos_constantine }
+			remove_ideas = GRE_idea_constantine
+			remove_mission = GRE_escalating_schism
+		}
+		create_dynamic_country = {
+			original_tag = GRE
+			set_country_flag = GRE_monarchist_mainland_flag
+			hidden_effect = {
+				set_politics = {
+					ruling_party = neutrality 
+					long_name = GRE_neutrality_house_party
+					name = GRE_neutrality_house_party
+				}
+				set_cosmetic_tag = GRE_normal_tag
+				uncomplete_national_focus = {
+					focus = GRE_negotiations_with_entente
+					uncomplete_children = yes
+					refund_political_power = no
+				}
+				complete_national_focus = GRE_commit_to_neutrality
+				unlock_national_focus = GRE_national_schism_focus
+				remove_power_balance = { id = GRE_venizelos_constantine }
+				set_party_name = {
+					ideology = democratic
+					long_name = GRE_neohellenic_party_long
+					name = GRE_neohellenic_party
+				}
+				set_party_name = {
+					ideology = communism
+					long_name = GRE_communism_party_long
+					name = GRE_communism_party
+				}
+				set_party_name = {
+					ideology = fascism
+					long_name = GRE_epistratoi_party_long
+					name = GRE_epistratoi_party
+				}
+				every_state = {
+					limit = {
+						is_owned_by = GRE
+						OR = {
+							state = 898
+							AND = {
+								has_state_flag = GRE_venizelist_state_flag
+								check_variable = { var = GRE_garrison_control value = 1 compare = equals }
+							}
+							AND = {
+								NOT = { has_state_flag = GRE_venizelist_state_flag }
+								check_variable = { var = GRE_garrison_control value = 4 compare = less_than }
+							}
+						}
+					}
+					transfer_state_to = GRM
+				}
+				set_capital = { state = 898 }
+				set_popularities = {
+					democratic = 10
+					neutrality = 73
+					fascism = 10
+					communism = 7
+				}
+				THE = {
+					every_character = {
+						limit = {
+							NOT = {
+								is_character = GRE_avraam_benaroya
+								has_character_flag = GRE_venizelist_character 
+							}
+						}
+						set_nationality = GRM
+					}
+				}
+				promote_character = GRE_constantine_i
+				promote_character = GRE_ioannis_metaxas
+				promote_character = GRE_platon_drakoulis
+				GRE_alexandros_zaimis = {
+					if = {
+						limit = { has_ideology = conservatism }
+						promote_character = conservatism
+					}
+					else = {
+						add_country_leader_role = {
+							promote_leader = yes
+							country_leader = { ideology = conservatism }
+						}
+					}
+				}
+				activate_advisor = GRE_alexandros_zaimis
+				set_can_be_fired_in_advisor_role = { character = GRE_alexandros_zaimis value = no }
+				every_state = {
+					teleport_armies = {
+						limit = { tag = GRM }
+						to_state_array = owned_controlled_states
+					}
+				}
+				add_ideas = gre_the_megali_idea
+				if = {
+					limit = { PREV = { has_idea = GRE_agricultural_education_idea } }
+					add_ideas = GRE_agricultural_education_idea
+				}
+				if = {
+					limit = { PREV = { has_country_flag = GRE_thessaloniki_resources_sold } }
+					set_country_flag = GRE_thessaloniki_resources_sold
+				}
+				copy_laws_of_PREV = yes
+				set_variable = { GRE_IFC_var = GRE.GRE_IFC_var }
+				set_variable = { GRE_stability_var = GRE.GRE_stability_var }
+				set_variable = { GRE_pp_var = GRE.GRE_pp_var }
+				set_variable = { GRE_foreign_cost = GRE.GRE_foreign_cost }
+				if = {
+					limit = { PREV = { has_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier } } }
+					add_dynamic_modifier = { modifier = GRE_IFC_dynamic_modifier }
+				}
+				if = {
+					limit = { PREV = { has_dynamic_modifier = { modifier = GRE_political_turmoil_dynamic_modifier } } }
+					add_dynamic_modifier = { modifier = GRE_political_turmoil_dynamic_modifier }
+					else_if = {
+						limit = { PREV = { has_dynamic_modifier = { modifier = GRE_political_normality_dynamic_modifier } } }
+						add_dynamic_modifier = { modifier = GRE_political_normality_dynamic_modifier }			
+					}
+				}
+				if = {
+					limit = { PREV = { has_dynamic_modifier = { modifier = GRE_agrarian_society_dynamic_modifier } } }
+					add_dynamic_modifier = { modifier = GRE_agrarian_society_dynamic_modifier }
+				}
+				else_if = {
+					limit = { PREV = { has_dynamic_modifier = { modifier = GRE_farmer_focused_culture_dynamic_modifier } } }
+					add_dynamic_modifier = { modifier = GRE_farmer_focused_culture_dynamic_modifier }	
+				}
+				else_if = {
+					limit = { PREV = { has_dynamic_modifier = { modifier = GRE_balanced_approach_dynamic_modifier } } }
+					add_dynamic_modifier = { modifier = GRE_balanced_approach_dynamic_modifier }		
+				}
+				else_if = {
+					limit = { PREV = { has_dynamic_modifier = { modifier = GRE_industrializing_society_dynamic_modifier } } }
+					add_dynamic_modifier = { modifier = GRE_industrializing_society_dynamic_modifier }			
+				}
+				set_variable = { GRE_efficiency_cap_var = GRE.GRE_efficiency_cap_var }
+				set_variable = { GRE_efficiency_growth_var = GRE.GRE_efficiency_growth_var }
+				set_variable = { GRE_construction_speed_var = GRE.GRE_construction_speed_var }
+				set_variable = { GRE_factory_output_var = GRE.GRE_factory_output_var }
+				set_variable = { GRE_military_construction_speed_var = GRE.GRE_military_construction_speed_var }
+				add_ideas = GRE_generous_promotions
+				add_ideas = gre_conscription_plan
+				add_ideas = GRE_epistratoi_cool
 			}
 		}
-		GRE_panagiotis_danglis = {
-			add_country_leader_role = {
-				promote_leader = yes
-				country_leader = { ideology = stratocracy }
+		hidden_effect = {
+			every_state = {
+				teleport_armies = {
+					limit = { tag = THE }
+					to_state_array = owned_controlled_states
+				}
 			}
-		}
-		GRE_pavlos_kountouriotis = {
-			add_country_leader_role = {
-				promote_leader = yes
-				country_leader = { ideology = authoritarian_democracy }
+			GRE_panagiotis_danglis = {
+				add_country_leader_role = {
+					promote_leader = yes
+					country_leader = { ideology = stratocracy }
+				}
 			}
-		}
-		set_temp_variable = { GRE_overall_temp_div_count = GRE_venizelist_civil_war_divisions_counter_var }
-		add_to_temp_variable = { GRE_overall_temp_div_count = GRE_monarchist_civil_war_divisions_counter_var }
-		set_temp_variable = { GRE_thessaloniki_state_temp_div_count = GRE_venizelist_civil_war_divisions_counter_var }
-		set_temp_variable = { GRE_mainland_state_temp_div_count = GRE_monarchist_civil_war_divisions_counter_var }
-		divide_temp_variable = { GRE_mainland_state_temp_div_count = GRE_overall_temp_div_count }
-		transfer_units_fraction = {
-			target = GRM
-			size = var:GRE_mainland_state_temp_div_count
-			target_organization = 1
-			source_organization = 1
-			keep_unit_leaders_trigger = { has_trait = trait_GRE_venezelist_loyalist }
+			GRE_pavlos_kountouriotis = {
+				add_country_leader_role = {
+					promote_leader = yes
+					country_leader = { ideology = authoritarian_democracy }
+				}
+			}
+			set_temp_variable = { GRE_overall_temp_div_count = GRE_venizelist_civil_war_divisions_counter_var }
+			add_to_temp_variable = { GRE_overall_temp_div_count = GRE_monarchist_civil_war_divisions_counter_var }
+			set_temp_variable = { GRE_thessaloniki_state_temp_div_count = GRE_venizelist_civil_war_divisions_counter_var }
+			set_temp_variable = { GRE_mainland_state_temp_div_count = GRE_monarchist_civil_war_divisions_counter_var }
+			divide_temp_variable = { GRE_mainland_state_temp_div_count = GRE_overall_temp_div_count }
+			transfer_units_fraction = {
+				target = GRM
+				size = var:GRE_mainland_state_temp_div_count
+				target_organization = 1
+				source_organization = 1
+				keep_unit_leaders_trigger = { has_trait = trait_GRE_venezelist_loyalist }
+			}
 		}
 	}
 }
@@ -368,6 +591,8 @@ GRE_venizelist_civil_war = {
 					}
 				}
 			}
+			activate_advisor = GRE_alexandros_zaimis
+			set_can_be_fired_in_advisor_role = { character = GRE_alexandros_zaimis value = no }
 			promote_character = GRE_platon_drakoulis
 			every_state = {
 				teleport_armies = {
@@ -487,20 +712,6 @@ GRE_monarchist_civil_war = {
 	clr_country_flag = battle_of_influence_royalist_side
 	set_country_flag = civil_war_has_been_triggered
 	remove_power_balance = { id = GRE_venizelos_constantine }
-	promote_character = GRE_constantine_i
-	if = {
-		limit = { NOT = { has_government = fascism } }
-		set_politics = {
-			ruling_party = neutrality
-			long_name = GRE_neutrality_house_party
-			name = GRE_neutrality_house_party
-		}
-	}
-	set_party_name = {
-		ideology = democratic
-		long_name = GRE_neohellenic_party_long
-		name = GRE_neohellenic_party
-	}
 	create_dynamic_country = {
 		original_tag = GRE
 		set_country_flag = GRE_national_defense_flag
@@ -524,7 +735,7 @@ GRE_monarchist_civil_war = {
 				limit = {
 					is_owned_by = GRE
 					OR = {
-						state = 898
+						state = 345
 						AND = {
 							has_state_flag = GRE_venizelist_state_flag
 							check_variable = { var = GRE_garrison_control value = 1 compare = greater_than }
@@ -539,10 +750,10 @@ GRE_monarchist_civil_war = {
 			}
 			set_capital = { state = 345 }
 			set_popularities = {
-				democratic = 10
-				neutrality = 73
-				fascism = 10
-				communism = 7
+				democratic = 73
+				neutrality = 10
+				fascism = 7
+				communism = 10
 			}
 			GRM = {
 				every_character = {
@@ -647,11 +858,11 @@ GRE_monarchist_civil_war = {
 				to_state_array = owned_controlled_states
 			}
 		}
-		set_temp_variable = { GRE_overall_temp_div_count = GRE_venizelist_civil_war_divisions_counter_var }
-		add_to_temp_variable = { GRE_overall_temp_div_count = GRE_monarchist_civil_war_divisions_counter_var }
+		set_temp_variable = { GRE_overall_temp_div_count = GRE_monarchist_civil_war_divisions_counter_var }
+		add_to_temp_variable = { GRE_overall_temp_div_count = GRE_venizelist_civil_war_divisions_counter_var }
 		set_temp_variable = { GRE_thessaloniki_state_temp_div_count = GRE_venizelist_civil_war_divisions_counter_var }
 		set_temp_variable = { GRE_mainland_state_temp_div_count = GRE_monarchist_civil_war_divisions_counter_var }
-		divide_temp_variable = { GRE_mainland_state_temp_div_count = GRE_overall_temp_div_count }
+		divide_temp_variable = { GRE_thessaloniki_state_temp_div_count = GRE_overall_temp_div_count }
 		transfer_units_fraction = {
 			target = THE
 			size = var:GRE_thessaloniki_state_temp_div_count
@@ -666,10 +877,21 @@ GRE_monarchist_civil_war = {
 			}
 		}
 		set_party_name = {
+			ideology = democratic
+			long_name = GRE_gounaris_party_long
+			name = GRE_gounaris_party
+		}
+		set_party_name = {
 			ideology = communism
 			long_name = GRE_communism_party_long
 			name = GRE_communism_party
 		}
+		set_party_name = {
+			ideology = fascism
+			long_name = GRE_epistratoi_party_long
+			name = GRE_epistratoi_party
+		}
+		GRE_dimitrios_gounaris = { promote_character = conservatism }
 		promote_character = GRE_platon_drakoulis
 	}
 	effect_tooltip = { start_civil_war = { ideology = democratic } }
@@ -679,6 +901,10 @@ GRE_monarchist_civil_war = {
 
 GRE_national_schism_effect = {
 	activate_mission = GRE_escalating_schism
+	if = {
+		limit = { has_country_flag = battle_of_influence_royalist_side }
+		activate_mission = GRE_provisional_government_of_national_defence
+	}
 	hidden_effect = {
 		set_country_flag = battle_of_influence
 		every_state = {
