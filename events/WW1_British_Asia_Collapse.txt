@@ -11,13 +11,13 @@ country_event = {
 		has_country_flag = great_war_loser
 		OR = {
 			has_global_flag = frankfurt_treaty
-			has_global_flag = versallies_treaty
+			has_global_flag = versailles_treaty
 		}
 		OR = {
 			has_subject = AFG
 			has_subject = RAJ
 			has_subject = MAL
-			has_subject = SRW
+			has_subject = SAR
 			has_subject = BRN
 			has_subject = BHU
 			has_subject = NEP
@@ -38,6 +38,10 @@ country_event = {
 		modifier = {
 			factor = 20
 			has_global_flag = honourable_peace
+		}
+		modifier = {
+			factor = 0.1
+			has_global_flag = british_civil_war
 		}
 	}
 	fire_only_once = yes
@@ -102,9 +106,6 @@ country_event = {
 			}
 			end_puppet = MAL
 			hidden_effect = {
-				MAL = {
-					set_cosmetic_tag = MAL_interwar
-				}
 				every_state = {
 					limit = {
 						OR = {
@@ -195,9 +196,9 @@ country_event = {
 		}
 		if = {
 			limit = {
-				has_subject = SRW
+				has_subject = SAR
 			}
-			end_puppet = SRW
+			end_puppet = SAR
 		}
 		if = {
 			limit = {
@@ -649,6 +650,21 @@ country_event = {
 					remove_idea = RAJ_marginalized_muslim_community
 				}
 			}
+			if = {
+				limit = {
+					strength_ratio = {
+						tag = PAK
+						ratio < 1.0
+					}
+				}
+				every_controlled_state = {
+					limit = { is_owned_by = ROOT }
+					create_unit = {
+						division = "division_template = \"Hindu Militia\" start_experience_factor = 1"
+						owner = ROOT
+					}
+				}
+			}
 			set_country_flag = RAJ_pakistani_civil_war_flag
 		}
 	}
@@ -671,7 +687,7 @@ country_event = {
 		}
 		OR = {
 			has_global_flag = frankfurt_treaty
-			has_global_flag = versallies_treaty
+			has_global_flag = versailles_treaty
 		}
 		PAK = {
 			is_subject = no
@@ -1033,7 +1049,7 @@ country_event = {
 		}
 		OR = {
 			has_global_flag = frankfurt_treaty
-			has_global_flag = versallies_treaty
+			has_global_flag = versailles_treaty
 		}
 		NOT = {
 			has_global_flag = raj_collapse
@@ -1046,6 +1062,10 @@ country_event = {
 		modifier = {
 			factor = 20
 			has_global_flag = honourable_peace
+		}
+		modifier = {
+			factor = 0.1
+			has_global_flag = british_civil_war
 		}
 	}
 	immediate = {
@@ -1146,6 +1166,8 @@ country_event = {
 			transfer_units_fraction = {
 				target = BRJ
 				size = 0.70
+				target_organization = 1
+				source_organization = 1
 				keep_unit_leaders_trigger = {
 					NOT = { has_trait = trait_royalist }
 				}
@@ -1178,7 +1200,7 @@ country_event = {
 				division_template = {
 					name = "Loyalist Infantry Division"
 					division_names_group = RAJ_INF_01
-					override_model = ENG_infantry_0_entity
+					override_model = ENG_infantry_entity
 					regiments = {
 						infantry = { x = 0 y = 0 }
 						infantry = { x = 0 y = 1 }
@@ -1192,11 +1214,11 @@ country_event = {
 				division_template = {
 					name = "Police Division"
 					division_names_group = RAJ_GAR_01
-					override_model = ENG_infantry_0_entity
+					override_model = ENG_infantry_entity
 					regiments = {
-						irregular_infantry = { x = 0 y = 0 }
-						irregular_infantry = { x = 0 y = 1 }
-						irregular_infantry = { x = 0 y = 2 }
+						militia = { x = 0 y = 0 }
+						militia = { x = 0 y = 1 }
+						militia = { x = 0 y = 2 }
 						irregular_cavalry = { x = 1 y = 0 }
 						irregular_cavalry = { x = 1 y = 1 }
 					}
@@ -1615,6 +1637,17 @@ country_event = {
 		}
 		hidden_effect = {
 			activate_mission = ENG_afghanistan_war_timer
+			if = {
+				limit = {
+					has_subject = RAJ
+				}
+				RAJ = {
+					add_to_war = {
+						targeted_alliance = ROOT
+						enemy = AFG
+					}
+				}
+			}
 			AFG = {
 				activate_mission = ENG_afghanistan_war_timer
 				add_ideas = AFG_idea_i_hate_mountains
@@ -1702,8 +1735,7 @@ country_event = {
 				limit = {
 					has_war_with = AFG
 					OR = {
-						is_in_faction_with = ROOT
-						is_subject_of = ROOT
+						is_ally_with = ROOT
 						NOT = { has_war_with = ROOT }
 					}
 				}
@@ -1754,56 +1786,56 @@ country_event = {
 }
 
 # German Invasion on the Collapsing British India
-country_event = {
-	id = britas.17
-	title = britas.17.t
-	desc = britas.17.d
-	picture = GFX_report_event_german_troops
-	trigger = {
-		tag = GER
-		has_war_with = FRA
-		is_subject = no
-		has_capitulated = no
-		has_global_flag = great_war
-		has_subject = ENG
-		RAJ = {
-			is_subject = no
-			NOT = { has_war_with = ROOT }
-		}
-		has_completed_focus = GER_pearl_of_the_british_crown
-		NOT = {
-			has_global_flag = great_war_ends
-			has_global_flag = GER_capitulation
-			has_wargoal_against = RAJ
-		}
-	}
-	fire_only_once = yes
-	option = {
-		name = britas.17.a
-		create_wargoal = {
-			target = RAJ
-			type = take_claimed_state
-		}
-		ai_chance = {
-			factor = 100
-		}
-	}
-	option = {
-		# my guy is too weak
-		name = britas.17.b
-		add_war_support = -0.10
-		ai_chance = {
-			factor = 10
-			modifier = {
-				factor = 0
-				OR = {
-					has_war_support > 0.10
-					has_stability > 0.10
-				}
-			}
-		}
-	}
-}
+# country_event = {
+# 	id = britas.17
+# 	title = britas.17.t
+# 	desc = britas.17.d
+# 	picture = GFX_report_event_german_troops
+# 	trigger = {
+# 		tag = GER
+# 		has_war_with = FRA
+# 		is_subject = no
+# 		has_capitulated = no
+# 		has_global_flag = great_war
+# 		has_subject = ENG
+# 		RAJ = {
+# 			is_subject = no
+# 			NOT = { has_war_with = ROOT }
+# 		}
+# 		has_completed_focus = GER_pearl_of_the_british_crown
+# 		NOT = {
+# 			has_global_flag = great_war_ends
+# 			has_global_flag = GER_capitulation
+# 			has_wargoal_against = RAJ
+# 		}
+# 	}
+# 	fire_only_once = yes
+# 	option = {
+# 		name = britas.17.a
+# 		create_wargoal = {
+# 			target = RAJ
+# 			type = take_claimed_state
+# 		}
+# 		ai_chance = {
+# 			factor = 100
+# 		}
+# 	}
+# 	option = {
+# 		# my guy is too weak
+# 		name = britas.17.b
+# 		add_war_support = -0.10
+# 		ai_chance = {
+# 			factor = 10
+# 			modifier = {
+# 				factor = 0
+# 				OR = {
+# 					has_war_support > 0.10
+# 					has_stability > 0.10
+# 				}
+# 			}
+# 		}
+# 	}
+# }
 
 # Raj War goes cold
 country_event = {
@@ -1893,11 +1925,13 @@ country_event = {
 					}
 					set_autonomy = {
 						target = MYS
-						autonomy_state = autonomy_dominion
+						autonomy_state = autonomy_integrated_puppet
+						freedom_level = 0.8
 					}
 					set_autonomy = {
 						target = HYD
-						autonomy_state = autonomy_dominion
+						autonomy_state = autonomy_integrated_puppet
+						freedom_level = 0.8
 					}
 					MYS = {
 						set_politics = {
@@ -1944,7 +1978,7 @@ country_event = {
 		has_country_flag = great_war_loser
 		OR = {
 			has_global_flag = frankfurt_treaty
-			has_global_flag = versallies_treaty
+			has_global_flag = versailles_treaty
 		}
 		OR = {
 			has_subject = KUW
@@ -1959,6 +1993,7 @@ country_event = {
 			any_owned_state = {
 				OR = {
 					is_core_of = KUW
+					is_claimed_by = KUW
 					is_core_of = QAT
 					is_core_of = BHR
 					is_core_of = UAE
@@ -1977,6 +2012,10 @@ country_event = {
 			factor = 20
 			has_global_flag = honourable_peace
 		}
+		modifier = {
+			factor = 0.1
+			has_global_flag = british_civil_war
+		}
 	}
 	fire_only_once = yes
 	option = {
@@ -1990,10 +2029,21 @@ country_event = {
 		if = {
 			limit = {
 				any_owned_state = {
-					is_core_of = KUW
+					OR = {
+						is_core_of = KUW
+						is_claimed_by = KUW
+					}	
 				}
 			}
-			release = KUW
+			every_owned_state = {
+				limit = {
+					OR = {
+						is_core_of = KUW
+						is_claimed_by = KUW
+					}
+				}	
+				transfer_state_to = KUW
+			}
 		}
 		if = {
 			limit = {

@@ -1,101 +1,329 @@
 RAJ_prepare_aden_front = {
 	allowed = {
-		OR = {
-			original_tag = RAJ
-		}
-		is_historical_focus_on = yes
+		original_tag = RAJ
 	}
 	enable = {
-		date > 1914.1.1
+		controls_state = 659
+		TUR = {
+			OR = {
+				has_active_mission = TUR_black_sea_raid_mission
+				AND = {
+					focus_progress = {
+						focus = TUR_german_ottoman_alliance
+						progress > 0
+					}
+					ROOT = {
+						has_war_with = GER
+					}
+				}
+				AND = {
+					focus_progress = {
+						focus = TUR_our_traditional_allies
+						progress > 0
+					}
+					ROOT = {
+						has_war_with = ENT
+					}
+				}
+				any_allied_country = {
+					OR = {
+						has_wargoal_against = TUR
+						has_war_with = TUR
+						is_justifying_wargoal_against = TUR
+						TUR = {
+							OR = {
+								is_justifying_wargoal_against = PREV
+								has_wargoal_against = PREV
+							}
+						}
+					}
+				}
+				TUR = {
+					OR = {
+						is_justifying_wargoal_against = ROOT
+						has_wargoal_against = ROOT
+					}
+				}
+			}
+		}
+		NOT = {
+			has_war_with = TUR
+			is_in_faction_with = TUR
+			has_global_flag = great_war_ends
+		}
 	}
 	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = prepare_for_war
+		id = TUR 
+		value = 1
+	}
+	ai_strategy = { # shitty hoi AI think front with NAJ is the same as front with TUR
+		type = prepare_for_war
+		id = NAJ
+		value = 1
+	}
+	ai_strategy = {
+		type = area_priority
+		id = europe
+		value = -1000
+	}
+	ai_strategy = {
+		type = garrison
+		value = -100
+	}
+	ai_strategy = {
+		type = garrison_reinforcement_priority
+		value = -100
+	}
+	ai_strategy = {
+		type = front_unit_request
+		strategic_region = 196
+		value = 350
+	}
+	ai_strategy = {
+		type = front_unit_request
+		tag = GER
+		value = -1000
+	}
+	ai_strategy = {
+		type = dont_defend_ally_borders
+		id = FRA
+		value = 1000
+	}
+	ai_strategy = {
+		type = dont_defend_ally_borders
+		id = BEL
+		value = 1000
+	}
+}
 
+RAJ_fight_aden_front = {
+	allowed = {
+		original_tag = RAJ
+	}
+	enable = {
+		controls_state = 659
+		has_war_with = TUR
+		NOT = {
+			is_in_faction_with = TUR
+			has_global_flag = great_war_ends
+		}
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = area_priority
+		id = mainland_ottomans
+		value = 1000
+	}
+	ai_strategy = {
+		type = front_unit_request
+		strategic_region = 196
+		value = 1000
+	}
+	ai_strategy = {
+		type = front_unit_request
+		tag = NAJ
+		value = -100
+	}
+	ai_strategy = {
+		type = front_control
+		strategic_region = 196
+		ratio = 0.6
+		priority = 500
+		ordertype = front
+		execution_type = balanced
+	}
+	ai_strategy = {
+		type = area_priority
+		id = europe
+		value = -1000
+	}
+	ai_strategy = {
+		type = garrison
+		value = -100
+	}
+	ai_strategy = {
+		type = garrison_reinforcement_priority
+		value = -100
+	}
+	ai_strategy = {
+		type = front_unit_request
+		tag = GER
+		value = -1000
+	}
+	ai_strategy = {
+		type = dont_defend_ally_borders
+		id = FRA
+		value = 1000
+	}
+	ai_strategy = {
+		type = dont_defend_ally_borders
+		id = BEL
+		value = 1000
+	}
+}
+
+RAJ_enemy_invade_us = {
+	allowed = {
+		original_tag = RAJ
+	}
+	enable = {
+		any_owned_state = {
+			NOT = {
+				state = 659
+				is_controlled_by = RAJ
+			}
+		}		
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = front_unit_request
+		state_trigger = {
+			is_core_of = RAJ
+		}
+		value = 1000
+	}
+}
+
+RAJ_help_FRA = {
+	allowed = {
+		original_tag = RAj
+	}
+	enable = {
+		NOT = {
+			has_global_flag = WW1_is_stuck
+		}
+		is_in_faction_with = FRA
+		has_war_with = GER
+		FRA = {
+			OR = {
+				NOT = {
+					has_full_control_of_state = 29
+				}
+				NOT = {
+					has_full_control_of_state = 17
+				}
+				NOT = {
+					has_full_control_of_state = 864
+				}
+			}
+		}
+	}
+	abort = {
+		controls_state = 659
+		OR = {
+			TUR = {
+				has_active_mission = TUR_black_sea_raid_mission
+			}
+			has_war_with = TUR
+		}
+	}
+	abort_when_not_enabled = yes
 	ai_strategy = {
 		type = put_unit_buffers
-		ratio = 0.7
+		ratio = 0.1
 		states = {
-			659
+			16
 		}
 		subtract_fronts_from_need = yes
 	}
 	ai_strategy = {
-		type = front_unit_request
-		tag = TUR
-		value = 1000
+		type = dont_defend_ally_borders
+		id = FRA
+		value = -100		#its false or true, putting 9999 is useless
 	}
-}
-
-RAJ_fight_ottoman = {
-	allowed = {
-		OR = {
-			original_tag = RAJ
-		}
-		is_historical_focus_on = yes
-	}
-	enable = {
-		has_war_with = TUR
-	}
-	abort_when_not_enabled = yes
-
 	ai_strategy = {
-		type = front_control
-		tag = TUR
-		ratio = 0.75
-		priority = 7000
-		ordertype = front
-		execution_type = balanced
-		execute_order = yes
+		type = force_defend_ally_borders
+		id = FRA
+		value = 100		#its false or true, putting 9999 is useless
 	}
 	ai_strategy = {
 		type = front_unit_request
-		tag = TUR
-		value = 1000
-	}
-}
-
-RAJ_fight_persia = {
-	allowed = {
-		OR = {
-			original_tag = RAJ
-		}
-		is_historical_focus_on = yes
-	}
-	enable = {
-		has_war_with = PER
-	}
-	abort_when_not_enabled = yes
-
-	ai_strategy = {
-		type = front_control
-		tag = PER
-		ratio = 0.2
-		priority = 100
-		ordertype = front
-		execution_type = balanced
-		execute_order = yes
+		tag = FRA
+		value = 100
 	}
 	ai_strategy = {
 		type = front_unit_request
-		tag = PER
+		tag = GER
 		value = 50
-	}
-}
-
-RAJ_dont_go_to_africa = {
-	enable = {
-		original_tag = RAJ
-		is_historical_focus_on = yes
-	}
-	abort_when_not_enabled = yes
-
-	ai_strategy = {
-		type = front_unit_request
-		area = africa
-		value = -600
 	}
 	ai_strategy = {
 		type = area_priority
-		id = africa
-		value = -600
+		id = northern_france_and_benelux
+		value = 100
+	}
+	ai_strategy = {
+		type = garrison_reinforcement_priority
+		value = -25
+	}
+}
+
+RAJ_dont_help_AST = {
+	allowed = {
+		original_tag = RAJ
+	}
+	enable = {
+		is_in_faction_with = AST
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = area_priority
+		id = oceania
+		value = -100
+	}
+	ai_strategy = {
+		type = dont_defend_ally_borders
+		id = AST
+		value = 1
+	}
+}
+
+RAJ_dont_help_SAF = {
+	allowed = {
+		original_tag = RAJ
+	}
+	enable = {
+		is_in_faction_with = SAF
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = dont_defend_ally_borders
+		id = SAF
+		value = 1
+	}
+}
+
+RAJ_build_civs = {
+	allowed = {
+		original_tag = RAJ
+	}
+	enable = {
+		date < 1912.1.1
+		has_war = no
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = building_target
+		id = industrial_complex
+		value = 100
+	}
+}
+
+RAJ_build_mils = {
+	allowed = {
+		original_tag = RAJ
+	}
+	enable = {
+		OR = {
+			date > 1912.1.1
+			has_war = yes
+		}
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = building_target
+		id = arms_factory
+		value = 100
 	}
 }

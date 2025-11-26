@@ -24,16 +24,11 @@ country_event = {
 	fire_only_once = yes
 	hidden = yes
 	immediate = {
-		hidden_effect = {
-			if = {
-				limit = {
-					is_in_faction = yes
-				}
-				leave_faction = yes
-			}
+		hidden_effect = {		
 			every_other_country = {
 				limit = {
 					has_war_with = ROOT
+					has_war_with = GER
 				}
 				white_peace = ROOT
 			}
@@ -41,8 +36,56 @@ country_event = {
 				limit = {
 					is_subject_of = GER
 				}
+				clr_country_flag = released_by_germany
 				GER = {
 					end_puppet = LIT
+				}
+			}
+			if = {
+				limit = {
+					is_in_faction_with = GER
+				}
+				leave_faction = yes
+			}
+			if = {
+				limit = { has_idea = GER_idea_german_military_advisors }
+				remove_ideas = GER_idea_german_military_advisors
+			}
+
+			#Treaty of Bialystok
+			#Germans Surrender Bialystok and Grodno to Polish Administration
+			if = {
+				limit = {
+					is_neighbor_of = POL
+					OR = {
+						owns_state = 97
+						owns_state = 773
+						owns_state = 1017
+					}
+				}
+				country_event = {
+					id = ww1_poland.28
+					days = 20
+				}
+				country_event = { #Vilnius
+					id = ww1_lithuania.9
+					days = 30
+				}
+				GER = {
+					country_event = {
+						id = ww1_poland.28
+						days = 20
+					}
+				}
+				POL = {
+					country_event = {
+						id = ww1_poland.28
+						days = 20
+					}
+					country_event = { #Vilnius
+						id = ww1_lithuania.9
+						days = 30
+					}
 				}
 			}
 		}
@@ -89,7 +132,7 @@ country_event = {
 	trigger = {
 		original_tag = LIT
 		has_country_leader = {
-			character = LIT_mindaugas_ii
+			character = GER_wilhelm_karl_von_urach
 			ruling_only = no
 		}
 		date > 1928.3.0
@@ -100,8 +143,7 @@ country_event = {
 	fire_only_once = yes
 	option = {
 		name = ww1_lithuania.2.a
-		hidden_effect = { retire_character = GER_wilhelm_karl_von_urach }
-		retire_character = LIT_mindaugas_ii
+		retire_character = GER_wilhelm_karl_von_urach
 		LIT_vytautas_ii = {
 			set_character_name = LIT_vytautas_ii
 			promote_leader = yes
@@ -140,6 +182,13 @@ country_event = {
 		set_politics = {
 			ruling_party = democratic
 			elections_allowed = yes
+		}
+		hidden_effect = {
+			set_party_name = {
+				ideology = neutrality
+				long_name = LIT_national_party_long
+				name = LIT_national_party
+			}
 		}
 	}
 }
@@ -228,7 +277,7 @@ country_event = {
 		has_cosmetic_tag = LIT_GER
 		OR = {
 			has_country_leader = {
-				character = LIT_mindaugas_ii
+				character = GER_wilhelm_karl_von_urach
 			}
 			has_country_leader = {
 				character = LIT_vytautas_ii
@@ -245,25 +294,11 @@ country_event = {
 		}
 		if = {
 			limit = {
-				has_character = LIT_mindaugas_ii
+				has_character = GER_wilhelm_karl_von_urach
 			}
-			if = {
-				limit = {
-					has_character = GER_wilhelm_karl_von_urach
-				}
-				GER_wilhelm_karl_von_urach = {
-					set_portraits = {
-						civilian = {
-							large = "gfx/leaders/LIT/LIT_mindaugas_ii_civilian.png"
-						}
-						army = {
-							large = "gfx/leaders/LIT/LIT_mindaugas_ii.png"
-						}
-					}
-					promote_leader = yes
-				}
-			}
-			LIT_mindaugas_ii = {
+			GER_wilhelm_karl_von_urach = {
+				set_character_name = LIT_mindaugas_ii
+				promote_leader = yes
 				set_portraits = {
 					civilian = {
 						large = "gfx/leaders/LIT/LIT_mindaugas_ii_civilian.png"
@@ -329,6 +364,7 @@ country_event = {
 	picture = GFX_report_event_generic_peaceful_annexation
 	trigger = {
 		owns_state = 946
+		has_global_flag = interbellum
 		has_war = no
 		LIT = {
 			has_war = no
@@ -399,5 +435,102 @@ country_event = {
 			target = FROM
 			modifier = small_increase
 		}
+	}
+}
+
+# Germany Hands Over Vilnius To Poland
+country_event = {
+	id = ww1_lithuania.9
+	title = ww1_lithuania.9.t
+	desc = {
+		text = ww1_lithuania.9.d
+		trigger = {
+			tag = LIT
+		}
+	}
+	desc = {
+		text = ww1_lithuania.9.c
+		trigger = {
+			tag = POL
+		}
+	}
+	picture = GFX_report_event_generic_peaceful_annexation
+	is_triggered_only = yes
+	option = {
+		name = ww1_lithuania.9.a
+		trigger = {
+			tag = LIT
+		}
+		add_political_power = -25
+		effect_tooltip = {
+			POL = {
+				add_state_core = 784
+				transfer_state = 784
+			}
+		}
+		add_contested_owner = 784
+	}
+	option = {
+		name = ww1_lithuania.9.b
+		trigger = {
+			tag = POL
+		}
+		add_political_power = 25
+		add_state_core = 784 #1916 census, over 50% were Poles
+		transfer_state = 784
+	}
+}
+
+# The Bolsheviks Seize Vilnius
+country_event = {
+	id = ww1_lithuania.10
+	title = ww1_lithuania.10.t
+	desc = ww1_lithuania.10.d
+	picture = GFX_report_event_soviet_in_riga
+	fire_only_once = yes
+	trigger = {
+		tag = POL
+		owns_state = 784
+		SOV = {
+			has_war_with = ROOT
+			controls_state = 784
+		}
+	}
+	option = {
+		name = ww1_lithuania.10.a
+		if = {
+			limit = {
+				BLR = {
+					exists = yes
+					is_subject_of = SOV
+				}
+			}
+			784 = {
+				transfer_state_to = BLR
+			}
+		}
+		else_if = {
+			limit = {
+				country_exists = LIT
+			}
+			784 = {
+				if = {
+					limit = {
+						OR = {
+							SOV = { has_subject = LIT }
+							has_global_flag = soviet_lithuanian_peace_treaty
+						}
+					}
+					transfer_state_to = LIT
+				}
+				else_if = {
+					limit = {
+						LIT = { has_war_with = SOV }
+					}
+					set_state_owner_to = LIT
+				}
+			}
+		}
+		add_political_power = -25
 	}
 }

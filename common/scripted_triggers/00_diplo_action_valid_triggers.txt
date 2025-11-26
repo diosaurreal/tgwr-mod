@@ -6,17 +6,135 @@
 # in some cases this trigger is checked for only initatior country, in that case both from & this is same
 
 is_diplomatic_action_valid_stage_coup = {
-	NOT = { has_dlc = "La Resistance" } # we have operation for it
+	always = no
 }
 
 is_diplomatic_action_valid_boost_party_popularity = {
-	NOT = { has_dlc = "La Resistance" } # we have operation for it
+	always = no
 }
 	
 is_diplomatic_action_valid_declare_war = {
-	NOT = { is_subject_of = FROM.overlord }
+	NOT = { 
+		is_subject_of = FROM.overlord 
+		AND = {
+			is_subject = yes
+			OVERLORD = {
+				is_subject_of = FROM
+			}
+		}
+		AND = {
+			FROM = {
+				is_subject = yes
+				OVERLORD = {
+					is_subject_of = ROOT
+				}
+			}
+		}	
+	}
 }
 
+is_diplomatic_action_valid_assume_faction_leadership = {
+	has_global_flag = interbellum
+	OR = {
+		has_country_flag = interbellum
+		NOT = {
+			has_country_flag = great_war_loser
+			has_country_flag = great_war_winner
+		}
+	}
+}
+is_diplomatic_action_valid_docking_rights = {
+	NOT = {
+		FROM = { 
+			OR = {
+				has_autonomy_state = autonomy_tgwr_governorate_general
+				has_autonomy_state = autonomy_tgwr_real_union
+				has_autonomy_state = autonomy_tgwr_condominium
+			}		
+		}
+	}
+}
+is_diplomatic_action_valid_non_aggression_pact = {
+	NOT = {
+		has_autonomy_state = autonomy_tgwr_governorate_general
+		has_autonomy_state = autonomy_tgwr_real_union
+		has_autonomy_state = autonomy_tgwr_condominium
+		FROM = { 
+			OR = {
+				has_autonomy_state = autonomy_tgwr_governorate_general
+				has_autonomy_state = autonomy_tgwr_real_union
+				has_autonomy_state = autonomy_tgwr_condominium
+			}		
+		}
+	}
+}
+is_diplomatic_action_valid_improve_relation = {
+	NOT = {
+		has_autonomy_state = autonomy_tgwr_governorate_general
+		has_autonomy_state = autonomy_tgwr_real_union
+		has_autonomy_state = autonomy_tgwr_condominium
+		FROM = { 
+			OR = {
+				has_autonomy_state = autonomy_tgwr_governorate_general
+				has_autonomy_state = autonomy_tgwr_real_union
+				has_autonomy_state = autonomy_tgwr_condominium
+			}		
+		}
+	}
+}
+is_diplomatic_action_valid_offer_docking_rights = {
+	NOT = {
+		FROM = { 
+			OR = {
+				has_autonomy_state = autonomy_tgwr_governorate_general
+				has_autonomy_state = autonomy_tgwr_real_union
+				has_autonomy_state = autonomy_tgwr_condominium
+			}		
+		}
+	}
+}
+is_diplomatic_action_valid_guarantee = {
+	NOT = {
+		has_autonomy_state = autonomy_tgwr_governorate_general
+		has_autonomy_state = autonomy_tgwr_real_union
+		has_autonomy_state = autonomy_tgwr_condominium
+		FROM = {
+			OR = {
+				has_autonomy_state = autonomy_tgwr_governorate_general
+				has_autonomy_state = autonomy_tgwr_real_union
+				has_autonomy_state = autonomy_tgwr_condominium
+			}		
+		}
+	}
+}
+is_diplomatic_action_valid_request_licensed_production = {
+	NOT = {
+		has_autonomy_state = autonomy_tgwr_governorate_general
+		has_autonomy_state = autonomy_tgwr_real_union
+		has_autonomy_state = autonomy_tgwr_condominium
+		FROM = { 
+			OR = {
+				has_autonomy_state = autonomy_tgwr_governorate_general
+				has_autonomy_state = autonomy_tgwr_real_union
+				has_autonomy_state = autonomy_tgwr_condominium
+			}		
+		}
+	}
+}
+is_diplomatic_action_valid_request_access_to_licence_production = {
+	NOT = {
+		has_autonomy_state = autonomy_tgwr_governorate_general
+		has_autonomy_state = autonomy_tgwr_real_union
+		has_autonomy_state = autonomy_tgwr_condominium
+		FROM = { 
+			OR = {
+				has_autonomy_state = autonomy_tgwr_governorate_general
+				has_autonomy_state = autonomy_tgwr_real_union
+				has_autonomy_state = autonomy_tgwr_condominium
+			}		
+		}
+	}
+}
 is_diplomatic_action_valid_join_allies = {
 	if = {
 		limit = {
@@ -27,9 +145,10 @@ is_diplomatic_action_valid_join_allies = {
 				has_autonomy_state = autonomy_tgwr_concession
 			}			
 		}
-		always = no
+		#always = no
+		is_in_faction_with = FROM  #experimental
 	}
-	if = {
+	else_if = {
 		limit = {
 			FROM = {
 				OR = {
@@ -41,10 +160,13 @@ is_diplomatic_action_valid_join_allies = {
 			}						
 		}
 		FROM = {
-			has_defensive_war = yes
+			OR = {
+				has_defensive_war = yes
+				is_in_faction_with = ROOT  #experimental
+			}
 		}
 	}
-	if = {
+	else_if = {
 		limit = {
 			is_in_faction_with = ITA 
 			FROM = {
@@ -52,12 +174,12 @@ is_diplomatic_action_valid_join_allies = {
 			}
 			has_global_flag = italo_turkish_war
 			NOT = {
-				has_global_flag = italo_turkish_war_ends 
+				has_global_flag = libyan_crisis_resolved 
 				has_global_flag = great_war
 			}
 		}
 		NOT = {
-			has_global_flag = italo_turkish_war_ends 
+			has_global_flag = libyan_crisis_resolved 
 			ITA = {
 				any_enemy_country = {
 					NOT = {
@@ -69,7 +191,7 @@ is_diplomatic_action_valid_join_allies = {
 			}
 		}	
 	}
-	if = {
+	else_if = {
 		limit = {
 			is_in_faction_with = FRA 
 			NOT = {
@@ -77,7 +199,11 @@ is_diplomatic_action_valid_join_allies = {
 				tag = FRA
 			}
 			FROM = {
-				has_war_with = CHA
+				OR = {
+					has_war_with = CHA
+					has_war_with = RMO
+					has_war_with = MOR
+				}
 				OR = {
 					is_subject_of = FRA
 					tag = FRA
@@ -88,13 +214,15 @@ is_diplomatic_action_valid_join_allies = {
 			any_enemy_country = {
 				NOT = {
 					original_tag = CHA 
+					original_tag = MOR
 					original_tag = DAR
 					original_tag = LBA
+					original_tag = KUT
 				}
 			}
 		}		
 	}
-	if = {
+	else_if = {
 		limit = {
 			FROM = {
 				original_tag = TUR
@@ -102,16 +230,14 @@ is_diplomatic_action_valid_join_allies = {
 				has_country_flag = great_war_loser
 			}
 			has_global_flag = great_war_ends
-			OR = {
-				is_in_faction_with = FROM 
-				has_subject = FROM
-			}
+			is_ally_with = FROM
 		}
 		FROM = {
 			any_enemy_country = {
 				NOT = {
 					original_tag = TUR 
 					original_tag = KUR
+					original_tag = PON
 				}
 				is_major = yes
 			}
@@ -131,9 +257,10 @@ is_diplomatic_action_valid_call_allies = {
 				}			
 			}			
 		}
-		always = no
+		#always = no
+		is_in_faction_with = FROM  #experimental
 	}
-	if = {
+	else_if = {
 		limit = {
 			OR = {
 				has_autonomy_state = autonomy_tgwr_protectorate
@@ -143,20 +270,23 @@ is_diplomatic_action_valid_call_allies = {
 			}			
 		}
 		ROOT = {
-			has_defensive_war = yes
+			OR = {
+				has_defensive_war = yes
+				is_in_faction_with = FROM  #experimental
+			}		
 		}
 	}
-	if = {
+	else_if = {
 		limit = {
 			tag = ITA
 			has_global_flag = italo_turkish_war
 			NOT = {
-				has_global_flag = italo_turkish_war_ends 
+				has_global_flag = libyan_crisis_resolved 
 				has_global_flag = great_war
 			}
 		}
 		NOT = {
-			has_global_flag = italo_turkish_war_ends 
+			has_global_flag = libyan_crisis_resolved 
 			ITA = {
 				any_enemy_country = {
 					NOT = {
@@ -168,33 +298,36 @@ is_diplomatic_action_valid_call_allies = {
 			}
 		}	
 	}
-	if = {
+	else_if = {
 		limit = {
 			OR = {
 				tag = FRA
 				is_subject_of = FRA			
 			}
-			has_war_with = CHA
+			OR = {
+				has_war_with = CHA
+				has_war_with = RMO
+				has_war_with = MOR
+			}
 		}
 		any_enemy_country = {
 			NOT = {
 				original_tag = CHA 
+				original_tag = MOR
 				original_tag = DAR
 				original_tag = LBA
+				original_tag = KUT
 			}
 		}
 	}
-	if = {
+	else_if = {
 		limit = {
 			original_tag = TUR
 			has_country_flag = TUR_kostantiniye_government_tag
 			has_country_flag = great_war_loser
 			has_global_flag = great_war_ends
 			FROM = {
-				OR = {
-					is_in_faction_with = ROOT 
-					has_subject = ROOT
-				}		
+				is_ally_with = ROOT
 			}
 		}
 		ROOT = {
@@ -202,9 +335,175 @@ is_diplomatic_action_valid_call_allies = {
 				NOT = {
 					original_tag = TUR 
 					original_tag = KUR
+					original_tag = PON
 				}
 				is_major = yes
 			}
 		}		
 	}
 }
+is_diplomatic_action_valid_join_faction = {
+	if = {
+		limit = { 
+			FROM = { 
+				is_subject = yes
+			}		
+		}	
+		FROM.OVERLORD = {
+			is_in_faction_with = ROOT
+		}
+	}
+	else_if = {
+		limit = {
+			original_tag = TRK
+			is_faction_leader = yes
+		}	
+		FROM = { 
+			OR = {
+				original_tag = BUK
+				original_tag = KHI
+				original_tag = KAZ
+				original_tag = AFG
+				original_tag = PER
+				original_tag = KUM
+				original_tag = SIK
+				original_tag = ETS
+				original_tag = KYR
+			} 	
+		}
+	}
+	else_if = {
+		limit = {
+			original_tag = ITA
+			has_country_flag = ITA_monarchist_italy_flag
+            is_faction_leader = yes
+		}	
+		FROM = { 
+			is_italian_nation = yes	
+		}
+	}
+	else_if = {
+		limit = {
+			tag = BLL
+		}	
+		FROM = {
+			OR = {
+				is_balkan_nation = yes
+				is_greek_nation = yes
+			}
+		}
+	}
+	else_if = {
+		limit = {
+			original_tag = BRA
+			is_faction_leader = yes
+		}	
+		FROM = {
+			is_latin_american_country = yes
+		}
+	}
+	else_if = {
+		limit = {		
+			OR = {
+				tag = NPA
+				tag = GXC
+				tag = YUN
+				tag = ZHC
+				tag = ANC
+				tag = FNG
+			}
+			is_faction_leader = yes
+			NOT = {
+				has_country_flag = reunited_china
+			}
+		}	
+		FROM = {
+			is_chinese_warlord_no_tt = yes
+		}
+	}
+}
+is_diplomatic_action_valid_offer_join_faction= {
+	is_in_faction = no
+	if = {
+		limit = { 
+			is_subject = yes		
+		}	
+		OVERLORD = {
+			is_in_faction_with = FROM
+		}
+	}
+	else_if = {
+		limit = {
+			FROM = {
+				original_tag = TRK
+				is_faction_leader = yes
+			}
+			
+		}	
+		OR = {
+			original_tag = BUK
+			original_tag = KHI
+			original_tag = KAZ
+			original_tag = AFG
+			original_tag = PER
+			original_tag = KUM
+			original_tag = SIK
+			original_tag = ETS
+			original_tag = KYR
+		} 	
+	}
+	else_if = {
+		limit = {
+			FROM = {
+				original_tag = ITA
+				has_country_flag = ITA_monarchist_italy_flag
+				is_faction_leader = yes
+			}			
+		}	
+		is_italian_nation = yes	
+	}
+	else_if = {
+		limit = {
+			FROM = {
+				tag = BLL
+			}	
+		}	
+		OR = {
+			is_balkan_nation = yes
+			is_greek_nation = yes
+		}
+	}
+	else_if = {
+		limit = {
+			FROM = {
+				original_tag = BRA
+				is_faction_leader = yes
+			}	
+		}	
+		is_latin_american_country = yes
+	}
+	else_if = {
+		limit = {
+			FROM = {
+				OR = {
+					tag = NPA
+					tag = GXC
+					tag = YUN
+					tag = ZHC
+					tag = ANC
+					tag = FNG
+				}		
+				is_faction_leader = yes
+				NOT = {
+					has_country_flag = reunited_china
+				}
+			}
+			
+		}	
+		is_chinese_warlord_no_tt = yes
+	}
+}
+is_diplomatic_action_valid_create_faction = {
+	is_subject = no
+}
+

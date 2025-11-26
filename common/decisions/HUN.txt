@@ -1,74 +1,54 @@
 peace_deals = {
-	HUN_sue_for_peace_ROM_CZE = {
-		name = sue_for_peace_FROM
-		icon = GFX_decision_eng_trade_unions_support
-		target_trigger = {
-			FROM = {
-				OR = {
-					tag = CZE
-					tag = ROM
-				}
-			}
-		}
-		allowed = {
-			original_tag = HUN
-		}
-		available = {
-			surrender_progress > 0.1
-		}
-		visible = {
-			has_global_flag = ROM_HUN_war_1919
-			has_war_with = FROM
-		}
-		fire_only_once = yes
-		ai_will_do = {
-			factor = 1000
-			modifier = {
-				factor = 0
-				controls_state = 43
-				controls_state = 154
-				controls_state = 155	
-                surrender_progress < 0.65
-			}
-		}
-		complete_effect = {
-			FROM = { country_event = { id = ww1_romania.10 } }
-		}
-	}
-
+	
 	HUN_sue_for_peace_AUH = {
 		allowed = {
 			original_tag = HUN
 		}
+		target_trigger = {
+			FROM = {
+				tag = AUS
+			}
+		}
+		# target_root_trigger = {
+		# 	has_war_with = FROM
+		# }
 		available = {
-			has_war_with = AUH
-			surrender_progress > 0.25
+			OR = {
+				surrender_progress > 0.1
+				war_length_with = {
+					tag = FROM
+					months = 6
+				}
+			}
 		}
 		visible = {
-			has_global_flag = HUN_want_independence
-			has_war_with = AUH	
+			has_global_flag = AUH_civil_war
+			NOT = {
+				has_global_flag = AUH_HUN_civil_war_ends
+			}
+			has_war_with = AUS	
 		}
 		fire_only_once = yes
 		ai_will_do = {
-			factor = 1000
+			base = 0
 			modifier = {
-                surrender_progress < 0.5
-				date < 1912.1.1
-				factor = 0
+				add = 1000
+				surrender_progress > 0.25
 			}
 			modifier = {
-				factor = 0
-                surrender_progress < 0.25
-				date < 1913.1.1
-			}
-			modifier = {
-                surrender_progress < 0.15
-				date < 1914.1.1
-				factor = 0
+				add = 1000
+				war_length_with = {
+					tag = FROM
+					months = 6
+				}
+				surrender_progress > 0.1
+				FROM = {
+					surrender_progress < 0.1
+				}
 			}
 		}
 		complete_effect = {
-			AUH = { country_event = { id = ww1_auh.117 } }
+			AUS = { country_event = { id = ww1_auh.117 } }
 		}
 	}
 }
@@ -107,49 +87,176 @@ GER_great_war = {
 			factor = 100
 		}
 	}
+
+	HUN_send_equipment_to_austria = {
+		icon = GFX_decision_generic_prepare_civil_war
+		available = {
+			has_equipment = {
+				infantry_equipment > 999
+			}
+			AUS = {
+				has_equipment = {
+					infantry_equipment < 10001
+				}
+			}
+		}	
+		visible = {
+			tag = HUN
+			is_subject_of = AUS
+			NOT = {
+				has_dlc = "Arms Against Tyranny"
+			}
+		}
+		fire_only_once = no
+		allowed = {
+			original_tag = HUN
+		}
+		days_remove = 35
+		target_trigger = {
+			FROM = { 
+				tag = AUS
+			}
+		}
+		modifier = {
+			consumer_goods_factor = -0.1
+		}
+		targeted_modifier = {
+			tag = AUS
+			consumer_goods_factor = 0.05
+		}
+		remove_effect = {
+			send_equipment = {
+				equipment = infantry_equipment
+				amount = 1000
+				target = AUS
+			}
+		}
+		ai_will_do = {
+			factor = 10
+			modifier = {
+				has_equipment = {
+					infantry_equipment > 5000
+				}
+				factor = 500
+			}
+			modifier = {
+				has_equipment = {
+					infantry_equipment < 500
+				}
+				factor = 0
+			}
+		}
+	}
+	
 }
-political_actions = {	
-	HUN_establish_slovak_soviet_republic = {
-		icon = GFX_decision_SOV_secure_the_administration
+HUN_soviet_army = {
+	HUN_found_the_international_brigade = {
+		icon = GFX_decision_generic_military
+		cost = 15
+		days_remove = 5
 		allowed = {
 			original_tag = HUN
 		}
 		available = {
-			has_war = no
-			owns_state = 70
-			owns_state = 71
-			NOT = { country_exists = SLO }
+			has_government = communism
+			has_war = yes
 		}
 		visible = {
-			is_subject = no
+			has_completed_focus = HUN_found_the_red_army
 			has_government = communism
-			OR = {
-				NOT = {
-					has_global_flag = great_war
-				}
-				AND = {
-					has_global_flag = great_war
-					has_global_flag = interbellum
+		}
+		fire_only_once = yes
+		ai_will_do = {
+			factor = 1
+		}
+		remove_effect = {
+			custom_effect_tooltip = HUN_voros_division.tt
+			43 = {
+				create_unit = {
+					division = "name = \"80th Nemzetközi Brigád\" division_template = \"Vörös Hadosztály\" start_experience_factor = 0.3"
+					owner = ROOT
 				}
 			}
+		}
+	}
+	HUN_war_communism = {
+		icon = GFX_decision_eng_trade_unions_support
+		cost = 15
+		days_remove = 15
+		allowed = {
+			original_tag = HUN
+		}
+		available = {
+			has_government = communism
+			has_war = yes
+		}
+		visible = {
+			has_completed_focus = HUN_collectivise_farming
+			has_completed_focus = HUN_union_decision_making
+			has_government = communism
 		}
 		fire_only_once = yes
 		ai_will_do = {
 			factor = 1
 		}
 		complete_effect = {
-			every_owned_state = {
+			add_stability = -0.1
+		}
+		remove_effect = {
+			add_equipment_to_stockpile = {
+				type = infantry_equipment
+				amount = 6000
+				producer = ROOT
+			}
+			add_equipment_to_stockpile = {
+				type = field_gun_equipment
+				amount = 200
+				producer = ROOT
+			}
+			add_equipment_to_stockpile = {
+				type = support_equipment
+				amount = 200
+				producer = ROOT
+			}
+			if = {
 				limit = {
-					OR = {
-						is_core_of = SLO
-						state = 73
+					NOT = {
+						has_idea = tot_economic_mobilisation
 					}
 				}
-				if = {
-					limit = {
-						is_claimed_by = ROOT
+				add_ideas = tot_economic_mobilisation
+			}
+		}
+	}
+	HUN_establish_slovak_soviet_republic = {
+		icon = GFX_decision_SOV_secure_the_administration
+		allowed = {
+			original_tag = HUN
+		}
+		available = {
+			controls_state = 71
+			NOT = { country_exists = SLO }
+		}
+		visible = {
+			is_subject = no
+			has_government = communism
+			has_completed_focus = HUN_offensive_against_czechs
+		}
+		fire_only_once = yes
+		ai_will_do = {
+			factor = 1
+		}
+		complete_effect = {
+			71 = {
+				set_state_owner_to = SLO
+			}
+			every_owned_state = {
+				limit = {
+					is_core_of = SLO
+					is_fully_controlled_by = HUN
+					NOT = {
+						state = 664
 					}
-					remove_claim_by = ROOT
 				}
 				transfer_state_to = SLO
 			}
@@ -157,6 +264,9 @@ political_actions = {
 				set_politics = {
 					ruling_party = communism
 					elections_allowed = no 
+				}
+				set_capital = {
+					state = 71
 				}
 				set_cosmetic_tag = SLO_socialism
 			}
@@ -170,12 +280,16 @@ political_actions = {
 		}
 		available = {
 			has_war = no			
-			owns_state = 4
-			owns_state = 152
-			owns_state = 153
+			any_owned_state = {
+				is_core_of = AUS
+				region = 22
+				NOT = {
+					is_core_of = ROOT
+					is_claimed_by = ROOT
+				}
+			}
 			NOT = {
 				country_exists = AUS
-				country_exists = AUH
 			}
 		}
 		visible = {
@@ -196,31 +310,13 @@ political_actions = {
 			factor = 1
 		}
 		complete_effect = {
-			every_state = {
+			every_owned_state = {			
 				limit = {
-					OR = {
-						state = 4
-						state = 39
-						state = 147
-						state = 152
-						state = 153
-					}
-				}
-				if = {
-					limit = {
+					is_core_of = AUS
+					region = 22
+					NOT = {
+						is_core_of = ROOT
 						is_claimed_by = ROOT
-					}
-					remove_claim_by = ROOT
-				}
-				add_core_of = AUS
-			}
-			every_owned_state = {
-				limit = {
-					OR = {
-						state = 4
-						state = 39
-						state = 152
-						state = 153
 					}
 				}
 				transfer_state_to = AUS
@@ -234,10 +330,17 @@ political_actions = {
 			puppet = AUS
 		}
 	}
+}
+political_actions = {
 	HUN_end_regency = {
 		icon = GFX_decision_generic_monarchy
 		allowed = {
 			original_tag = HUN
+		}
+		visible = {
+			NOT = {
+				is_subject_of = AUS
+			}
 		}
 		target_trigger = {
 			FROM = {
@@ -248,15 +351,7 @@ political_actions = {
 						ruling_only = yes
 					}
 					has_country_leader = {
-						character = AUS_franz_joseph_i
-						ruling_only = yes
-					}
-					has_country_leader = {
-						character = AUH_franz_ferdinand_i
-						ruling_only = yes
-					}
-					has_country_leader = {
-						character = AUS_franz_ferdinand_i
+						character = AUH_franz_ferdinand
 						ruling_only = yes
 					}
 					has_country_leader = {
@@ -264,15 +359,7 @@ political_actions = {
 						ruling_only = yes
 					}
 					has_country_leader = {
-						character = AUS_karl_i
-						ruling_only = yes
-					}
-					has_country_leader = {
 						character = AUH_otto_von_habsburg
-						ruling_only = yes
-					}
-					has_country_leader = {
-						character = AUS_otto_von_habsburg
 						ruling_only = yes
 					}
 				}
@@ -282,10 +369,7 @@ political_actions = {
 			has_government = neutrality
 			OR = {
 				has_country_leader = {
-					character = HUN_istvan_tisza
-				}
-				has_country_leader = {
-					character = HUN_joseph_august
+					character = AUH_joseph_august_von_osterreich
 				}
 				has_country_leader = {
 					character = HUN_miklos_horthy
@@ -303,33 +387,34 @@ political_actions = {
 				add = 10
 				is_subject_of = FROM
 			}
-			modifier = {
-				add = 1
-				OR = {
-					has_global_flag = prussian_blue
-					has_global_flag = spartakist_in_bavaria
-				}
-				has_war = no
-				FROM = {
-					tag = AUS
-					is_neighbor_of = PREV
-					has_war = no
-					is_subject = no
-					has_country_leader = {
-						character = AUS_otto_von_habsburg
-						ruling_only = yes
-					}
-				}
-			}
+			# modifier = {
+			# 	add = 1
+			# 	OR = {
+			# 		#has_global_flag = prussian_blue
+			# 		has_global_flag = spartakist_in_bavaria
+			# 	}
+			# 	has_war = no
+			# 	FROM = {
+			# 		tag = AUS
+			# 		is_neighbor_of = PREV
+			# 		has_war = no
+			# 		is_subject = no
+			# 		has_country_leader = {
+			# 			character = AUS_otto_von_habsburg
+			# 			ruling_only = yes
+			# 		}
+			# 	}
+			# }
 		}
 		cost = 200
 		complete_effect = {
 			news_event = ww1_hungary.4
-			FROM = {
-				AUH_HUN_create_habsburg = yes	
+			set_country_flag = monarchist_puppet
+			AUH_create_habsburg = yes
+			FROM = {	
 				set_autonomy = {
 					target = ROOT
-					autonomous_state = autonomy_tgwr_crownland
+					autonomous_state = autonomy_tgwr_real_union
 				}
 				ROOT = {
 					set_politics = {
@@ -343,7 +428,6 @@ political_actions = {
 			hidden_effect = {
 				drop_cosmetic_tag = yes
 				clr_country_flag = HUN_republic
-				clr_country_flag = HUN_regency
 			}
 		}
 	}
@@ -361,9 +445,13 @@ HUN_habsburg_restoration = {
 				NOT = { country_exists = AUS }
 				has_subject = AUS
 			}
-			owns_state = 4
-			owns_state = 152
-			owns_state = 153
+			any_owned_state = {
+				is_core_of = AUS
+				region = 22
+				NOT = {
+					is_core_of = ROOT
+				}
+			}
 			if = {
 				limit = {
 					has_global_flag = great_war
@@ -373,6 +461,7 @@ HUN_habsburg_restoration = {
 		}
 		visible = {
 			has_country_flag = hungarian_revanchism
+			has_monarchy = yes
 			NOT = {
 				has_country_flag = great_war_loser
 			}
@@ -386,70 +475,56 @@ HUN_habsburg_restoration = {
 				limit = {
 					is_faction_leader = no
 				}
-				create_faction = danube_adriabund
+				create_faction_from_template = faction_template_habsburg_alliance
+				set_faction_name = danube_adriabund
 			}
 			every_owned_state = {
 				limit = {
-					OR = {
-						state = 4
-						state = 39
-						#state = 69
-						state = 102
-						state = 152
-						state = 153
-						state = 244
-						state = 736
-						state = 1010
+					is_core_of = AUS
+					region = 22
+					NOT = {
+						is_core_of = ROOT
 					}
 				}
-				remove_core_of = HUN
 				remove_claim_by = HUN
-				add_core_of = AUS
 				transfer_state_to = AUS
 			}
+			AUS = { set_country_flag = monarchist_puppet }
 			set_autonomy = {
 				target = AUS
-				autonomous_state = autonomy_tgwr_crownland
+				autonomous_state = autonomy_tgwr_real_union
 			}
 			AUS = {
-				set_party_name = {
-					ideology = neutrality
-					long_name = AUH_neutrality_party_long
-					name = AUH_neutrality_party
-				}
 				set_politics = {
 					ruling_party = neutrality
+					long_name = AUS_neutrality_party_long
+					name = AUS_neutrality_party
 					elections_allowed = no
 				}
+				set_cosmetic_tag = AUH
 			}
 			hidden_effect = {
 				if = {
 					limit = {
-						has_country_leader = {
-							character = HUN_franz_joseph_i
-						}
+						has_idea = HUN_franz_joseph_i
 					}
 					AUS = {
-						AUS_franz_joseph_i = {
-							add_country_leader_role = {
-								promote_leader = yes
-								country_leader = {
-									ideology = semi_constitutional_monarchy
-									traits = { oldschool_kaiser }
-								}
+						add_country_leader_role = {
+							character = AUS_franz_joseph_i
+							promote_leader = yes
+							country_leader = {
+								ideology = semi_constitutional_monarchy
+								traits = { oldschool_kaiser }
 							}
 						}
-						set_cosmetic_tag = AUH_EMP
 					}
 				}
 				else_if = {
 					limit = {
-						has_country_leader = {
-							character = HUN_franz_ferdinand_i
-						}
+						has_idea = HUN_franz_ferdinand
 					}
 					AUS = {
-						AUS_franz_ferdinand_i = {
+						AUH_franz_ferdinand = {
 							add_country_leader_role = {
 								promote_leader = yes
 								country_leader = {
@@ -457,12 +532,11 @@ HUN_habsburg_restoration = {
 								}
 							}
 						}
-						set_cosmetic_tag = AUH_EMP
 					}
 				}
 				else = {
 					AUS = {
-						AUS_karl_i = {
+						AUH_karl_i = {
 							add_country_leader_role = {
 								promote_leader = yes
 								country_leader = {
@@ -470,15 +544,10 @@ HUN_habsburg_restoration = {
 								}
 							}
 						}
-						set_party_name = {
-							ideology = neutrality
-							long_name = AUH_neutrality_party_long
-							name = AUH_neutrality_party
-						}
-						set_cosmetic_tag = AUH_EMP
 					}
 				}
 				69 = { add_core_of = AUS }
+				1200 = { add_core_of = AUS }
 				news_event = ww1_bruderkrieg.15
 			}
 		}
@@ -542,9 +611,10 @@ HUN_habsburg_restoration = {
 				add_core_of = GAL
 				transfer_state_to = GAL
 			}
+			GAL = { set_country_flag = monarchist_puppet }
 			set_autonomy = {
 				target = GAL
-				autonomous_state = autonomy_tgwr_crownland
+				autonomous_state = autonomy_tgwr_real_union
 			}
 		}
 	}
@@ -645,6 +715,7 @@ HUN_habsburg_restoration = {
 					is_core_of = CZE
 					OR = {
 						state = 69
+						state = 1200
 						NOT = {
 							is_core_of = HUN
 							is_core_of = SLO
@@ -660,9 +731,10 @@ HUN_habsburg_restoration = {
 				limit = {
 					NOT = { has_subject = CZE }
 				}
+				CZE = { set_country_flag = monarchist_puppet }
 				set_autonomy = {
 					target = CZE
-					autonomous_state = autonomy_tgwr_crownland
+					autonomous_state = autonomy_tgwr_real_union
 				}
 				hidden_effect = {
 					CZE = {
@@ -736,13 +808,14 @@ HUN_habsburg_restoration = {
 				limit = {
 					NOT = { has_subject = CRO }
 				}
+				CRO = { set_country_flag = monarchist_puppet }
 				set_autonomy = {
 					target = CRO
-					autonomous_state = autonomy_tgwr_crownland
+					autonomous_state = autonomy_tgwr_real_union
 				}
 				hidden_effect = {
 					CRO = {
-						set_cosmetic_tag = CRO_AUH
+						set_cosmetic_tag = CRO_AUS
 					}
 				}
 			}
@@ -780,6 +853,267 @@ HUN_habsburg_restoration = {
 		}
 		complete_effect = {
 			CZE = { country_event = ww1_bruderkrieg.9 }
+		}
+	}
+}
+ROM_romanian_hungarian_war = {
+    HUN_sue_for_peace_romanian_hungarian_war = { #historical
+		allowed = {
+			original_tag = HUN
+		}
+		icon = GFX_decision_eng_ally_imperialist_coup
+		visible = {
+			ROM = {
+				has_country_flag = great_war_winner
+			}
+		}
+		available = {
+			has_war_with = ROM
+		}
+		fire_only_once = yes
+		ai_will_do = {
+			factor = 0
+			modifier = {
+				add = 500
+				surrender_progress > 0.6
+			}
+			modifier = {
+				add = 500
+				surrender_progress > 0.45
+				any_enemy_country = {
+					controls_province = 9660 #budapest
+				}
+			}
+		}
+		complete_effect = {
+			ROM = {
+				country_event = {
+					id = ww1_romania.82
+					hours = 2
+				}
+			}
+		}
+	}
+	HUN_sue_for_peace_romanian_hungarian_war2 = { #for a-hist post war transylvanian invasion
+		name = HUN_sue_for_peace_romanian_hungarian_war
+		allowed = {
+			original_tag = HUN
+		}
+		icon = GFX_decision_eng_ally_imperialist_coup
+		visible = {
+			ROM = {
+				NOT = {
+					has_country_flag = great_war_winner
+				}
+			}
+		}
+		available = {
+			has_war_with = ROM
+		}
+		fire_only_once = yes
+		ai_will_do = {
+			factor = 0
+			modifier = {
+				add = 500
+				NOT = {
+					controls_state = 778
+					controls_state = 84
+					controls_state = 76
+					controls_state = 1044
+					controls_state = 82
+				}
+			}
+			modifier = {
+				add = 500
+				surrender_progress > 0.8
+			}
+			modifier = {
+				add = 500
+				NOT = {
+					controls_province = 9660 #budapest
+				}
+			}
+		}
+		complete_effect = {
+			ROM = {
+				country_event = {
+					id = ww1_romania.212
+					hours = 6
+				}
+			}
+			effect_tooltip = {
+				every_owned_state = {
+					limit = {
+						OR = {
+							state = 778
+							state = 84
+							state = 76
+							state = 1044
+							state = 82 #take banat if its not banat republic/serbian
+						}
+					}
+					transfer_state_to = ROM
+				}
+			}
+		}
+	}
+	HUN_invade_cze_mission = {
+		icon = GFX_decision_generic_prepare_civil_war
+		days_mission_timeout = 50
+		#selectable_mission = yes
+		days_remove = 10
+		fire_only_once = yes
+		available = {
+			always = no
+		}	
+		allowed = {
+			always = no
+		}
+		visible = {
+			always = no
+		}
+		cancel_trigger = {
+			OR = {
+				has_completed_focus = HUN_offensive_against_czechs
+				NOT = {
+					has_government = communism
+				}
+			}
+		}
+		timeout_effect = { #romania and czechoslovakia make the move against soviet hungary
+			custom_effect_tooltip = HUN_demarcations_broken.tt
+			swap_ideas = {
+				remove_idea = HUN_disorganized_army
+				add_idea = HUN_army_collapse
+			}
+			CZE = {
+				create_wargoal = {
+					target = HUN
+					type = take_core_state
+				}
+			}
+			hidden_effect = {
+				ROM = {
+					remove_ideas = ROM_armistice
+				}
+				HUN = {
+					remove_ideas = HUN_armistice
+				}
+			}
+		}
+		ai_will_do = {
+			base = 1000
+		}
+	}
+	HUN_capture_presov = {
+		icon = GFX_decision_generic_prepare_civil_war
+		days_mission_timeout = 50
+		#selectable_mission = yes
+		days_remove = 10
+		fire_only_once = yes
+		available = {
+			OR = {
+				HUN = {
+					controls_province = 3581
+				}
+				SLO = {
+					is_subject_of = HUN
+					controls_province = 3581
+				}
+			}
+		}	
+		is_good = no
+		allowed = {
+			always = no
+		}
+		visible = {
+			always = no
+		}
+		cancel_trigger = {
+			NOT = {
+				has_government = communism
+			}
+		}
+		complete_effect = { #success
+			hidden_effect = {
+				remove_ideas = HUN_czech_offensive
+			}
+			country_event = {
+				id = ww1_romania.201
+				days = 1
+			}
+		}
+		timeout_effect = { #they fail
+			country_event = {
+				id = ww1_romania.202
+				days = 1
+			}
+			effect_tooltip = {
+				add_political_power = -100
+				add_war_support = -0.1
+				add_stability = -0.1
+			}
+		}
+		ai_will_do = {
+			base = 1000
+		}
+	}
+	HUN_rom_offensive_mission = {
+		icon = GFX_decision_generic_prepare_civil_war
+		days_mission_timeout = 80
+		#selectable_mission = yes
+		days_remove = 10
+		fire_only_once = yes
+		available = {
+			always = no
+		}
+		allowed = {
+			always = no
+		}	
+		visible = {
+			always = no
+		}
+		cancel_trigger = {
+			OR = {
+				has_completed_focus = HUN_the_great_gambit
+				NOT = {
+					has_government = communism
+					has_war_with = ROM
+				}
+			}
+		}
+		complete_effect = {
+		}
+		timeout_effect = {
+			custom_effect_tooltip = HUN_demarcations_broken.tt
+			swap_ideas = {
+				remove_idea = HUN_disorganized_army
+				add_idea = HUN_army_collapse
+			}
+			CZE = {
+				if = {
+					limit = {
+						NOT = {
+							has_war_with = HUN
+						}
+					}
+					create_wargoal = {
+						target = HUN
+						type = annex_everything
+					}
+				}		
+			}
+			hidden_effect = {
+				ROM = {
+					remove_ideas = ROM_armistice
+				}
+				HUN = {
+					remove_ideas = HUN_armistice
+				}
+			}
+		}
+		ai_will_do = {
+			base = 1000
 		}
 	}
 }

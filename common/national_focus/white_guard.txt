@@ -71,7 +71,7 @@ focus_tree = {
 						infantry = { x = 0 y = 0 }
 					}
 					support = {
-						artillery = { x = 0 y = 0 }
+						field_gun = { x = 0 y = 0 }
 					}
 				}
 				division_template = {
@@ -81,7 +81,7 @@ focus_tree = {
 						cavalry = { x = 0 y = 0 }
 					}
 					support = {
-						artillery = { x = 0 y = 0 }
+						field_gun = { x = 0 y = 0 }
 					}
 				}
 				country_event = {
@@ -92,7 +92,6 @@ focus_tree = {
 			add_political_power = 25
 			army_experience = 10
 			add_ideas = DON_alekseev_organization_1
-			custom_effect_tooltip = DON_Alekseev_organization_tt	
 			if = {
 				limit = {
 					has_active_mission = SRA_vol_departure
@@ -102,6 +101,8 @@ focus_tree = {
 					days = 15
 				}
 			}
+			custom_effect_tooltip = DON_Alekseev_organization_tt
+			custom_effect_tooltip = DON_complete_focus_for_better_oob
 		}
 
 		search_filters = { FOCUS_FILTER_ARMY_XP }
@@ -559,7 +560,12 @@ focus_tree = {
 					days = 15
 				}
 			}
-			country_event = ww1_don.7	
+			country_event = ww1_don.7
+			hidden_effect = {
+				SRA = {
+					set_country_flag = SRA_load_stronger_oob
+				}
+			}
 		}
 
 		search_filters = { FOCUS_FILTER_ARMY_XP }
@@ -655,14 +661,38 @@ shared_focus = {
 	bypass = {
 	}
 	available_if_capitulated = yes
+	select_effect = {
+		if = {
+			limit = {
+				tag = RSO
+			}
+			set_politics = {
+				ruling_party = fascism
+				elections_allowed = no
+			}
+		}
+	}
 	completion_reward = {
 		add_political_power = 100
+		if = {
+			limit = {
+				tag = RSO
+			}
+			set_politics = {
+				ruling_party = democratic
+				elections_allowed = no
+			}
+		}
 	}
 	search_filters = {
 		FOCUS_FILTER_POLITICAL
 	}
 	ai_will_do = {
 		factor = 10
+		modifier = {
+			factor = 10
+			tag = RSO
+		}
 	}
 }
 
@@ -1014,7 +1044,7 @@ shared_focus = {
 	}
 	completion_reward = {
 		army_experience = 25
-		add_command_power = 50
+		add_command_power = 50	
 	}
 	search_filters = {
 		FOCUS_FILTER_ARMY_XP
@@ -1430,7 +1460,7 @@ shared_focus = {
 
 shared_focus = {
 	id = WHI_all_for_victory
-	icon = GFX_focus_generic_total_war
+	icon = GFX_focus_RUS_for_united_russia
 	cost = 5
 	x = 0
 	y = 1
@@ -1597,12 +1627,32 @@ shared_focus = {
 	available_if_capitulated = yes
 	completion_reward = {
 		add_political_power = 25
+		if = {
+			limit = {
+				tag = RSO
+				has_capitulated = no
+				has_war_with = SOV
+				FRA = {
+					is_subject = no
+					has_capitulated = no
+					NOT = {
+						has_country_flag = great_war_loser
+						has_war_with = ROOT
+					}
+				}
+			}
+			country_event = rusrevolt.22
+		}
 	}
 	search_filters = {
 		FOCUS_FILTER_WAR_SUPPORT
 	}
 	ai_will_do = {
 		factor = 1
+		modifier = {
+			factor = 20
+			tag = RSO
+		}
 	}
 }
 
@@ -1621,17 +1671,21 @@ shared_focus = {
 	}
 	available = {
 		is_subject = no
+		ENT = {
+			has_country_flag = great_war_winner
+		}
 		if = {
 			limit = {
 				OR = {
 					ENG = {
-						is_in_faction_with = FRA
+						is_in_faction_with = ENT
+						NOT = { tag = ENT }
 					}
 					AND = {
 						ENG = {
 							has_country_flag = great_war_winner
 						}
-						FRA = {
+						ENT = {
 							has_country_flag = great_war_winner
 						}
 					}
@@ -1653,7 +1707,7 @@ shared_focus = {
 				}
 			}
 			else = {
-				FRA = {
+				ENT = {
 					exists = yes
 					has_capitulated = no
 					NOT = {
@@ -1680,7 +1734,7 @@ shared_focus = {
 	}
 	bypass = {
 		OR = {
-			is_subject_of = FRA
+			is_subject_of = ENT
 			is_subject_of = ENG
 		}
 	}
@@ -1690,13 +1744,14 @@ shared_focus = {
 			limit = {
 				OR = {
 					ENG = {
-						is_in_faction_with = FRA
+						is_in_faction_with = ENT
+						NOT = { tag = ENT }
 					}
 					AND = {
 						ENG = {
 							has_country_flag = great_war_winner
 						}
-						FRA = {
+						ENT = {
 							has_country_flag = great_war_winner
 						}
 					}
@@ -1724,7 +1779,7 @@ shared_focus = {
 				}
 			}
 			else = {
-				FRA = {
+				ENT = {
 					add_opinion_modifier = {
 						target = ROOT
 						modifier = large_increase
@@ -1840,7 +1895,15 @@ shared_focus = {
 	}
 	available = {
 		is_subject = no
+		capital_scope = {
+			OR = {
+				region = 148
+				region = 149
+				region = 155
+			}
+		}
 		JAP = {
+			has_completed_focus = JAP_ww1_Russian_Revolution_Opportunity
 			exists = yes
 			has_capitulated = no
 			NOT = {
@@ -1864,11 +1927,29 @@ shared_focus = {
 		}
 	}
 	bypass = {
-		is_subject_of = JAP
+		OR = {
+			is_subject_of = JAP
+			has_country_flag = siberian_intervention
+		}
 	}
 	available_if_capitulated = yes
 	completion_reward = {
+		set_country_flag = siberian_intervention
+		add_opinion_modifier = {
+			target = JAP
+			modifier = large_increase
+		}
 		JAP = {
+			diplomatic_relation = {
+				country = ROOT
+				relation = military_access
+				active = yes
+			}
+			diplomatic_relation = {
+				country = ROOT
+				relation = guarantee
+				active = yes
+			}
 			add_opinion_modifier = {
 				target = ROOT
 				modifier = large_increase
@@ -1891,13 +1972,7 @@ shared_focus = {
 		}
 	}
 	ai_will_do = {
-		base = 0
-		modifier = {
-			add = 10
-			has_country_leader = {
-				character = RUS_grigory_semyonov
-			}
-		}
+		base = 10
 	}
 }
 
@@ -2009,6 +2084,10 @@ shared_focus = {
 	}
 	ai_will_do = {
 		factor = 1
+		modifier = {
+			factor = 10
+			tag = RSO
+		}
 	}
 }
 
@@ -2041,9 +2120,49 @@ shared_focus = {
 			type = infantry_equipment
 			amount = 1000
 		}
+		if = {
+			limit = {
+				tag = RSO
+			}
+			RUS = {
+				RUS_vladimir_marushevsky = { 
+					set_nationality = ROOT
+					if = {
+						limit = {
+							is_field_marshal = no									
+						}
+						promote_leader = yes
+					}
+					hidden_effect = {
+						if = {
+							limit = {
+								ROOT = {
+									NOT = {
+										has_country_leader = {
+											character = RSO_georgiy_chaplin
+										}
+										has_character = RUS_evgeniy_miller
+									}
+								}						
+							}
+							add_country_leader_role = {
+								promote_leader = yes
+								country_leader = {
+									ideology = stratocracy
+								}
+							}
+						}
+					}				
+				}
+			}
+		}	
 	}
 	ai_will_do = {
 		factor = 1
+		modifier = {
+			factor = 10
+			tag = RSO
+		}
 	}
 }
 
@@ -2079,6 +2198,10 @@ shared_focus = {
 	}
 	ai_will_do = {
 		factor = 1
+		modifier = {
+			factor = 10
+			tag = RSO
+		}
 	}
 }
 
@@ -2115,12 +2238,51 @@ shared_focus = {
 			type = infantry_equipment
 			amount = 5000
 		}
+		if = {
+			limit = {
+				tag = RSO
+			}
+			RUS = {
+				RUS_evgeniy_miller = {
+					set_nationality = ROOT
+					if = {
+						limit = {
+							is_field_marshal = no									
+						}
+						promote_leader = yes
+					}
+					hidden_effect = {
+						if = {
+							limit = {
+								ROOT = {
+									NOT = {
+										has_country_leader = {
+											character = RSO_georgiy_chaplin
+										}
+									}
+								}							
+							}
+							add_country_leader_role = {
+								promote_leader = yes
+								country_leader = {
+									ideology = stratocracy
+								}
+							}
+						}
+					}								
+				}
+			}
+		}
 	}
 	search_filters = {
 		FOCUS_FILTER_MANPOWER
 	}
 	ai_will_do = {
 		factor = 1
+		modifier = {
+			factor = 5
+			tag = RSO
+		}
 	}
 }
 

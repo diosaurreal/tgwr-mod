@@ -16,25 +16,21 @@ country_event = {
 	}
 	option = {
 		name = ww1_serbia.1.a
-		clr_country_flag = grand_coalition
-		set_country_flag = grand_coalition_collapse
 		# hidden_effect = {
 		# 	country_event = generic.27
 		# }
-		remove_ideas = {
-			SER_idea_grand_coalition
-			SER_idea_grand_coalition_1
+		if = {
+			limit = { has_idea = SER_idea_grand_coalition }
+			remove_ideas = SER_idea_grand_coalition
 		}
-		hidden_effect = {
-			country_event = {
-				id = ww1_serbia.3
-				days = 90
-			}
+		if = {
+			limit = { has_idea = SER_idea_grand_coalition_1 }
+			remove_ideas = SER_idea_grand_coalition_1
 		}
-		# retire_character = SER_nikola_pasic
-		SER_milovan_milovanovic = {
-			promote_character = yes
-		}
+		hidden_effect = { country_event = { id = ww1_serbia.3 days = 90 } }
+		retire_country_leader = yes
+		set_country_flag = SER_grand_coalition_collapsed
+		complete_national_focus = SER_coalition_collapse
 	}
 }
 
@@ -88,11 +84,9 @@ country_event = {
 	is_triggered_only = yes
 	trigger = {
 		original_tag = SER
-		has_country_flag = grand_coalition_collapse
 		NOT = {
-			has_country_flag = grand_coalition
-		}
-		NOT = {
+			has_idea = SER_idea_grand_coalition
+			has_idea = SER_idea_grand_coalition_1
 			has_idea = SER_idea_government_without_majority
 		}
 		has_start_date < 1911.1.1
@@ -234,26 +228,15 @@ country_event = {
 	}
 	option = {
 		name = ww1_serbia.6.a
-		hidden_effect = {
-			promote_character = SER_ljubomir_davidovic
-		}
 		effect_tooltip = {
 			SER_ljubomir_stojanovic = {
 				remove_country_leader_role = {
 					ideology = social_liberalism
 				}
 			}
-			SER_ljubomir_davidovic = {
-				add_country_leader_role = {
-					promote_leader = yes
-					country_leader = {
-						ideology = social_liberalism
-						traits = {
-							teacher_politician
-						}
-					}
-				}
-			}
+		}
+		SER_ljubomir_davidovic = {
+			promote_character = social_liberalism
 		}
 	}
 }
@@ -273,24 +256,15 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_serbia.8.a
-		hidden_effect = {
-			SER_nikola_pasic = {
-				promote_character = {
+		effect_tooltip = {
+			SER_marko_trifkovic = {
+				remove_country_leader_role = {
 					ideology = liberal_conservatism
 				}
 			}
 		}
-		effect_tooltip = {
-			retire_country_leader = yes
-			create_country_leader = {
-				name = "Nikola Pašić"
-				ideology = liberal_conservatism
-				expire = "1935.1.1"
-				traits = {
-					radical_veteran
-					political_swimmer
-				}
-			}
+		SER_nikola_pasic = {
+			promote_character = liberal_conservatism
 		}
 	}
 }
@@ -313,27 +287,17 @@ country_event = {
 	fire_only_once = yes
 	option = {
 		name = ww1_serbia.9.a
-		effect_tooltip = {
-			retire_character = SER_milovan_milovanovic
-			SER_marko_trifkovic = {
-				add_country_leader_role = {
-					promote_leader = yes
-					country_leader = {
-						ideology = liberal_conservatism
-						traits = {
-							professional_crisis_solver
-						}
-					}
-				}
-			}
-		}
 		hidden_effect = {
 			retire_character = SER_milovan_milovanovic
-			SER_marko_trifkovic = {
-				promote_character = {
-					ideology = liberal_conservatism
-				}
-			}
+			remove_ideas = SER_idea_interim_government
+			add_ideas = SER_idea_fragile_majority
+			unlock_national_focus = SER_radical_victory
+			mark_focus_tree_layout_dirty = yes
+		}
+
+		retire_character = SER_milovan_milovanovic
+		SER_marko_trifkovic = {
+			promote_character = liberal_conservatism
 		}
 	}
 }
@@ -376,9 +340,7 @@ country_event = {
 		name = ww1_serbia.11.a
 		add_political_power = -20
 		if = {
-			limit = {
-				has_idea = SER_idea_grand_coalition_1
-			}
+			limit = { has_idea = SER_idea_grand_coalition_1 }
 			swap_ideas = {
 				remove_idea = SER_idea_grand_coalition_1
 				add_idea = SER_idea_grand_coalition
@@ -648,12 +610,16 @@ country_event = {
 			target = SER
 			modifier = danube_convention_ROM_SER
 		}
-		country_event = ww1_serbia.23
+		SER = {
+			country_event = ww1_serbia.23
+		}
 	}
 	option = {
 		name = ww1_serbia.22.b
 		add_political_power = -20
-		country_event = ww1_serbia.24
+		SER = {
+			country_event = ww1_serbia.24
+		}
 	}
 }
 
@@ -751,6 +717,17 @@ country_event = {
 		SER = {
 			country_event = ww1_serbia.27
 		}
+		ai_chance = {
+			base = 5
+			modifier = {
+				factor = 0
+				OR = {
+					has_country_leader_ideology = absolute_monarchy
+					has_completed_focus = RUS_resist_the_duma
+					has_government = fascism
+				}
+			}
+		}
 	}
 	#we not care, unless they go socialist
 	option = {
@@ -758,6 +735,17 @@ country_event = {
 		add_popularity = {
 			ideology = communism
 			popularity = -0.1
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+				OR = {
+					has_country_leader_ideology = absolute_monarchy
+					has_completed_focus = RUS_resist_the_duma
+					has_government = fascism
+				}
+			}
 		}
 	}
 	#give red light
@@ -771,6 +759,18 @@ country_event = {
 		add_popularity = {
 			ideology = communism
 			popularity = 0.05
+		}
+		country_event = ww1_serbia.30
+		ai_chance = {
+			base = 20
+			modifier = {
+				factor = 0
+				OR = {
+					has_completed_focus = RUS_revolutionaries_in_duma
+					has_government = democratic
+					has_government = communism
+				}
+			}
 		}
 	}
 }
@@ -890,39 +890,31 @@ country_event = {
 	}
 	option = {
 		name = ww1_serbia.31.a
+		set_cosmetic_tag = SER_republic
+		remove_ideas = {
+			SER_idea_petar_i
+			SER_idea_petar_i2
+			SER_idea_bloody_throne
+			SER_idea_Dorde_karadjordjevic
+			SER_idea_Jelena_karadjordjevic
+			SER_idea_alexander_i
+			SER_idea_arsenije_karadjordjevic
+			SER_idea_1903_constitution
+		}
 		if = {
 			limit = {
-				has_stability > 0.6
+				OR = {
+					has_stability > 0.6
+					has_country_flag = SER_monarchist_civil_war
+				}
 			}
 			add_stability = -0.2
-			remove_ideas = {
-				SER_idea_petar_i
-				SER_idea_petar_i2
-				SER_idea_bloody_throne
-				SER_idea_Dorde_karadjordjevic
-				SER_idea_Jelena_karadjordjevic
-				SER_idea_alexander_i
-				SER_idea_arsenije_karadjordjevic
-				SER_idea_1903_constitution
-			}
-			set_cosmetic_tag = SER_republic
 			else = {
 				add_stability = -0.4
-				remove_ideas = {
-					SER_idea_petar_i
-					SER_idea_petar_i2
-					SER_idea_bloody_throne
-					SER_idea_Dorde_karadjordjevic
-					SER_idea_Jelena_karadjordjevic
-					SER_idea_alexander_i
-					SER_idea_arsenije_karadjordjevic
-					SER_idea_1903_constitution
-				}
-				set_cosmetic_tag = SER_republic
 				start_civil_war = {
 					ideology = neutrality
 					ruling_party = democratic
-					size = 0.7
+					size = 0.6
 					set_country_flag = SER_revolter_flag
 					states = {
 						809
@@ -1054,6 +1046,9 @@ country_event = {
 					state = 759
 					state = 847
 					state = 44
+					state = 1213
+					state = 1214
+					state = 1215
 				}
 			}
 			add_dynamic_modifier = {
@@ -1255,8 +1250,12 @@ country_event = {
 	option = {
 		name = ww1_serbia.43.a
 		set_global_flag = corfu_lease
+		187 = {
+			transfer_state_to = FROM
+			add_dynamic_modifier = { modifier = SER_serbian_exile }
+			add_contested_owner = GRE
+		}
 		FROM = {
-			transfer_state = 187
 			swap_ideas = {
 				remove_idea = SER_idea_exodus
 				add_idea = SER_idea_exile
@@ -1264,12 +1263,6 @@ country_event = {
 			add_opinion_modifier = {
 				target = ROOT
 				modifier = large_increase
-			}
-		}
-		187 = {
-			set_state_controller_to = FROM
-			add_dynamic_modifier = {
-				modifier = SER_serbian_exile
 			}
 		}
 		hidden_effect = {
@@ -1281,6 +1274,40 @@ country_event = {
 			}
 			news_event = ww1_greece.231
 		}
+		ai_chance = { factor = 100 }
+	}
+	option = {
+		name = ww1_serbia.43.b
+		trigger = { NOT = { has_completed_focus = GRE_negotiations_with_entente } }
+		declare_war_on = {
+			target = SER
+			type = take_claimed_state
+			generator = { 187 }
+		}
+		187 = {
+			transfer_state_to = FROM
+			add_dynamic_modifier = { modifier = SER_serbian_exile }
+			add_contested_owner = GRE
+		}
+		FROM = {
+			swap_ideas = {
+				remove_idea = SER_idea_exodus
+				add_idea = SER_idea_exile
+			}
+			add_opinion_modifier = {
+				target = ROOT
+				modifier = large_decrease
+			}
+		}
+		hidden_effect = {
+			every_state = {
+				teleport_armies = {
+					limit = { tag = SER }
+					to_province = 10203
+				}
+			}
+		}
+		ai_chance = { factor = 0 }
 	}
 }
 
@@ -1298,10 +1325,8 @@ country_event = {
 		date > "1914.1.1"
 		has_war = no
 		NOT = {
-			has_global_flag = kis_franzferdinand_murdered
-		}
-		NOT = {
-			has_global_flag = kis_franzJoseph_murdered
+			has_global_flag = AUH_franz_ferdinand_killed_in_sarajevo
+			has_global_flag = AUH_franz_joseph_killed
 		}
 	}
 	option = {
@@ -1557,13 +1582,15 @@ country_event = {
 			ideology = democratic
 			popularity = 0.1
 		}
-		SER_bozidar_jankovic = {
-			set_nationality = MNT
-			promote_leader = yes
-		}
-		SER_petar_pesic = {
-			set_nationality = MNT
-		}
+		SER = {
+			SER_bozidar_jankovic = {
+				set_nationality = MNT
+				promote_leader = yes
+			}
+			SER_petar_pesic = {
+				set_nationality = MNT
+			}
+		}	
 	}
 	option = {
 		name = ww1_serbia.53.b
@@ -1596,6 +1623,7 @@ country_event = {
 		every_state = {
 			limit = {
 				is_core_of = CRO
+				has_resistance = yes
 			}
 			add_compliance = -0.1
 		}
@@ -1611,7 +1639,21 @@ country_event = {
 	title = ww1_serbia.56.t
 	desc = ww1_serbia.56.d
 	picture = GFX_report_event_gre_rural_rebels
-	is_triggered_only = yes
+	trigger = {
+		tag = SER
+		owns_state = 105
+		NOT = { country_exists = MNT }
+		MNT = {
+			has_country_leader = {
+				character = MNT_podgorica_assembly
+				ruling_only = yes
+			}
+		}
+	}
+	fire_only_once = yes
+	mean_time_to_happen = {
+		days = 30
+	}
 	option = {
 		name = ww1_serbia.56.a
 		add_stability = -0.1
@@ -1759,6 +1801,59 @@ country_event = {
 	}
 }
 
+#Death of Sava Grujić
+country_event = {
+	id = ww1_serbia.61
+	title = ww1_serbia.61.t
+	desc = ww1_serbia.61.d
+	picture = GFX_report_event_generic_parliament
+	is_triggered_only = yes
+	trigger = {
+		original_tag = SER
+	}
+	option = {
+		name = ww1_serbia.61.a
+		add_war_support = -0.02
+	}
+}
+
+#Death of Pera Velimirović
+country_event = {
+	id = ww1_serbia.62
+	title = ww1_serbia.62.t
+	desc = ww1_serbia.62.d
+	picture = GFX_report_event_generic_parliament
+	is_triggered_only = yes
+	trigger = {
+		original_tag = SER
+	}
+	option = {
+		name = ww1_serbia.62.a
+		add_political_power = -5
+	}
+}
+
+#Death of Ilija Gojković
+country_event = {
+	id = ww1_serbia.63
+	title = ww1_serbia.63.t
+	desc = ww1_serbia.63.d
+	fire_only_once = yes
+	trigger = {
+		original_tag = SER
+		has_character = SER_ilija_gojkovic
+		has_war_with = AUS
+		has_capitulated = yes
+		has_completed_focus = SER_join_Solun_front
+	}
+	mean_time_to_happen = {
+		days = 15
+	}
+	option = {
+		name = ww1_serbia.63.a
+		retire_character = SER_ilija_gojkovic
+	}
+}
 #Black hand is formalized in May
 country_event = {
 	id = ww1_serbia.100
@@ -1989,7 +2084,7 @@ country_event = {
 			modifier = {
 				add = 60
 				any_state = {
-					is_owned_and_controlled_by = AUH
+					is_owned_and_controlled_by = AUS
 					is_core_of = ROM
 				}
 			}
@@ -2077,10 +2172,10 @@ country_event = {
 				tag = ROM
 				tag = SER
 			}
-			has_war_with = AUH
+			has_war_with = AUS
 		}
 		NOT = {
-			has_war_with = AUH
+			has_war_with = AUS
 			has_war_with = SER
 			has_war_with = ROM
 			has_global_flag = treaty_of_bucharest_1918
@@ -2105,12 +2200,12 @@ country_event = {
 					tag = SER
 					tag = ROM
 				}
-				has_war_with = AUH
+				has_war_with = AUS
 			}
 			ROOT = {
 				add_to_war = {
 					targeted_alliance = PREV
-					enemy = AUH
+					enemy = AUS
 				}
 			}
 		}
@@ -2243,7 +2338,7 @@ country_event = {
 		#a lot
 		name = ww1_serbia.113.a
 		add_manpower = -40000
-		AUH = {
+		AUS = {
 			every_owned_state = {
 				limit = {
 					is_core_of = GAL
@@ -2256,7 +2351,7 @@ country_event = {
 		#a bit
 		name = ww1_serbia.113.b
 		add_manpower = -10000
-		AUH = {
+		AUS = {
 			every_owned_state = {
 				limit = {
 					is_core_of = GAL
@@ -2305,10 +2400,10 @@ country_event = {
 		#bomb
 		name = ww1_serbia.115.a
 		add_political_power = -50
-		AUH = {
+		AUS = {
 			country_event = {
 				id = ww1_serbia.116
-				days = 5
+				hours = 5
 			}
 		}
 	}
@@ -2322,21 +2417,34 @@ country_event = {
 	picture = GFX_report_event_generic_riot
 	is_triggered_only = yes
 	timeout_days = 5
+	immediate = {
+		hidden_effect = {
+			AUH_retire_franz_joseph_i = yes
+			set_global_flag = AUH_franz_joseph_killed
+			retire_character = AUH_franz_joseph_i
+		}		
+	}	
 	option = {
 		#bomb
 		name = ww1_serbia.116.a
 		news_event = ww1_serbia.117
-		AUH = {
+		effect_tooltip = {
 			retire_character = AUH_franz_joseph_i
-			hidden_effect = {
-				AUH_karl_i = {
-					set_character_name = "AUH_karl_i"
-					promote_character = semi_constitutional_monarchy
+			if = {
+				limit = {
+					has_country_leader = {
+						character = AUH_franz_ferdinand
+					}
 				}
-				AUH_franz_ferdinand_i = {
-					set_character_name = "AUH_franz_ferdinand_i"
-					promote_character = semi_constitutional_monarchy
-				}
+				promote_character = AUH_franz_ferdinand
+				else_if = {
+					limit = { 
+						has_country_leader = {
+							character = AUH_karl_i
+						}	
+					}
+					promote_character = AUH_karl_i
+				}	
 			}
 		}
 		hidden_effect = {
@@ -2345,7 +2453,7 @@ country_event = {
 				days = 7
 			}
 		}
-		set_global_flag = kis_franzJoseph_murdered
+		
 	}
 }
 
@@ -2357,10 +2465,9 @@ news_event = {
 	picture = ww1_franzferdinand_1
 	major = yes
 	is_triggered_only = yes
-	fire_only_once = yes
 	immediate = {
 		hidden_effect = {
-			GAL = {
+			SER = {
 				add_named_threat = {
 					threat = 5
 					name = ww1_serbia.117.t
@@ -2369,9 +2476,24 @@ news_event = {
 		}
 	}
 	option = {
-		name = ww1_franzferdinand.1.a
-		ai_chance = {
-			base = 100
+		name = ww1_serbia.117.a
+		trigger = {
+			NOT = {
+				tag = AUS
+				tag = SER
+			}
+		}
+	}
+	option = {
+		name = ww1_serbia.117.b
+		trigger = {
+			tag = AUS
+		}
+	}
+	option = {
+		name = ww1_serbia.117.c
+		trigger = {
+			tag = SER
 		}
 	}
 }
@@ -2467,7 +2589,7 @@ country_event = {
 						days = 6
 					}
 				}
-				AUH = {
+				AUS = {
 					country_event = {
 						id = ww1_serbia.120
 						days = 8
@@ -2501,7 +2623,7 @@ country_event = {
 	}
 }
 
-#AUH : what should we do about galicia ?!
+#AUS : what should we do about galicia ?!
 country_event = {
 	id = ww1_serbia.120
 	title = ww1_serbia.120.t
@@ -2546,7 +2668,7 @@ country_event = {
 	}
 }
 
-#GER : AUH is asking for support
+#GER : AUS is asking for support
 country_event = {
 	id = ww1_serbia.121
 	title = ww1_serbia.121.t
@@ -2556,7 +2678,7 @@ country_event = {
 	timeout_days = 5
 	option = {
 		name = ww1_serbia.121.a
-		AUH = {
+		AUS = {
 			country_event = {
 				id = ww1_serbia.122
 				days = 4
@@ -2570,14 +2692,14 @@ country_event = {
 	option = {
 		name = ww1_serbia.121.b
 		## this is shit, hell no
-		AUH = {
+		AUS = {
 			country_event = {
 				id = ww1_serbia.123
 				days = 4
 			}
 		}
 		effect_tooltip = {
-			AUH = {
+			AUS = {
 				leave_faction = yes
 			}
 		}
@@ -2587,7 +2709,7 @@ country_event = {
 	}
 }
 
-#AUH : GER accepted
+#AUS : GER accepted
 country_event = {
 	id = ww1_serbia.122
 	title = ww1_serbia.122.t
@@ -2605,7 +2727,7 @@ country_event = {
 	}
 }
 
-#AUH : GER dont want to get involved !
+#AUS : GER dont want to get involved !
 country_event = {
 	id = ww1_serbia.123
 	title = ww1_serbia.123.t
@@ -2616,13 +2738,13 @@ country_event = {
 	option = {
 		name = ww1_serbia.122.a
 		#of course lets go !
-		AUH = {
+		AUS = {
 			leave_faction = yes
 		}
 	}
 }
 
-### AUH fast planned attack ! 
+### AUS fast planned attack ! 
 news_event = {
 	id = ww1_serbia.124
 	title = ww1_serbia.124.t
@@ -2630,7 +2752,6 @@ news_event = {
 	picture = GFX_news_event_047
 	major = yes
 	is_triggered_only = yes
-	fire_only_once = yes
 	option = {
 		name = ww1_franzferdinand.1.a
 		ai_chance = {
@@ -3002,7 +3123,7 @@ country_event = {
 	}
 }
 
-### AUH give us banat and thats all
+### AUS give us banat and thats all
 country_event = {
 	id = ww1_serbia.132
 	title = ww1_serbia.132.t
@@ -3025,19 +3146,19 @@ country_event = {
 		ai_chance = {
 			base = 50
 			modifier = {
-				AUH = {
+				AUS = {
 					surrender_progress > 0.3
 				}
 				add = 100
 			}
 			modifier = {
-				AUH = {
+				AUS = {
 					surrender_progress > 0.6
 				}
 				add = 100
 			}
 			modifier = {
-				AUH = {
+				AUS = {
 					surrender_progress > 0.9
 				}
 				add = 100
@@ -3045,7 +3166,7 @@ country_event = {
 		}
 		add_war_support = -0.1
 		create_wargoal = {
-			target = AUH
+			target = AUS
 			type = take_core_state
 		}
 		country_event = {
@@ -3055,7 +3176,7 @@ country_event = {
 	}
 }
 
-### AUH give all !
+### AUS give all !
 country_event = {
 	id = ww1_serbia.133
 	title = ww1_serbia.133.t
@@ -3087,7 +3208,7 @@ country_event = {
 	}
 }
 
-### AUH give nothing !
+### AUS give nothing !
 country_event = {
 	id = ww1_serbia.134
 	title = ww1_serbia.134.t
@@ -3100,7 +3221,7 @@ country_event = {
 			base = 100
 		}
 		create_wargoal = {
-			target = AUH
+			target = AUS
 			type = take_core_state
 		}
 		add_ai_strategy = {
@@ -3240,33 +3361,18 @@ country_event = {
 		}
 	}
 }
-
-### Radicals beaten !
-# country_event = {
-# 	id = ww1_serbia.136
-# 	title = ww1_serbia.136.t
-# 	desc = ww1_serbia.136.d
-# 	picture = GFX_report_event_conservative_victory
-# 	is_triggered_only = yes
-# 	option = {
-# 		name = ww1_serbia.136.a #Excellent !
-# 		add_political_power = 25
-# 		set_country_flag = democrats_beaten
-# 	}
-# }
 # The Long Expected War
 country_event = {
 	id = ww1_serbia.138
-	picture = GFX_report_event_generic_army
 	trigger = {
 		tag = SER
 		OR = {
-			has_war_with = AUH
-			has_wargoal_against = AUH
-			AUH = {
+			has_war_with = AUS
+			has_wargoal_against = AUS
+			AUS = {
 				has_wargoal_against = ROOT
 			}
-			has_global_flag = kis_franzferdinand_murdered
+			has_global_flag = AUH_franz_ferdinand_killed_in_sarajevo
 		}
 	}
 	fire_only_once = yes
@@ -3292,50 +3398,79 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_serbia.139.a
-		annex_country = {
-			target = CRO
-			transfer_troops = yes
-		}
-		if = {
-			limit = {
-				NOT = {
-					has_cosmetic_tag = SER_empire
-					has_cosmetic_tag = YUG
-					has_cosmetic_tag = SER_YUG
-				}
+		custom_effect_tooltip = GAME_OVER_TT
+		FROM = {
+			annex_country = {
+				target = CRO
+				transfer_troops = yes
 			}
 			if = {
 				limit = {
-					has_country_flag = greater_serbia_chosen
-				}
-				set_cosmetic_tag = SER_empire
-			}
-			else_if = {
-				limit = {
-					any_owned_state = {
-						is_core_of = SLV
+					NOT = {
+						has_cosmetic_tag = SER_empire
+						has_cosmetic_tag = YUG
+						has_cosmetic_tag = SER_YUG
 					}
 				}
-				set_cosmetic_tag = SER_YUG
+				if = {
+					limit = {
+						has_country_flag = greater_serbia_chosen
+					}
+					set_cosmetic_tag = SER_empire
+				}
+				else_if = {
+					limit = {
+						any_owned_state = {
+							is_core_of = SLV
+						}
+					}
+					set_cosmetic_tag = SER_YUG
+				}
+				else = {
+					set_cosmetic_tag = YUG
+				}
+				set_country_flag = SER_yugoslavia_formed
 			}
-			else = {
-				set_cosmetic_tag = YUG
+			hidden_effect = {
+				every_state = {
+					limit = {
+						OR = {
+							is_core_of = CRO
+							is_core_of = SLV
+							is_core_of = BOS
+						}
+					}
+					add_core_of = PREV
+				}
+				every_state = {
+					limit = {
+						OR = {
+							is_claimed_by = CRO
+							is_claimed_by = SLV
+							is_claimed_by = BOS
+						}
+					}
+					add_claim_by = PREV
+				}
 			}
-			set_country_flag = SER_yugoslavia_formed
 		}
-		hidden_effect = {
-			every_state = {
-				limit = {
-					is_core_of = CRO
-				}
-				add_core_of = ROOT
+	}
+	option = {
+		name = ww1_serbia.139.b
+		trigger = {
+			NOT = {
+				has_country_flag = great_war_loser
+				is_subject_of = FROM
 			}
-			every_state = {
-				limit = {
-					is_claimed_by = CRO
-				}
-				add_claim_by = ROOT
+		}
+		FROM = {
+			declare_war_on = {
+				target = ROOT
+				type = annex_everything
 			}
+		}
+		ai_chance = {
+			base = 0
 		}
 	}
 }
@@ -3355,9 +3490,14 @@ country_event = {
 				transfer_troops = yes
 			}
 		}
-		custom_effect_tooltip = GAME_OVER_TT
 		hidden_effect = {
-			every_unit_leader = {
+			every_character = {
+				limit = {
+					NOT = {
+						has_character_flag = dont_transfer
+						has_character_flag = greens
+					}
+				}
 				set_nationality = FROM
 			}
 			every_state = {
@@ -3372,60 +3512,55 @@ country_event = {
 				}
 				add_claim_by = FROM
 			}
-			FROM = {
+		}
+		FROM = {
+			if = {
+				limit = {
+					is_ai = yes
+					ROOT = { is_ai = no }
+				}
 				change_tag_from = ROOT
 			}
+			else = {
+				custom_effect_tooltip = GAME_OVER_TT
+			}
+		}
+		ai_chance = {
+			base = 10
 		}
 	}
-	# player chance to resist - the whites revolt
+	# player chance to resist - the greens revolt
 	option = {
 		name = ww1_serbia.140.b
 		trigger = {
 			is_subject = no
 		}
-		start_civil_war = {
-			ideology = democratic
-			size = 0.5
-			states_filter = {
-				NOT = {
-					state = 105
-					state = 870
-				}
-			}
-			keep_all_characters = yes
-			hidden_effect = {
-				PREV = {
-					MNT_podgorica_assembly = {
-						set_nationality = PREV.PREV
-					}
-				}
-				get_current_government_type = yes
-				FROM = {
-					set_autonomy = {
-						target = PREV
-						autonomy_state = autonomy_integrated_puppet
-						end_wars = no
-						end_civil_wars = no
-					}
-				}
-				restore_previous_government_type = yes
-				set_party_name = {
-					ideology = democratic
-					long_name = MNT_national_assembly_long
-					name = MNT_national_assembly
-				}
-				MNT_podgorica_assembly = {
-					add_country_leader_role = {
-						promote_leader = yes
-						country_leader = {
-							ideology = conservatism
-						}
-					}
-					promote_character = conservatism
-				}
-			}
-		}
 		hidden_effect = {
+			MNT_vukasin_markovic = {
+				promote_character = vanguardism
+			}
+			MNT_krsto_popovic = {
+				promote_character = stratocracy
+			}
+			every_character = {
+				limit = {
+					NOT = {
+						has_character_flag = dont_transfer
+						has_character_flag = greens
+					}
+				}
+				set_nationality = FROM
+			}
+			set_party_name = {
+				ideology = fascism
+				long_name = MNT_zeleni_party_long
+				name = MNT_zeleni_party
+			}
+			set_party_name = {
+				ideology = democratic
+				long_name = MNT_zeleni_party_long
+				name = MNT_zeleni_party
+			}
 			every_state = {
 				limit = {
 					is_core_of = ROOT
@@ -3439,8 +3574,55 @@ country_event = {
 				add_claim_by = FROM
 			}
 		}
+		transfer_units_fraction = {
+			target = FROM
+			size = 0.5
+			keep_unit_leaders_trigger = {
+				always = yes
+			}
+		}
+		FROM = {
+			declare_war_on = {
+				target = ROOT
+				type = annex_everything
+			}
+		}
+		every_owned_state = {
+			limit = {
+				NOT = {
+					state = 105
+					state = 1205
+				}
+			}
+			set_state_controller_to = FROM
+		}
+		hidden_effect = {
+			division_template = {
+				name = "Zelenaši"
+				regiments = {
+					infantry = { x = 0 y = 0 }
+					infantry = { x = 0 y = 1 }
+					infantry = { x = 0 y = 2 }
+				}
+			}
+			capital_scope = {
+				create_unit = {
+					division = "name = \"Zelenaši\" division_template = \"Zelenaši\" start_experience_factor = 1.0 start_equipment_factor = 0.7"
+					owner = PREV
+					count = 2
+				}
+			}
+		}
 		ai_chance = {
-			base = 0
+			base = 1
+			modifier = {
+				factor = 0
+				has_country_flag = Montenegro_capitulated
+			}
+			modifier = {
+				factor = 0
+				is_historical_focus_on = yes
+			}
 		}
 	}
 }
@@ -3453,7 +3635,7 @@ country_event = {
 	picture = GFX_report_event_generic_army
 	is_triggered_only = yes
 	trigger = {
-		tag = AUH
+		tag = AUS
 	}
 	option = {
 		name = ww1_serbia.141.a
@@ -3520,7 +3702,7 @@ country_event = {
 		SER = {
 			is_in_faction_with = BUL
 			is_in_faction_with = GRE
-			has_war_with = AUH
+			has_war_with = AUS
 		}
 		NOT = {
 			has_country_flag = SER_great_war_with_balkan_faction
@@ -3553,9 +3735,8 @@ country_event = {
 		every_country = {
 			limit = {
 				OR = {
-					original_tag = AUH
-					is_subject_of = AUH
-					is_in_faction_with = AUH
+					original_tag = AUS
+					is_ally_with = AUS
 				}
 				has_war_with = BLL
 			}
@@ -3563,7 +3744,7 @@ country_event = {
 				limit = {
 					OR = {
 						tag = BLL
-						is_in_faction_with = BLL
+						is_ally_with = BLL
 					}
 				}
 				set_country_flag = austria_vs_balkan_league_loser
@@ -3682,17 +3863,15 @@ country_event = {
 			limit = {
 				OR = {
 					tag = BLL
-					is_subject_of = BLL
-					is_in_faction_with = BLL
+					is_ally_with = BLL
 				}
-				has_war_with = AUH
+				has_war_with = AUS
 			}
 			every_other_country = {
 				limit = {
 					OR = {
-						original_tag = AUH
-						is_subject_of = AUH
-						is_in_faction_with = AUH
+						original_tag = AUS
+						is_ally_with = AUS
 					}
 				}
 				set_country_flag = austria_vs_balkan_league_loser
@@ -3711,7 +3890,7 @@ country_event = {
 				transfer_state_to = PREV
 			}
 		}
-		AUH = {
+		AUS = {
 			release = CRO
 			release = BOS
 		}
@@ -3721,5 +3900,145 @@ country_event = {
 		ai_chance = {
 			base = 0
 		}
+	}
+}
+
+# Austrian puppet serbia border
+country_event = {
+	id = ww1_serbia.146
+	title = ww1_serbia.146.t
+	desc = ww1_serbia.146.d
+	picture = GFX_report_event_generic_military_parade
+	fire_only_once = yes
+	trigger = {
+		tag = AUS
+		any_owned_state = {
+			is_core_of = MNT
+		}
+		SER = {
+			is_subject_of = ROOT
+			NOT = {
+				has_autonomy_state = autonomy_dominion
+			}
+		}
+		NOT = { has_subject = MNT }
+	}
+	option = {
+		name = ww1_serbia.146.a
+		every_state = {
+			limit = {
+				OR = {
+					state = 107
+					state = 760
+					state = 761
+					state = 809
+					state = 847
+					state = 848
+					state = 876
+				}
+				OWNER = {
+					OR = {
+						tag = ROOT
+						is_subject_of = ROOT
+						has_country_flag = great_war_loser
+					}
+				}
+			}
+			remove_claim_by = ROOT
+			add_core_of = SER
+			transfer_state_to = SER
+		}
+		ai_chance = {
+			base = 0
+		}
+	}
+	option = {
+		name = ww1_serbia.146.c
+		every_state = {
+			limit = {
+				OR = {
+					state = 105
+					state = 107
+					state = 760
+					state = 761
+					state = 809
+					state = 847
+					state = 848
+					state = 876
+				}
+				OWNER = {
+					OR = {
+						tag = ROOT
+						is_subject_of = ROOT
+						has_country_flag = great_war_loser
+					}
+				}
+			}
+			add_core_of = SER
+			if = {
+				limit = { has_resistance = yes }
+				add_resistance = 30
+				add_compliance = -100
+			}
+		}
+		ai_chance = {
+			base = 0
+		}
+	}
+	option = {
+		name = ww1_serbia.146.b
+		add_political_power = -25
+		every_state = {
+			limit = {
+				OR = {
+					state = 107
+					state = 760
+					state = 761
+					state = 809
+					state = 847
+					state = 848
+					state = 876
+				}
+				OWNER = {
+					OR = {
+						tag = ROOT
+						is_subject_of = ROOT
+						has_country_flag = great_war_loser
+					}
+				}
+			}
+			add_core_of = SER
+			if = {
+				limit = { has_resistance = yes }
+				add_resistance = 30
+				add_compliance = -100
+			}
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				add = 10
+				has_government = fascism
+			}
+			modifier = {
+				add = 10
+				has_subject = CRO
+			}
+		}
+	}
+}
+
+
+#Serbia invade Banat
+country_event = {
+	id = ww1_serbia.150
+	title = ww1_serbia.150.t
+	desc = ww1_serbia.150.d
+	picture = GFX_report_event_generic_military_parade
+	fire_only_once = yes
+	is_triggered_only = yes
+	option = {
+		name = ww1_serbia.150.a
+		add_political_power = 25
 	}
 }

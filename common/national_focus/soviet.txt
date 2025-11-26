@@ -11,12 +11,13 @@ focus_tree = {
 
 	focus = {
 		id = SOV_first_decrees
-		icon = GFX_focus_generic_soviet_politics
+		icon = GFX_focus_SOV_first_decrees
 		cost = 1
 		x = 0
 		y = 0
 		available_if_capitulated = yes
 		completion_reward = {
+			add_political_power = 150
 			custom_effect_tooltip = available_political_advisor
 			show_ideas_tooltip = SOV_alexey_ryikov
 			custom_effect_tooltip = available_political_advisor
@@ -53,14 +54,17 @@ focus_tree = {
 		bypass = {
 			NOT = { has_war_with = GER }
 		}
-		select_effect = {
-			hidden_effect = {
-				country_lock_all_division_template = yes
-			}
-		}
 		cancelable = no
 		completion_reward = {
 			GER = { country_event = { id = ww1_brest_litovsk.1 days = 5 } }
+			if = {
+				limit = {
+					has_idea = RUS_nikolai_dukhonin_opposition
+					has_character = SOV_nikolai_krylenko
+				}
+				retire_character = RUS_nikolai_dukhonin
+				activate_advisor = SOV_nikolai_krylenko			
+			}	
         }
 		ai_will_do = {
 			factor = 4000
@@ -68,7 +72,7 @@ focus_tree = {
 	}
 	focus = {
 		id = SOV_combat_the_counter_revolution
-		icon = GFX_goal_generic_political_pressure
+		icon = GFX_focus_SOV_combat_the_counter_revolution
 		cost = 2
 		prerequisite = {
 			focus = SOV_first_decrees
@@ -91,11 +95,12 @@ focus_tree = {
 		will_lead_to_war_with = UKR
 		will_lead_to_war_with = CRI
 		completion_reward = {
+			add_political_power = 250
 			if = {
 				limit = {
 					is_in_faction = no
 				}
-				create_faction = red_movement
+				create_faction_from_template = faction_template_red_movement
 				else_if = {
 					limit = {
 						is_faction_leader = yes
@@ -111,6 +116,14 @@ focus_tree = {
 				create_intelligence_agency = {
 					name = "Cheka" 
 					icon = "GFX_intelligence_agency_logo_sov" 
+				}
+				create_operative_leader = {
+					name = "Yakov Blumkin"
+					GFX = GFX_SOV_yakov_blyumkin
+					traits = {  operative_escape_artist operative_commando }
+					bypass_recruitment = no
+					available_to_spy_master = yes
+					nationalities = { SOV UKR ISR }
 				}		
 			}
 			every_other_country = {
@@ -139,25 +152,38 @@ focus_tree = {
 			}
 			if = {
 				limit = {
-					UKR = {
+					UPR = {
 						exists = yes
 						is_subject = no
-						NOT = {
-							is_in_faction_with = ROOT
+						OR = {
+							is_in_faction = no
+							has_war_with = ROOT
 						}
 					}
 				}
-				UKR = {
-					country_event = ww1_russia.111
+				country_event = ww1_ukraine_civil_war.1
+				UPR = {
+					country_event = ww1_ukraine_civil_war.2
 				}
-			}	
+			}
+			else_if = {
+				limit = {
+					UPR = {
+						exists = no
+					}
+				}
+				hidden_effect = {
+					create_UPRS = yes
+				}
+			}
 			if = {
 				limit = {
 					CRI = {
 						exists = yes
 						is_subject = no
-						NOT = {
-							is_in_faction_with = ROOT
+						OR = {
+							is_in_faction = no
+							has_war_with = ROOT
 						}
 					}
 					955 = {
@@ -219,6 +245,14 @@ focus_tree = {
 								division = "division_template = \"Krasnaya Gvardiya\" start_experience_factor = 0.2" 
 								owner = BSR
 								allow_spawning_on_enemy_provs = yes
+								count = 3
+							}
+						}
+						233 = {
+							create_unit = {
+								division = "division_template = \"Krasnaya Gvardiya\" start_experience_factor = 0.2" 
+								owner = BSR
+								allow_spawning_on_enemy_provs = yes
 								count = 2
 							}
 						}
@@ -230,6 +264,7 @@ focus_tree = {
 			}			
 			unlock_decision_category_tooltip = SOV_combat_the_counter_revolution
 			activate_mission = SOV_soviet_stavrapol
+			activate_mission = SOV_soviet_abkhazia
 			#activate_mission = SOV_soviet_black_sea
 		}
 		ai_will_do = {
@@ -354,18 +389,18 @@ focus_tree = {
 		completion_reward = {
 			custom_effect_tooltip = SOV_nationalization_tt
 			random_owned_state = {
-                add_extra_state_shared_building_slots = 2
+                add_extra_state_shared_building_slots = 1
                 add_building_construction = {
                     type = industrial_complex
-                    level = 2
+                    level = 1
                     instant_build = yes
                 }
             }
 			248 = {
-				add_extra_state_shared_building_slots = 2
+				add_extra_state_shared_building_slots = 1
 				add_building_construction = {
 					type = arms_factory
-					level = 2
+					level = 1
 					instant_build = yes
 				}
 			}
@@ -499,6 +534,19 @@ focus_tree = {
 					add_idea = SOV_industry_in_chaos_2
 				}
 			}
+			if = {
+				limit = {
+					controls_state = 223
+				}
+				223 = {
+					add_extra_state_shared_building_slots = 1
+					add_building_construction = {
+						type = arms_factory
+						level = 1
+						instant_build = yes
+					}
+				}
+			}
 			set_country_flag = sov_recent_industry_rehab
 		}
 		search_filters = {
@@ -510,7 +558,7 @@ focus_tree = {
 	}
 	focus = {
 		id = SOV_labor_conscription
-		icon = GFX_goal_generic_construction
+		icon = GFX_focus_SOV_labor
 		cost = 5
 		prerequisite = {
 			focus = SOV_dictate_of_committees_of_workers
@@ -548,12 +596,17 @@ focus_tree = {
 			}
 			clr_country_flag = sov_recent_industry_rehab
 			set_country_flag = sov_recent_industry_rehab
-			219 = {
-				add_extra_state_shared_building_slots = 3
-				add_building_construction = {
-					type = arms_factory
-					level = 3
-					instant_build = yes
+			if = {
+				limit = {
+					controls_state = 219
+				}
+				219 = {
+					add_extra_state_shared_building_slots = 1
+					add_building_construction = {
+						type = arms_factory
+						level = 1
+						instant_build = yes
+					}
 				}
 			}
 		}
@@ -605,6 +658,20 @@ focus_tree = {
 				}
 				remove_ideas = SOV_industry_in_chaos_3
 			}
+			if = {
+				limit = {
+					controls_state = 252
+				}
+				252 = {
+					add_extra_state_shared_building_slots = 1
+					add_building_construction = {
+						type = arms_factory
+						level = 1
+						instant_build = yes
+					}
+				}
+			}
+			unlock_decision_category_tooltip = SOV_industrial_focus
 		}
 		search_filters = {
 			FOCUS_FILTER_INDUSTRY
@@ -669,7 +736,7 @@ focus_tree = {
 	}
 	focus = {
 		id = SOV_planned_economy
-		icon = GFX_focus_economic_control_red
+		icon = GFX_focus_SOV_five_year_plan
 		cost = 20
 		prerequisite = {
 			focus = SOV_new_economic_politics
@@ -955,7 +1022,7 @@ focus_tree = {
 	}
 	focus = {
 		id = SOV_red_army
-		icon = GFX_focus_SOV_builder_of_the_red_army
+		icon = GFX_focus_SOV_red_army
 		cost = 5
 		prerequisite = {
 			focus = SOV_decree_on_army_revolutionary_committee
@@ -973,13 +1040,11 @@ focus_tree = {
 		relative_position_id = SOV_decree_on_army_revolutionary_committee
 		completion_reward = {
 			custom_effect_tooltip = SOV_red_army_tt
+			activate_advisor = SOV_ioakim_vazetis
 			show_unit_leaders_tooltip = SOV_leon_trotsky
 			swap_ideas = {
 				remove_idea = SOV_idea_red_guard
 				add_idea = SOV_idea_red_army
-			}
-			hidden_effect = {
-				country_lock_all_division_template = no
 			}
 			if = {
 				limit = {
@@ -990,7 +1055,8 @@ focus_tree = {
 					}
 				}
 				add_ideas = extensive_conscription
-			}
+			}			
+			unlock_decision_tooltip = SOV_recruit_militia_centre
 		}
 		ai_will_do = {
 			factor = 1000
@@ -1033,6 +1099,7 @@ focus_tree = {
 				custom_effect_tooltip = available_military_high_command
 				show_ideas_tooltip = RUS_yuri_danilov_high_command
 			}
+			set_country_flag = sov_recent_military_rehab
 		}
 		ai_will_do = {
 			factor = 100
@@ -1059,6 +1126,8 @@ focus_tree = {
 				remove_idea = SOV_idea_red_army
 				add_idea = SOV_idea_red_army_militia
 			}
+			custom_effect_tooltip = available_chief_of_army
+			show_ideas_tooltip = SOV_aleksandr_miasnikian
 			if = {
 				limit = {
 					OR = {
@@ -1068,6 +1137,18 @@ focus_tree = {
 				}
 				add_ideas = service_by_requirement
 			}
+
+			hidden_effect = {
+				add_units_to_division_template = {
+					template_name = "Krasnaya Gvardiya"
+					regiments = {
+						militia = 1
+						militia = 1
+					}
+				}
+			}
+			custom_effect_tooltip = SOV_peoples_army_tt
+			set_country_flag = sov_recent_military_rehab
 		}
 		ai_will_do = {
 			factor = 80
@@ -1084,6 +1165,12 @@ focus_tree = {
 			focus = SOV_peoples_army
 			focus = SOV_pre_revolutionary_army_officers
 		}
+		available = {
+			has_country_flag = {
+				flag = sov_recent_military_rehab
+				days > 60
+			}
+		}
 		x = 1
 		y = 1
 		relative_position_id = SOV_pre_revolutionary_army_officers
@@ -1092,6 +1179,8 @@ focus_tree = {
 			remove_ideas = SOV_idea_revolutionary_commanders
 			custom_effect_tooltip = available_military_high_command
 			show_ideas_tooltip = SOV_council_of_armored_units
+			clr_country_flag = sov_recent_military_rehab
+			set_country_flag = sov_recent_military_rehab
 		}
 		ai_will_do = {
 			factor = 100
@@ -1113,7 +1202,14 @@ focus_tree = {
 		prerequisite = {
 			focus = SOV_revolutionary_military_council
 		}
+		available = {
+			has_country_flag = {
+				flag = sov_recent_military_rehab
+				days > 60
+			}
+		}
 		completion_reward = {
+			custom_effect_tooltip = ETH_unlock_academy_tt
 			add_doctrine_cost_reduction = {
 				name = RUS_reorg_general_staff
 				cost_reduction = 0.5
@@ -1125,12 +1221,31 @@ focus_tree = {
 				add_idea = SOV_idea_red_army_officers_2
 			}
 			army_experience = 25
+			hidden_effect = {
+				add_units_to_division_template = {
+					template_name = "Krasnaya Gvardiya"
+					support = {
+						engineer = 0
+					}
+				}
+			}
+			custom_effect_tooltip = SOV_military_academy_tt
+			unlock_decision_tooltip = SOV_recruit_militia_centre_perm
+			clr_country_flag = sov_recent_military_rehab
+			set_country_flag = sov_recent_military_rehab
+			if = {
+				limit = {
+					has_character = RUS_aleksandr_verkhovsky
+				}
+				custom_effect_tooltip = available_theorist
+				show_ideas_tooltip = RUS_aleksandr_verkhovsky
+			}		
 		}
 		ai_will_do = { factor = 100 }
 	}
 	focus = {
 		id = SOV_political_commissars
-		icon = GFX_goal_generic_allies_build_infantry
+		icon = GFX_focus_SOV_military_purge
 		cost = 5
 		prerequisite = {
 			focus = SOV_revolutionary_military_council
@@ -1141,6 +1256,12 @@ focus_tree = {
 		}
 		x = 0
 		y = 2
+		available = {
+			has_country_flag = {
+				flag = sov_recent_military_rehab
+				days > 60
+			}
+		}
 		relative_position_id = SOV_revolutionary_military_council
 		completion_reward = {
 			add_political_power = 100
@@ -1167,6 +1288,15 @@ focus_tree = {
 				}
 			}
 			custom_effect_tooltip = SOV_political_commissars_tt
+			hidden_effect = {
+				add_units_to_division_template = {
+					template_name = "Krasnaya Gvardiya"
+					support = {
+						military_police = 0
+					}
+				}
+			}
+			custom_effect_tooltip = SOV_commissars_mp_tt
 		}
 		ai_will_do = {
 			factor = 100
@@ -1174,7 +1304,7 @@ focus_tree = {
 	}
 	focus = {
 		id = SOV_reform_the_army
-		icon = GFX_focus_SOV_organization_centralization_discipline
+		icon = GFX_focus_SOV_builder_of_the_red_army
 		cost = 5
 		prerequisite = {
 			focus = SOV_political_commissars
@@ -1182,7 +1312,10 @@ focus_tree = {
 		x = 0
 		y = 5
 		available =  {
-			has_global_flag = russian_civil_war_ends
+			has_country_flag = {
+				flag = sov_recent_military_rehab
+				days > 365
+			}
 		}
 		relative_position_id = SOV_red_army
 		completion_reward = {
@@ -1216,6 +1349,46 @@ focus_tree = {
 					SOV_idea_red_army_officers_3
 				}
 			}
+			hidden_effect = {
+				set_division_template_lock = {
+					division_template = "Krasnaya Gvardiya"
+					is_locked = no
+				}
+				# incase player does some shenanigans 
+				# if = {
+				# 	limit = {
+				# 		is_ai = yes
+				# 	}
+					division_template = {
+						name = "Pekhotnaya Diviziya"
+						division_names_group = RUS_INF_01
+						is_locked = no
+						force_allow_recruiting = yes
+						regiments = {
+							infantry = { x = 0 y = 0 }
+							infantry = { x = 0 y = 1 }
+							infantry = { x = 0 y = 2 }
+
+							infantry = { x = 1 y = 0 }
+							infantry = { x = 1 y = 1 }
+							infantry = { x = 1 y = 2 }
+
+							infantry = { x = 2 y = 0 }
+							infantry = { x = 2 y = 1 }
+						}
+						support = {
+							engineer = {
+								x = 0
+								y = 0
+							}
+							field_gun = {
+								x = 0
+								y = 1
+							}
+						}
+					}
+				# }
+			}
 		}
 		ai_will_do = {
 			factor = 100
@@ -1235,8 +1408,13 @@ focus_tree = {
 		y = 1
 		relative_position_id = SOV_revolutionary_military_council
 		available = {
+			has_country_flag = {
+				flag = sov_recent_military_rehab
+				days > 60
+			}
 		}
 		completion_reward = {
+			custom_effect_tooltip = ETH_unlock_academy_tt
 			add_tech_bonus = {
 				name = SOV_military_all_education
 				bonus = 1.0
@@ -1248,6 +1426,9 @@ focus_tree = {
 				remove_idea = SOV_idea_red_army_militia
 				add_idea = SOV_idea_red_army_militia_2
 			}
+			unlock_decision_tooltip = SOV_recruit_militia_centre_perm
+			clr_country_flag = sov_recent_military_rehab
+			set_country_flag = sov_recent_military_rehab
 		}
 		search_filters = {
 			FOCUS_FILTER_RESEARCH
@@ -1264,6 +1445,12 @@ focus_tree = {
 			focus = SOV_peoples_army
 			focus = SOV_pre_revolutionary_army_officers
 		}
+		available = {
+			has_country_flag = {
+				flag = sov_recent_military_rehab
+				days > 60
+			}
+		}
 		x = 1
 		y = 1
 		relative_position_id = SOV_peoples_army
@@ -1272,8 +1459,19 @@ focus_tree = {
 				name = SOV_artillery_god_of_war
 				bonus = 1.0
 				uses = 1
-				category = artillery
+				category = cat_artillery
 			}
+			hidden_effect = {
+				add_units_to_division_template = {
+					template_name = "Krasnaya Gvardiya"
+					support = {
+						field_gun = 0
+					}
+				}
+			}
+			custom_effect_tooltip = SOV_artillery_war_tt
+			clr_country_flag = sov_recent_military_rehab
+			set_country_flag = sov_recent_military_rehab
 		}
 		search_filters = {
 			FOCUS_FILTER_RESEARCH
@@ -1288,6 +1486,12 @@ focus_tree = {
 		}
 		x = 0
 		y = 2
+		available = {
+			has_country_flag = {
+				flag = sov_recent_military_rehab
+				days > 60
+			}
+		}
 		relative_position_id = SOV_artillery_god_of_war
 		completion_reward = {
 			custom_effect_tooltip = available_designer
@@ -1310,6 +1514,8 @@ focus_tree = {
 				uses = 1
 				category = armor
 			}
+			clr_country_flag = sov_recent_military_rehab
+			set_country_flag = sov_recent_military_rehab
 		}
 		search_filters = {
 			FOCUS_FILTER_RESEARCH
@@ -1323,10 +1529,19 @@ focus_tree = {
 		prerequisite = {
 			focus = SOV_decree_on_army_revolutionary_committee
 		}
+		available = {
+			NOT = {
+				has_war_with = GER
+			}
+			NOT = {
+				has_idea = RUS_demobilizing_army
+			}
+		}
 		x = 0
 		y = 1
 		relative_position_id = SOV_decree_on_army_revolutionary_committee
 		completion_reward = {
+			custom_effect_tooltip = ETH_unlock_spirit_airforce_tt
 			air_experience = 50
 		}
 	}
@@ -1369,6 +1584,7 @@ focus_tree = {
 		y = 1
 		relative_position_id = SOV_design_bureau
 		completion_reward = {
+			custom_effect_tooltip = ETH_the_ethiopian_air_force_tt 
 			add_tech_bonus = {
 				name = SOV_air_force_of_red_army
 				bonus = 2.0
@@ -1408,6 +1624,7 @@ focus_tree = {
 		y = 1
 		relative_position_id = SOV_design_bureau
 		completion_reward = {
+			custom_effect_tooltip = ETH_the_ethiopian_air_force_tt 
 			add_doctrine_cost_reduction = {
 				name = SOV_air_force_of_soviet_russia
 				cost_reduction = 0.5
@@ -1469,6 +1686,14 @@ focus_tree = {
 		cost = 5
 		prerequisite = {
 			focus = SOV_decree_on_army_revolutionary_committee
+		}
+		available = {
+			NOT = {
+				has_war_with = GER
+			}
+			NOT = {
+				has_idea = RUS_demobilizing_army
+			}
 		}
 		x = 5
 		y = 1
@@ -1754,12 +1979,13 @@ focus_tree = {
 		y = 1
 		relative_position_id = SOV_navy_initiative
 		completion_reward = {
+			custom_effect_tooltip = unlock_spirit_of_naval_academy_tt
 			add_ideas = SOV_idea_fleet_academy
 		}
 	}
 	focus = {
 		id = SOV_soviet_republics
-		icon = GFX_goal_support_communism
+		icon = GFX_focus_generic_soviet_politics
 		cost = 5
 		available = {
 			is_subject = no
@@ -1789,7 +2015,7 @@ focus_tree = {
 	}
 	focus = {
 		id = SOV_bring_revolution_to_europe
-		icon = GFX_focus_usa_focus_on_europe
+		icon = GFX_SOV_a_global_class_struggle_ccp_2d_sov_compatibility
 		cost = 5
 		prerequisite = {
 			focus = SOV_peace_talks
@@ -1813,6 +2039,7 @@ focus_tree = {
 		will_lead_to_war_with = COU
 		will_lead_to_war_with = POL
 		completion_reward = {
+			add_political_power = 250
 			country_event = ww1_soviet.34
 			if = {
 				limit = {
@@ -1850,19 +2077,19 @@ focus_tree = {
 				}
 			}
 			hidden_effect = {
-				every_country = {
-					limit = {
-						OR = {
-							tag = LIT
-							tag = LAT
-							tag = EST
-						}
-					}
-					country_event = {
-						id = ww1_baltics.13
-						days = 45
-					}
-				}
+				# every_country = {
+				# 	limit = {
+				# 		OR = {
+				# 			tag = LIT
+				# 			tag = LAT
+				# 			tag = EST
+				# 		}
+				# 	}
+				# 	country_event = {
+				# 		id = ww1_baltics.13
+				# 		days = 45
+				# 	}
+				# }
 				every_other_country = {
 					limit = {
 						exists = yes
@@ -1917,46 +2144,120 @@ focus_tree = {
 		y = 2
 		relative_position_id = SOV_soviet_republics
 		available = {
-			has_global_flag = russian_civil_war_ends
+			has_global_flag = russian_civil_war
 			has_government = communism
 			is_subject = no
-			any_owned_state = {
+			SIB = {
 				OR = {
-					region = 148
-					state = 563
-					state = 564
+					exists = no
+					has_capitulated = yes
+					surrender_progress > 0.7
+					has_country_flag = POLITCENTRE
 				}
 			}
-			NOT = {
-				country_exists = FER
-			}
-		}
-		completion_reward = {
-			FER = {
-				every_state = {
-					limit = {
-						is_owned_by = ROOT
+			OR = {
+				AND = {
+					any_owned_state = {
 						OR = {
 							region = 148
 							state = 563
 							state = 564
 						}
 					}
-					add_core_of = PREV
-					transfer_state_to = PREV
+					any_controlled_state = {
+						OR = {
+							region = 148
+							state = 563
+							state = 564
+						}
+					}
+				}			
+				AND = {
+					TBK = {
+						is_neighbor_of = ROOT
+						owns_state = 564
+						exists = yes
+						is_subject = no
+						NOT = {
+							is_in_faction_with = ROOT
+						}
+					}
 				}
-				ROOT = {
-					puppet = FER
+			}		
+			NOT = {
+				country_exists = FER
+			}
+		}
+		completion_reward = {
+			every_state = {
+				limit = {
+					OR = {
+						region = 148
+						state = 563
+						state = 564
+					}
 				}
+				add_core_of = FER
+			}
+			every_owned_state = {
+				limit = {
+					OR = {
+						region = 148
+						state = 563
+						state = 564
+					}
+				}
+				set_state_owner_to = FER
+			}
+			every_controlled_state = {
+				limit = {
+					OR = {
+						region = 148
+						state = 563
+						state = 564
+					}
+				}
+				set_state_controller_to = FER
+			}
+			FER = {
+				if = {
+					limit = {
+						TBK = {
+							owns_state = 564
+							is_subject =  no
+							NOT = {
+								is_in_faction_with = ROOT
+							}
+						}
+					}
+					transfer_state = 564
+				}				
 				hidden_effect = {
-					set_cosmetic_tag = SOV_puppet
 					load_oob = "FER_1918"
 					set_popularities = {
-						democratic = 18
-						neutrality = 42
+						democratic = 40
+						neutrality = 18
 						fascism = 0
-						communism = 40
+						communism = 42
 					}
+				}
+			}
+			if = {
+				limit = {
+					TBK = {
+						exists = yes
+						is_subject =  no
+						NOT = {
+							is_in_faction_with = ROOT
+						}
+					}
+				}	
+				TBK = {
+					declare_war_on = {
+						target = FER
+						type = civil_war
+					}
+					add_civil_war_target = FER
 				}
 			}
 			if = {
@@ -1965,17 +2266,105 @@ focus_tree = {
 						exists = yes
 						is_subject =  no
 						NOT = {
+							is_in_faction_with = ROOT
 							has_government = communism
 						}
 					}
 				}	
-				FER = {
+				PRI = {
 					declare_war_on = {
-						target = PRI
+						target = FER
 						type = civil_war
 					}
+					add_civil_war_target = FER
 				}	
 			}
+			else_if = {
+				limit = {
+					PRI = {
+						exists = yes
+						OR = {
+							is_subject = no
+							is_subject_of = ROOT
+						}
+						OR = {
+							is_in_faction_with = ROOT
+							has_government = communism
+						}
+					}
+				}
+				FER = {
+					annex_country = {
+						target = PRI
+					}
+				}
+				hidden_effect = {
+					every_state = {
+						limit = {
+							is_core_of = PRI
+						}
+						remove_core_of = PRI
+					}
+				}
+			}
+			if = {
+				limit = {
+					AMU = {
+						exists = yes
+						is_subject =  no
+						NOT = {
+							is_in_faction_with = ROOT
+						}
+					}
+				}	
+				AMU = {
+					declare_war_on = {
+						target = FER
+						type = civil_war
+					}
+					add_civil_war_target = FER
+				}	
+			}
+			if = {
+				limit = {
+					USS = {
+						exists = yes
+						is_subject =  no
+						NOT = {
+							is_in_faction_with = ROOT
+						}
+					}
+				}	
+				USS = {
+					declare_war_on = {
+						target = FER
+						type = civil_war
+					}
+					add_civil_war_target = FER
+				}	
+			}
+			set_autonomy = {
+				target = FER
+				autonomy_state = autonomy_satellite
+				end_civil_wars = no
+				end_wars = no			
+			}
+			if = {
+				limit = {
+					has_character = SOV_ieronim_uborevich
+				}
+				SOV_ieronim_uborevich = {
+					set_nationality = FER
+				}
+			}
+			if = {
+				limit = {
+					has_character = SOV_sergey_lazo
+				}
+				SOV_sergey_lazo = {
+					set_nationality = PRI
+				}
+			}	
 		}
 		ai_will_do = {
 			factor = 100
@@ -2000,17 +2389,28 @@ focus_tree = {
 			has_country_flag = russian_civil_war_winner
 			NOT = {
 				has_subject = CER
+				any_enemy_country = {
+					is_china_or_warlord = yes
+				}
+				has_global_flag = chinese_eastern_railway_incident
 			}
 		}
 		completion_reward = {
+			set_global_flag = karakhan_manifesto
 			CER = {
 				remove_ideas = CER_nominal_concession
-			}		
+			}
+			every_other_country = {
+				limit = {
+					is_china_or_warlord = yes
+				}
+				country_event = ww1_soviet.51
+			}
 		}
 	}
 	focus = {
 		id = SOV_comintern
-		icon = GFX_focus_ideology_internationalist
+		icon = GFX_focus_SOV_international_union_of_soviet_republics
 		cost = 8
 		prerequisite = {
 			focus = SOV_soviet_republics
@@ -2033,21 +2433,29 @@ focus_tree = {
 		}
 		completion_reward = {
 			if = {
-				limit = { is_in_faction = no has_government = communism }
-				create_faction = Comintern
-			}
-			if = {
-				limit = { is_in_faction = no NOT = { has_government = communism } }
-				create_faction = Socintern
-			}
-			if = {
-				limit = { is_faction_leader = yes has_government = communism }
+				limit = {
+					has_government = communism
+				}
+				if = {
+					limit = {
+						is_in_faction = no
+					}
+					create_faction_from_template = faction_template_comintern
+				}
 				set_faction_name = Comintern
 			}
-			if = {
-				limit = { is_faction_leader = yes NOT = { has_government = communism } }
+			else = {
+				if = {
+					limit = {
+						is_in_faction = no
+					}
+					create_faction_from_template = faction_template_defensive_democratic
+				}
 				set_faction_name = Socintern
 			}
+			
+			custom_effect_tooltip = available_political_advisor
+			show_ideas_tooltip = SOV_karl_radek
 		}
 		ai_will_do = {
 			factor = 10
@@ -2055,7 +2463,7 @@ focus_tree = {
 	}
 	focus = {
 		id = SOV_party_dictatorship
-		icon = GFX_focus_SOV_the_path_of_marxism_leninism
+		icon = GFX_focus_SOV_party
 		cost = 5
 		prerequisite = {
 			focus = SOV_combat_the_counter_revolution
@@ -2068,7 +2476,7 @@ focus_tree = {
 			has_government = communism
 		}
 		completion_reward = {
-			add_political_power = 100
+			add_political_power = 250
 			remove_ideas = SOV_idea_unrecognized_government
 			set_party_name = { 
 				ideology = communism
@@ -2144,7 +2552,7 @@ focus_tree = {
 			controls_state = 653
 		}
 		completion_reward = {
-			add_political_power = 20
+			add_political_power = 50
 			country_event = {
 				id = ww1_soviet.4
 			}
@@ -2197,6 +2605,7 @@ focus_tree = {
 		y = 1
 		relative_position_id = SOV_fate_of_tsar_family
 		available = {
+			has_war = no
 			is_subject = no
 			is_in_russian_civil_war = no
 			any_country = {
@@ -2265,6 +2674,10 @@ focus_tree = {
 		}
 		ai_will_do = {
 			factor = 100
+			modifier = {
+				factor = 0
+				date < 1921.10.1
+			}
 		}
 		search_filters = {
 			FOCUS_FILTER_ANNEXATION
@@ -2272,7 +2685,7 @@ focus_tree = {
 	}
 	focus = {
 		id = SOV_operation_successor
-		icon = GFX_goal_generic_major_alliance
+		icon = GFX_focus_SOV_the_path_of_marxism_leninism
 		cost = 5
 		prerequisite = {
 			focus = SOV_USSR
@@ -2344,16 +2757,14 @@ focus_tree = {
 				}			
 			}
 			set_province_name = { id = 3151 name = LENINGRAD_PROV }
-			set_province_name = { id = 9461 name = VOROSHILOVGRAD_PROV }
 			set_province_name = { id = 1821 name = SVERDLOVSK_PROV }
-			set_province_name = { id = 6245 name = KALININ_PROV }
+			set_province_name = { id = 9432 name = MARXSTAD_PROV }
+			set_province_name = { id = 9305 name = SOV_VICTORY_POINTS_9305 }
+			set_province_name = { id = 11661 name = SOV_VICTORY_POINTS_11661 }
+			set_province_name = { id = 7657 name = SOV_VICTORY_POINTS_7657 }
 			hidden_effect = {
 				195 = { set_state_name = LENINGRAD_STATE }
-				228 = { set_state_name = VOROSHILOVGRAD_STATE }
 				653 = { set_state_name = SVERDLOVSK_STATE }
-				400 = { set_state_name = KIROV_STATE }
-				247 = { set_state_name = KALININ_STATE }
-				401 = { set_state_name = ENGELS_STATE }
 			}
 			add_ideas = SOV_idea_cult_of_personality
 		}
@@ -2408,7 +2819,7 @@ focus_tree = {
 	}
 	focus = {
 		id = SOV_socialist_education
-		icon = GFX_focus_tur_socialist_education
+		icon = GFX_focus_SOV_education
 		cost = 8
 		prerequisite = {
 			focus = SOV_press_decree

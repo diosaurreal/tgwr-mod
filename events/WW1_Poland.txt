@@ -55,8 +55,11 @@ country_event = {
 		exists = yes
 		is_subject = no
 		has_war = no
+		OR = {
+			country_exists = GAL
+			owns_state = 88
+		}
 		GAL = {
-			exists = yes
 			OR = {
 				is_subject = no
 				is_subject_of = PREV
@@ -71,29 +74,51 @@ country_event = {
 	hidden = yes
 
 	immediate = {
+		set_global_flag = GAL_POL_united
 		POL = {
 			annex_country = {
 				target = GAL
 				transfer_troops = yes
 			}
+			every_state = {
+				limit = {
+					OR = {
+						is_claimed_by = GAL					
+						is_core_of = GAL
+					}	
+				}
+				remove_core_of = GAL
+				remove_claim_by = GAL
+			}
+		}
+		GAL = {
 			if = {
 				limit = {
-					WUK = {
-						exists = yes
-						is_subject = no
-						is_in_faction = no
-						has_war = no
-					}
+					has_character = POL_wincenty_witos
 				}
-				annex_country = {
-					target = WUK
-					transfer_troops = no
-				}
-				every_state = {
-					limit = {
-						is_core_of = WUK
+				POL_wincenty_witos = {			
+					remove_country_leader_role = {
+						ideology = authoritarian_democracy
 					}
-					remove_core_of = WUK
+					set_nationality = POL
+				}
+			}
+			if = {
+				limit = {
+					has_character = POL_ignacy_daszynski
+				}
+				POL_ignacy_daszynski = {	
+					set_nationality = POL
+					if = {
+						limit = {
+							POL = {
+								NOT = {
+									has_government = communism
+								}
+							}
+						}
+						promote_character = reformist_socialism
+					}
 				}
 			}
 		}
@@ -115,7 +140,7 @@ country_event = {
 			AND = {
 				is_subject_of = GER
 				GER = { has_country_flag = great_war_loser }
-				NOT = { has_global_flag = versallies_treaty }
+				NOT = { has_global_flag = versailles_treaty }
 			}
        	}
 	}
@@ -135,10 +160,10 @@ country_event = {
 		            infantry = { x = 2 y = 0 }
 		            infantry = { x = 2 y = 1 }
 		            infantry = { x = 2 y = 2 }
-					artillery_brigade = { x = 0 y = 3 }
+					field_gun_brigade = { x = 0 y = 3 }
 	            }
 	            support = {
-		            artillery = { x = 0 y = 0 }
+		            field_gun = { x = 0 y = 0 }
 		            recon = { x = 0 y = 1 }
 		            engineer = { x = 0 y = 2 }
 	            }
@@ -155,7 +180,7 @@ country_event = {
 		            infantry = { x = 1 y = 2 }
 	            }
 	            support = {
-		            artillery = { x = 0 y = 0 }
+		            field_gun = { x = 0 y = 0 }
 		            recon = { x = 0 y = 1 }
 		            engineer = { x = 0 y = 2 }
 	            }
@@ -170,7 +195,7 @@ country_event = {
 		            cavalry = { x = 1 y = 1 }
 	            }
 	            support = {
-		            artillery = { x = 0 y = 0 }
+		            field_gun = { x = 0 y = 0 }
 	            }
             }
 			division_template = {
@@ -181,7 +206,7 @@ country_event = {
 		            cavalry = { x = 1 y = 0 }
 	            }
 	            support = {
-		            artillery = { x = 0 y = 0 }
+		            field_gun = { x = 0 y = 0 }
 	            }
             }
 			capital_scope = {
@@ -283,7 +308,7 @@ country_event = {
 		has_war = no
 		is_subject = no
 		NOT = {
-			original_tag = AUH
+			original_tag = AUS
 		}
 	}
 	mean_time_to_happen = { days = 200 }
@@ -439,23 +464,22 @@ country_event = {
 	mean_time_to_happen = { days = 17 }	
 	option = {
 		name = ww1_poland.3.a
-		POL_felix_dzerzhinsky = {
-			if = {
-				limit = { has_ideology = vanguardism }
+		every_possible_country = {
+			limit = {
+				has_character = SOV_felix_dzerzhinsky
+			}	
+			SOV_felix_dzerzhinsky = {
+				set_nationality = POL
+				set_character_name = POL_felix_dzerzhinsky
 				promote_character = vanguardism
-			}
-			else = {
-				add_country_leader_role = {
-					country_leader = {
-						ideology = vanguardism
-						traits = { prince_of_terror }
-					}	
-					promote_leader = yes
-				}
-			}
+			}			
 		}
+		
 		set_party_name = { ideology = communism name = POL_polrewkom_party long_name = POL_polrewkom_party_long }
 		set_cosmetic_tag = POL_SOVIET	
+		unlock_national_focus = POL_declare_a_republic
+		unlock_national_focus = POL_red_tram_goes_on
+		unlock_national_focus = POL_alliance_with_bolsheviks
 	}
 }
 # Remove Soviet Poland
@@ -470,8 +494,9 @@ country_event = {
 	mean_time_to_happen = { days = 0 }
 	hidden = yes
 	immediate = {
-		POL_felix_dzerzhinsky = {
-			remove_country_leader_role = { ideology = vanguardism }
+		SOV_felix_dzerzhinsky = {
+			set_nationality = SOV
+			set_character_name = SOV_felix_dzerzhinsky
 		}
 		POL_ignacy_daszynski = {
 			promote_character = reformist_socialism
@@ -564,16 +589,17 @@ country_event = {
 			every_state = {
 				limit = {
 					OR = {
-						is_owned_by = AUH
+						is_owned_by = AUS
 						AND = {
 							is_owned_by = GAL
 							GAL = {
-								is_subject_of = AUH
+								is_subject_of = AUS
 							}	
 						}
 					}	
 					OR = {
 						is_core_of = UKR
+						is_core_of = WUK
 						is_core_of = MOL
 					}
 					OR = {
@@ -595,16 +621,17 @@ country_event = {
 				every_state = {
 					limit = {
 						OR = {
-							is_owned_by = AUH
+							is_owned_by = AUS
 							AND = {
 								is_owned_by = GAL
 								GAL = {
-									is_subject_of = AUH
+									is_subject_of = AUS
 								}	
 							}
 						}							
 						OR = {
 							is_core_of = UKR
+							is_core_of = WUK
 							is_core_of = MOL
 						}
 						OR = {
@@ -637,16 +664,49 @@ country_event = {
 						is_core_of = GAL
 						NOT = {
 							is_core_of = CZE
+							is_core_of = TRA
 						}					
 						OR = {
 							is_core_of = POL
 							is_core_of = UKR
+							is_core_of = WUK
 						}
 					}
 					transfer_state_to = FROM
 				}			
 			}
 		}
+		if = {
+			limit = {
+				is_subject = no
+				POL = {
+					is_subject = no
+				}
+			}
+			POL = {
+				get_current_government_type = yes
+				ROOT = {
+					set_autonomy = {
+						target = PREV
+						autonomy_state = autonomy_dominion
+						freedom_level = 0.8
+					}
+				}
+				restore_previous_government_type = yes
+			}
+			else_if = {
+				limit = {
+					NOT = {
+						has_subject = POL
+					}
+				}
+				give_guarantee = POL
+				POL = {
+					give_military_access = ROOT
+				}					
+			}
+		}
+		POL = { country_event = ww1_poland.6 }
 	}
 	option = {
 		name = ww1_poland.2.b
@@ -687,7 +747,7 @@ country_event = {
 	option = {
 		name = ww1_poland.7.a
 		add_opinion_modifier = {
-			target = AUH
+			target = AUS
 			modifier = large_decrease
 		}
 		if = {
@@ -755,24 +815,19 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_poland.9.a #Wittelsbach
-		every_possible_country = {
-			limit = {
-				has_character = GER_lepold_von_bayern
-			}
+		GER = {
 			GER_lepold_von_bayern = {
 				set_character_name = POL_leopold_i
 				set_nationality = ROOT
-			}
-		}
-		POL_leopold_i = {
-			add_country_leader_role = {
-				country_leader = {
-					ideology = semi_constitutional_monarchy
-					traits = { german_agent }
+				add_country_leader_role = {
+					promote_leader = yes
+					country_leader = {
+						ideology = semi_constitutional_monarchy				
+						traits = { german_agent }
+					}
 				}
-			}
-			promote_character = semi_constitutional_monarchy
-		}		
+			}	
+		}	
 		set_party_name = {
 			ideology = neutrality
 			name = BAY_neutrality_party
@@ -784,23 +839,18 @@ country_event = {
 	}
 	option = {
 		name = ww1_poland.9.b #Württemberg
-		every_possible_country = {
-			limit = {
-				has_character = GER_albrecht_von_wurttemberg
-			}
+		GER = {
 			GER_albrecht_von_wurttemberg = {
 				set_character_name = POL_albrecht_i
 				set_nationality = ROOT
-			}
-		}
-		POL_albrecht_i = {
-			add_country_leader_role = {
-				country_leader = {
-					ideology = semi_constitutional_monarchy
-					traits = { german_agent }
+				add_country_leader_role = {
+					promote_leader = yes
+					country_leader = {
+						ideology = semi_constitutional_monarchy
+						traits = { german_agent }
+					}
 				}
-			}
-			promote_character = semi_constitutional_monarchy
+			}	
 		}		
 		set_party_name = {
 			ideology = neutrality
@@ -815,12 +865,12 @@ country_event = {
 		name = ww1_poland.9.c #	Wettin
 		POL_fryderyk_krystian_i = {
 			add_country_leader_role = {
+				promote_leader = yes
 				country_leader = {
-					ideology = semi_constitutional_monarchy
+					ideology = semi_constitutional_monarchy				
 					traits = { german_agent }
 				}
 			}
-			promote_character = semi_constitutional_monarchy
 		}
 		set_party_name = {
 			ideology = neutrality
@@ -835,12 +885,12 @@ country_event = {
 		name = ww1_poland.9.d #Hohenzollern
 		POL_august_iv = {
 			add_country_leader_role = {
+				promote_leader = yes
 				country_leader = {
 					ideology = semi_constitutional_monarchy
 					traits = { auwi german_agent }
 				}
 			}
-			promote_character = semi_constitutional_monarchy
 		}
 		set_party_name = {
 			ideology = neutrality
@@ -860,13 +910,12 @@ country_event = {
 		original_tag = POL
 		is_subject = no
 		has_global_flag = great_war_ends
-		has_global_flag = versallies_treaty
+		has_global_flag = versailles_treaty
 		owns_state = 404
 		GER = {
 			owns_state = 763
 			NOT = {
-				is_subject_of = PREV
-				is_in_faction_with = PREV
+				is_ally_with = PREV
 			}
 		}
 		has_war = yes
@@ -892,13 +941,12 @@ country_event = {
 		original_tag = POL
 		is_subject = no
 		has_global_flag = great_war_ends
-		has_global_flag = versallies_treaty
+		has_global_flag = versailles_treaty
 		owns_state = 404
 		GER = {
 			owns_state = 763
 			NOT = {
-				is_subject_of = PREV
-				is_in_faction_with = PREV
+				is_ally_with = PREV
 			}
 		}
 		has_war = no
@@ -955,7 +1003,15 @@ country_event = {
 			}
 		}
 		white_peace = LIT
-		784 = { set_demilitarized_zone = yes }
+		784 = {
+			if = {
+				limit = {
+					NOT = { is_owned_by = ROOT }
+				}
+				set_demilitarized_zone = yes
+				ROOT = { unlock_decision_tooltip = POL_occupy_wilno }
+			}
+		}
 		add_named_threat = {
 			threat = -2
 			name = ww1_poland.14.t
@@ -1046,20 +1102,49 @@ news_event = {
 	}
 }
 
-# Treaty of Warsaw (Polish-Ukrainian Agreement)
+# Treaty of Warsaw (Polish-Ukrainian Agreement)]
+
+
+## Polish Victory in Ukraine war
 country_event = {
 	id = ww1_poland.16
 	title = ww1_poland.16.t
-	desc = ww1_poland.16.d
+	desc = {
+		text = ww1_poland.16.d_sov
+		trigger = {
+			FROM = {
+				has_war_with = SOV
+			}
+			NOT = {
+				has_global_flag = polish_soviet_war
+			}
+		}
+	}
+	desc = {
+		text = ww1_poland.16.d
+		trigger = {
+			OR = {
+				NOT = {
+					FROM = {
+						has_war_with = SOV
+					}
+				}
+				has_global_flag = polish_soviet_war
+			}
+		}
+	}
 	picture = GFX_report_event_generic_read_write
 	is_triggered_only = yes
 	option = {
 		name = ww1_poland.16.a
 		hidden_effect = {
+			set_country_flag = treaty_of_warsaw
 			WUK = {
 				transfer_units_fraction= {
 					target = UKR
 					size = 1
+					target_organization = 1
+					source_organization = 1
 					stockpile_ratio = 1
 					army_ratio = 1
 					navy_ratio = 1
@@ -1068,6 +1153,7 @@ country_event = {
 			}
 		}
 		FROM = {
+			set_country_flag = treaty_of_warsaw
 			every_owned_state = {
 				limit = {
 					OR = {
@@ -1086,8 +1172,7 @@ country_event = {
 				limit = {
 					OR = {
 						tag = PREV
-						is_subject_of = PREV
-						is_in_faction_with = PREV
+						is_ally_with = PREV
 					}
 				}
 				set_truce = {
@@ -1114,6 +1199,24 @@ country_event = {
 				}
 			}
 		}
+		# if = {
+		# 	limit = {
+		# 		NOT = {
+		# 			has_war_with = SOV
+		# 			is_ally_with = SOV
+		# 			has_government = communism
+		# 			has_global_flag = polish_soviet_war
+		# 		}
+		# 		FROM = { has_war_with = SOV }
+		# 	}
+		# 	add_to_war = {
+		# 		targeted_alliance = FROM
+		# 		enemy = SOV
+		# 	}
+		# 	hidden_effect = {
+		# 		polish_soviet_war_effect = yes
+		# 	}
+		# }
 	}
 	option = {
 		name = ww1_poland.16.b
@@ -1148,7 +1251,7 @@ country_event = {
 			if = {
 				limit = {
 					is_historical_focus_on = yes
-					NOT = { has_global_flag = prussian_blue }
+					#NOT = { has_global_flag = prussian_blue }
 				}
 				every_state = {
 					limit = {
@@ -1372,7 +1475,7 @@ country_event = {
 			if = {
 				limit = {
 					is_historical_focus_on = yes
-					NOT = { has_global_flag = prussian_blue }
+					#NOT = { has_global_flag = prussian_blue }
 				}
 				5 = {
 					remove_core_of = FROM
@@ -1380,14 +1483,14 @@ country_event = {
 					set_demilitarized_zone = no
 				}
 			}
-			else_if = {
-				limit = { has_global_flag = prussian_blue }
-				5 = {
-					remove_core_of = FROM
-					transfer_state_to = ROOT
-					set_demilitarized_zone = no
-				}
-			}
+			# else_if = {
+			# 	limit = { has_global_flag = prussian_blue }
+			# 	5 = {
+			# 		remove_core_of = FROM
+			# 		transfer_state_to = ROOT
+			# 		set_demilitarized_zone = no
+			# 	}
+			# }
 			else = {
 				random_list = {
 					# Historical
@@ -1471,7 +1574,7 @@ country_event = {
 	trigger = {
 		original_tag = POL
 		has_country_leader = {
-			character = POL_karol_stefan_i
+			character = AUH_karl_stephan
 			ruling_only = no
 		}
 		date > 1933.4.1
@@ -1482,20 +1585,25 @@ country_event = {
 	fire_only_once = yes
 	option = {
 		name = ww1_poland.21.a
-		hidden_effect = {
-			retire_character = AUH_Karl_Stephan
-		}
-		retire_character = POL_karol_stefan_i
+		retire_character = AUH_karl_stephan
 		POL_karol_olbracht = {
 			set_character_name = POL_karol_olbracht_i
 			promote_leader = yes
-			add_country_leader_role = {
-				country_leader = {
-					ideology = semi_constitutional_monarchy
-					traits = { patriot_king POL_soldier_king }
+			if = {
+				limit = {
+					has_ideology = semi_constitutional_monarchy
 				}
-			}
-			promote_character = semi_constitutional_monarchy
+				promote_character = semi_constitutional_monarchy
+				else = {
+					add_country_leader_role = {
+						promote_leader = yes
+						country_leader = {
+							ideology = semi_constitutional_monarchy
+							traits = { patriot_king POL_soldier_king }
+						}
+					}
+				}	
+			}	
 		}
 	}
 }
@@ -1589,6 +1697,8 @@ country_event = {
 # Danzig in German hands, it happens when poland loses soviet war
 country_event = {
 	id = ww1_poland.23
+	title = ww1_poland.23.t
+	desc = ww1_poland.23.d
 	trigger = {
 		tag = GER
 		has_war = no
@@ -1616,8 +1726,8 @@ country_event = {
 		days = 0
 	}
 	fire_only_once = yes
-	hidden = yes
-	immediate = {
+	option = {
+		name = ww1_poland.23.a
 		DNZ = {
 			get_current_government_type = yes
 		}
@@ -1628,5 +1738,303 @@ country_event = {
 		DNZ = {
 			restore_previous_government_type = yes
 		}
+	}
+}
+
+# poland gives industry to austria
+country_event = {
+	id = ww1_poland.24
+	title = ww1_poland.24.t
+	desc = ww1_poland.24.d
+	is_triggered_only = yes
+	option = {
+		name = ww1_poland.24.a
+		add_ideas = POL_industry
+		ai_chance = {
+			factor = 100
+		}
+	}
+}
+
+# Polish Troops Enter Bialystok
+country_event = {
+	id = ww1_poland.25
+	title = ww1_poland.25.t
+	desc = ww1_poland.25.d
+	picture = GFX_report_event_polish_army
+	is_triggered_only = yes
+	option = {
+		name = ww1_poland.25.a
+		every_owned_state = {
+			limit = {
+				OR = {
+					state = 97
+					state = 1017
+				}
+			}
+			transfer_state_to = FROM
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				add = 10
+				has_country_flag = great_war_loser
+			}
+			modifier = {
+				add = 10
+				has_war_together_with = FROM
+			}
+			modifier = {
+				add = 5
+				strength_ratio = {
+					tag = FROM
+					ratio < 1
+				}
+			}
+		}
+	}
+	option = {
+		name = ww1_poland.25.b
+		trigger = {
+			NOT = {
+				has_country_flag = great_war_loser
+			}
+		}
+		start_border_war = {
+			change_state_after_war = no
+			attacker = {
+				state = 1203
+				num_provinces = 2
+				on_win = ww1_poland.26
+				on_lose = ww1_poland.27
+				dig_in_factor = 2
+				terrain_factor = 2
+			}
+			defender = {
+				state = 97
+				num_provinces = 3
+				on_win = ww1_poland.27
+				on_lose = ww1_poland.26
+			}
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+				has_war_together_with = FROM
+			}
+		}
+	}
+}
+
+# Polish Troops Seized Bialystok
+country_event = {
+	id = ww1_poland.26
+	title = ww1_poland.26.t
+	desc = ww1_poland.26.d
+	picture = GFX_report_event_polish_army
+	is_triggered_only = yes
+	option = {
+		name = ww1_poland.26.a
+		trigger = {
+			NOT = { owns_state = 97 }
+		}
+		add_political_power = 25
+		transfer_state = 97
+		transfer_state = 1017
+	}
+	option = {
+		name = ww1_poland.26.b
+		trigger = {
+			owns_state = 97
+		}
+		add_political_power = -25
+		effect_tooltip = {
+			1203 = {
+				owner = {
+					transfer_state = 97
+					transfer_state = 1017
+				}
+			}
+		}
+	}
+}
+
+# Polish Troops Failed to Seize Bialystok
+country_event = {
+	id = ww1_poland.27
+	title = ww1_poland.27.t
+	desc = ww1_poland.27.d
+	picture = GFX_report_event_polish_army
+	is_triggered_only = yes
+	option = {
+		name = ww1_poland.27.a
+		trigger = {
+			NOT = { owns_state = 97 }
+		}
+		add_political_power = -25
+	}
+	option = {
+		name = ww1_poland.27.b
+		trigger = {
+			owns_state = 97
+		}
+		add_political_power = 25
+	}
+}
+
+# Treaty of Bialystok
+country_event = {
+	id = ww1_poland.28
+	title = ww1_poland.28.t
+	desc = ww1_poland.28.d
+	picture = GFX_report_event_generic_peaceful_annexation
+	is_triggered_only = yes
+	option = {
+		name = ww1_poland.28.a
+		trigger = {
+			tag = POL
+		}
+		transfer_state = 773
+		transfer_state = 97
+		transfer_state = 1017
+		add_state_core = 773
+		add_state_core = 97
+		add_state_core = 1017
+	}
+	option = {
+		name = ww1_poland.28.b
+		trigger = {
+			NOT = { tag = POL }
+		}
+		effect_tooltip = {
+			POL = {
+				transfer_state = 773
+				transfer_state = 97
+				transfer_state = 1017
+				add_state_core = 773
+				add_state_core = 97
+				add_state_core = 1017
+			}
+		}
+	}
+}
+
+# Polish Troops Enter Grodno
+country_event = {
+	id = ww1_poland.29
+	title = ww1_poland.29.t
+	desc = ww1_poland.29.d
+	picture = GFX_report_event_polish_army
+	is_triggered_only = yes
+	option = {
+		name = ww1_poland.29.a
+		FROM = {
+			transfer_state = 773
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				add = 10
+				has_country_flag = great_war_loser
+			}
+			modifier = {
+				add = 10
+				has_war_together_with = FROM
+			}
+			modifier = {
+				add = 5
+				strength_ratio = {
+					tag = FROM
+					ratio < 1
+				}
+			}
+		}
+	}
+	option = {
+		name = ww1_poland.29.b
+		trigger = {
+			NOT = {
+				has_country_flag = great_war_loser
+			}
+		}
+		start_border_war = {
+			change_state_after_war = no
+			attacker = {
+				state = 97
+				num_provinces = 3
+				on_win = ww1_poland.30
+				on_lose = ww1_poland.31
+				dig_in_factor = 2
+				terrain_factor = 2
+			}
+			defender = {
+				state = 773
+				num_provinces = 3
+				on_win = ww1_poland.31
+				on_lose = ww1_poland.30
+			}
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+				has_war_together_with = FROM
+			}
+		}
+	}
+}
+
+# Polish Troops Seized Grodno
+country_event = {
+	id = ww1_poland.30
+	title = ww1_poland.30.t
+	desc = ww1_poland.30.d
+	picture = GFX_report_event_polish_army
+	is_triggered_only = yes
+	option = {
+		name = ww1_poland.30.a
+		trigger = {
+			NOT = { owns_state = 773 }
+		}
+		add_political_power = 25
+		transfer_state = 773
+	}
+	option = {
+		name = ww1_poland.30.b
+		trigger = {
+			owns_state = 773
+		}
+		add_political_power = -25
+		effect_tooltip = {
+			1203 = {
+				owner = {
+					transfer_state = 773
+				}
+			}
+		}
+	}
+}
+
+# Polish Troops Failed to Seize Grodno
+country_event = {
+	id = ww1_poland.31
+	title = ww1_poland.31.t
+	desc = ww1_poland.31.d
+	picture = GFX_report_event_polish_army
+	is_triggered_only = yes
+	option = {
+		name = ww1_poland.31.a
+		trigger = {
+			NOT = { owns_state = 773 }
+		}
+		add_political_power = -25
+	}
+	option = {
+		name = ww1_poland.31.b
+		trigger = {
+			owns_state = 773
+		}
+		add_political_power = 25
 	}
 }
