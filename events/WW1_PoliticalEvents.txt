@@ -177,8 +177,12 @@ country_event = { #donotlog
 	is_triggered_only = yes
 
 	trigger = {
-		has_global_flag = tgwr_show_division_limiter
+		OR = {
+			has_global_flag = tgwr_show_division_limiter
+			has_active_mission = RUS_demobilizing_army_timer
+		}
 		NOT = { has_global_flag = tgwr_no_unit_limits }
+		NOT = { has_country_flag = tgwr_no_unit_limits }
 	}
 
 	option = {
@@ -189,6 +193,7 @@ country_event = { #donotlog
 		subtract_from_variable = { num_actual_divisions = num_battalions_with_type@fake_intel_unit }
 		subtract_from_variable = { mobilisation_penalty_var = num_battalions_with_type@irregular_infantry }
 		subtract_from_variable = { mobilisation_penalty_var = num_battalions_with_type@irregular_cavalry }
+		subtract_from_variable = { mobilisation_penalty_var = num_battalions_with_type@militia }
 
 		# expeditionaries should count towards the sender's limit, not the receiver's
 		clear_variable = num_expeditionary_battalions_sent
@@ -313,7 +318,7 @@ country_event = {
 # Repeated check for whether an AI country should reduce its number of units
 country_event = {
 	id = ww1_political.6
-	immediate = { log = "[GetDateText]: [Root.GetName]: event ww1_political.6 FROM = [From.GetName]" }
+	immediate = { log = "[GetDateText]: [Root.GetName](FROM: [FROM.GetName] has been checked with unit numbers" }
 
 	hidden = yes
 	is_triggered_only = yes
@@ -333,6 +338,7 @@ country_event = {
 					AND = {
 						has_reached_maximum_divisions = yes
 						NOT = { has_global_flag = tgwr_no_unit_limits }
+						NOT = { has_country_flag = tgwr_no_unit_limits }
 					}
 				}
 				NOT = {
@@ -363,8 +369,21 @@ country_event = {
 	trigger = {
 		is_in_faction = yes
 		has_war = no
+		is_subject = yes
 	}
 	immediate = {
 		leave_faction = yes
+		OVERLORD = {
+			if = {
+				limit = { 
+					NOT = { has_military_access_to = ROOT }
+				}
+				diplomatic_relation = {
+					country = ROOT
+					relation = military_access
+					active = yes
+				}
+			}
+		}
 	}
 }

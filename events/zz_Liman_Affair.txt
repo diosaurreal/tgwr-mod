@@ -1,0 +1,970 @@
+﻿###########################
+# Liman Affair, Event Chain
+###########################
+add_namespace = ww1_liman_affair
+
+#Turkey asks German to send advisors
+country_event = {
+	id = ww1_liman_affair.1
+	title = ww1_liman_affair.1.t
+	desc = ww1_liman_affair.1.d
+	picture = GFX_report_event_GER_TUR_military_mission
+	fire_only_once = yes
+	is_triggered_only = yes
+	option = { #Accept
+		name = ww1_liman_affair.1.a
+		army_experience = 25
+		effect_tooltip = {
+			GER_TUR_military_mission_effect = yes
+		}
+		TUR = {
+			country_event = {
+				id = ww1_liman_affair.3
+				days = 2
+			}
+		}
+		ai_chance = {
+			factor = 50
+		}
+	}
+	option = { #Decline
+		name = ww1_liman_affair.1.b
+		add_stability = 0.05
+		add_war_support = -0.1
+		TUR = {
+			country_event = {
+				id = ww1_liman_affair.2 #Turkey is informed on Germany's refusal
+				days = 2
+			}
+		}
+		ai_chance = {
+			factor = 0.25
+			modifier = {
+				is_historical_focus_on = yes
+				factor = 0
+			}
+			modifier = {
+				NOT = {
+					is_historical_focus_on = yes
+				}
+				GER = {
+					has_opinion = {
+						target = TUR
+						value > 0
+					}
+				}
+				factor = 1.5
+			}
+		}
+	}
+}
+#Turkey is informed of Germany's refusal
+country_event = {
+	id = ww1_liman_affair.2
+	title = ww1_liman_affair.2.t
+	desc = ww1_liman_affair.2.d
+	picture = GFX_report_event_GER_TUR_military_mission
+	fire_only_once = yes
+	is_triggered_only = yes
+	option = {
+		name = ww1_liman_affair.2.a
+		add_political_power = -20
+		add_war_support = -0.05
+		#Possible ending of the Liman Affair
+	}
+}
+#Turkey is informed, and get effects, of Germany's acceptence
+country_event = {
+	id = ww1_liman_affair.3
+	title = ww1_liman_affair.3.t
+	desc = ww1_liman_affair.3.d
+	picture = GFX_report_event_GER_TUR_military_mission
+	fire_only_once = yes
+	is_triggered_only = yes
+	option = {
+		name = ww1_liman_affair.3.a
+		GER_TUR_military_mission_effect = yes
+
+	}
+}
+#France is informed about the military mission
+country_event = {
+	id = ww1_liman_affair.4
+	title = ww1_liman_affair.4.t
+	desc = ww1_liman_affair.4.d
+	picture = GFX_report_event_GER_TUR_military_mission
+	fire_only_once = yes
+	trigger = {
+		tag = FRA
+		has_global_flag = GER_TUR_military_mission
+		has_crisis = no
+		is_subject = no	
+		has_war_with_major = no
+		RUS = {
+			is_in_faction_with = GER
+		}
+		NOT = {
+			has_non_aggression_pact_with = GER
+			is_in_faction_with = GER
+			has_global_flag = great_war
+			has_crisis = no
+			has_global_flag = informed_of_TUR_GER_mission
+		}
+	}
+	immediate = {
+		set_global_flag = informed_of_TUR_GER_mission
+	}
+	option = { #Object to the mission
+		name = ww1_liman_affair.4.a
+		add_political_power = -20
+		add_war_support = 0.05
+		set_country_flag = protest_against_liman_mission
+		start_liman_crisis = yes
+		join_aggressor_in_current_crisis = yes
+		add_to_variable = {
+			global.aggressor_advantage = 2000
+		}
+		set_variable = {
+			global.aggressor_advantage_tt = global.aggressor_advantage
+		}
+		divide_variable = { global.aggressor_advantage_tt = 100 }
+		if = {
+			limit = {
+				ENG = {
+					is_subject = no
+					NOT = {
+						is_in_faction_with = GER
+						has_war_with = GER
+						has_completed_focus = ENG_Pax_Britannica
+					}
+				}
+			}
+			ENG = {
+				country_event = {
+					id = ww1_liman_affair.6 #England asked for support by France
+					days = 2
+				}
+			}
+		}
+		news_event = {
+			id = ww1_liman_affair.9 #Crisis in the Ottoman Empire news event
+			days = 1
+		}
+		ai_chance = {
+			factor = 40
+		}
+	}
+	option = { #Stay out of it
+		name = ww1_liman_affair.4.b
+		add_stability = 0.025
+		add_war_support = -0.05
+		#Possible ending of the Liman Affair
+		ai_chance = {
+			factor = 50
+		}
+	}
+}
+#Russia is informed about the military mission
+country_event = {
+	id = ww1_liman_affair.5
+	title = ww1_liman_affair.5.t
+	desc = ww1_liman_affair.5.d
+	picture = GFX_report_event_GER_TUR_military_mission
+	fire_only_once = yes
+	trigger = {
+		tag = RUS	
+		has_global_flag = GER_TUR_military_mission
+		has_crisis = no
+		is_subject = no	
+		has_war_with_major = no
+		is_russia_a_monarchy = yes
+		NOT = {
+			has_non_aggression_pact_with = GER
+			is_in_faction_with = GER
+			has_global_flag = great_war
+			has_global_flag = informed_of_TUR_GER_mission	
+		}
+	}
+	immediate = {
+		set_global_flag = informed_of_TUR_GER_mission
+	}
+	option = { #Object to the mission
+		name = ww1_liman_affair.5.a
+		custom_effect_tooltip = historical_tt
+		add_political_power = -20
+		add_war_support = 0.05
+		set_country_flag = protest_against_liman_mission
+		start_liman_crisis = yes
+		join_aggressor_in_current_crisis = yes
+		add_to_variable = {
+			global.aggressor_advantage = 3000
+		}
+		set_variable = {
+			global.aggressor_advantage_tt = global.aggressor_advantage
+		}
+		divide_variable = { global.aggressor_advantage_tt = 100 }
+		if = {
+			limit = {
+				FRA = {
+					is_subject = no
+					NOT = {
+						is_in_faction_with = GER
+						has_war_with = GER
+					}
+				}
+			}
+			FRA = {
+				country_event = {
+					id = ww1_liman_affair.7 #France asked for support by Russia
+					days = 2
+				}
+			}
+		}
+		if = {
+			limit = {
+				ENG = {
+					is_subject = no
+					NOT = {
+						is_in_faction_with = GER
+						has_war_with = GER
+						has_completed_focus = ENG_Pax_Britannica
+					}
+				}
+			}
+			ENG = {
+				country_event = {
+					id = ww1_liman_affair.8 #England asked for support by Russia
+					days = 2
+				}
+			}
+		}
+		news_event = {
+			id = ww1_liman_affair.9 #Crisis in the Ottoman Empire news event
+			days = 1
+		}
+		ai_chance = {
+			base = 0.9
+		}
+	}
+	option = { #Stay out of it
+		name = ww1_liman_affair.5.b
+		add_stability = 0.025
+		add_war_support = -0.05
+		#Possible ending of the Liman Affair
+		ai_chance = {
+			base = 0.1
+			modifier = {
+				is_historical_focus_on = yes
+				factor = 0
+			}
+		}
+	}
+}
+#England asked for support by France
+country_event = {
+	id = ww1_liman_affair.6
+	title = ww1_liman_affair.6.t
+	desc = ww1_liman_affair.6.d
+	picture = GFX_report_event_GER_TUR_military_mission
+	fire_only_once = yes
+	is_triggered_only = yes
+	option = { #Support
+		name = ww1_liman_affair.6.a
+		add_political_power = -10
+		add_war_support = 0.05
+		RUS = {
+			country_event = {
+				id = ww1_liman_affair.20
+				days = 2
+			}
+		}
+		set_global_flag = liman_affair_ENG_supports
+		set_country_flag = protest_against_liman_mission
+		join_aggressor_in_current_crisis = yes
+		add_to_variable = {
+			global.aggressor_advantage = 2000
+		}
+		set_variable = {
+			global.aggressor_advantage_tt = global.aggressor_advantage
+		}
+		divide_variable = { global.aggressor_advantage_tt = 100 }
+		ai_chance = {
+			base = 0.55
+			modifier = {
+				ENG = {
+					has_opinion = {
+						target = GER
+						value < 26
+					}
+				}
+				factor = 1.5
+			}		
+			modifier = {
+				has_non_aggression_pact_with = GER
+				factor = 0
+			}
+		}
+	}
+	option = { #Do nothing
+		name = ww1_liman_affair.6.b
+		add_war_support = -0.025
+		FRA = {
+			country_event = {
+				id = ww1_liman_affair.21
+				days = 5
+			}
+		}
+		join_neutral_in_current_crisis = yes
+		ai_chance = {
+			base = 0.45
+			modifier = {
+				ENG = {
+					has_opinion = {
+						target = GER
+						value > 25
+					}
+				}
+				factor = 1.5
+			}			
+		}
+	}
+}
+#France asked for support by Russia
+country_event = {
+	id = ww1_liman_affair.7
+	title = ww1_liman_affair.7.t
+	desc = ww1_liman_affair.7.d
+	picture = GFX_report_event_GER_TUR_military_mission
+	fire_only_once = yes
+	is_triggered_only = yes
+	option = { #Support
+		name = ww1_liman_affair.7.a
+		custom_effect_tooltip = historical_tt
+		add_political_power = -10
+		add_war_support = 0.05
+		set_global_flag = liman_affair_FRA_supports
+		set_country_flag = protest_against_liman_mission
+		RUS = {
+			country_event = {
+				id = ww1_liman_affair.20
+				days = 2
+			}
+		}
+		join_aggressor_in_current_crisis = yes
+		add_to_variable = {
+			global.aggressor_advantage = 2000
+		}
+		set_variable = {
+			global.aggressor_advantage_tt = global.aggressor_advantage
+		}
+		divide_variable = { global.aggressor_advantage_tt = 100 }
+		ai_chance = {
+			base = 0.6
+			modifier = {
+				FRA = {
+					is_in_faction_with = RUS
+				}
+				factor = 1.5
+			}
+			modifier = {
+				has_non_aggression_pact_with = GER
+				factor = 0
+			}
+		}
+	}
+	option = { #Do nothing
+		name = ww1_liman_affair.7.b
+		add_war_support = -0.025
+		RUS = {
+			country_event = {
+				id = ww1_liman_affair.21
+				days = 5
+			}
+		}
+		join_neutral_in_current_crisis = yes
+		ai_chance = {
+			base = 0.4
+			modifier = {
+				is_historical_focus_on = yes
+				factor = 0
+			}
+		}
+	}
+}
+#England asked for support by Russia
+country_event = {
+	id = ww1_liman_affair.8
+	title = ww1_liman_affair.8.t
+	desc = ww1_liman_affair.8.d
+	picture = GFX_report_event_GER_TUR_military_mission
+	fire_only_once = yes
+	is_triggered_only = yes
+	option = { #Support
+		name = ww1_liman_affair.8.a
+		add_political_power = -20
+		add_war_support = 0.025
+		RUS = {
+			country_event = {
+				id = ww1_liman_affair.20
+				days = 2
+			}
+		}
+		set_country_flag = protest_against_liman_mission
+		set_global_flag = liman_affair_ENG_supports
+		join_aggressor_in_current_crisis = yes
+		add_to_variable = {
+			global.aggressor_advantage = 2000
+		}
+		set_variable = {
+			global.aggressor_advantage_tt = global.aggressor_advantage
+		}
+		divide_variable = { global.aggressor_advantage_tt = 100 }
+		ai_chance = {
+			base = 0.3
+			modifier = {
+				ENG = {
+					is_in_faction_with = RUS
+				}
+				factor = 1.5
+			}
+			modifier = {
+				has_non_aggression_pact_with = GER
+				factor = 0
+			}
+			modifier = {
+				is_historical_focus_on = yes
+				factor = 0
+			}
+		}
+	}
+	option = { #Do nothing
+		name = ww1_liman_affair.10.b
+		custom_effect_tooltip = historical_tt
+		RUS = {
+			country_event = {
+				id = ww1_liman_affair.21
+				days = 5
+			}
+		}
+		join_neutral_in_current_crisis = yes
+		ai_chance = {
+			base = 0.6
+		}
+	}
+}
+#################################
+# First Half of Liman Affair
+#################################
+#Crisis in the Ottoman Empire news event
+news_event = {
+	id = ww1_liman_affair.9
+	title = ww1_liman_affair.9.t
+	desc = ww1_liman_affair.9.d
+	picture = GFX_news_event_liman_affair
+	is_triggered_only = yes
+	major = yes
+	immediate = {
+		set_global_flag = liman_mission_active
+		hidden_effect = {
+			GER = {
+				country_event = {
+					id = ww1_liman_affair.24
+					days = 2
+				}
+			}
+		}
+	}
+	option = {
+		name = ww1_liman_affair.9.a
+	}
+}
+#Germany gets Russian demands
+country_event = {
+	id = ww1_liman_affair.10
+	title = ww1_liman_affair.10.t
+	desc = ww1_liman_affair.10.d
+	picture = GFX_report_event_GER_TUR_military_mission_2
+	fire_only_once = yes
+	is_triggered_only = yes
+	# option = { #Offer negotiations
+	# 	name = ww1_liman_affair.10.a
+	# }
+	option = { #Accept Demands
+		name = ww1_liman_affair.10.b
+		add_political_power = -50
+		news_event = ww1_liman_affair.18
+		add_war_support = -0.15
+		effect_tooltip = {
+			TUR = {
+				recall_GER_TUR_military_mission_effect = yes
+			}
+		}
+		every_other_country = {
+			limit = {
+				OR = {
+					tag = TUR
+					has_country_flag = protest_against_liman_mission
+				}			
+			}
+			country_event = {
+				id = ww1_liman_affair.12 #accept
+				days = 2
+			}
+		}
+		ai_chance = {
+			factor = 1
+			modifier = {
+				ENG = {
+					has_country_flag = protest_against_liman_mission
+				}
+				factor = 3 #x3 chance
+			}
+			modifier = {
+				FRA = {
+					has_country_flag = protest_against_liman_mission
+				}
+				factor = 3 #x3 chance
+			}
+		}
+	}
+	option = { #Decline Demands
+		name = ww1_liman_affair.10.c
+		news_event = ww1_liman_affair.14
+		RUS = {
+			country_event = {
+				id = ww1_liman_affair.16 #Germany refuses Russian demands
+				days = 1
+			}
+		}
+		ai_chance = {
+			factor = 1.5
+			modifier = {
+				FRA = {
+					has_country_flag = protest_against_liman_mission
+				}
+				is_historical_focus_on = yes
+				factor = 0
+			}
+		}
+	}
+}
+#Germany gets French demands
+country_event = {
+	id = ww1_liman_affair.11
+	title = ww1_liman_affair.11.t
+	desc = ww1_liman_affair.11.d
+	picture = GFX_report_event_GER_TUR_military_mission_2
+	fire_only_once = yes
+	is_triggered_only = yes
+	# option = { #Offer negotiations
+	# 	name = ww1_liman_affair.11.a
+	# }
+	option = { #Accept Demands
+		name = ww1_liman_affair.11.b
+		news_event = ww1_liman_affair.19
+		add_political_power = -50
+		add_war_support = -0.15
+		effect_tooltip = {
+			TUR = {
+				recall_GER_TUR_military_mission_effect = yes
+			}
+		}
+		every_other_country = {
+			limit = {
+				OR = {
+					tag = TUR
+					has_country_flag = protest_against_liman_mission
+				}			
+			}
+			country_event = {
+				id = ww1_liman_affair.13 #accept
+				days = 2
+			}
+		}
+		ai_chance = {
+			factor = 0.5
+			modifier = {
+				ENG = {
+					has_country_flag = protest_against_liman_mission
+				}
+				factor = 3 #x3 chance
+			}
+		}
+	}
+	option = { #Decline Demands
+		name = ww1_liman_affair.11.c
+		news_event = ww1_liman_affair.15
+		FRA = {
+			country_event = {
+				id = ww1_liman_affair.17 #Germany refuses French demands
+				days = 1
+			}
+		}
+		ai_chance = {
+			factor = 0.5
+		}
+	}
+}
+#Germany accepts Russian demands
+country_event = {
+	id = ww1_liman_affair.12
+	title = ww1_liman_affair.12.t
+	desc = ww1_liman_affair.12.d
+	picture = GFX_report_event_GER_TUR_military_mission_2
+	fire_only_once = yes
+	is_triggered_only = yes
+	option = { 
+		name = ww1_liman_affair.12.a
+		news_event = ww1_liman_affair.18
+		delete_crisis = yes
+		IF = {
+			limit = {
+				tag = TUR
+			}
+			recall_GER_TUR_military_mission_effect  = yes
+		}
+		else = {
+			effect_tooltip = {
+				TUR = {
+					recall_GER_TUR_military_mission_effect  = yes
+				}
+			}
+		}	
+		#Possible ending of the Liman Affair
+	}
+}
+#Germany accepts French demands
+country_event = {
+	id = ww1_liman_affair.13
+	title = ww1_liman_affair.13.t
+	desc = ww1_liman_affair.13.d
+	picture = GFX_report_event_GER_TUR_military_mission_2
+	fire_only_once = yes
+	is_triggered_only = yes
+	option = { 
+		name = ww1_liman_affair.13.a
+		news_event = ww1_liman_affair.19
+		delete_crisis = yes
+		IF = {
+			limit = {
+				tag = TUR
+			}
+			recall_GER_TUR_military_mission_effect  = yes
+		}
+		else = {
+			effect_tooltip = {
+				TUR = {
+					recall_GER_TUR_military_mission_effect = yes
+				}
+			}
+		}
+		#Possible ending of the Liman Affair
+	}
+}
+
+#Germany refuses Russian demands, news
+news_event = {
+	id = ww1_liman_affair.14
+	title = ww1_liman_affair.14.t
+	desc = ww1_liman_affair.14.d
+	picture = GFX_news_event_ottomans_germany
+	is_triggered_only = yes
+	option = { 
+		name = ww1_liman_affair.14.a
+	}
+}
+
+#Germany refuses French demands, news
+news_event = {
+	id = ww1_liman_affair.15
+	title = ww1_liman_affair.15.t
+	desc = ww1_liman_affair.15.d
+	picture = GFX_news_event_ottomans_germany
+	is_triggered_only = yes
+	option = { 
+		name = ww1_liman_affair.15.a
+	}
+}
+
+#Germany refuses Russian demands
+country_event = {
+	id = ww1_liman_affair.16
+	title = ww1_liman_affair.16.t
+	desc = ww1_liman_affair.16.d
+	picture = GFX_report_event_GER_TUR_military_mission_2
+	fire_only_once = yes
+	is_triggered_only = yes
+	option = { 
+		name = ww1_liman_affair.16.a
+		add_named_threat = {
+			threat = 20
+			name = liman_affair_mission
+		}
+		delete_crisis = yes
+		clr_global_flag = liman_mission_active
+		create_wargoal = {
+			target = GER
+			type = topple_government
+		}
+		create_wargoal = {
+			target = TUR
+			type = topple_government
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				factor = 0
+				NOT = {
+					ENG = { has_country_flag = protest_against_liman_mission }
+					FRA = { has_country_flag = protest_against_liman_mission }
+				}
+			}
+			modifier = {
+				factor = 0
+				NOT = { is_in_faction_with = FRA }
+			}
+		}
+	}
+	option = { 
+		name = ww1_liman_affair.16.b
+		every_country = {
+			limit = {
+				OR = {
+					tag = TUR
+					tag = GER
+				}
+			}
+			country_event = {
+				id = ww1_liman_affair.25
+				days = 2
+			}
+		}
+		news_event = ww1_liman_affair.26
+		delete_crisis = yes
+		clr_global_flag = liman_mission_active
+		ai_chance = {
+			base = 50
+		}
+	}
+}
+
+#Germany refuses French demands
+country_event = {
+	id = ww1_liman_affair.17
+	title = ww1_liman_affair.17.t
+	desc = ww1_liman_affair.17.d
+	picture = GFX_report_event_GER_TUR_military_mission_2
+	fire_only_once = yes
+	is_triggered_only = yes
+	option = { 
+		name = ww1_liman_affair.16.a
+		add_named_threat = {
+			threat = 20
+			name = liman_affair_mission
+		}
+		delete_crisis = yes
+		clr_global_flag = liman_mission_active
+		create_wargoal = {
+			target = GER
+			type = topple_government
+		}
+		create_wargoal = {
+			target = TUR
+			type = topple_government
+		}
+		ai_chance = {
+			base = 10 #France didn't really care in the first place
+			modifier = {
+				factor = 0
+				NOT = {
+					ENG = { has_country_flag = protest_against_liman_mission }
+				}
+			}
+		}
+	}
+	option = { 
+		name = ww1_liman_affair.16.b
+		every_country = {
+			limit = {
+				OR = {
+					tag = TUR
+					tag = GER
+				}
+			}
+			country_event = {
+				id = ww1_liman_affair.25
+				days = 2
+			}
+		}
+		news_event = ww1_liman_affair.26
+		delete_crisis = yes
+		clr_global_flag = liman_mission_active
+		ai_chance = {
+			base = 50
+		}
+	}
+}
+
+#Germany backdown general news
+news_event = {
+	id = ww1_liman_affair.18
+	title = ww1_liman_affair.18.t
+	desc = ww1_liman_affair.18.d
+	picture = GFX_news_event_ottomans_germany
+	is_triggered_only = yes
+	immediate = {
+		hidden_effect = {
+			delete_crisis = yes
+		}
+	}
+	option = { 
+		name = ww1_liman_affair.18.a
+	}
+}
+
+#Germany backdown general news when France lead
+news_event = {
+	id = ww1_liman_affair.19
+	title = ww1_liman_affair.19.t
+	desc = ww1_liman_affair.19.d
+	picture = GFX_news_event_ottomans_germany
+	is_triggered_only = yes
+	immediate = {
+		hidden_effect = {
+			delete_crisis = yes
+		}
+	}
+	option = { 
+		name = ww1_liman_affair.19.a
+	}
+}
+
+#FROM is joining ROOT in the current crisis
+country_event = {
+	id = ww1_liman_affair.20
+	title = ww1_liman_affair.20.t
+	desc = ww1_liman_affair.20.d
+	picture = GFX_report_event_GER_TUR_military_mission_2
+	is_triggered_only = yes
+	option = { 
+		name = ww1_liman_affair.20.a
+	}
+}
+
+#FROM is NOT joining ROOT in the current crisis
+country_event = {
+	id = ww1_liman_affair.21
+	title = ww1_liman_affair.21.t
+	desc = ww1_liman_affair.21.d
+	picture = GFX_report_event_GER_TUR_military_mission_2
+	is_triggered_only = yes
+	option = { 
+		name = ww1_liman_affair.21.a
+	}
+}
+
+#GER or TUR remove a large part of their advisors to avoid escalation
+country_event = {
+	id = ww1_liman_affair.22
+	title = ww1_liman_affair.22.t
+	desc = ww1_liman_affair.22.d
+	picture = GFX_report_event_generic_military_parade
+	is_triggered_only = yes
+	immediate = {
+		hidden_effect = {
+			delete_crisis = yes
+		}
+	}
+	option = { 
+		name = ww1_liman_affair.22.a
+		clr_global_flag = liman_mission_active
+		effect_tooltip = {
+			TUR = {
+				restraint_GER_TUR_military_mission_effect = yes
+			}
+		}
+	}
+}
+
+#Ottoman are informed about germany decision to remove army
+country_event = {
+	id = ww1_liman_affair.23
+	title = ww1_liman_affair.23.t
+	desc = ww1_liman_affair.23.d
+	picture = GFX_report_event_generic_military_parade
+	is_triggered_only = yes
+	immediate = {
+		hidden_effect = {
+			delete_crisis = yes
+		}
+	}
+	option = { 
+		name = ww1_liman_affair.23.a
+		clr_global_flag = liman_mission_active
+		effect_tooltip = {
+			TUR = {
+				restraint_GER_TUR_military_mission_effect = yes
+			}
+		}
+	}
+}
+
+#GER learn entente is doing some prep time to attack
+country_event = {
+	id = ww1_liman_affair.24
+	title = ww1_liman_affair.24.t
+	desc = ww1_liman_affair.24.d
+	picture = GFX_report_event_generic_military_parade
+	is_triggered_only = yes
+	option = { 
+		name = ww1_liman_affair.24.a
+		unlock_decision_tooltip = CP_expel_german_advisors
+	}
+}
+
+#Entente abandon their claims on bosphorus
+country_event = {
+	id = ww1_liman_affair.25
+	title = ww1_liman_affair.25.t
+	desc = ww1_liman_affair.25.d
+	picture = GFX_report_event_generic_military_parade
+	is_triggered_only = yes
+	immediate = {
+		hidden_effect = {
+			delete_crisis = yes
+		}
+	}
+	option = { 
+		name = ww1_liman_affair.25.a
+		add_political_power = 50
+		add_stability = 0.02
+	}
+}
+
+#Entente back down due to German chadness
+news_event = {
+	id = ww1_liman_affair.26
+	title = ww1_liman_affair.26.t
+	desc = ww1_liman_affair.26.d
+	picture = GFX_news_event_ottomans_germany
+	is_triggered_only = yes
+	immediate = {
+		hidden_effect = {
+			delete_crisis = yes
+		}
+	}
+	option = { 
+		trigger = {
+			NOT = {
+				has_country_flag = protest_against_liman_mission
+			}
+		}
+		name = ww1_liman_affair.26.a
+	}
+	option = { 
+		trigger = {
+			has_country_flag = protest_against_liman_mission
+		}
+		name = ww1_liman_affair.26.b
+	}
+}

@@ -24,7 +24,8 @@ ROM_military_category = {
 		}
 		is_good = yes
 		activation = {
-			has_war = yes
+			has_war_with = BUL
+			has_global_flag = great_war
 			has_civil_war = no
 			controls_province = 657
 			any_enemy_country = {
@@ -168,7 +169,6 @@ ROM_military_category = {
 			has_completed_focus = ROM_prepare_for_the_upcoming_war
 		}
 		available = {
-			has_tech = fortification1
 			controls_province = 9617
 		}
 		modifier = {
@@ -469,13 +469,18 @@ ROM_military_category = {
 			add_tech_bonus = {
 				bonus = 0.5
 				uses = 2
-				category = mio_cat_all_artillery_equipment
+				category = cat_artillery
 				name = ROM_artillery_modernization_focus
 			}
 			add_equipment_to_stockpile = {
-    			type = artillery_equipment
-    			amount = 75
-    			producer = ROM
+    			type = field_gun_equipment
+    			amount = 60
+    			producer = ROOT
+			}
+			add_equipment_to_stockpile = {
+    			type = howitzer_equipment
+    			amount = 15
+    			producer = ROOT
 			}
 		}
 	}
@@ -572,7 +577,6 @@ ROM_kings_country_category = {
 		icon = GFX_decision_generic_monarchy
 		activation = {
 			original_tag = ROM
-			NOT = { has_active_mission = ROM_king_appoints_new_government }
 		}
 		available = {
 			hidden_trigger = {
@@ -663,8 +667,7 @@ ROM_kings_country_category = {
 		fire_only_once = yes
 		days_remove = 15
 		ai_will_do = {
-			base = 1
-			factor = 0
+			base = 0
 			modifier = {
 				has_global_flag = great_war_ends
 				factor = 100
@@ -1173,42 +1176,33 @@ GER_great_war = {
 		target_trigger = {
 			FROM = {
 				owns_state = 78
-				controls_state = 78
-				78 = {
-					num_owned_neighbour_states = {
-						owner = PREV
-						count < 2
-					}
-				}
+				controls_state = 78		
+				original_tag = UKR
+				has_country_flag = UKR_rumcherod
+				is_subject = yes
 				NOT = {
-					tag = MOL
-					tag = AUS
-					tag = HUN
-					tag = GER
-					tag = BUL
-					tag = TUR
-					has_war_with = ROOT
-					ROOT = {
-						is_subject_of = PREV
-					}
+					is_in_faction_with = ENT
+					is_in_faction_with = GER
 				}
 			}
 		}
+		fire_only_once = yes
 		available = {
 			has_war = no
+			is_subject = no
 			78 = {
 				any_neighbor_state = {
 					is_owned_and_controlled_by = ROOT
 				}
 			}
 		}
-		days_remove = 10
+		days_remove = 3
 		ai_will_do = {
 			factor = 80
 		}
 		war_with_target_on_remove = yes
 		remove_effect = {
-			every_country = {
+			random_other_country = {
 				limit = {
 					owns_state = 78
 					controls_state = 78
@@ -1218,35 +1212,29 @@ GER_great_war = {
 						target = PREV
 						type = take_state_focus
 						generator = { 78 }
-            				}
+            		}
 				}
 				country_event = ww1_romania.153
 			}
 			activate_mission = ROM_bessarabian_gamble
+			hidden_effect = {
+				add_ideas = standing_alone
+			}	
 		}
 		cancel_trigger = {
 			hidden_trigger = {
 				FROM = {
 					NOT = {
-						owns_state = 78
-						controls_state = 78
-						78 = {
-							num_owned_neighbour_states = {
-								owner = PREV
-								count < 1
+						AND = {
+							owns_state = 78
+							controls_state = 78
+							original_tag = UKR
+							has_country_flag = UKR_rumcherod
+							is_subject = yes
+							NOT = {
+								is_in_faction_with = ENT
+								is_in_faction_with = GER
 							}
-						}
-					}
-					OR = {
-						tag = MOL
-						tag = AUS
-						tag = HUN
-						tag = GER
-						tag = BUL
-						tag = TUR
-						has_war_with = ROOT
-						ROOT = {
-							is_subject_of = PREV
 						}
 					}
 				}
@@ -1260,13 +1248,12 @@ GER_great_war = {
 		}
 		cancel_trigger = {
 			OR = {
-				any_country = {
-					owns_state = 78
-					NOT = {
-						has_war_with = ROOT
+				NOT = {
+					any_enemy_country = {
+						owns_state = 78
 					}
-				}
-				surrender_progress > 0.05
+				}			
+				surrender_progress > 0.1
 			}
 		}
 		days_mission_timeout = 150
@@ -1275,20 +1262,7 @@ GER_great_war = {
 		}
 		is_good = no
 		complete_effect = {
-			every_country = {
-				limit = {
-					has_war_with = ROOT
-					OR = {
-						owns_state = 78	
-						any_country = {
-							OR = {
-								is_in_faction_with = PREV
-								is_subject_of = PREV
-								has_subject = PREV
-							}
-						}
-					}
-				}
+			every_enemy_country = { # i hope no one will declare war on ROM during invasion, else in case of RUC's capitulation it still in war with SOV
 				white_peace = ROOT
 			}
 			78 = {
@@ -1299,49 +1273,36 @@ GER_great_war = {
 			add_stability = 0.05
 			add_war_support = 0.05
 			add_political_power = 100
+			hidden_effect = {
+				remove_ideas = standing_alone
+			}
 		}
 		timeout_effect = {
-			every_country = {
-				limit = {
-					has_war_with = ROOT
-					OR = {
-						owns_state = 78	
-						any_country = {
-							OR = {
-								is_in_faction_with = PREV
-								is_subject_of = PREV
-								has_subject = PREV
-							}
-						}
-					}
-				}
-				white_peace = ROOT
+			every_enemy_country = { # i hope no one will declare war on ROM during invasion, else in case of RUC's capitulation it still in war with SOV
+				ROOT = {
+					white_peace = PREV
+				}			
 			}
 			add_stability = -0.05
 			add_war_support = -0.05
 			add_political_power = -50
+			hidden_effect = {
+				remove_ideas = standing_alone
+			}
 		}
 		cancel_effect  = {
 			hidden_effect = {
-				every_country = {
-					limit = {
-						has_war_with = ROOT
-						OR = {
-							owns_state = 78	
-							any_country = {
-								OR = {
-									is_in_faction_with = PREV
-									is_subject_of = PREV
-									has_subject = PREV
-								}
-							}
-						}
-					}
-					white_peace = ROOT
+				every_enemy_country = { # i hope no one will declare war on ROM during invasion, else in case of RUC's capitulation it still in war with SOV
+					ROOT = {
+						white_peace = PREV
+					}			
 				}
 				add_stability = -0.05
 				add_war_support = -0.05
 				add_political_power = -50
+				hidden_effect = {
+					remove_ideas = standing_alone
+				}
 			}	
 		}
 	}
@@ -1355,9 +1316,11 @@ GER_great_war = {
 			has_global_flag = great_war
 			has_war_with = GER
 			surrender_progress > 0.4
-			fights_alone = yes
+			#fights_alone = yes
+			# ^ broken
 		}
 		visible = {
+			has_war_with = GER
 			has_global_flag = great_war
 			NOT = {
 				has_country_flag = ROM_armistice_of_focsani_completed
@@ -1391,25 +1354,13 @@ GER_great_war = {
 				}
 				set_country_flag = ROM_armistice_of_focsani_completed
 				give_military_access = RUS
-				every_country = {
-					limit = {
-						OR = {
-							tag = GER
-							is_in_faction_with = GER
-						}
-					}
+				white_peace = GER
+				every_enemy_country = {
 					ROM = {
 						white_peace = PREV
 					}
 				}
-				if = {
-					limit = {
-						ROM = {
-							is_in_faction_with = FRA
-						}
-					}
-					leave_faction = yes
-				}
+				leave_faction = yes
 			}
 			every_owned_state = {
 				limit = {
@@ -1421,7 +1372,9 @@ GER_great_war = {
 						state = 866
 					}
 				}
+				set_state_flag = focsani_armistice
 				transfer_state_to = GER
+				add_contested_owner = ROOT
 			}
 			custom_effect_tooltip = ROM_armistice_of_focsani.tt
 		}
@@ -1430,7 +1383,10 @@ GER_great_war = {
 			modifier = {
 				add = 1000
 				ROM = {
-					surrender_progress > 0.75
+					surrender_progress > 0.75	
+					NOT = {
+						is_in_faction_with = RUS
+					}
 				}
 			}
 		}
@@ -1475,6 +1431,7 @@ GER_great_war = {
 		available = {
 			has_global_flag = ROM_treaty_of_bucharest
 		}
+		fire_only_once = yes
 		days_mission_timeout = 250
 		selectable_mission = no
 		complete_effect = {
@@ -1497,47 +1454,57 @@ GER_great_war = {
 			is_subject = no
 			has_war = no
 			OR = {
-				AND = {
-					has_country_flag = ROM_armistice_of_focsani_completed
+				AND = {			
 					OR = {
 						GER = {
-							has_idea = ger_famine
+							has_idea = GER_famine
 						}
 						BUL = {
 							OR = {
-								has_capitulated = yes
+								AND = {
+									is_in_faction_with = GER
+									has_capitulated = yes
+								}							
 								has_war = no
 							}
 						}
-					}
-					has_global_flag = ROM_treaty_of_bucharest
-					NOT = {
-						has_country_flag = ROM_collaborationist_tag
-					}
-					FRA = {
-						is_in_faction_with = ENG
-						has_war_with = GER
-					}
+						AUS = {
+							is_in_faction_with = GER
+							OR = {
+								has_country_flag = collapse_of_austria_hungary_HUN
+								has_capitulated = yes
+								surrender_progress > 0.50
+							}
+						}
+					}							
 				}
-				GER = {
-					has_country_flag = GER_capitulation
-				}
+				has_global_flag = GER_capitulation
 			}
 			NOT = {
 				has_completed_focus = ROM_pay_off_occupation_costs
 			}
 		}
 		visible = {
+			is_great_war_ongoing = yes
+			NOT = {
+				has_country_flag = ROM_collaborationist_tag
+			}
+			NOT = {
+				has_global_flag = ENT_capitulation
+				has_country_flag = ROM_treaty_of_bucharest_nullified
+				has_country_flag = ROM_treaty_of_bucharest_violated
+			}
+			has_country_flag = ROM_armistice_of_focsani_completed
+			has_global_flag = ROM_treaty_of_bucharest
+			ENT = {
+				has_war_with = GER
+			}	
 			NOT = {
 				has_global_flag = great_war_ends
 			}
-			has_global_flag = great_war
-			NOT = {
-				has_global_flag = FRA_capitulation
-			}
 		}
 		fire_only_once = yes
-		days_remove = 10
+		days_remove = 2
 		war_with_on_remove = GER
 		remove_effect = {
 			set_country_flag = ROM_treaty_of_bucharest_violated
@@ -1545,26 +1512,176 @@ GER_great_war = {
 				idea_armistice
 				standing_alone
 			}
-			FRA = {
+			ENT = {
 				if = {
 					limit = {
 						is_faction_leader = yes
+						has_war_with = GER
+						NOT = { has_war_with = ROOT }
 					}
 					add_to_faction = ROM
 				}
 			}
-			add_to_war = {
-				targeted_alliance = FRA
-				enemy = GER
-			}
+			join_great_war_against_GER = yes
 		}
 		ai_will_do = {
 			base = 0
 			modifier = {
-				add = 10
 				GER = {
-					has_idea = ger_famine
+					OR = {
+						casualties > 1500000
+						casualties_inflicted_by = {
+							opponent = FRA
+							thousands > 500
+						}
+					}
+					has_idea = GER_famine
+				}		
+				FRA = {
+					surrender_progress < 0.25
+					has_war_with = GER
 				}
+				ENG = {
+					surrender_progress < 0.25
+					has_war_with = GER
+				}
+				USA = {
+					surrender_progress < 0.25
+					has_war_with = GER
+				}
+				AUS = {
+					if = {
+						limit = {
+							is_in_faction_with = GER
+						}
+						OR = {
+							has_country_flag = collapse_of_austria_hungary_HUN
+							has_capitulated = yes
+							surrender_progress > 0.50
+						}
+					}
+				}
+				TUR = {
+					if = {
+						limit = {
+							is_in_faction_with = GER
+						}
+						OR = {
+							has_capitulated = yes
+							surrender_progress > 0.50
+						}
+					}
+				}
+				add = 1000
+			}
+			#German armistice historical trigger
+			modifier = {
+				GER = {
+					OR = {
+						has_idea = GER_famine
+						has_stability < 0.05
+						has_war_support < 0.05
+					}
+					longest_war_length > 50	#october-november 1918
+					OR = {
+						has_war_support < 0.25
+						has_stability < 0.25
+					}
+					casualties > 1500000 # 2 million minimum
+				}
+				#Germany has not invaded UK or USA, or Japan...
+				any_country = {
+					is_major = yes
+					has_war_with = GER
+					is_in_faction_with = FRA
+					has_capitulated = no
+					surrender_progress < 0.20
+				}
+				FRA = {
+					surrender_progress < 0.10
+					has_war_with = GER
+				}
+				ENG = {
+					surrender_progress < 0.10
+					has_war_with = GER
+				}
+				USA = {
+					surrender_progress < 0.10
+					has_war_with = GER
+				}
+				add = 1000
+			}
+			#German armistice historical trigger + austria collapsed
+			modifier = {
+				GER = {
+					OR = {
+						has_stability < 0.15
+						has_war_support < 0.15
+					}
+					longest_war_length > 48	#mid 1918
+				}
+				AUS = {
+					NOT = {
+						is_in_faction_with = GER
+					}
+					has_country_flag = collapse_of_austria_hungary_HUN
+				}
+				#Germany has not invaded UK or USA, or Japan...
+				any_country = {
+					is_major = yes
+					has_war_with = GER
+					OR = {
+						is_in_faction_with = FRA
+						tag = FRA
+					}
+					has_capitulated = no
+					surrender_progress < 0.20
+				}
+				add = 1000
+			}
+			#German armistice historical trigger if no USA
+			modifier = {
+				GER = {
+					OR = {
+						has_idea = GER_famine
+						has_stability < 0.05
+						has_war_support < 0.05
+					}
+					longest_war_length > 54	#early 1919
+					OR = {
+						has_war_support < 0.10
+						has_stability < 0.10
+					}
+					casualties > 2000000 # 2 million minimum
+				}
+				#Germany has not invaded UK or USA, or Japan...
+				any_country = {
+					is_major = yes
+					has_war_with = GER
+					is_in_faction_with = FRA
+					has_capitulated = no
+					surrender_progress < 0.20
+				}
+				FRA = {
+					surrender_progress < 0.10
+					has_war_with = GER
+				}
+				ENG = {
+					surrender_progress < 0.10
+					has_war_with = GER
+				}
+				add = 1000
+			}
+			# prevent vanilla chaos
+			modifier = {
+				add = 1000
+				GER = {
+					surrender_progress > 0.9
+				}			
+			}
+			modifier = {
+				add = 1000
+				has_global_flag = GER_capitulation			
 			}
 		}
 	}
@@ -1617,7 +1734,7 @@ foreign_politics = {
 		}
 		war_with_on_remove = BUL
 		fire_only_once = yes
-		days_remove = 15
+		days_remove = 7
 		ai_will_do = {
 			factor = 200
 			modifier = {
@@ -1643,8 +1760,15 @@ foreign_politics = {
 			}
 		}
 		remove_effect = {
-			country_event = {
-				id = ww1_secondbalkan.4
+			if = {
+				limit = { 
+					BUL = {
+						has_war = yes
+					}
+				}
+				country_event = {
+					id = ww1_secondbalkan.4
+				}
 			}
 			add_state_claim = 77
 		}
@@ -1739,6 +1863,14 @@ peace_deals = {
 		available = {
 			surrender_progress > 0.40
 		}
+		target_trigger = {
+			FROM = {
+				tag = HUn
+			}
+		}
+		# target_root_trigger = {
+		# 	has_war_with = FROM
+		# }
 		visible = {
 			has_war_with = HUN
 			is_subject = no
@@ -1768,7 +1900,7 @@ peace_deals = {
 			tag = ROM
 		}
 		available = {
-			surrender_progress > 0.1
+			surrender_progress > 0.4
 		}
 		visible = {
 			has_war_with = BUL
@@ -1785,13 +1917,22 @@ peace_deals = {
 			factor = 1000
 			modifier = {
 				factor = 0
-				surrender_progress < 0.60
+				surrender_progress < 0.6
 			}
 		}
 		complete_effect = {
 			white_peace = BUL
 			add_political_power = -100
 			leave_faction = yes
+			every_owned_state = {
+				limit = {
+					OR = {
+						state = 805
+						state = 846
+					}
+				}
+				transfer_state_to = BUL
+			}
 		}
 	}
 }
@@ -1800,7 +1941,7 @@ economy_decisions = {
 	ROM_fix_the_railways = {
 		icon = GFX_decision_generic_construction
 		cost = 50
-		days_remove = 365
+		days_remove = 190
 		allowed = {
 			original_tag = ROM
 		}
@@ -2467,7 +2608,7 @@ ROM_the_romanian_economy_cat = {
 		}
 	}
 	ROM_open_transylvanian_coal_mines = {
-		icon = GFX_decision_generic_factory
+		icon = GFX_decision_coal
 		cost = 30
 		days_remove = 30
 		fire_only_once = yes
@@ -2497,8 +2638,8 @@ ROM_the_romanian_economy_cat = {
 		remove_effect = {
 			84 = {
 				add_resource = {
-					type = steel
-					amount = 3
+					type = coal
+					amount = 7
 				}
 			}
 			custom_effect_tooltip = ROM_ice.tt
@@ -2825,7 +2966,7 @@ ROM_the_romanian_economy_cat = {
 }
 ROM_tutorial = {
 	ROM_tutorial_event_trigger = {
-		icon = GFX_decision_generic_construction
+		icon = GFX_decision_generic_decision
 		cost = 0
 		allowed = {
 			original_tag = ROM
@@ -2842,7 +2983,7 @@ ROM_tutorial = {
 		}
 	}
 	ROM_disable_tutorial = {
-		icon = GFX_decision_generic_construction
+		icon = GFX_decision_generic_decision
 		cost = 0
 		allowed = {
 			original_tag = ROM

@@ -185,6 +185,10 @@ debug_decisions = {
 						state = 203
 						state = 759
 						state = 44
+						state = 1140
+						state = 1141
+						state = 1214
+						state = 1215
 					}
 				}
 				transfer_state_to = SER
@@ -222,7 +226,7 @@ debug_decisions = {
 						state = 451
 						state = 788
 						state = 225
-						state = 757	
+						state = 757
 					}
 				}
 				transfer_state_to = BUL
@@ -241,7 +245,7 @@ debug_decisions = {
 			has_global_flag = great_war
 			NOT = {
 				has_global_flag = GER_capitulation
-				has_global_flag = FRA_capitulation
+				has_global_flag = ENT_capitulation
 			}
 		}
 		fire_only_once = no
@@ -251,15 +255,15 @@ debug_decisions = {
 			hidden_effect = {
 				every_country = {
 					limit = {
-						is_in_faction_with = FRA
+						is_ally_with = ENT
 						has_war_with = GER
 					}
 					set_country_flag = member_of_entente
 				}
 				every_other_country = {
 					limit = {
-						is_in_faction_with = GER
-						has_war_with = FRA
+						is_ally_with = GER
+						has_war_with = ENT
 					}
 					set_country_flag = member_of_central_powers
 				}
@@ -267,12 +271,12 @@ debug_decisions = {
 					limit = {
 						is_subject = no
 						NOT = {
-							is_in_faction_with = FRA
+							tag = ENT
+							is_ally_with = ENT
 							has_country_flag = member_of_entente
 							has_country_flag = member_of_central_powers
 							tag = SOV
-							is_in_faction_with = SOV
-							is_subject_of = SOV
+							is_ally_with = SOV
 							any_country = {
 								original_tag = RUS
 								has_war_with = SOV
@@ -291,7 +295,7 @@ debug_decisions = {
 					name = GER_capitulation
 				}
 			}
-			set_global_flag = france_accepts_GER_capitulation
+			set_global_flag = ENT_accepts_GER_capitulation
 			news_event = {
 				id = ww1_centre_capitulation.2
 			}
@@ -306,37 +310,35 @@ debug_decisions = {
 			has_global_flag = great_war
 			NOT = {
 				has_global_flag = GER_capitulation
-				has_global_flag = FRA_capitulation
+				has_global_flag = ENT_capitulation
 				has_global_flag = FRA_capitulation_alone
 			}
 		}
 		fire_only_once = no
 		cost = 0
 		complete_effect = {
-			set_global_flag = FRA_capitulation
+			set_global_flag = ENT_capitulation
 			hidden_effect = {
 				every_country = {
 					limit = {
 						OR = {
-							has_country_flag = entente_leader
-							any_allied_country = {
-								OR = {
-									has_country_flag = entente_leader
-									tag = FRA
-								}
-							}
+							tag = ENT
+							is_ally_with = ENT
+							has_country_flag = FRA_surrender_alone
+							has_country_flag = RUS_surrender_alone
 						}
 						OR = {
 							has_war_with = GER
 							has_country_flag = FRA_surrender_alone
+							has_country_flag = RUS_surrender_alone
 						}
 					}
 					set_country_flag = member_of_entente
 				}
 				every_other_country = {
 					limit = {
-						is_in_faction_with = GER
-						has_war_with = FRA
+						is_ally_with = GER
+						has_war_with = ENT
 					}
 					set_country_flag = member_of_central_powers
 				}
@@ -344,36 +346,27 @@ debug_decisions = {
 					limit = {
 						is_subject = no
 						NOT = {
-							is_in_faction_with = GER
 							has_country_flag = member_of_entente
-							has_country_flag = member_of_central_powers
+							has_country_flag = refused_to_surrender
 							tag = SOV
 							AND = {
 								is_russian_tag = yes
 								has_war_with = SOV
 							}
-							AND = {
-								tag = SOV
-								any_country = {
-									is_russian_tag = yes
-									has_war_with = SOV
-								}
-							}
-							has_war_with = FRA
-							OR = {
-								is_faction_leader = yes
-								is_in_faction = no
-							}
+						}
+						OR = {
+							is_faction_leader = yes
+							is_in_faction = no
 						}
 					}
 					country_event = ww1_entente_capitulation.14
 				}
 				add_named_threat = {
 					threat = -10
-					name = FRA_capitulation
+					name = ENT_capitulation
 				}
 			}
-			set_global_flag = germany_accepts_FRA_capitulation
+			set_global_flag = GER_accepts_ENT_capitulation
 			news_event = {
 				id = ww1_entente_capitulation.2
 			}
@@ -388,7 +381,7 @@ debug_decisions = {
 				# surrender_progress > 0.10
 				NOT = {
 					has_global_flag = GER_capitulation
-					has_global_flag = FRA_capitulation
+					has_global_flag = ENT_capitulation
 				}
 			}
 			RUS = {
@@ -403,7 +396,7 @@ debug_decisions = {
 			has_global_flag = great_war
 			NOT = {
 				has_global_flag = GER_capitulation
-				has_global_flag = FRA_capitulation
+				has_global_flag = ENT_capitulation
 				has_global_flag = FRA_capitulation_alone
 			}
 		}
@@ -418,22 +411,15 @@ debug_decisions = {
 	make_entente_honourable_peace_now = {
 		available = {
 			is_ai = no
-			any_country = {
+			FROM = {
 				has_war_with = GER
-				has_country_flag = entente_leader
 				has_global_flag = great_war
 				NOT = {
 					has_global_flag = GER_capitulation
-					has_global_flag = FRA_capitulation
+					has_global_flag = ENT_capitulation
 					# russian revolution be like
 				}
 				has_threat_of_revolution = no
-			}
-			RUS = {
-				is_in_faction_with = FRA
-				surrender_progress < 0.25
-				has_war_with = GER
-				has_civil_war = no
 			}
 		}
 		visible = {
@@ -444,14 +430,21 @@ debug_decisions = {
 				has_global_flag = GER_capitulation
 			}
 		}
+		target_trigger = {
+			FROM = {
+				has_country_flag = entente_leader
+				is_faction_leader = yes
+				NOT = {
+					tag = RUS
+					tag = FRA
+				}
+			}
+		}
 		fire_only_once = no
 		cost = 0
 		complete_effect = {
-			random_country = {
-				limit = {
-					has_country_flag = entente_leader
-				}
-				activate_decision = FRA_armistice_ent
+			FROM = {
+				activate_decision = ENT_armistice
 			}
 		}
 	}
@@ -546,6 +539,19 @@ debug_decisions = {
 			allow_elections = yes
 		}
 	}
+	hold_election = {
+		available = {
+			is_ai = no
+		}
+		visible = {
+			is_debug = yes
+			has_elections = yes
+		}
+		cost = 0
+		complete_effect = {
+			hold_election = ROOT
+		}
+	}
 	new_term_elections = {
 		available = {
 			is_ai = no
@@ -626,6 +632,65 @@ debug_decisions = {
 				ROOT = {
 					copy_laws_of_PREV = yes
 				}
+			}
+		}
+	}
+	spawn_120_ships = {
+		available = {
+			is_ai = no
+		}
+		visible = {
+			is_debug = yes
+		}
+		fire_only_once = no
+		cost = 0
+		complete_effect = {
+			for_loop_effect = {
+				end = 120
+				create_ship = {
+					type = ship_hull_heavy_1
+					equipment_variant = "Dreadnought Class"
+					creator = ENG
+				}
+			}
+		}
+	}
+	spawn_10_ships = {
+		available = {
+			is_ai = no
+		}
+		visible = {
+			is_debug = yes
+		}
+		fire_only_once = no
+		cost = 0
+		complete_effect = {
+			for_loop_effect = {
+				end = 10
+				create_ship = {
+					type = ship_hull_heavy_1
+					equipment_variant = "Dreadnought Class"
+					creator = ENG
+				}
+			}
+		}
+	}
+	destroy_10_ships = {
+		available = {
+			is_ai = no
+		}
+		visible = {
+			is_debug = yes
+			has_navy_size = {
+				size > 0
+			}
+		}
+		fire_only_once = no
+		cost = 0
+		complete_effect = {
+			destroy_ships = {
+				type = ship_hull_heavy_1
+				count = 10
 			}
 		}
 	}
@@ -765,7 +830,6 @@ debug_decisions = {
 		ai_will_do = {
 			base = 0
 		}
-		power_balance = _test_balance
 	}
 	create_recruitable_operative_not_to_spy_master_debug = {
 		icon = generic_research
@@ -1057,4 +1121,27 @@ debug_decisions = {
 		}
 	}
 
+	relinguish_entente_leadership_debug = {
+		available = {
+			is_ai = no
+		}
+		visible = {
+			is_debug = yes
+			is_faction_leader = yes
+			has_country_flag = entente_leader
+		}
+		fire_only_once = no
+		cost = 0
+		complete_effect = {
+			if = {
+				limit = { 
+					has_war_with = GER
+				}
+				relinguish_entente_leadership = yes
+				else = {
+					relinguish_entente_leadership_peace = yes
+				}
+			}
+		}
+	}
 }

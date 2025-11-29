@@ -34,8 +34,12 @@ NDefines.NDiplomacy.FRONT_IS_DANGEROUS = 0									-- Vanilla is -100
 
 -- Buildings
 
-NDefines.NBuildings.INFRASTRUCTURE_RESOURCE_BONUS = 0.1 -- multiplicative resource bonus for each level of (non damaged) infrastructure
-NDefines.NBuildings.SUPPLY_ROUTE_RESOURCE_BONUS = 0.2   -- multiplicative resource bonus for having a railway/naval connection to the capital
+-- Halfing infra bonuses to account 5 extra infrastructure levels
+NDefines.NBuildings.INFRASTRUCTURE_RESOURCE_BONUS = 0.1             -- multiplicative resource bonus for each level of (non damaged) infrastructure
+NDefines.NMilitary.INFRASTRUCTURE_MOVEMENT_SPEED_IMPACT = -0.025	-- speed penalty per infrastucture below maximum.
+NDefines.NMilitary.INFRA_ORG_IMPACT = 0.25				            -- scale factor of infra on org regain.
+NDefines.NSupply.INFRA_TO_SUPPLY = 0.15							-- each level of infra gives this many supply
+NDefines.NSupply.SUPPLY_FROM_DAMAGED_INFRA = 0.075				-- damaged infrastructure counts as this in supply calcs
 
 -- Peace Conferences
 NDefines.NAI.PEACE_AI_EVALUATE_OTHER_ALWAYS = true							-- Vanilla is false
@@ -99,10 +103,10 @@ NDefines.NAI.PROPOSE_LEND_LEASE_AIDESIRE_SAME_IDEOLOGY_CIVIL_WAR = 0	-- Added to
 NDefines.NAI.SEND_VOLUNTEER_AIDESIRE_SAME_IDEOLOGY = 0					-- Added to AI desire to send volunteers if recipent is same ideology (and AI can't declare war on recipient)
 NDefines.NAI.SEND_VOLUNTEER_AIDESIRE_SAME_IDEOLOGY_CIVIL_WAR = 0		-- Added to AI desire to send volunteers if recipent is same ideology and they are currently in civil war
 
-NDefines.NMilitary.UNIT_DIGIN_SPEED = 0.5
-
-NDefines.NAI.MAX_DISTANCE_NAVAL_INVASION = 150.0
 NDefines.NAI.CALL_ALLY_PUPPET_INVITE_OVERLORD = 100    -- Desire for a puppet to call its overlord into the war -- Vanilla is -1000
+
+NDefines.NAI.CONSTRUCTION_PRIO_RAILWAY = 0.5 -- vanilla is 4
+
 NDefines.NDiplomacy.IDEOLOGY_JOIN_FACTION_MIN_LEVEL = -1
 NDefines.NDiplomacy.MARKET_ACCESS_ACCEPTANCE_SAME_IDEOLOGY = 0				 -- Acceptance value added if same ideology (Vanilla is 15)
 NDefines.NDiplomacy.MARKET_ACCESS_ACCEPTANCE_TRADE_INFLUENCE = 0.2 			 -- Acceptance factor for trade influence (Vanilla is 0.70)
@@ -117,26 +121,22 @@ NDefines.NGraphics.VICTORY_POINTS_DISTANCE_CUTOFF = {300, 500, 1000} 		-- Vanill
 
 NDefines_Graphics.NGraphics.POLITICAL_GRID_SMALL_BOX_LIMIT = 18              	-- Limit for gridbox in political view before it will be replaced with extended gridbox, Vanilla is 6
 
-NDefines.NSupply.NAVAL_DISTANCE_FACTOR_FOR_REINFORCEMENT_SPEED = 0.12
-NDefines.NSupply.NAVAL_BASE_INITIAL_SUPPLY_FLOW = 5
-NDefines.NSupply.CAPITAL_SUPPLY_DOCKYARDS = 0.6
-
-NDefines.NCountry.MAX_BOMBING_WAR_SUPPORT_IMPACT = -0.1 -- Vanilla is -0.3, it is not ww2
-NDefines.NCountry.MAX_CONVOYS_BEING_RAIDED_WAR_SUPPORT_IMPACT = -0.3 -- Vanilla is -0.5, it is not ww2
+NDefines.NSupply.CAPITAL_SUPPLY_BASE = 1.0
+NDefines.NSupply.CAPITAL_SUPPLY_CIVILIAN_FACTORIES = 0.6
+NDefines.NSupply.CAPITAL_SUPPLY_MILITARY_FACTORIES = 0.5
+NDefines.NSupply.CAPITAL_SUPPLY_DOCKYARDS = 0.3
 
 -- Production AI
-NDefines.NAI.DESIRE_USE_XP_TO_UPGRADE_AIR_EQUIPMENT = 1.5					-- Vanilla is 1 - AI more eagerly upgrades its planes, they are much more important than doctrines
+NDefines.NProduction.BASE_ENERGY_COST = 2						-- How much energy per factory consumes (Vanilla is 0.25)
 
-NDefines.NDiplomacy.EMBARGO_COST = 50 -- Vanilla is 100
-NDefines.NDiplomacy.EMBARGO_THREAT_THRESHOLD = -1 -- Vanilla is 30
-NDefines.NAI.EMBARGO_WORLD_TENSION_THREAT_DIVISOR = 0 -- Vanilla is 2.5
+NDefines.NDiplomacy.EMBARGO_COST = 0 -- Vanilla is 100
+NDefines.NDiplomacy.EMBARGO_THREAT_THRESHOLD = 0 -- Vanilla is 30
+NDefines.NAI.EMBARGO_WORLD_TENSION_THREAT_DIVISOR = 10000 -- Vanilla is 2.5
 
 -- Navy
 NDefines.NNavy.TRAINING_MAX_DAILY_COUNTRY_EXP = 1.0 -- Vanilla is 3.5
 
 NDefines.NAir.CARRIER_SIZE_STAT_INCREMENT = 4					-- Each Point of carrier_size state adds capacity for this many planes
-
-NDefines.NProduction.PRODUCTION_RESOURCE_LACK_PENALTY = -0.10  -- increased so the player research stuff
 
 NDefines.NCountry.FEMALE_UNIT_LEADER_BASE_CHANCE = {
     -- applies as a factor to female unit leader randomization
@@ -148,3 +148,11 @@ NDefines.NCountry.FEMALE_UNIT_LEADER_BASE_CHANCE = {
     0.3, -- operatives
     0.1, -- scientists
 }
+
+NDefines.NMilitary.LAND_COMBAT_COLLATERAL_FORT_FACTOR = 0.003 --0.005
+NDefines.NMilitary.LAND_COMBAT_FORT_DAMAGE_CHANCE = 3 -- out of 100 - vanilla is 5
+
+NDefines.NNavy.NAVAL_INVASION_PLAN_CAP = 0	--1								-- base cap of naval invasions can be planned at the same time
+NDefines.NNavy.BASE_NAVAL_INVASION_DIVISION_CAP = 0	--4						-- base cap of divisions that can be assigned in a naval invasion
+
+NDefines.NDoctrines.TRAINING_MASTERY_GAIN_FACTOR = 0.01
