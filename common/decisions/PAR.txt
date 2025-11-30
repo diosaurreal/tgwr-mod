@@ -143,7 +143,117 @@ foreign_politics = {
 			hidden_effect = { set_global_flag = chaco_war_ready }
 			declare_war_on = {
 				target = FROM
-				type = take_core_state
+				type = take_state
+				generator = { 901 1091 }
+			}
+		}
+	}
+	PAR_sue_for_peace_BOL = {
+		icon = GFX_decision_eng_trade_unions_support
+		name = sue_for_peace_FROM
+		allowed = {
+			original_tag = PAR
+		}
+		target_trigger = {
+			FROM = {
+				original_tag = BOL
+			}
+		}
+		target_root_trigger = {
+			has_global_flag = chaco_war_ready
+		}
+		visible = {
+			has_war_with = FROM
+			is_subject = no
+			NOT = { has_global_flag = chaco_war_end }
+		}
+		fire_only_once = yes
+		complete_effect = {
+			set_global_flag = chaco_war_end
+			white_peace = FROM
+			every_owned_state = {
+				limit = {
+					OR = {
+						state = 688
+						state = 901
+					}
+				}
+				transfer_state_to = FROM
+			}
+		}
+		ai_will_do = {
+			factor = 100
+			modifier = {
+				factor = 0
+				surrender_progress < 0.3
+			}
+			modifier = {
+				factor = 0
+				controls_state = 688
+			}
+		}
+	}
+	PAR_chaco_war_timer = {
+		icon = generic_prepare_civil_war
+		allowed = {
+			OR = {
+				original_tag = PAR
+				original_tag = BOL
+			}
+		}
+		activation = {
+			has_global_flag = chaco_war_ready
+			OR = {
+				has_war_with = PAR
+				has_war_with = BOL
+			}
+			is_subject = no
+			NOT = { has_global_flag = chaco_war_end }
+		}
+		fire_only_once = no
+		days_mission_timeout = 1000
+		available = {
+			NOT = {
+				has_war_with = PAR
+				has_war_with = BOL
+			}
+		}
+		is_good = no
+		timeout_effect = {
+			set_global_flag = chaco_war_end
+			PAR = {
+				if = {
+					limit = {
+						controls_state = 901
+					}
+					transfer_state = 901
+				}
+				if = {
+					limit = {
+						owns_state = 901
+						controls_state = 1091
+					}
+					transfer_state = 1091
+				}
+				if = {
+					limit = {
+						NOT = {
+							owns_state = 901
+							owns_state = 1091
+						}
+						BOL = { controls_state = 688 }
+					}
+					BOL = { transfer_state = 688 }
+				}
+			}
+			every_enemy_country = {
+				limit = {
+					OR = {
+						original_tag = BOL
+						original_tag = PAR
+					}
+				}
+				white_peace = ROOT
 			}
 		}
 	}
