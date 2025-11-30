@@ -154,3 +154,5 @@ NDefines.NMilitary.LAND_COMBAT_FORT_DAMAGE_CHANCE = 3 -- out of 100 - vanilla is
 
 NDefines.NNavy.NAVAL_INVASION_PLAN_CAP = 0	--1								-- base cap of naval invasions can be planned at the same time
 NDefines.NNavy.BASE_NAVAL_INVASION_DIVISION_CAP = 0	--4						-- base cap of divisions that can be assigned in a naval invasion
+
+NDefines.NDoctrines.TRAINING_MASTERY_GAIN_FACTOR = 0.01
