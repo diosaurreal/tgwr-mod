@@ -228,26 +228,15 @@ country_event = {
 	}
 	option = {
 		name = ww1_serbia.6.a
-		hidden_effect = {
-			promote_character = SER_ljubomir_davidovic
-		}
 		effect_tooltip = {
 			SER_ljubomir_stojanovic = {
 				remove_country_leader_role = {
 					ideology = social_liberalism
 				}
 			}
-			SER_ljubomir_davidovic = {
-				add_country_leader_role = {
-					promote_leader = yes
-					country_leader = {
-						ideology = social_liberalism
-						traits = {
-							teacher_politician
-						}
-					}
-				}
-			}
+		}
+		SER_ljubomir_davidovic = {
+			promote_character = social_liberalism
 		}
 	}
 }
@@ -267,24 +256,15 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_serbia.8.a
-		hidden_effect = {
-			SER_nikola_pasic = {
-				promote_character = {
+		effect_tooltip = {
+			SER_marko_trifkovic = {
+				remove_country_leader_role = {
 					ideology = liberal_conservatism
 				}
 			}
 		}
-		effect_tooltip = {
-			retire_country_leader = yes
-			create_country_leader = {
-				name = "Nikola Pašić"
-				ideology = liberal_conservatism
-				expire = "1935.1.1"
-				traits = {
-					radical_veteran
-					political_swimmer
-				}
-			}
+		SER_nikola_pasic = {
+			promote_character = liberal_conservatism
 		}
 	}
 }
@@ -307,31 +287,17 @@ country_event = {
 	fire_only_once = yes
 	option = {
 		name = ww1_serbia.9.a
-		effect_tooltip = {
-			retire_character = SER_milovan_milovanovic
-			SER_marko_trifkovic = {
-				add_country_leader_role = {
-					promote_leader = yes
-					country_leader = {
-						ideology = liberal_conservatism
-						traits = {
-							professional_crisis_solver
-						}
-					}
-				}
-			}
-		}
 		hidden_effect = {
 			retire_character = SER_milovan_milovanovic
 			remove_ideas = SER_idea_interim_government
 			add_ideas = SER_idea_fragile_majority
 			unlock_national_focus = SER_radical_victory
 			mark_focus_tree_layout_dirty = yes
-			SER_marko_trifkovic = {
-				promote_character = {
-					ideology = liberal_conservatism
-				}
-			}
+		}
+
+		retire_character = SER_milovan_milovanovic
+		SER_marko_trifkovic = {
+			promote_character = liberal_conservatism
 		}
 	}
 }
@@ -1308,6 +1274,40 @@ country_event = {
 			}
 			news_event = ww1_greece.231
 		}
+		ai_chance = { factor = 100 }
+	}
+	option = {
+		name = ww1_serbia.43.b
+		trigger = { NOT = { has_completed_focus = GRE_negotiations_with_entente } }
+		declare_war_on = {
+			target = SER
+			type = take_claimed_state
+			generator = { 187 }
+		}
+		187 = {
+			transfer_state_to = FROM
+			add_dynamic_modifier = { modifier = SER_serbian_exile }
+			add_contested_owner = GRE
+		}
+		FROM = {
+			swap_ideas = {
+				remove_idea = SER_idea_exodus
+				add_idea = SER_idea_exile
+			}
+			add_opinion_modifier = {
+				target = ROOT
+				modifier = large_decrease
+			}
+		}
+		hidden_effect = {
+			every_state = {
+				teleport_armies = {
+					limit = { tag = SER }
+					to_province = 10203
+				}
+			}
+		}
+		ai_chance = { factor = 0 }
 	}
 }
 
@@ -1623,6 +1623,7 @@ country_event = {
 		every_state = {
 			limit = {
 				is_core_of = CRO
+				has_resistance = yes
 			}
 			add_compliance = -0.1
 		}
@@ -2464,7 +2465,6 @@ news_event = {
 	picture = ww1_franzferdinand_1
 	major = yes
 	is_triggered_only = yes
-	fire_only_once = yes
 	immediate = {
 		hidden_effect = {
 			SER = {
@@ -2752,7 +2752,6 @@ news_event = {
 	picture = GFX_news_event_047
 	major = yes
 	is_triggered_only = yes
-	fire_only_once = yes
 	option = {
 		name = ww1_franzferdinand.1.a
 		ai_chance = {
@@ -3491,9 +3490,14 @@ country_event = {
 				transfer_troops = yes
 			}
 		}
-		custom_effect_tooltip = GAME_OVER_TT
 		hidden_effect = {
-			every_unit_leader = {
+			every_character = {
+				limit = {
+					NOT = {
+						has_character_flag = dont_transfer
+						has_character_flag = greens
+					}
+				}
 				set_nationality = FROM
 			}
 			every_state = {
@@ -3508,81 +3512,55 @@ country_event = {
 				}
 				add_claim_by = FROM
 			}
-			FROM = {
+		}
+		FROM = {
+			if = {
+				limit = {
+					is_ai = yes
+					ROOT = { is_ai = no }
+				}
 				change_tag_from = ROOT
 			}
+			else = {
+				custom_effect_tooltip = GAME_OVER_TT
+			}
+		}
+		ai_chance = {
+			base = 10
 		}
 	}
-	# player chance to resist - the whites revolt
+	# player chance to resist - the greens revolt
 	option = {
 		name = ww1_serbia.140.b
 		trigger = {
 			is_subject = no
 		}
-		start_civil_war = {
-			ideology = democratic
-			size = 0.5
-			states_filter = {
-				NOT = {
-					state = 105
-					state = 870
-				}
-			}
-			keep_political_leader = yes
-			keep_political_party_members = yes
-			keep_unit_leaders_trigger = {
-				OR = {
-					has_trait = politically_connected
-					has_trait = trait_royal
-					has_trait = trait_royalist
-				}
-			}
-			hidden_effect = {
-				PREV = {
-					MNT_podgorica_assembly = {
-						set_nationality = PREV.PREV
-					}
-				}
-				FROM = {
-					set_autonomy = {
-						target = PREV
-						autonomy_state = autonomy_integrated_puppet
-						end_wars = no
-						end_civil_wars = no
-					}
-				}
-				set_politics = {
-					ruling_party = democratic
-					elections_allowed = no
-				}
-				add_popularity = {
-					ideology = democratic
-					popularity = 0.2
-				}
-				set_party_name = {
-					ideology = democratic
-					long_name = MNT_national_assembly_long
-					name = MNT_national_assembly
-				}
-				MNT_podgorica_assembly = {
-					if = {
-						limit = {
-							has_ideology = conservatism
-						}
-						promote_character = conservatism
-					}
-					else = {
-						add_country_leader_role = {
-							promote_leader = yes
-							country_leader = {
-								ideology = conservatism
-							}
-						}
-					}
-				}
-			}
-		}
 		hidden_effect = {
+			MNT_vukasin_markovic = {
+				promote_character = vanguardism
+			}
+			MNT_krsto_popovic = {
+				promote_character = stratocracy
+			}
+			every_character = {
+				limit = {
+					NOT = {
+						has_character_flag = dont_transfer
+						has_character_flag = greens
+					}
+				}
+				set_nationality = FROM
+			}
+			set_party_name = {
+				ideology = fascism
+				long_name = MNT_zeleni_party_long
+				name = MNT_zeleni_party
+			}
+			set_party_name = {
+				ideology = democratic
+				long_name = MNT_zeleni_party_long
+				name = MNT_zeleni_party
+			}
 			every_state = {
 				limit = {
 					is_core_of = ROOT
@@ -3596,8 +3574,55 @@ country_event = {
 				add_claim_by = FROM
 			}
 		}
+		transfer_units_fraction = {
+			target = FROM
+			size = 0.5
+			keep_unit_leaders_trigger = {
+				always = yes
+			}
+		}
+		FROM = {
+			declare_war_on = {
+				target = ROOT
+				type = annex_everything
+			}
+		}
+		every_owned_state = {
+			limit = {
+				NOT = {
+					state = 105
+					state = 1205
+				}
+			}
+			set_state_controller_to = FROM
+		}
+		hidden_effect = {
+			division_template = {
+				name = "Zelenaši"
+				regiments = {
+					infantry = { x = 0 y = 0 }
+					infantry = { x = 0 y = 1 }
+					infantry = { x = 0 y = 2 }
+				}
+			}
+			capital_scope = {
+				create_unit = {
+					division = "name = \"Zelenaši\" division_template = \"Zelenaši\" start_experience_factor = 1.0 start_equipment_factor = 0.7"
+					owner = PREV
+					count = 2
+				}
+			}
+		}
 		ai_chance = {
-			base = 0
+			base = 1
+			modifier = {
+				factor = 0
+				has_country_flag = Montenegro_capitulated
+			}
+			modifier = {
+				factor = 0
+				is_historical_focus_on = yes
+			}
 		}
 	}
 }

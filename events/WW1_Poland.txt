@@ -1003,7 +1003,15 @@ country_event = {
 			}
 		}
 		white_peace = LIT
-		784 = { set_demilitarized_zone = yes }
+		784 = {
+			if = {
+				limit = {
+					NOT = { is_owned_by = ROOT }
+				}
+				set_demilitarized_zone = yes
+				ROOT = { unlock_decision_tooltip = POL_occupy_wilno }
+			}
+		}
 		add_named_threat = {
 			threat = -2
 			name = ww1_poland.14.t
@@ -1095,7 +1103,9 @@ news_event = {
 }
 
 # Treaty of Warsaw (Polish-Ukrainian Agreement)]
-## Polish Victory
+
+
+## Polish Victory in Ukraine war
 country_event = {
 	id = ww1_poland.16
 	title = ww1_poland.16.t
@@ -1189,24 +1199,24 @@ country_event = {
 				}
 			}
 		}
-		if = {
-			limit = {
-				NOT = {
-					has_war_with = SOV
-					is_ally_with = SOV
-					has_government = communism
-					has_global_flag = polish_soviet_war
-				}
-				FROM = { has_war_with = SOV }
-			}
-			add_to_war = {
-				targeted_alliance = FROM
-				enemy = SOV
-			}
-			hidden_effect = {
-				polish_soviet_war_effect = yes
-			}
-		}
+		# if = {
+		# 	limit = {
+		# 		NOT = {
+		# 			has_war_with = SOV
+		# 			is_ally_with = SOV
+		# 			has_government = communism
+		# 			has_global_flag = polish_soviet_war
+		# 		}
+		# 		FROM = { has_war_with = SOV }
+		# 	}
+		# 	add_to_war = {
+		# 		targeted_alliance = FROM
+		# 		enemy = SOV
+		# 	}
+		# 	hidden_effect = {
+		# 		polish_soviet_war_effect = yes
+		# 	}
+		# }
 	}
 	option = {
 		name = ww1_poland.16.b
@@ -1687,6 +1697,8 @@ country_event = {
 # Danzig in German hands, it happens when poland loses soviet war
 country_event = {
 	id = ww1_poland.23
+	title = ww1_poland.23.t
+	desc = ww1_poland.23.d
 	trigger = {
 		tag = GER
 		has_war = no
@@ -1714,8 +1726,8 @@ country_event = {
 		days = 0
 	}
 	fire_only_once = yes
-	hidden = yes
-	immediate = {
+	option = {
+		name = ww1_poland.23.a
 		DNZ = {
 			get_current_government_type = yes
 		}
@@ -1728,6 +1740,7 @@ country_event = {
 		}
 	}
 }
+
 # poland gives industry to austria
 country_event = {
 	id = ww1_poland.24
@@ -1740,5 +1753,288 @@ country_event = {
 		ai_chance = {
 			factor = 100
 		}
+	}
+}
+
+# Polish Troops Enter Bialystok
+country_event = {
+	id = ww1_poland.25
+	title = ww1_poland.25.t
+	desc = ww1_poland.25.d
+	picture = GFX_report_event_polish_army
+	is_triggered_only = yes
+	option = {
+		name = ww1_poland.25.a
+		every_owned_state = {
+			limit = {
+				OR = {
+					state = 97
+					state = 1017
+				}
+			}
+			transfer_state_to = FROM
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				add = 10
+				has_country_flag = great_war_loser
+			}
+			modifier = {
+				add = 10
+				has_war_together_with = FROM
+			}
+			modifier = {
+				add = 5
+				strength_ratio = {
+					tag = FROM
+					ratio < 1
+				}
+			}
+		}
+	}
+	option = {
+		name = ww1_poland.25.b
+		trigger = {
+			NOT = {
+				has_country_flag = great_war_loser
+			}
+		}
+		start_border_war = {
+			change_state_after_war = no
+			attacker = {
+				state = 1203
+				num_provinces = 2
+				on_win = ww1_poland.26
+				on_lose = ww1_poland.27
+				dig_in_factor = 2
+				terrain_factor = 2
+			}
+			defender = {
+				state = 97
+				num_provinces = 3
+				on_win = ww1_poland.27
+				on_lose = ww1_poland.26
+			}
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+				has_war_together_with = FROM
+			}
+		}
+	}
+}
+
+# Polish Troops Seized Bialystok
+country_event = {
+	id = ww1_poland.26
+	title = ww1_poland.26.t
+	desc = ww1_poland.26.d
+	picture = GFX_report_event_polish_army
+	is_triggered_only = yes
+	option = {
+		name = ww1_poland.26.a
+		trigger = {
+			NOT = { owns_state = 97 }
+		}
+		add_political_power = 25
+		transfer_state = 97
+		transfer_state = 1017
+	}
+	option = {
+		name = ww1_poland.26.b
+		trigger = {
+			owns_state = 97
+		}
+		add_political_power = -25
+		effect_tooltip = {
+			1203 = {
+				owner = {
+					transfer_state = 97
+					transfer_state = 1017
+				}
+			}
+		}
+	}
+}
+
+# Polish Troops Failed to Seize Bialystok
+country_event = {
+	id = ww1_poland.27
+	title = ww1_poland.27.t
+	desc = ww1_poland.27.d
+	picture = GFX_report_event_polish_army
+	is_triggered_only = yes
+	option = {
+		name = ww1_poland.27.a
+		trigger = {
+			NOT = { owns_state = 97 }
+		}
+		add_political_power = -25
+	}
+	option = {
+		name = ww1_poland.27.b
+		trigger = {
+			owns_state = 97
+		}
+		add_political_power = 25
+	}
+}
+
+# Treaty of Bialystok
+country_event = {
+	id = ww1_poland.28
+	title = ww1_poland.28.t
+	desc = ww1_poland.28.d
+	picture = GFX_report_event_generic_peaceful_annexation
+	is_triggered_only = yes
+	option = {
+		name = ww1_poland.28.a
+		trigger = {
+			tag = POL
+		}
+		transfer_state = 773
+		transfer_state = 97
+		transfer_state = 1017
+		add_state_core = 773
+		add_state_core = 97
+		add_state_core = 1017
+	}
+	option = {
+		name = ww1_poland.28.b
+		trigger = {
+			NOT = { tag = POL }
+		}
+		effect_tooltip = {
+			POL = {
+				transfer_state = 773
+				transfer_state = 97
+				transfer_state = 1017
+				add_state_core = 773
+				add_state_core = 97
+				add_state_core = 1017
+			}
+		}
+	}
+}
+
+# Polish Troops Enter Grodno
+country_event = {
+	id = ww1_poland.29
+	title = ww1_poland.29.t
+	desc = ww1_poland.29.d
+	picture = GFX_report_event_polish_army
+	is_triggered_only = yes
+	option = {
+		name = ww1_poland.29.a
+		FROM = {
+			transfer_state = 773
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				add = 10
+				has_country_flag = great_war_loser
+			}
+			modifier = {
+				add = 10
+				has_war_together_with = FROM
+			}
+			modifier = {
+				add = 5
+				strength_ratio = {
+					tag = FROM
+					ratio < 1
+				}
+			}
+		}
+	}
+	option = {
+		name = ww1_poland.29.b
+		trigger = {
+			NOT = {
+				has_country_flag = great_war_loser
+			}
+		}
+		start_border_war = {
+			change_state_after_war = no
+			attacker = {
+				state = 97
+				num_provinces = 3
+				on_win = ww1_poland.30
+				on_lose = ww1_poland.31
+				dig_in_factor = 2
+				terrain_factor = 2
+			}
+			defender = {
+				state = 773
+				num_provinces = 3
+				on_win = ww1_poland.31
+				on_lose = ww1_poland.30
+			}
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				factor = 0
+				has_war_together_with = FROM
+			}
+		}
+	}
+}
+
+# Polish Troops Seized Grodno
+country_event = {
+	id = ww1_poland.30
+	title = ww1_poland.30.t
+	desc = ww1_poland.30.d
+	picture = GFX_report_event_polish_army
+	is_triggered_only = yes
+	option = {
+		name = ww1_poland.30.a
+		trigger = {
+			NOT = { owns_state = 773 }
+		}
+		add_political_power = 25
+		transfer_state = 773
+	}
+	option = {
+		name = ww1_poland.30.b
+		trigger = {
+			owns_state = 773
+		}
+		add_political_power = -25
+		effect_tooltip = {
+			1203 = {
+				owner = {
+					transfer_state = 773
+				}
+			}
+		}
+	}
+}
+
+# Polish Troops Failed to Seize Grodno
+country_event = {
+	id = ww1_poland.31
+	title = ww1_poland.31.t
+	desc = ww1_poland.31.d
+	picture = GFX_report_event_polish_army
+	is_triggered_only = yes
+	option = {
+		name = ww1_poland.31.a
+		trigger = {
+			NOT = { owns_state = 773 }
+		}
+		add_political_power = -25
+	}
+	option = {
+		name = ww1_poland.31.b
+		trigger = {
+			owns_state = 773
+		}
+		add_political_power = 25
 	}
 }
