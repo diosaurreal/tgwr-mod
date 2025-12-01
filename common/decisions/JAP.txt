@@ -690,88 +690,126 @@ debug_decisions = {
 	}
 }
 
-JAP_buying_ships = {
-	JAP_order_kongo_battleship = {
-		icon = MTG_naval_treaties
-		target_trigger = {
-			FROM = {
-				tag = USA
-			}
-		}
-		visible = {
+JAP_ijn_modernization = {
+	JAP_build_ships_mission = {
+		allowed = {
 			tag = JAP
-			NOT = {
-				has_war_with = FROM
-				has_country_flag = has_ordered_kongo_battleship
-			}
 		}
+		is_good = no
 		available = {
-			has_opinion = {
-				target = FROM
-				value > 25
+			set_temp_variable = {
+				bb_two = built_battleship
 			}
-			command_power > 49
-			num_of_civilian_factories > 2
-			has_capitulated = no
-			FROM = { has_capitulated = no }
-			NOT = {
-				has_war_with = USA
-				has_country_flag = JAP_buying_ships_from_USA
-				has_country_flag = has_ordered_kongo_battleship
+			add_to_temp_variable = {
+				bb_two = 2
 			}
-			has_tech = basic_ship_hull_heavy
-		}
-		fire_only_once = no
-		complete_effect = {
-			add_ideas = JAP_buying_ships_from_USA
-			set_country_flag = JAP_buying_ships_from_USA
-		}
-		cost = 0
-		custom_cost_text = decision_cost_CP_50
-		custom_cost_trigger = {
-			command_power > 49
-		}
-		days_remove = 180
-		days_re_enable = 30
-		complete_effect = {
-			add_command_power = -50
-		}
-		cancel_effect = {
-			remove_ideas = JAP_buying_ships_from_USA
-			clr_country_flag = JAP_buying_ships_from_USA
-		}
-		remove_effect = {
-			remove_ideas = JAP_buying_ships_from_USA
-			clr_country_flag = JAP_buying_ships_from_USA
-			set_country_flag = has_ordered_kongo_battleship
-			effect_tooltip = {
-				hidden_effect = {
-					create_equipment_variant = {
-						name = "Kongo Class"
-						type = ship_hull_heavy_2
-						name_group = JAP_BB_HISTORICAL
-						parent_version = 0
-						modules = {
-							fixed_ship_battery_slot = ship_heavy_battery_2
-							fixed_ship_anti_air_slot = empty
-							fixed_ship_fire_control_system_slot = ship_fire_control_system_0
-							fixed_ship_radar_slot = empty
-							fixed_ship_engine_slot = heavy_ship_engine_1
-							fixed_ship_secondaries_slot = ship_secondaries_1
-							fixed_ship_armor_slot = ship_armor_bb_1
-							front_1_custom_slot = empty
-							mid_1_custom_slot = empty
-							rear_1_custom_slot = empty
+			set_temp_variable = {
+				bc_two = built_battlecruiser
+			}
+			add_to_temp_variable = {
+				bc_two = 2
+			}
+			set_temp_variable = {
+				bc_one = built_battlecruiser
+			}
+			add_to_temp_variable = {
+				bc_one = 1
+			}
+			set_temp_variable = {
+				bb_one = built_battleship
+			}
+			add_to_temp_variable = {
+				bb_one = 1
+			}
+			set_temp_variable = {
+				capital_ships_count = num_ships_with_type@battleship
+			}
+			subtract_from_temp_variable = {
+				capital_ships_count = built_battleship
+			}
+			add_to_temp_variable = {
+				capital_ships_count = num_ships_with_type@battle_cruiser
+			}
+			subtract_from_temp_variable = {
+				capital_ships_count = built_battlecruiser
+			}
+			custom_trigger_tooltip = {
+				tooltip = JAP_build_two_capital_ships
+				OR = {
+					check_variable = {
+						var = num_ships_with_type@battleship
+						value = bb_two
+						compare = greater_than_or_equals
+					}
+					AND = {
+						check_variable = {
+							var = num_ships_with_type@battleship
+							value = bb_one
+							compare = greater_than_or_equals
 						}
+						check_variable = {
+							var = num_ships_with_type@battle_cruiser
+							value = bc_one
+							compare = greater_than_or_equals
+						}						
+					}
+					check_variable = {
+						var = num_ships_with_type@battle_cruiser
+						value = bc_two
+						compare = greater_than_or_equals
 					}
 				}
-				create_ship = { name = "IJA Kongo" type = ship_hull_heavy_2 equipment_variant = "Kongo Class" }
 			}
-			hidden_effect = {
-				country_event = {
-					id = ww1_japan.25
+		}
+		cancel_trigger = {
+			hidden_trigger = {			
+				OR = {
+					has_idea = idea_army_restrictions
+					has_idea = disarmed_nation
 				}
 			}
+		}
+		days_mission_timeout = 365
+		complete_effect = {
+			if = {
+				limit = { 
+					has_completed_focus = JAP_fleet_programm
+				}
+				JAP_improve_naval_industry = yes
+			}
+			hidden_effect = {
+				JAP_start_ship_building_mission = yes
+			}
+		}
+		timeout_effect = {
+			JAP_worse_naval_industry = yes
+			add_political_power = -20
+			add_stability = -0.05
+			hidden_effect = {
+				activate_mission = JAP_build_ships_mission
+			}
+		}
+	}
+	JAP_debug_improve_industry = {
+		available = {
+			is_ai = no
+		}
+		visible = {
+			is_debug = yes
+		}
+		complete_effect = {
+			JAP_improve_naval_industry = yes
+		}
+	}
+	JAP_debug_improve_research = {
+		available = {
+			is_ai = no
+		}
+		visible = {
+			is_debug = yes
+		}
+		complete_effect = {
+			JAP_improve_naval_research = yes
 		}
 	}
 }
