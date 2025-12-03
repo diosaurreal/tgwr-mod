@@ -2939,8 +2939,7 @@ news_event = {
 		trigger = {
 			OR = {
 				tag = GER
-				is_in_faction_with = GER
-				is_subject_of = GER
+				is_ally_with = GER
 				has_war_with = FRA
 				has_country_flag = great_war_winner
 			}
@@ -2954,8 +2953,7 @@ news_event = {
 		trigger = {
 			OR = {
 				tag = FRA
-				is_in_faction_with = FRA
-				is_subject_of = FRA
+				is_ally_with = FRA
 				has_war_with = GER
 				has_country_flag = great_war_loser
 			}
@@ -3666,11 +3664,6 @@ country_event = {
 	desc = ww1_germany.108.d
 	picture = GFX_report_event_german_reichstag_gathering
 	is_triggered_only = yes
-	immediate = {
-		hidden_effect = {
-			complete_national_focus = GER_veteran_organisation_weimar
-		}
-	}
 	option = {
 		name = ww1_germany.108.a
 		add_stability = -0.05
@@ -4028,10 +4021,10 @@ country_event = {
 		}
 		remove_ideas = GER_idea_kapp_illegitimate_government
 		hidden_effect = {
-			drop_cosmetic_tag = yes
+			set_cosmetic_tag = GER_republic
 			if = {
 				limit = {
-					has_global_flag = beer_hall_putsch
+					has_country_flag = GER_nazi_party
 				}
 				set_party_name = {
 					ideology = fascism
@@ -4040,22 +4033,27 @@ country_event = {
 				}
 				promote_character = GER_adolf_hitler
 			}
-			# else_if = {
-			# 	limit = {
-			# 		has_completed_focus = GER_deutsche_arbeiterpartei
-			# 	}
-			# 	set_party_name = {
-			# 		ideology = fascism
-			# 		long_name = GER_fascism_party_DAP_long
-			# 		name = GER_fascism_party_DAP
-			# 	}
-			# 	promote_character = GER_adolf_hitler
-			# }
 			else = {
 				set_party_name = {
 					ideology = fascism
-					long_name = GER_fascism_party
-					name = GER_fascism_party
+					long_name = GER_fascism_party_DAP_long
+					name = GER_fascism_party_DAP
+				}
+				GER_anton_drexler = {
+					if = {
+						limit = {
+							has_ideology = gen_nazism
+						}
+						promote_character = gen_nazism
+						else = {
+							add_country_leader_role = {
+								promote_leader = yes
+								country_leader = {
+									ideology = gen_nazism
+								}
+							}
+						}	
+					}
 				}
 			}
 		}
@@ -4688,6 +4686,9 @@ country_event = {
 	}
 	option = {
 		name = ww1_germany.122.b
+		trigger = {
+			is_ai = no
+		}
 		remove_ideas = strikes_3
 		start_civil_war = {
 			ideology = communism
@@ -4810,9 +4811,9 @@ country_event = {
 	picture = GFX_report_event_german_reichstag_gathering
 	trigger = {
 		original_tag = GER
-		has_civil_war = no
 		has_global_flag = ruhr_uprising
 		has_country_flag = ruhr_uprising
+		has_civil_war = no
 	}
 	fire_only_once = yes
 	mean_time_to_happen = {
@@ -4826,7 +4827,15 @@ country_event = {
 		set_capital = {
 			state = 64
 		}
-		set_cosmetic_tag = BAY_germany
+		if = {
+			limit = { 
+				has_government = communism
+			}
+			set_cosmetic_tag = GER_socialism
+		}
+		else = {
+			set_cosmetic_tag = GER_republic
+		}
 	}
 }
 
@@ -5475,8 +5484,7 @@ country_event = {
 			owner = {
 				OR = {
 					tag = ROOT #failsafe somehow
-					is_in_faction_with = ROOT
-					is_subject_of = ROOT
+					is_ally_with = ROOT
 					has_country_flag = great_war_winner
 				}
 			}
@@ -5489,8 +5497,7 @@ country_event = {
 				owner = {
 					OR = {
 						tag = ROOT #failsafe somehow
-						is_in_faction_with = ROOT
-						is_subject_of = ROOT
+						is_ally_with = ROOT
 						has_country_flag = great_war_winner
 					}
 				}
@@ -5517,8 +5524,7 @@ country_event = {
 					limit = {
 						OR = {
 							tag = ROOT
-							is_subject_of = ROOT
-							is_in_faction_with = ROOT
+							is_ally_with = ROOT
 							has_country_flag = great_war_winner
 						}
 					}
@@ -5559,8 +5565,7 @@ country_event = {
 				owner = {
 					OR = {
 						tag = ROOT #failsafe somehow
-						is_in_faction_with = ROOT
-						is_subject_of = ROOT
+						is_ally_with = ROOT
 						has_country_flag = great_war_winner
 					}
 				}
@@ -5577,8 +5582,7 @@ country_event = {
 					limit = {
 						OR = {
 							tag = ROOT
-							is_subject_of = ROOT
-							is_in_faction_with = ROOT
+							is_ally_with = ROOT
 							has_country_flag = great_war_winner
 						}
 					}
@@ -6509,7 +6513,7 @@ country_event = {
 				add = 10
 				OR = {
 					tag = MAL
-					tag = SRW
+					tag = SAR
 				}
 				has_global_flag = british_civil_war
 			}
@@ -7121,9 +7125,10 @@ country_event = {
 	option = {
 		name = ww1_germany.166.a
 		trigger = {
-			BUL = {
-				owns_state = 211
-				NOT = { has_war_with = ROOT }
+			211 = {
+				owner = {
+					NOT = { has_war_with = ROOT }
+				}
 			}
 		}
 		every_owned_state = {
@@ -7134,34 +7139,80 @@ country_event = {
 					state = 846
 				}
 			}
-			transfer_state_to = BUL
+			211 = {
+				owner = {
+					transfer_state = PREV.PREV
+				}
+			}
 		}
 		ai_chance = {
 			base = 10
 			modifier = {
 				add = -5
-				has_opinion = {
-					target = BUL
-					value < 0
+				211 = {
+					owner = {
+						ROOT = {
+							has_opinion = {
+								target = PREV
+								value < 0
+							}
+						}
+					}
 				}
 			}
 			modifier = {
 				add = -5
-				BUL = { has_country_flag = great_war_loser }
+				211 = {
+					owner = {
+						has_country_flag = great_war_loser
+					}
+				}
+			}
+			modifier = {
+				add = -30
+				has_monarchy = yes
+				211 = {
+					owner = {
+						has_government = communism
+					}
+				}
+			}
+			modifier = {
+				add = 10
+				211 = {
+					owner = {
+						has_country_flag = great_war_winner
+					}
+				}
 			}
 			modifier = {
 				add = 5
+				211 = {
+					owner = {
+						is_subject_of = ROOT
+					}
+				}
 				has_subject = BUL
 			}
 			modifier = {
 				add = 5
-				is_in_faction_with = BUL
+				211 = {
+					owner = {
+						is_in_faction_with = ROOT
+					}
+				}
 			}
 			modifier = {
 				add = 5
-				has_opinion = {
-					target = BUL
-					value > 20
+				211 = {
+					owner = {
+						ROOT = {
+							has_opinion = {
+								target = PREV
+								value > 20
+							}
+						}
+					}
 				}
 			}
 		}
@@ -7171,7 +7222,7 @@ country_event = {
 		name = ww1_germany.166.b
 		trigger = {
 			ROM = {
-				owns_state = 46
+				owns_state = 79
 				NOT = { has_war_with = ROOT }
 			}
 		}
@@ -7199,6 +7250,15 @@ country_event = {
 				ROM = { has_country_flag = great_war_loser }
 			}
 			modifier = {
+				add = -30
+				has_monarchy = yes
+				ROM = { has_government = communism }
+			}
+			modifier = {
+				add = 10
+				ROM = { has_country_flag = great_war_winner }
+			}
+			modifier = {
 				add = 5
 				has_subject = ROM
 			}
@@ -7215,59 +7275,55 @@ country_event = {
 			}
 		}
 	}
-	# transfer to ottoman
+	# divide
 	option = {
 		name = ww1_germany.166.c
 		trigger = {
-			TUR = {
-				owns_state = 211
+			211 = {
+				owner = {
+					NOT = { has_war_with = ROOT }
+				}
+			}
+			ROM = {
+				owns_state = 79
 				NOT = { has_war_with = ROOT }
 			}
+			owns_state = 805
+			owns_state = 846
 		}
 		every_owned_state = {
 			limit = {
 				OR = {
 					state = 77
-					state = 805
 					state = 846
 				}
 			}
-			transfer_state_to = TUR
+			211 = {
+				owner = {
+					transfer_state = PREV.PREV
+				}
+			}
+		}
+		805 = {
+			transfer_state_to = ROM
 		}
 		ai_chance = {
-			base = 10
+			base = 0
 			modifier = {
-				add = -20
-				NOT = {
-					77 = { is_claimed_by = TUR }
-					805 = { is_claimed_by = TUR }
-					846 = { is_claimed_by = TUR }
+				add = 30
+				211 = {
+					owner = {
+						NOT = {
+							is_ally_with = ROOT
+							has_country_flag = great_war_winner
+						}
+					}
 				}
-			}
-			modifier = {
-				add = -5
-				has_opinion = {
-					target = TUR
-					value < 0
-				}
-			}
-			modifier = {
-				add = -5
-				TUR = { has_country_flag = great_war_loser }
-			}
-			modifier = {
-				add = 5
-				has_subject = TUR
-			}
-			modifier = {
-				add = 5
-				is_in_faction_with = TUR
-			}
-			modifier = {
-				add = 5
-				has_opinion = {
-					target = TUR
-					value > 20
+				ROM = {
+					NOT = {
+						is_ally_with = ROOT
+						has_country_flag = great_war_winner
+					}
 				}
 			}
 		}
@@ -7275,7 +7331,7 @@ country_event = {
 	# keep there
 	option = {
 		name = ww1_germany.166.d
-		ai_chance = { factor = 0 }
+		ai_chance = { base = 0 }
 	}
 }
 
@@ -7323,6 +7379,12 @@ country_event = {
 		puppet = BLR
 		hidden_effect = {
 			BLR = {
+				every_state = {
+					limit = {
+						has_contested_owner = PREV
+					}
+					remove_contested_owner = PREV
+				}
 				set_politics = {
 					ruling_party = neutrality
 					last_election = "1908.11.1"
@@ -7771,10 +7833,7 @@ country_event = {
 			227 = {
 				owner = {
 					is_russian_tag = no
-					OR = {
-						is_subject_of = ROOT
-						is_in_faction_with = ROOT
-					}
+					is_ally_with = ROOT
 				}
 			}
 		}
@@ -7802,11 +7861,29 @@ country_event = {
 	desc = ww1_germany.171.d
 	picture = GFX_report_event_generic_military_parade
 	is_triggered_only = yes
+	fire_only_once = yes
+	immediate = {
+		hidden_effect = {
+			annex_country = {
+				target = ALS
+				transfer_troops = no
+			}
+			ALS = {
+				remove_ideas = standing_alone
+				set_politics = {
+					ruling_party = democratic
+					elections_allowed = no
+				}
+			}		
+		}
+	}
 	option = {
 		name = ww1_germany.171.a
-		annex_country = {
-			target = ALS
-			transfer_troops = no
+		effect_tooltip = {
+			annex_country = {
+				target = ALS
+				transfer_troops = no
+			}			
 		}
 	}
 }
@@ -7937,9 +8014,8 @@ country_event = {
 				907 = {
 					owner = {
 						NOT = {
-							is_in_faction_with = ROOT
+							is_ally_with = ROOT
 							has_war_with = ROOT
-							is_subject_of = ROOT
 							tag = ROOT
 						}
 					}
@@ -7996,8 +8072,7 @@ country_event = {
 				owner = {
 					OR = {
 						has_war_with = ROOT
-						is_in_faction_with = ROOT
-						is_subject_of = ROOT
+						is_ally_with = ROOT
 					}
 				}
 			}
@@ -8037,8 +8112,7 @@ country_event = {
 				if = {
 					limit = {
 						OR = {
-							is_subject_of = ROOT
-							is_in_faction_with = ROOT
+							is_ally_with = ROOT
 						}
 					}
 					transfer_state = 865
@@ -8563,7 +8637,6 @@ news_event = {
 	title = ww1_germanrework.10.t
 	desc = ww1_germanrework.10.d
 	picture = GFX_news_event_wilhelm_ii_george_v
-	fire_only_once = no
 	is_triggered_only = yes
 	major = yes
 
@@ -10804,32 +10877,7 @@ country_event = {
 	fire_only_once = yes
 	option = {
 		name = ww1_germanrework.100.a
-		if = {
-			limit = {
-				has_dlc = "Gotterdammerung"
-				NOT = {
-					is_special_project_completed = sp:sp_land_super_heavy_howitzer
-				}
-			}
-			sp:sp_land_super_heavy_howitzer = {
-				add_project_progress_ratio = 0.5
-			}		
-		}
-		add_breakthrough_points = {
-			specialization = specialization_land
-			value = 1
-		}
-		add_tech_bonus = {
-			name = GER_propose_joint_military_exercises
-			bonus = 1
-			category = cat_howitzer
-			uses = 1
-		}
-		add_doctrine_cost_reduction = {
-			name = GER_propose_joint_military_exercises
-			category = land_doctrine
-			cost_reduction = 0.25
-		}
+		GER_joint_military_exercises_effect = yes
 	}
 }
 
@@ -12804,7 +12852,6 @@ country_event = {
 	title = ww1_germanrework.162.t
 	desc = ww1_germanrework.162.d
 	picture = GFX_report_event_unrestricted_submarine_warfare
-	fire_only_once = no
 	is_triggered_only = yes
 	option = {
 		name = ww1_germanrework.162.a
@@ -12835,7 +12882,6 @@ country_event = {
 	title = ww1_germanrework.163.t
 	desc = ww1_germanrework.163.d
 	picture = GFX_report_event_unrestricted_submarine_warfare
-	fire_only_once = no
 	is_triggered_only = yes
 	option = {
 		name = ww1_germanrework.163.a
@@ -12951,22 +12997,26 @@ country_event = {
 		unlock_decision_tooltip = GER_send_zimmermann_telegram
 		set_country_flag = GER_send_zimmermann_telegram_possible
 		ai_chance = {
-			factor = 50
+			base = 50
 		}
 	}
 	option = {
 		name = ww1_germanrework.166.b
 		add_war_support = 0.03
-		effect_tooltip = {
-			USA = {
+		USA = {
+			effect_tooltip = {
 				declare_war_on = {
 					target = GER
 					type = topple_government
 				}
+			}	
+			country_event = {
+				id = ww1_germanrework.168
+				hours = 2
 			}
 		}
 		ai_chance = {
-			factor = 5
+			base = 5
 			modifier = {
 				is_historical_focus_on = yes
 				factor = 0
@@ -13005,7 +13055,7 @@ country_event = {
 		join_great_war_against_GER = yes
 		news_event = {
 			id = ww1_germanrework.169
-			days = 1
+			hours = 1
 		}
 	}
 }
@@ -13028,7 +13078,6 @@ country_event = {
 	title = ww1_germanrework.170.t
 	desc = ww1_germanrework.170.d
 	picture = GFX_report_event_unrestricted_submarine_warfare
-	fire_only_once = no
 	is_triggered_only = yes
 	option = {
 		name = ww1_germanrework.170.a
@@ -13138,7 +13187,6 @@ country_event = {
 	title = ww1_germanrework.174.t
 	desc = ww1_germanrework.174.desc
 	picture = [get_GER_bundesrat_event_picture]
-	fire_only_once = no
 	is_triggered_only = yes
 	immediate = {
 		hidden_effect = {
@@ -14246,13 +14294,17 @@ country_event = {
 		}
 		set_country_flag = mexico_agrees
 		ai_chance = {
-			factor = 100
+			base = 100
 			modifier = {
 				is_historical_focus_on = yes
 				factor = 0
 			}
 			modifier = {
 				has_government = democratic
+				factor = 0
+			}
+			modifier = {
+				has_government = communism
 				factor = 0
 			}
 			modifier = {
@@ -14270,7 +14322,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 10
+			base = 10
 			modifier = {
 				has_government = neutrality
 				factor = 10
@@ -14406,8 +14458,7 @@ country_event = {
 					limit = {
 						# has_war_with = ROM
 						NOT = {
-							is_in_faction_with = ROM
-							is_subject_of = ROM
+							is_ally_with = ROM
 							has_war_with = ROOT
 						}
 						owns_state = 80
@@ -14420,8 +14471,7 @@ country_event = {
 					any_other_country = {
 						# has_war_with = ROM
 						NOT = {
-							is_in_faction_with = ROM
-							is_subject_of = ROM
+							is_ally_with = ROM
 							has_war_with = ROOT
 						}
 						owns_state = 211
@@ -14431,8 +14481,7 @@ country_event = {
 					limit = {
 						# has_war_with = ROM
 						NOT = {
-							is_in_faction_with = ROM
-							is_subject_of = ROM
+							is_ally_with = ROM
 							has_war_with = ROOT
 						}
 						owns_state = 211
