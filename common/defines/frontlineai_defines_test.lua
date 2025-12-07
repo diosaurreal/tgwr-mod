@@ -1,6 +1,6 @@
 --Hello, if you're looking to put this in a modpack, ask and link, but jokes on you, it's compatible in theory with literally every mod so you shouldn't have to put it in a modpack!						
 		
-NDefines.NAI.GARRISON_FRACTION = 0.2					-- How large part of a front should always be holding the line rather than advancing at the enemy
+--NDefines.NAI.GARRISON_FRACTION = 0.2					-- How large part of a front should always be holding the line rather than advancing at the enemy
 	
 NDefines.NAI.DIPLOMACY_REJECTED_WAIT_MONTHS_BASE = 1	-- AI will not repeat offers until at least this time has passed, and at most the double
 	
@@ -199,9 +199,6 @@ NDefines.NAI.COMMAND_POWER_BEFORE_SPEND_ON_TRAITS = 30.0
 NDefines.NAI.MIN_AI_UNITS_PER_TILE_FOR_STANDARD_COHESION = 2.0	-- How many units should we have for each tile along a front in order to switch to standard cohesion (less moving around)
 NDefines.NAI.MIN_FRONT_SIZE_TO_CONSIDER_STANDARD_COHESION = 2000	-- How long should fronts be before we consider switching to standard cohesion (under this, standard cohesion fronts will switch back to relaxed)
 
-NDefines.NAI.ASSIGN_TANKS_TO_WAR_FRONT = 12.0 --4.0
-NDefines.NAI.ASSIGN_TANKS_TO_NON_WAR_FRONT = 0.2 --0.4
-
 NDefines.NMilitary.PLAN_EXECUTE_RUSH = -10									-- When looking for an attach target, this score limit is required in the battle plan to consider province for attack
 
 
@@ -239,6 +236,8 @@ NDefines.NAI.PLAN_ACTIVATION_PLAYER_WEIGHT_FACTOR = 1 		                -- AI co
 
 NDefines.NAI.PLAN_MIN_SIZE_FOR_FALLBACK = 5000					                -- A country with less provinces than this will not draw fallback plans  but rather station their troops along the front
 
+NDefines.NAI.RECON_PLANES_NAVAL = 0.1
+NDefines.NAI.RECON_PLANES_LAND_COMBAT = 100
 --------------------------------------------------------------------------------------------------------------
 -- OlD COAST DEFENSE AI
 --------------------------------------------------------------------------------------------------------------
@@ -366,7 +365,7 @@ NDefines.NAI.MAX_FUEL_CONSUMPTION_RATIO_FOR_AIR_TRAINING = 1
 -------------------------
 
 
-NDefines.NAI.LAND_COMBAT_OUR_COMBATS_AIR_IMPORTANCE = 1000		-- Strategic importance of our armies in the combats
+NDefines.NAI.LAND_COMBAT_OUR_COMBATS_AIR_IMPORTANCE = 400		-- vanilla 155
 
 
 -------------------------
@@ -377,20 +376,23 @@ NDefines.NAI.LAND_DEFENSE_FIGHERS_PER_PLANE = 1				-- Amount of air superiority 
 NDefines.NAI.LAND_DEFENSE_INTERSEPTORS_PER_BOMBERS = 1		-- Amount of air interceptor planes requested per enemy bomber
 
 
-NDefines.NAI.LAND_DEFENSE_CIVIL_FACTORY_IMPORTANCE = 800 -- 50			-- Strategic importance of civil factories
-NDefines.NAI.LAND_DEFENSE_MILITARY_FACTORY_IMPORTANCE = 880 -- 70		-- Strategic importance of military factories
-NDefines.NAI.LAND_DEFENSE_NAVAL_FACTORY_IMPORTANCE = 420 -- 30			-- Strategic importance of naval factories
+--NDefines.NAI.LAND_DEFENSE_CIVIL_FACTORY_IMPORTANCE = 800 -- 50			-- Strategic importance of civil factories
+--NDefines.NAI.LAND_DEFENSE_MILITARY_FACTORY_IMPORTANCE = 880 -- 70		-- Strategic importance of military factories
+--NDefines.NAI.LAND_DEFENSE_NAVAL_FACTORY_IMPORTANCE = 420 -- 30			-- Strategic importance of naval factories
 
 
 -------------------------
 -- Str bombing
 -------------------------
 
-NDefines.NAI.STR_BOMB_PLANES_PER_CIV_FACTORY = 200				-- Amount of planes requested per enemy civ factory
-NDefines.NAI.STR_BOMB_PLANES_PER_MIL_FACTORY = 205				-- Amount of planes requested per enemy military factory
-NDefines.NAI.STR_BOMB_PLANES_PER_NAV_FACTORY = 105				-- Amount of planes requested per enemy naval factory
-NDefines.NAI.STR_BOMB_PLANES_PER_SUPPLY_HUB = 30                 -- Amount of planes requested per enemy supply node
-NDefines.NAI.STR_BOMB_MIN_EXCORT_PLANES = 200					-- Min amount of planes requested to excort operations
+NDefines.NAI.STR_BOMB_PLANES_PER_CIV_FACTORY = 0				-- Amount of planes requested per enemy civ factory
+NDefines.NAI.STR_BOMB_PLANES_PER_MIL_FACTORY = 0				-- Amount of planes requested per enemy military factory
+NDefines.NAI.STR_BOMB_PLANES_PER_NAV_FACTORY = 0				-- Amount of planes requested per enemy naval factory
+NDefines.NAI.STR_BOMB_CIVIL_FACTORY_IMPORTANCE = 0				-- Amount of planes requested per enemy naval factory
+NDefines.NAI.STR_BOMB_MILITARY_FACTORY_IMPORTANCE = 0				-- Amount of planes requested per enemy naval factory
+NDefines.NAI.STR_BOMB_NAVAL_FACTORY_IMPORTANCE = 0				-- Amount of planes requested per enemy naval factory
+--NDefines.NAI.STR_BOMB_PLANES_PER_SUPPLY_HUB = 3                 -- Amount of planes requested per enemy supply node
+NDefines.NAI.STR_BOMB_MIN_EXCORT_PLANES = 0					-- Min amount of planes requested to excort operations
 	
 -------------------------
 -- Naval air
@@ -398,16 +400,10 @@ NDefines.NAI.STR_BOMB_MIN_EXCORT_PLANES = 200					-- Min amount of planes reques
 
 
 NDefines.NAI.NAVAL_STRIKE_PLANES_PER_SHIP = 40					-- Amount of bombers requested per enemy ship
-
+NDefines.NAI.SUPPLY_PRIO_FACTOR = -100 --100 						--	AI is bad with that
 NDefines.NAI.NAVAL_SHIP_AIR_IMPORTANCE = 1 --2.0					-- Naval ship air importance
-
+NDefines.NAI.STR_BOMB_IMPORTANCE_SCALE = 5 --1.0
 NDefines.NAI.NAVAL_IMPORTANCE_SCALE = 0.5 --0.65						-- Naval total importance scale (every naval score get's multiplied by it)
-
-
-NDefines.NAI.NAVAL_PATROL_PLANES_PER_SHIP_PATROLLING = 20 --10.0		-- Amount of naval patrol planes per ship on a patrol mission
-NDefines.NAI.NAVAL_PATROL_PLANES_PER_SHIP_RAIDING = 40 --10.0		-- Amount of naval patrol planes per ship on a convoy raid mission
-NDefines.NAI.NAVAL_PATROL_PLANES_PER_SHIP_ESCORTING = 20 --10.0		-- Amount of naval patrol planes per ship on a convoy escort mission
-
 
 --- Land Defines
 NDefines.NMilitary.PLAN_EXECUTE_BALANCED_LIMIT = -1.0			-- When looking for an attach target, this score limit ---is required in the battle plan to consider province for attack suggested define by SensitiveDannyBoi
@@ -471,3 +467,12 @@ NDefines.NAI.MINIMUM_FUEL_DAYS_TO_ASK_LEND_LEASE = 10
 NDefines.NAI.MINIMUM_FUEL_DAYS_TO_ACCEPT_LEND_LEASE = 5
 
 NDefines.NAI.DIPLOMACY_ACCEPT_ATTACHE_OPINION_TRASHHOLD = 0
+
+NDefines.NAI.ASSIGN_TANKS_TO_WAR_FRONT = 1000
+NDefines.NAI.ASSIGN_TANKS_TO_NON_WAR_FRONT = 0
+
+NDefines.NAI.AIFC_UNIT_OFFENSIVE_SCORE_FACTOR_HARD_ATTACK = 0
+NDefines.NAI.AIFC_UNIT_OFFENSIVE_SCORE_FACTOR_HARDNESS = 0
+NDefines.NAI.AIFC_UNIT_OFFENSIVE_SCORE_FACTOR_ARMOR = 1000
+
+NDefines.NAI.ASSIGN_INVASION_AMPHIBIOUS_ATTACK_FACTOR = 100

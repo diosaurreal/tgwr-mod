@@ -3226,9 +3226,7 @@ news_event = {
 			is_controlled_by = ITA
 			is_owned_by = TUR
 		}
-		TUR = {
-			has_war_with = ITA
-		}
+		TUR = { has_war_with = ITA }
 		NOT = {
 			has_global_flag = libyan_crisis_resolved
 			has_global_flag = great_war
@@ -3237,9 +3235,7 @@ news_event = {
 	}
 	immediate = {
 		set_global_flag = fall_of_rhodes
-		899 = {
-			set_state_flag = fallen_to_italy_ITA_TUR_war
-		}
+		899 = { set_state_flag = fallen_to_italy_ITA_TUR_war }
 	}
 	mean_time_to_happen = {
 		days = 0
@@ -4158,7 +4154,6 @@ news_event = {
 	desc = ww1_italy.147.d
 	picture = GFX_news_event_election_vote
 	major = yes
-	fire_only_once = yes
 	is_triggered_only = yes
 	option = {
 		name = ww1_italy.147.a
@@ -7190,9 +7185,36 @@ country_event = {
 	fire_only_once = yes
 	option = {
 		name = ww1_italy.233.a
-		add_timed_idea = {
-			idea = ITA_unknown_lands
-			days = 365
+		every_state = {
+			limit = {
+				NOT = {
+					state = 448
+					state = 450
+				}
+				OR = {
+					is_core_of = LBA
+					is_core_of = TRP
+				}
+				impassable = no
+				owner = {
+					OR = {
+						has_war_with = ITA
+						tag = LBA
+					}
+				}
+			}
+			add_dynamic_modifier = { modifier = unknown_lands scope = ITA }
+			hidden_effect = {
+				if = {
+					limit = { is_controlled_by = ITA }
+					remove_dynamic_modifier = { modifier = unknown_lands scope = ITA }
+					add_dynamic_modifier = {
+						modifier = unknown_lands_2
+						scope = ITA
+						days = 180
+					}
+				}
+			}
 		}
 	}
 }
@@ -8367,7 +8389,7 @@ country_event = {
 			has_completed_focus = ITA_demobilize_the_army
 		}
 	}
-	fire_only_once = yes
+	is_triggered_only = yes
 	option = {
 		name = ww1_italy.292.a
 		custom_effect_tooltip = ITA_bread_shortages_1_minus
@@ -8382,33 +8404,33 @@ country_event = {
 	}
 }
 
-country_event = {
-	id = ww1_italy.293
-	title = ww1_italy.293.t
-	desc = ww1_italy.293.d
-	picture = GFX_report_ship_bombing_athens
-	trigger = {
-		tag = ITA
-		is_great_war_ongoing = yes
-		has_war_with = AUS
-	}
-	fire_only_once = yes
-	option = {
-		name = ww1_italy.293.a
-		160 = {
-			add_dynamic_modifier = {
-				modifier = ITA_aus_shell
-				scope = ITA
-				days = 180
-			}
-		}
-		custom_effect_tooltip = ITA_radio_prevents_shelling
-		custom_effect_tooltip = ITA_war_score_minus_2
-		add_to_variable = {
-			ITA_percieved_usefulness = -2
-		}
-	}
-}
+# country_event = {
+# 	id = ww1_italy.293
+# 	title = ww1_italy.293.t
+# 	desc = ww1_italy.293.d
+# 	picture = GFX_report_ship_bombing_athens
+# 	trigger = {
+# 		tag = ITA
+# 		is_great_war_ongoing = yes
+# 		has_war_with = AUS
+# 	}
+# 	fire_only_once = yes
+# 	option = {
+# 		name = ww1_italy.293.a
+# 		160 = {
+# 			add_dynamic_modifier = {
+# 				modifier = ITA_aus_shell
+# 				scope = ITA
+# 				days = 180
+# 			}
+# 		}
+# 		custom_effect_tooltip = ITA_radio_prevents_shelling
+# 		custom_effect_tooltip = ITA_war_score_minus_2
+# 		add_to_variable = {
+# 			ITA_percieved_usefulness = -2
+# 		}
+# 	}
+# }
 
 country_event = {
 	id = ww1_italy.294
@@ -8714,39 +8736,68 @@ country_event = {
 	fire_only_once = yes
 	option = {
 		name = ww1_italy.304.a
-		FROM = {
-			annex_country = {
-				target = ROOT
-				transfer_troops = no
+		effect_tooltip = {
+			FROM = {
+				annex_country = {
+					target = ROOT
+					transfer_troops = no
+				}
 			}
 		}
 		clr_country_flag = protectorate
-		hidden_effect = {
-			880 = {
-				add_resistance = 15
-				add_compliance = 5
-			}
-		}
-		ai_chance = {
-			base = 10000
-		}
+		custom_effect_tooltip = GAME_OVER_TT
+		hidden_effect = { FROM = { country_event = { id = ww1_italy.305 hours = 8 } } }
+		ai_chance = { base = 100 }
 	}
 	option = {
 		name = ww1_italy.304.b
-		custom_effect_tooltip = does_the_same_thing_lmao
 		FROM = {
-			annex_country = {
-				target = ROOT
-				transfer_troops = no
+			end_puppet = ROOT
+			effect_tooltip = {
+				create_wargoal = {
+					type = annex_everything
+					target = ROOT
+				}
 			}
 		}
 		clr_country_flag = protectorate
-		hidden_effect = {
-			880 = {
-				add_resistance = 15
-				add_compliance = 5
-			}
+		hidden_effect = { FROM = { country_event = { id = ww1_italy.306 hours = 8 } } }
+		ai_chance = { base = 0 }
+	}
+}
+
+country_event = {
+	id = ww1_italy.305
+	title = ww1_italy.305.t
+	desc = ww1_italy.305.d
+	picture = GFX_report_event_generic_sign_treaty1
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_italy.305.a
+		annex_country = {
+			target = FROM
+			transfer_troops = no
 		}
+		ai_chance = { base = 100 }
+	}
+}
+
+country_event = {
+	id = ww1_italy.306
+	title = ww1_italy.306.t
+	desc = ww1_italy.306.d
+	picture = GFX_report_event_generic_sign_treaty1
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_italy.306.a
+		end_puppet = FROM
+		create_wargoal = {
+			type = annex_everything
+			target = FROM
+		}
+		ai_chance = { base = 100 }
 	}
 }
 
@@ -9246,6 +9297,17 @@ country_event = {
 				type = infrastructure
 				damage = 0.35
 			}
+			add_province_modifier = {
+				static_modifiers = { earthquake_aftershock }
+				province = {
+					id = 1009
+					id = 1156
+					id = 4014
+					id = 4159
+					id = 12047
+				}
+				days = 120
+			}
 		}
 	}
 }
@@ -9278,6 +9340,17 @@ country_event = {
 			damage_building = {
 				type = infrastructure
 				damage = 2
+			}
+			damage_building = {
+				type = rail_way
+				damage = 1
+			}
+			add_province_modifier = {
+				static_modifiers = { earthquake_aftershock }
+				province = {
+					all_provinces = yes
+				}
+				days = 120
 			}
 		}
 		if = {
@@ -9682,6 +9755,9 @@ country_event = {
 				days = 2
 			}
 		}
+		ai_chance = {
+			base = 1
+		}
 	}
 	option = {
 		name = ww1_italy.350.b
@@ -9694,6 +9770,13 @@ country_event = {
 			country_event = {
 				id = ww1_italy.351
 				days = 2
+			}
+		}
+		ai_chance = {
+			base = 1
+			modifier = {
+				is_historical_focus_on = yes
+				factor = 0
 			}
 		}
 	}
@@ -9710,6 +9793,13 @@ country_event = {
 			country_event = {
 				id = ww1_italy.351
 				days = 2
+			}
+		}
+		ai_chance = {
+			base = 1
+			modifier = {
+				is_historical_focus_on = yes
+				factor = 0
 			}
 		}
 	}
@@ -10860,7 +10950,27 @@ country_event = {
 	option = {
 		name = ww1_italy.396.a
 		add_political_power = 100
-		white_peace = ITA
+		ITA = {
+			white_peace = ROOT
+		}
+		every_country = {
+			limit = {
+				has_war_with = ITA
+			}
+			every_country = {
+				limit = {
+					OR = {
+						tag = ITA
+						is_subject_of = ITA
+					}
+				}
+				white_peace = PREV
+				set_truce = {
+					target = PREV
+					days = 365
+				}
+			}
+		}
 		every_country = {
 			limit = {
 				OR = {
@@ -10981,6 +11091,7 @@ country_event = {
 	picture = GFX_report_event_ITA_PSI_conference
 	fire_only_once = yes
 	trigger = {
+		original_tag = ITA
 		SOV = {
 			exists = yes
 		}
@@ -11316,6 +11427,7 @@ country_event = {
 	picture = GFX_report_event_ITA_army_ww1
 	fire_only_once = yes
 	trigger = {
+		original_tag = ITA
 		OR = {
 			has_war_with = AUS
 			has_war_with = FRA
@@ -11914,6 +12026,9 @@ country_event = {
 		custom_effect_tooltip = ITA_the_mission_dtdd_10
 		add_to_variable = {
 			ITA_war_end_timer = -10
+		}
+		ai_chance = {
+			base = 50
 		}
 	}
 	option = {
@@ -23728,7 +23843,7 @@ country_event = {
 				ITA_alceste_de_ambris = {
 					set_nationality = SRI
 				}
-				ITA_odino_morgari = {
+				ITA_oddino_morgari = {
 					set_nationality = SRI
 				}
 				ITA_giacinto_serrati = {
