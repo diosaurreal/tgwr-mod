@@ -157,10 +157,4 @@ NDefines.NNavy.BASE_NAVAL_INVASION_DIVISION_CAP = 0	--4						-- base cap of divi
 
 NDefines.NDoctrines.TRAINING_MASTERY_GAIN_FACTOR = 0.01
 
-NDefines.NFactions.FACTION_INTELLIGENCE_ALLOWED_ADVISOR_TRAIT = {
-    "head_of_intelligence",
-    "SWI_intelligence_officer",
-    "dogged_investigator",
-}
-
 NDefines.NFactions.AI_THEATER_CREATION_PENALTY = 1
