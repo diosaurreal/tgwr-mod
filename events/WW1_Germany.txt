@@ -10188,12 +10188,11 @@ country_event = {
 		#Moltke plan
 		effect_tooltip = {
 			swap_ideas = {
-				add_idea = GER_schlieffen_moltke_plan
-				remove_idea = GER_schlieffen_plan
+				add_idea = GER_idea_schlieffen_moltke_plan
+				remove_idea = GER_idea_schlieffen_plan
 			}
 		}
-		set_country_flag = GER_schliffenmoltkeplan
-		unlock_decision_tooltip = GER_schliffenmoltkeplan
+		set_country_flag = GER_schlieffen_moltke_plan
 	}
 	option = {
 		name = ww1_germanrework.75.b
@@ -14767,5 +14766,399 @@ news_event = {
 				is_in_faction_with = FRA
 			}
 		}
+	}
+}
+
+# War Plan
+country_event = {
+	id = ww1_germanrework.194
+	title = ww1_germanrework.194.t
+	desc = ww1_germanrework.194.d
+	picture = GFX_report_event_schlieffen_plan
+	is_triggered_only = yes
+	timeout_days = 1
+	option = {
+		name = ww1_germanrework.194.b
+		trigger = {
+			has_country_flag = GER_schlieffen_moltke_plan
+		}
+		GER_schlieffen_moltke_plan_effect = yes
+	}
+	option = {
+		name = ww1_germanrework.194.a
+		trigger = {
+			NOT = {
+				has_country_flag = GER_schlieffen_moltke_plan
+			}
+		}
+		GER_schlieffen_plan_effect = yes
+	}
+}
+
+# Belgium refuses ultimatum
+country_event = {
+	id = ww1_germanrework.195
+	title = ww1_germanrework.195.t
+	desc = ww1_germanrework.195.d
+	is_triggered_only = yes
+	timeout_days = 1
+	option = {
+		name = ww1_germanrework.195.a
+		if = {
+			limit = {
+				BEL = {
+					exists = yes
+					NOT = {
+						is_subject_of = ROOT
+						has_war_with = ROOT
+						is_in_faction_with = ROOT
+						has_war_with = FRA
+					}
+				}
+				NOT = { 
+					has_global_flag = BEL_granted_german_passage
+				}
+			}
+			declare_war_on = {
+				target = BEL
+				type = puppet_wargoal_focus
+			}
+			add_state_claim = 906 # Arelerland
+			add_state_claim = 907 # Ardenne
+			hidden_effect = {
+				news_event = kis_news.130 # Invasion of Belgium
+			}
+		}
+
+		# Belgian Congo?
+		# add_state_claim = 295
+		# add_state_claim = 718
+		# add_state_claim = 538
+	}
+}
+
+# Belgium accepts ultimatum
+country_event = {
+	id = ww1_germanrework.196
+	title = ww1_germanrework.196.t
+	desc = ww1_germanrework.196.d
+	is_triggered_only = yes
+	option = {
+		name = ww1_germanrework.196.a
+		GER_belgium_passage = yes
+	}
+}
+
+# Scope: GER
+# Netherlands refuses ultimatum
+country_event = {
+	id = ww1_germanrework.197
+	title = ww1_germanrework.197.t
+	desc = ww1_germanrework.197.d
+	is_triggered_only = yes
+	option = {
+		name = ww1_germanrework.197.a
+		if = {
+			limit = {
+				HOL = {
+					exists = yes
+					NOT = {
+						is_subject_of = ROOT
+						has_war_with = ROOT
+						is_in_faction_with = ROOT
+						has_war_with = FRA
+					}
+				}
+			}
+			declare_war_on = {
+				target = HOL
+				type = puppet_wargoal_focus
+			}
+			add_state_claim = 1063 # Limburg
+			hidden_effect = {
+				news_event = kis_news.154 # Invasion of the Netherlands
+			}
+		}
+	}
+}
+
+# Scope: GER
+# Netherlands accepts ultimatum
+country_event = {
+	id = ww1_germanrework.198
+	title = ww1_germanrework.198.t
+	desc = ww1_germanrework.198.d
+	is_triggered_only = yes
+	option = {
+		name = ww1_germanrework.198.a
+		GER_netherlands_passage = yes
+	}
+}
+
+# Scope: GER
+# Netherlands defies Entente ultimatum
+country_event = {
+	id = ww1_germanrework.199
+	title = ww1_germanrework.199.t
+	desc = ww1_germanrework.199.d
+	is_triggered_only = yes
+	option = {
+		name = ww1_germanrework.199.a
+		if = {
+			limit = {
+				is_faction_leader = yes
+			}
+			add_to_faction = HOL
+		}
+		HOL = {
+			if = {
+				limit = {
+					has_idea = neutrality_idea
+				}
+				remove_ideas = neutrality_idea
+			}
+		}		
+	}
+}
+
+# Scope: BEL
+# German Ultimatum to Belgium
+country_event = {
+	id = ww1_germanrework.200
+	title = ww1_germanrework.200.t
+	desc = ww1_germanrework.200.d
+	picture = GFX_report_event_armored_cars
+	is_triggered_only = yes
+	fire_only_once = yes
+	timeout_days = 4
+	# Reject Ultimatum
+	option = {
+		name = ww1_germanrework.200.a
+		add_stability = -0.1
+		add_war_support = 0.15
+		add_timed_idea = {
+			idea = idea_mobilization
+			days = 30
+		}
+		ai_chance = {
+			base = 90
+			modifier = {
+				has_game_rule = {
+					rule = BEL_ai_behavior 
+					option = DEMOCRATIC_SURRENDER #intented
+				}
+				add = -9000
+			}
+		}
+		GER = {
+			country_event = ww1_germanrework.195
+		}
+	}
+	# Accept Ultimatum
+	option = {
+		name = ww1_germanrework.200.b
+		add_stability = -0.40
+		add_war_support = -0.20
+		GER = {
+			country_event = ww1_germanrework.196
+		}
+		effect_tooltip = {
+			GER_belgium_passage = yes
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				has_game_rule = {
+					rule = BEL_ai_behavior 
+					option = DEMOCRATIC_SURRENDER #intented
+				}
+				add = 9000
+			}
+			modifier = {
+				is_historical_focus_on = yes
+				add = -10
+			}
+		}
+	}
+}
+
+# Scope: HOL
+# German Ultimatum to Netherlands
+country_event = {
+	id = ww1_germanrework.201
+	title = ww1_germanrework.201.t
+	desc = ww1_germanrework.201.d
+	picture = GFX_report_event_armored_cars
+	is_triggered_only = yes
+	# Reject Ultimatum
+	option = {
+		name = ww1_germanrework.201.a
+		GER = {
+			country_event = {
+				id = ww1_germanrework.197
+				days = 1
+			}
+		}
+		effect_tooltip = {
+			GER = {
+				declare_war_on = {
+					target = HOL
+					type = puppet_wargoal_focus
+				}
+			}
+		}
+		ai_chance = {
+			base = 20
+			modifier = {
+				factor = 0
+				has_completed_focus = HOL_sympathy_for_germany
+			}
+		}
+	}
+	# Accept Ultimatum
+	option = {
+		name = ww1_germanrework.201.b
+		GER = {
+			country_event = ww1_germanrework.198
+		}
+		ENT = {
+			country_event = {
+				id = ww1_germanrework.202
+				days = 1
+			}
+		}
+		effect_tooltip = {
+			GER_netherlands_passage = yes
+		}
+		ai_chance = {
+			base = 80
+			modifier = {
+				factor = 0
+				has_completed_focus = HOL_sympathy_for_england
+			}
+			modifier = {
+				factor = 0.25
+				has_completed_focus = HOL_independent_course
+			}
+		}
+	}
+}
+
+# Scope: ENT
+# Notification of Dutch granting German passage to Entente
+country_event = {
+	id = ww1_germanrework.202
+	title = ww1_germanrework.202.t
+	desc = ww1_germanrework.202.d
+	picture = GFX_report_event_armored_cars
+	is_triggered_only = yes
+	# Send Ultimatum to Holland
+	option = {
+		name = ww1_germanrework.202.a
+		HOL = {
+			country_event = {
+				id = ww1_germanrework.203
+				days = 1
+			}
+		}
+		ai_chance = {
+			base = 90
+		}
+	}
+	# Accept Hollands decision
+	option = {
+		name = ww1_germanrework.202.b
+		add_stability = -0.05
+		ai_chance = {
+			base = 10
+		}
+	}
+}
+
+# Scope: HOL
+# Entente Ultimatum to the Netherlands
+country_event = {
+	id = ww1_germanrework.203
+	title = ww1_germanrework.203.t
+	desc = ww1_germanrework.203.d
+	picture = GFX_report_event_armored_cars
+	is_triggered_only = yes
+	# Reject Ultimatum
+	option = {
+		name = ww1_germanrework.203.b
+		GER = {
+			country_event = {
+				id = ww1_germanrework.199
+			}
+		}
+		HOL = {
+			add_to_war = {
+				targeted_alliance = GER
+    			enemy = ENT
+			}
+		}
+	}
+	# Accept Ultimatum
+	option = {
+		name = ww1_germanrework.203.a
+		GER = {
+			country_event = {
+				id = ww1_germanrework.204
+				days = 1
+			}
+		}
+		# Revoke Military Access
+		diplomatic_relation = {
+			country = GER
+			relation = military_access
+			active = no
+		}
+	}
+}
+
+# Scope: GER
+# Netherlands accepts Entente ultimatum
+country_event = {
+	id = ww1_germanrework.204
+	title = ww1_germanrework.204.t
+	desc = ww1_germanrework.204.d
+	picture = GFX_report_event_armored_cars
+	is_triggered_only = yes
+	# Declare War
+	option = {
+		name = ww1_germanrework.204.a
+		if = {
+			limit = {
+				HOL = {
+					exists = yes
+					NOT = {
+						is_subject_of = ROOT
+						has_war_with = ROOT
+						is_in_faction_with = ROOT
+						has_war_with = FRA
+					}
+				}
+			}
+			declare_war_on = {
+				target = HOL
+				type = puppet_wargoal_focus
+			}
+			add_state_claim = 1063 # Limburg
+			hidden_effect = {
+				news_event = kis_news.154 # Invasion of the Netherlands
+			}
+		}
+		ENT = {
+			if = {
+				limit = {
+					is_faction_leader = yes
+				}
+				add_to_faction = HOL
+			}
+		}
+	}
+	# Do nothing
+	option = {
+		name = ww1_germanrework.204.b
 	}
 }
