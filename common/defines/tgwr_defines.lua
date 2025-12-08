@@ -156,3 +156,5 @@ NDefines.NNavy.NAVAL_INVASION_PLAN_CAP = 0	--1								-- base cap of naval invas
 NDefines.NNavy.BASE_NAVAL_INVASION_DIVISION_CAP = 0	--4						-- base cap of divisions that can be assigned in a naval invasion
 
 NDefines.NDoctrines.TRAINING_MASTERY_GAIN_FACTOR = 0.01
+
+NDefines.NFactions.AI_THEATER_CREATION_PENALTY = 1
