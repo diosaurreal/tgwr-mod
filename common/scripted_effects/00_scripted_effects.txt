@@ -1945,6 +1945,78 @@ increase_state_category = {
 
 }	
 
+remove_buildings_to_target_effect = {
+	set_temp_variable = {
+		target_removed_factories = num_of_civilian_factories
+	}
+	set_temp_variable = {
+		target_removed_militaries = num_of_military_factories
+	}
+	set_temp_variable = {
+		target_removed_dockyards = num_of_naval_factories
+	}
+	#log = "[ROOT.GetName] was [?target_removed_factories]"
+	#log = "[ROOT.GetName] was [?target_removed_militaries]"
+	#log = "[ROOT.GetName] was [?target_removed_dockyards]"
+
+	multiply_temp_variable = {
+		target_removed_factories = target_coeff
+	}
+	multiply_temp_variable = {
+		target_removed_militaries = target_coeff
+	}
+	multiply_temp_variable = {
+		target_removed_dockyards = target_coeff
+	}
+	round_temp_variable = target_removed_factories
+	round_temp_variable = target_removed_militaries
+	round_temp_variable = target_removed_dockyards
+
+	#log = "[ROOT.GetName] target [?target_removed_factories]"
+	#log = "[ROOT.GetName] target [?target_removed_militaries]"
+	#log = "[ROOT.GetName] target [?target_removed_dockyards]"
+
+	for_loop_effect = {
+		end = target_removed_factories
+		random_owned_controlled_state = {
+			limit = {
+				industrial_complex > 0
+			}
+			remove_building = {
+				type = industrial_complex
+				level = 1
+			}
+		}
+		#log = "[ROOT.GetName] removed factories [?removed_factories], need [?target_removed_factories]"
+	}
+	for_loop_effect = {
+		end = target_removed_militaries
+		random_owned_controlled_state = {
+			limit = {
+				arms_factory > 0
+			}
+			remove_building = {
+				type = arms_factory
+				level = 1
+			}
+		}
+		#log = "[ROOT.GetName] removed mils [?removed_militaries], need [?target_removed_militaries]"
+	}
+	for_loop_effect = {
+		end = target_removed_dockyards
+		random_owned_controlled_state = {
+			limit = {
+				dockyard > 0
+			}
+			remove_building = {
+				type = dockyard
+				level = 1
+			}
+		}
+		#log = "[ROOT.GetName] removed docks [?removed_dockyards], need [?target_removed_dockyards]"
+	}	
+}
+
 
 post_ww1_demobilization_effect = {
 	set_country_flag = WW1_demobilization
@@ -1957,116 +2029,33 @@ post_ww1_demobilization_effect = {
 			}
 		}
 		add_ideas = interwar_recovery
-		activate_mission = mission_interwar_demobilization
 	}
-	every_owned_state = {
-		limit = {
-			is_capital = no
-			CONTROLLER = {
-				NOT = {
-					tag = TUR # Turkey is already obselete at the game start, dont need that
-				}
-			}
-		}
-		remove_building = {
-			type = arms_factory
-			level = 2
-		}
-		remove_building = {
-			type = industrial_complex
-			level = 1
-		}
-		remove_building = {
-			type = infrastructure
-			level = 1
-		}
-		remove_building = {
-			type = dockyard
-			level = 2
-		}
-	}
-	### erase massive mils areas
-	every_owned_state = {
-		limit = {
-			arms_factory > 0
-			arms_factory < 4
-		}
-		remove_building = {
-			type = arms_factory
-			level = 2
-		}
-	}
-	every_owned_state = {
-		limit = {
-			arms_factory > 4
-		}
-		remove_building = {
-			type = arms_factory
-			level = 3
-		}
-	}
-	######
-	# avoid capital having massive industries
-	every_owned_state = {
-		limit = {
-			CONTROLLER = {
-				industrial_complex > 3 # dont remove everything lol
-			}
-			industrial_complex > 3
-			is_capital = yes
-			CONTROLLER = {
-				is_major = no
-			}
-			
-		}
-		remove_building = {
-			type = industrial_complex
-			level = 2
-		}
-	}
-	# avoid capital having massive industries
-	every_owned_state = {
-		limit = {
-			CONTROLLER = {
-				arms_factory > 3 # dont remove everything lol
-			}
-			arms_factory > 3
-			is_capital = yes
-			CONTROLLER = {
-				is_major = no
-			}
-			
-		}
-		remove_building = {
-			type = arms_factory
-			level = 2
-		}
-	}
-	## losers lose more mils
-	every_owned_state = {
-		limit = {
-			CONTROLLER = {
+
+	if = {
+		limit = { 
+			NOT = {
 				has_country_flag = great_war_loser
-				arms_factory > 3
 			}
 		}
-		remove_building = {
-			type = arms_factory
-			level = 2
-		}
-		remove_building = {
-			type = dockyard
-			level = 1
+		set_temp_variable = {
+			target_coeff = 0.5
 		}
 	}
-	hidden_effect = {
-		add_equipment_to_stockpile = {
-			type = railway_gun_equipment
-			amount = -500
+	else = {
+		set_temp_variable = {
+			target_coeff = 0.6
 		}
-		add_equipment_to_stockpile = {
-			type = super_heavy_railway_gun_equipment
-			amount = -500
+		
+		hidden_effect = {
+			add_equipment_to_stockpile = {
+				type = railway_gun_equipment
+				amount = -500
+			}
+			add_equipment_to_stockpile = {
+				type = super_heavy_railway_gun_equipment
+				amount = -500
+			}
 		}
 	}
+	remove_buildings_to_target_effect = yes
 }
