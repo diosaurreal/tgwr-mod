@@ -1946,12 +1946,38 @@ increase_state_category = {
 }	
 
 remove_buildings_to_target_effect = {
-	while_loop_effect = {
-		limit = {
-			check_variable = {
-				removed_factories < target_removed_factories
-			}
-		}
+	set_temp_variable = {
+		target_removed_factories = num_of_civilian_factories
+	}
+	set_temp_variable = {
+		target_removed_militaries = num_of_military_factories
+	}
+	set_temp_variable = {
+		target_removed_dockyards = num_of_naval_factories
+	}
+	#log = "[ROOT.GetName] was [?target_removed_factories]"
+	#log = "[ROOT.GetName] was [?target_removed_militaries]"
+	#log = "[ROOT.GetName] was [?target_removed_dockyards]"
+
+	multiply_temp_variable = {
+		target_removed_factories = target_coeff
+	}
+	multiply_temp_variable = {
+		target_removed_militaries = target_coeff
+	}
+	multiply_temp_variable = {
+		target_removed_dockyards = target_coeff
+	}
+	round_temp_variable = target_removed_factories
+	round_temp_variable = target_removed_militaries
+	round_temp_variable = target_removed_dockyards
+
+	#log = "[ROOT.GetName] target [?target_removed_factories]"
+	#log = "[ROOT.GetName] target [?target_removed_militaries]"
+	#log = "[ROOT.GetName] target [?target_removed_dockyards]"
+
+	for_loop_effect = {
+		end = target_removed_factories
 		random_owned_controlled_state = {
 			limit = {
 				industrial_complex > 0
@@ -1960,17 +1986,11 @@ remove_buildings_to_target_effect = {
 				type = industrial_complex
 				level = 1
 			}
-			add_to_temp_variable = {
-				removed_factories = 1
-			}
 		}
+		#log = "[ROOT.GetName] removed factories [?removed_factories], need [?target_removed_factories]"
 	}
-	while_loop_effect = {
-		limit = {
-			check_variable = {
-				removed_militaries < target_removed_militaries
-			}
-		}
+	for_loop_effect = {
+		end = target_removed_militaries
 		random_owned_controlled_state = {
 			limit = {
 				arms_factory > 0
@@ -1979,17 +1999,11 @@ remove_buildings_to_target_effect = {
 				type = arms_factory
 				level = 1
 			}
-			add_to_temp_variable = {
-				removed_militaries = 1
-			}
 		}
+		#log = "[ROOT.GetName] removed mils [?removed_militaries], need [?target_removed_militaries]"
 	}
-	while_loop_effect = {
-		limit = {
-			check_variable = {
-				removed_dockyards < target_removed_dockyards
-			}
-		}
+	for_loop_effect = {
+		end = target_removed_dockyards
 		random_owned_controlled_state = {
 			limit = {
 				dockyard > 0
@@ -1998,10 +2012,8 @@ remove_buildings_to_target_effect = {
 				type = dockyard
 				level = 1
 			}
-			add_to_temp_variable = {
-				removed_dockyards = 1
-			}
 		}
+		#log = "[ROOT.GetName] removed docks [?removed_dockyards], need [?target_removed_dockyards]"
 	}	
 }
 
@@ -2017,60 +2029,23 @@ post_ww1_demobilization_effect = {
 			}
 		}
 		add_ideas = interwar_recovery
-		activate_mission = mission_interwar_demobilization
 	}
 
-	set_temp_variable = {
-		target_removed_factories = num_of_civilian_factories
-	}
-	set_temp_variable = {
-		target_removed_militaries = num_of_military_factories
-	}
-	set_temp_variable = {
-		target_removed_dockyards = num_of_naval_factories
-	}
-
-	set_temp_variable = {
-		removed_factories = 0
-	}
-	set_temp_variable = {
-		removed_militaries = 0
-	}
-	set_temp_variable = {
-		removed_dockyards = 0
-	}
 	if = {
 		limit = { 
 			NOT = {
 				has_country_flag = great_war_loser
 			}
 		}
-
-		multiply_temp_variable = {
-			target_removed_factories = 0.5
+		set_temp_variable = {
+			target_coeff = 0.5
 		}
-		multiply_temp_variable = {
-			target_removed_militaries = 0.5
-		}
-		multiply_temp_variable = {
-			target_removed_dockyards = 0.5
-		}
-		
-		remove_buildings_to_target_effect = yes
 	}
 	else = {
-		multiply_temp_variable = {
-			target_removed_factories = 0.6
-		}
-		multiply_temp_variable = {
-			target_removed_militaries = 0.6
-		}
-		multiply_temp_variable = {
-			target_removed_dockyards = 0.6
+		set_temp_variable = {
+			target_coeff = 0.6
 		}
 		
-		remove_buildings_to_target_effect = yes
-
 		hidden_effect = {
 			add_equipment_to_stockpile = {
 				type = railway_gun_equipment
@@ -2082,4 +2057,5 @@ post_ww1_demobilization_effect = {
 			}
 		}
 	}
+	remove_buildings_to_target_effect = yes
 }
