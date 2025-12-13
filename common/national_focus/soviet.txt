@@ -100,25 +100,12 @@ focus_tree = {
 				limit = {
 					is_in_faction = no
 				}
-				create_faction = red_movement
+				create_faction_from_template = faction_template_red_movement
 				else_if = {
 					limit = {
 						is_faction_leader = yes
 					}
 					set_faction_name = red_movement
-				}
-				hidden_effect = {
-					every_country_with_original_tag = {
-						original_tag_to_check = UKR
-						limit = {
-							has_country_flag = UKR_rumcherod
-							exists = yes							
-						}
-						remove_ideas = standing_alone
-						ROOT = {
-							add_to_faction = PREV
-						}
-					}					
 				}
 			}
 			add_ideas = SOV_idea_cheka
@@ -168,8 +155,9 @@ focus_tree = {
 					UPR = {
 						exists = yes
 						is_subject = no
-						NOT = {
-							is_in_faction_with = ROOT
+						OR = {
+							is_in_faction = no
+							has_war_with = ROOT
 						}
 					}
 				}
@@ -178,7 +166,12 @@ focus_tree = {
 					country_event = ww1_ukraine_civil_war.2
 				}
 			}
-			else = {
+			else_if = {
+				limit = {
+					UPR = {
+						exists = no
+					}
+				}
 				hidden_effect = {
 					create_UPRS = yes
 				}
@@ -188,8 +181,9 @@ focus_tree = {
 					CRI = {
 						exists = yes
 						is_subject = no
-						NOT = {
-							is_in_faction_with = ROOT
+						OR = {
+							is_in_faction = no
+							has_war_with = ROOT
 						}
 					}
 					955 = {
@@ -287,8 +281,9 @@ focus_tree = {
 		
 		available_if_capitulated = yes
 		bypass = {
+			has_SOV_low_peasant_support = no
 			NOT = {
-				has_idea = SOV_idea_very_low_peasant_support
+				has_idea = RUS_idea_agrarian_empire
 			}
 		}
 		prerequisite = {
@@ -299,9 +294,17 @@ focus_tree = {
 		}
 		completion_reward = {
 			add_stability = 0.05
-			swap_ideas = {
-				remove_idea = SOV_idea_agrarian_state
-				add_idea = SOV_idea_agrarian_state2
+			if = {
+				limit = { 
+					has_idea = SOV_idea_agrarian_state
+				}
+				swap_ideas = {
+					remove_idea = SOV_idea_agrarian_state
+					add_idea = SOV_idea_agrarian_state2
+				}
+			}
+			else = {
+				SOV_improve_peasant_support = yes
 			}
 		}
 		ai_will_do = {
@@ -348,24 +351,11 @@ focus_tree = {
 		y = 1
 		relative_position_id = SOV_municipalization
 		bypass = {
-			has_idea = SOV_idea_weak_peasant_support
+			has_SOV_low_peasant_support = no
 		}
 		completion_reward = {
 			add_stability = 0.1
-			if = {
-				limit = { has_idea = SOV_idea_low_peasant_support }
-				swap_ideas = {
-					remove_idea = SOV_idea_low_peasant_support
-					add_idea = SOV_idea_weak_peasant_support
-				}
-			}
-			if = {
-				limit = { has_idea = SOV_idea_very_low_peasant_support }
-				swap_ideas = {
-					remove_idea = SOV_idea_very_low_peasant_support
-					add_idea = SOV_idea_low_peasant_support
-				}
-			}
+			SOV_improve_peasant_support = yes
 		}
 		search_filters = {
 			FOCUS_FILTER_INDUSTRY
@@ -395,18 +385,18 @@ focus_tree = {
 		completion_reward = {
 			custom_effect_tooltip = SOV_nationalization_tt
 			random_owned_state = {
-                add_extra_state_shared_building_slots = 2
+                add_extra_state_shared_building_slots = 1
                 add_building_construction = {
                     type = industrial_complex
-                    level = 2
+                    level = 1
                     instant_build = yes
                 }
             }
 			248 = {
-				add_extra_state_shared_building_slots = 2
+				add_extra_state_shared_building_slots = 1
 				add_building_construction = {
 					type = arms_factory
-					level = 2
+					level = 1
 					instant_build = yes
 				}
 			}
@@ -433,23 +423,10 @@ focus_tree = {
 		y = 1
 		relative_position_id = SOV_nationalization
 		bypass = {
-			has_idea = SOV_idea_weak_peasant_support
+			has_SOV_low_peasant_support = no
 		}
 		completion_reward = {
-			if = {
-				limit = { has_idea = SOV_idea_low_peasant_support }
-				swap_ideas = {
-					remove_idea = SOV_idea_low_peasant_support
-					add_idea = SOV_idea_weak_peasant_support
-				}
-			}
-			if = {
-				limit = { has_idea = SOV_idea_very_low_peasant_support }
-				swap_ideas = {
-					remove_idea = SOV_idea_very_low_peasant_support
-					add_idea = SOV_idea_low_peasant_support
-				}
-			}
+			SOV_improve_peasant_support = yes
 		}
 		ai_will_do = { factor = 50 }
 		search_filters = {
@@ -495,23 +472,10 @@ focus_tree = {
 		relative_position_id = SOV_decree_on_food_dictatorship
 		available_if_capitulated = yes
 		bypass = {
-			has_idea = SOV_idea_weak_peasant_support
+			has_SOV_low_peasant_support = no
 		}
 		completion_reward = {
-			if = {
-				limit = { has_idea = SOV_idea_low_peasant_support }
-				swap_ideas = {
-					remove_idea = SOV_idea_low_peasant_support
-					add_idea = SOV_idea_weak_peasant_support
-				}
-			}
-			if = {
-				limit = { has_idea = SOV_idea_very_low_peasant_support }
-				swap_ideas = {
-					remove_idea = SOV_idea_very_low_peasant_support
-					add_idea = SOV_idea_low_peasant_support
-				}
-			}
+			SOV_improve_peasant_support = yes
 		}
 		ai_will_do = { factor = 50 }
 		search_filters = {
@@ -545,10 +509,10 @@ focus_tree = {
 					controls_state = 223
 				}
 				223 = {
-					add_extra_state_shared_building_slots = 3
+					add_extra_state_shared_building_slots = 1
 					add_building_construction = {
 						type = arms_factory
-						level = 3
+						level = 1
 						instant_build = yes
 					}
 				}
@@ -607,10 +571,10 @@ focus_tree = {
 					controls_state = 219
 				}
 				219 = {
-					add_extra_state_shared_building_slots = 3
+					add_extra_state_shared_building_slots = 1
 					add_building_construction = {
 						type = arms_factory
-						level = 3
+						level = 1
 						instant_build = yes
 					}
 				}
@@ -669,10 +633,10 @@ focus_tree = {
 					controls_state = 252
 				}
 				252 = {
-					add_extra_state_shared_building_slots = 3
+					add_extra_state_shared_building_slots = 1
 					add_building_construction = {
 						type = arms_factory
-						level = 3
+						level = 1
 						instant_build = yes
 					}
 				}
@@ -846,13 +810,11 @@ focus_tree = {
 		y = 1
 		relative_position_id = SOV_planned_economy
 		bypass = {
-			NOT = { has_idea = SOV_idea_very_low_peasant_support }
-			NOT = { has_idea = SOV_idea_low_peasant_support }
-			NOT = { has_idea = SOV_idea_weak_peasant_support }
+			has_SOV_low_peasant_support = no
 		}
 		completion_reward = {
 			add_stability = -0.05
-			remove_ideas = SOV_idea_weak_peasant_support
+			SOV_improve_peasant_support = yes
 		}
 		search_filters = {
 			FOCUS_FILTER_INDUSTRY
@@ -864,6 +826,11 @@ focus_tree = {
 		cost = 10
 		prerequisite = {
 			focus = SOV_kulak_liquidation
+		}
+		bypass = {
+			NOT = {
+				has_idea = SOV_idea_agrarian_state2
+			}
 		}
 		x = 0
 		y = 1
@@ -989,13 +956,17 @@ focus_tree = {
 		relative_position_id = SOV_evolutionary_industrialization
 		ai_will_do = { factor = 1 }
 		bypass = {
-			NOT = { has_idea = SOV_idea_very_low_peasant_support }
-			NOT = { has_idea = SOV_idea_low_peasant_support }
-			NOT = { has_idea = SOV_idea_weak_peasant_support }
+			has_SOV_low_peasant_support = no
+			NOT = {
+				has_idea = SOV_idea_agrarian_state2
+			}
 		}
 		completion_reward = {
-			remove_ideas = SOV_idea_agrarian_state2
-			remove_ideas = SOV_idea_weak_peasant_support
+			if = {
+				limit = { has_idea = SOV_idea_agrarian_state2 }
+				remove_ideas = SOV_idea_agrarian_state2
+			}
+			SOV_improve_peasant_support = yes
 			add_stability = 0.05
 		}
 		search_filters = {
@@ -2195,37 +2166,37 @@ focus_tree = {
 			}
 		}
 		completion_reward = {
+			every_state = {
+				limit = {
+					OR = {
+						region = 148
+						state = 563
+						state = 564
+					}
+				}
+				add_core_of = FER
+			}
+			every_owned_state = {
+				limit = {
+					OR = {
+						region = 148
+						state = 563
+						state = 564
+					}
+				}
+				set_state_owner_to = FER
+			}
+			every_controlled_state = {
+				limit = {
+					OR = {
+						region = 148
+						state = 563
+						state = 564
+					}
+				}
+				set_state_controller_to = FER
+			}
 			FER = {
-				every_state = {
-					limit = {
-						OR = {
-							region = 148
-							state = 563
-							state = 564
-						}
-					}
-					add_core_of = PREV
-				}
-				every_owned_state = {
-					limit = {
-						OR = {
-							region = 148
-							state = 563
-							state = 564
-						}
-					}
-					set_state_owner_to = PREV
-				}
-				every_controlled_state = {
-					limit = {
-						OR = {
-							region = 148
-							state = 563
-							state = 564
-						}
-					}
-					set_state_controller_to = PREV
-				}
 				if = {
 					limit = {
 						TBK = {
@@ -2363,6 +2334,14 @@ focus_tree = {
 					set_nationality = FER
 				}
 			}
+			if = {
+				limit = {
+					has_character = SOV_sergey_lazo
+				}
+				SOV_sergey_lazo = {
+					set_nationality = PRI
+				}
+			}	
 		}
 		ai_will_do = {
 			factor = 100
@@ -2431,21 +2410,27 @@ focus_tree = {
 		}
 		completion_reward = {
 			if = {
-				limit = { is_in_faction = no has_government = communism }
-				create_faction = Comintern
-			}
-			if = {
-				limit = { is_in_faction = no NOT = { has_government = communism } }
-				create_faction = Socintern
-			}
-			if = {
-				limit = { is_faction_leader = yes has_government = communism }
+				limit = {
+					has_government = communism
+				}
+				if = {
+					limit = {
+						is_in_faction = no
+					}
+					create_faction_from_template = faction_template_comintern
+				}
 				set_faction_name = Comintern
 			}
-			if = {
-				limit = { is_faction_leader = yes NOT = { has_government = communism } }
+			else = {
+				if = {
+					limit = {
+						is_in_faction = no
+					}
+					create_faction_from_template = faction_template_defensive_democratic
+				}
 				set_faction_name = Socintern
 			}
+			
 			custom_effect_tooltip = available_political_advisor
 			show_ideas_tooltip = SOV_karl_radek
 		}

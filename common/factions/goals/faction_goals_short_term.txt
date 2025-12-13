@@ -1,0 +1,1825 @@
+#category = short_term medium_term or long_term
+# ROOT is faction leader, FROM is faction member who opens UI and views goals, completed/cancel/complete_effect do not have FROM scopes
+
+
+ ##  #  # ### #  #  ##  
+#  # #  #  #  ## # #  # 
+#    ####  #  # ## #### 
+#  # #  #  #  #  # #  # 
+ ##  #  # ### #  # #  # 
+
+
+faction_goal_guerilla_expansion = {
+	name = guerilla_expansion_goal_name
+	description = guerilla_expansion_goal_desc
+	category = short_term
+	group = FOCUS_FILTER_POLITICAL_CHARACTER
+	allowed = {  }
+	visible = { always = no }
+	completed = {
+		custom_trigger_tooltip = {
+			tooltip = GUERILLA_TOTAL_ABOVE_THRESHOLD
+			check_variable = { global.guerilla_counter > 4 }
+		}
+	}
+	complete_effect = {
+		add_faction_power_projection = 100
+		every_collection_element = {
+			input = {
+				input = game:scope
+				operators =  { 
+					faction_members 
+					limit = {
+						check_variable = { THIS.guerilla_counter > 2 }
+					}
+				}
+				name = GUERILLA_ABOVE_THRESHOLD
+			}
+			add_faction_influence_ratio = 0.2
+			add_war_support = 0.05
+		}
+	}
+	ai_will_do = {
+		base = 3 # Pretty much everyone should want to do this
+		modifier = {
+			add = 2 # PRC cares more
+			original_tag = PRC
+		}
+	}
+}
+
+faction_goal_unlock_research = {
+	name = faction_goal_unlock_research_name
+	description = faction_goal_unlock_research_desc
+	category = short_term
+	group = FOCUS_FILTER_INTERNAL_AFFAIRS
+	available = {
+		FROM = { num_faction_members > 2 }
+	}
+	visible = { FROM = { has_faction_research_unlocked = no } }
+	select_effect = {
+		set_temp_variable = { total_techs = 0 }
+		every_collection_element = {
+			input = {
+				input = game:scope
+				operators =  {
+					faction_members
+				}
+			}
+			add_to_temp_variable = { total_techs = num_researched_technologies }
+		}
+		
+		multiply_temp_variable = {
+			var = total_techs
+			value = 1.20
+		}
+		scope:faction = {
+			set_variable = { unlock_military_techs_researched_target = total_techs }
+		}
+	}
+	completed = {
+		scope:faction = {
+			hidden_trigger = {
+				tooltip_evaluation = eval
+				set_temp_variable = { unlock_military_techs_researched_compare = 0 }			
+				all_collection_elements = {
+					collection = {
+						input = game:scope
+						operators =  { faction_members }
+					}
+					add_to_temp_variable = { unlock_military_techs_researched_compare = num_researched_technologies }
+				}
+			}
+			if = {
+				limit = {
+					has_variable = unlock_military_techs_researched_target
+				}
+				check_variable = {
+					var = unlock_military_techs_researched_compare
+					value = unlock_military_techs_researched_target
+					compare = greater_than
+					tooltip = "GOAL_T_TRIGGER_A"
+				}
+			}
+			else = {
+				check_variable = {
+					var = unlock_military_techs_researched_compare
+					value = 350
+					compare = greater_than
+					tooltip = "GOAL_T_TRIGGER_A"
+				}
+			}
+		}
+	}
+	complete_effect = {
+		set_faction_research_unlocked = yes
+		add_faction_initiative = 1
+	}
+	ai_will_do = {
+		base = 1000 # They should always do this if they can
+	}
+}
+
+faction_goal_unlock_military = {
+	name = faction_goal_unlock_military_name
+	description = faction_goal_unlock_military_desc
+	category = short_term
+	group = FOCUS_FILTER_INTERNAL_AFFAIRS
+	available = {
+		FROM = { num_faction_members > 2 }
+	}
+	visible = { 
+		FROM = { has_faction_military_unlocked = no }
+ 	}
+	select_effect = {
+		set_temp_variable = { total_divs = 0 }
+		every_collection_element = {
+			input = {
+				input = game:scope
+				operators =  {
+					faction_members
+				}
+			}
+			add_to_temp_variable = { total_divs = num_armies }
+		}
+		
+		multiply_temp_variable = {
+			var = total_divs
+			value = 1.20
+		}
+		scope:faction = {
+			set_variable = { unlock_target = total_divs }
+		}
+	}
+	completed = {
+		scope:faction = {
+			hidden_trigger = {
+				tooltip_evaluation = eval
+				set_temp_variable = { unlock_compare = 0 }			
+				all_collection_elements = {
+					collection = {
+						input = game:scope
+						operators =  { faction_members }
+					}
+					add_to_temp_variable = { unlock_compare = num_armies }
+				}
+			}
+			if = {
+				limit = {
+					has_variable = unlock_target
+				}
+				check_variable = {
+					var = unlock_compare
+					value = unlock_target
+					compare = greater_than
+					tooltip = "GOAL_T_TRIGGER_B"
+				}
+			}
+			else = {
+				check_variable = {
+					var = unlock_compare
+					value = 300
+					compare = greater_than
+					tooltip = "GOAL_T_TRIGGER_B"
+				}
+			}
+		}
+	}
+	complete_effect = {
+		set_faction_military_unlocked = yes
+		add_faction_initiative = 1
+	}
+	ai_will_do = {
+		base = 1000 # They should always do this if they can
+	}
+}
+
+
+# Faction Growth
+
+faction_goal_growing_the_faction = {
+	name = growing_the_faction
+	description = growing_the_faction_desc
+	category = short_term
+	group = FOCUS_FILTER_POLITICAL_CHARACTER
+	visible = { always = no }
+	completed = {
+		num_faction_members > 4
+	}
+	complete_effect = {
+		add_faction_power_projection = 50 
+		custom_effect_tooltip = generic_skip_one_line_tt
+		custom_effect_tooltip = THE_FACTION_LEADER
+		add_faction_initiative = 1
+	}
+	ai_will_do = {
+		base = 0
+		modifier = {  
+			add = 1
+			num_faction_members < 5
+		}
+		modifier = {  
+			add = 1
+			num_faction_members < 4
+		}
+		modifier = {  
+			add = 3
+			num_faction_members < 3
+		}
+	}
+}
+
+faction_goal_spy_master = {
+	name = spy_master_goal_name
+	description = spy_master_goal_desc
+	group = FOCUS_FILTER_POLITICAL_CHARACTER
+	category = short_term
+	allowed = {  }
+	visible = { always = no }
+	completed = {
+		OR = {
+			is_spymaster = yes
+			any_allied_country = {
+				is_spymaster = yes
+			}
+		}
+	}
+	complete_effect = {
+		add_faction_power_projection = 50
+		custom_effect_tooltip = generic_skip_one_line_tt
+		custom_effect_tooltip = THE_SPY_MASTER
+		add_faction_initiative = 1
+		custom_effect_tooltip = generic_skip_one_line_tt
+		every_faction_member = { 
+			limit = {
+				has_intelligence_agency = no
+			}
+			create_intelligence_agency = yes
+		}
+		every_faction_member = { 
+			limit = {
+				has_intelligence_agency = yes
+				NOT = { has_done_agency_upgrade  = upgrade_form_department }
+			}
+			upgrade_intelligence_agency = upgrade_form_department
+		}
+		every_faction_member = {
+			limit = {
+				has_intelligence_agency = yes
+				has_done_agency_upgrade  = upgrade_form_department
+				NOT = { has_done_agency_upgrade = upgrade_crypto_strength }
+			}
+			upgrade_intelligence_agency = upgrade_crypto_strength
+		}
+		every_faction_member = { 
+			limit = {
+				has_intelligence_agency = yes
+				has_done_agency_upgrade = upgrade_crypto_strength
+				has_tech = analytical_engine
+				NOT = { has_done_agency_upgrade = upgrade_crypto_strength_2 }
+			}
+			add_faction_initiative = 1
+			upgrade_intelligence_agency = upgrade_crypto_strength_2
+		}
+		every_faction_member = { 
+			limit = {
+				has_intelligence_agency = yes
+				NOT = { agency_upgrade_number > 30 }
+				OR = {
+					has_done_agency_upgrade = upgrade_crypto_strength_2
+					NOT = { has_tech = analytical_engine }
+				}
+			}
+			add_faction_initiative = 1
+			gain_random_agency_upgrade = yes
+		}
+		every_faction_member = { # Fallback in case someone completed everything
+			visible_when_empty = yes
+			limit = {
+				has_intelligence_agency = yes
+				agency_upgrade_number > 30
+			}
+			add_faction_initiative = 1
+			add_political_power = 100
+		}
+	}
+	ai_will_do = {
+		base = 1
+		modifier = {  
+			add = 2
+			has_intelligence_agency = yes
+		}
+	}
+}
+
+
+### Units
+
+faction_goal_an_infantry_army = {
+	name = an_infantry_army_goal_name
+	description = an_infantry_army_goal_desc
+	category = short_term
+	group = FOCUS_FILTER_ARMY_XP
+	completed = {
+		count_in_collection = {
+		    collection = {
+		        input = game:scope
+		        operators = { faction_members }
+		        name = FACTION
+		    }
+		   unit = infantry
+		   size > 249
+		}
+	}
+	complete_effect = {
+		add_faction_power_projection = 200
+		custom_effect_tooltip = ALL_FACTION_MEMBERS
+		every_faction_member = {
+			army_experience = 50 
+			random_character = {
+				tooltip = ONE_INFANTRY_GENERAL
+				visible_when_empty = yes
+				limit = {
+					is_unit_leader = yes 
+					OR = {
+						has_trait = infantry_leader
+						has_trait = infantry_expert 
+					}
+				}
+				gain_xp = 400
+				add_logistics = 1
+			}
+		}
+	}
+	ai_will_do = {
+		base = 1
+	}
+}
+
+
+# Crete
+faction_goal_expand_cretan_bases = {
+	name = expand_cretan_bases_goal_name
+	description = expand_cretan_bases_goal_desc
+	category = short_term
+	group = FOCUS_FILTER_CONSOLIDATION
+	allowed = {  }
+	visible = { always = no }
+	available = {
+
+	}
+	completed = {
+		182 = {
+			air_base > 3
+			any_province_building_level = {
+				province = {
+					all_provinces = yes
+				}
+				building = naval_base
+				level > 4
+			}
+		}
+	}
+	complete_effect = {
+		add_faction_power_projection = 100
+		custom_effect_tooltip = generic_skip_one_line_tt
+		custom_effect_tooltip = TARGET_STATE_CONTROLLERS
+		every_faction_member = { 
+			visible_when_empty = yes
+			limit = {
+				controls_state = 182
+			}
+			add_faction_initiative = 1
+		}
+	}
+	ai_will_do = {
+		base = 1
+		modifier = {
+			add = 2 # If convoys being threatened try to secure the mediterranean supply lines better
+			convoy_threat > 0.5
+			collection_size = {
+				input = {
+					input = game:all_states
+					operators = {
+						limit = {
+							is_controlled_by_ROOT_or_ally = yes
+							is_on_continent = europe
+						}
+					}
+				}
+				value > 0
+			}
+			collection_size = {
+				input = {
+					input = game:all_states
+					operators = {
+						limit = {
+							is_controlled_by_ROOT_or_ally = yes
+							OR = {
+								is_on_continent = middle_east
+								is_on_continent = africa
+							}
+						}
+					}
+				}
+				value > 0
+			}
+		}
+		modifier = {
+			add = 1 # If naval power seek to project it by expanding bases
+			has_navy_size = {
+				size > 5
+				type = capital_ship
+			}
+		}
+	}
+}
+
+# Cyprus
+faction_goal_expand_cypriot_bases = {
+	name = expand_cypriot_bases_goal_name
+	description = expand_cypriot_bases_goal_desc
+	category = short_term
+	group = FOCUS_FILTER_CONSOLIDATION
+	allowed = {  }
+	visible = { always = no }
+	available = {
+
+	}
+	completed = {
+		183 = {
+			air_base > 2
+			any_province_building_level = {
+				province = {
+					all_provinces = yes
+				}
+				building = naval_base
+				level > 3
+			}
+		}
+	}
+	complete_effect = {
+		add_faction_power_projection = 100
+		custom_effect_tooltip = generic_skip_one_line_tt
+		custom_effect_tooltip = TARGET_STATE_CONTROLLERS
+		every_faction_member = { 
+			visible_when_empty = yes
+			limit = {
+				controls_state = 183
+			}
+			add_faction_initiative = 1
+		}
+	}
+	ai_will_do = {
+		base = 1
+		modifier = {
+			add = 2 # If convoys being threatened try to secure the mediterranean supply lines better
+			convoy_threat > 0.5
+			collection_size = {
+				input = {
+					input = game:all_states
+					operators = {
+						limit = {
+							is_controlled_by_ROOT_or_ally = yes
+							is_on_continent = europe
+						}
+					}
+				}
+				value > 0
+			}
+			collection_size = {
+				input = {
+					input = game:all_states
+					operators = {
+						limit = {
+							is_controlled_by_ROOT_or_ally = yes
+							OR = {
+								is_on_continent = middle_east
+								is_on_continent = africa
+							}
+						}
+					}
+				}
+				value > 0
+			}
+		}
+		modifier = {
+			add = 1 # If naval power seek to project it by expanding bases
+			has_navy_size = {
+				size > 5
+				type = capital_ship
+			}
+		}
+	}
+}
+
+# Bosporus
+faction_goal_fortify_bosporus = {
+	name = fortify_bosporus_goal_name
+	description = fortify_bosporus_goal_desc
+	category = short_term
+	group = FOCUS_FILTER_CONSOLIDATION
+	allowed = {  }
+	visible = { always = no }
+	available = {
+
+	}
+	completed = {
+		custom_trigger_tooltip = {
+            tooltip = fortify_bosporus_tooltip
+			797 = {
+				any_province_building_level = {
+					province = {
+						id = 9833
+						id = 11829
+					}
+					building = coastal_bunker
+					level > 0
+				}
+				any_province_building_level = {
+					province = {
+						id = 9833
+						id = 11829
+					}
+					building = bunker
+					level > 0
+				}
+			}
+			OR = {
+				divisions_in_state = { state = 797 size > 1 }
+				any_allied_country = {
+					divisions_in_state = { state = 797 size > 1 }
+				}
+			}
+		}
+	}
+	complete_effect = {
+		add_faction_power_projection = 100
+		custom_effect_tooltip = generic_skip_one_line_tt
+		custom_effect_tooltip = TARGET_STATE_CONTROLLERS
+		every_faction_member = { 
+			visible_when_empty = yes
+			limit = {
+				controls_state = 797
+			}
+			add_faction_initiative = 1
+		}
+		797 = {
+			add_building_construction = {
+				type = anti_air_building
+				level = 1
+				instant_build = yes
+			}
+			add_building_construction = {
+				type = coastal_bunker
+				level = 1
+				province = 9833
+				instant_build = yes
+			}
+			add_building_construction = {
+				type = bunker
+				level = 1
+				province = 9833
+				instant_build = yes
+			}
+			add_building_construction = {
+				type = coastal_bunker
+				level = 1
+				province = 11829
+				instant_build = yes
+			}
+			add_building_construction = {
+				type = bunker
+				level = 1
+				province = 11829
+				instant_build = yes
+			}
+		}
+	}
+	ai_will_do = {
+		base = 1
+		modifier = {
+			add = 1 # If major naval power seek to control access
+			has_navy_size = {
+				size > 20
+				type = capital_ship
+			}
+		}
+		modifier = {
+			add = 1 # If at war with SOV prioritize this
+			any_enemy_country = {
+				original_tag = SOV
+			}
+		}
+	}
+}
+
+# Dardanelles
+faction_goal_fortify_dardanelles = {
+	name = fortify_dardanelles_goal_name
+	description = fortify_dardanelles_goal_desc
+	category = short_term
+	group = FOCUS_FILTER_CONSOLIDATION
+	allowed = {  }
+	visible = { always = no }
+	available = {
+		340 = { is_controlled_by_ROOT_or_ally = yes }
+		341 = { is_controlled_by_ROOT_or_ally = yes }
+	}
+	completed = {
+		custom_trigger_tooltip = {
+            tooltip = fortify_dardanelles_tooltip
+			340 = {
+				any_province_building_level = {
+					province = {
+						id = 6864
+					}
+					building = coastal_bunker
+					level > 0
+				}
+				any_province_building_level = {
+					province = {
+						id = 6864
+					}
+					building = bunker
+					level > 0
+				}
+			}
+			341 = {
+				any_province_building_level = {
+					province = {
+						id = 849
+					}
+					building = coastal_bunker
+					level > 0
+				}
+				any_province_building_level = {
+					province = {
+						id = 849
+					}
+					building = bunker
+					level > 0
+				}
+			}
+			OR = {
+				AND = {
+					divisions_in_state = { state = 797 size > 0 }
+					divisions_in_state = { state = 341 size > 0 }
+				}
+				any_allied_country = {
+					divisions_in_state = { state = 797 size > 0 }
+					divisions_in_state = { state = 341 size > 0 }
+				}
+			}
+		}
+	}
+	complete_effect = {
+		add_faction_power_projection = 100
+		custom_effect_tooltip = generic_skip_one_line_tt
+		custom_effect_tooltip = TARGET_STATE_CONTROLLERS
+		every_faction_member = { 
+			visible_when_empty = yes
+			limit = {
+				OR = {
+					controls_state = 340
+					controls_state = 341
+				}
+			}
+			add_faction_initiative = 1
+		}
+		340 = {
+			add_building_construction = {
+				type = anti_air_building
+				level = 1
+				instant_build = yes
+			}
+			add_building_construction = {
+				type = coastal_bunker
+				level = 1
+				province = 6864
+				instant_build = yes
+			}
+			add_building_construction = {
+				type = bunker
+				level = 1
+				province = 6864
+				instant_build = yes
+			}
+		}
+		341 = {
+			add_building_construction = {
+				type = anti_air_building
+				level = 1
+				instant_build = yes
+			}
+			add_building_construction = {
+				type = naval_base
+				level = 1
+				instant_build = yes
+				province = 849
+			}
+			add_building_construction = {
+				type = coastal_bunker
+				level = 1
+				province = 849
+				instant_build = yes
+			}
+			add_building_construction = {
+				type = bunker
+				level = 1
+				province = 849
+				instant_build = yes
+			}
+		}
+	}
+	ai_will_do = {
+		base = 1
+		modifier = {
+			add = 1 # If major naval power seek to control access
+			has_navy_size = {
+				size > 20
+				type = capital_ship
+			}
+		}
+		modifier = {
+			add = 1 # If at war with SOV prioritize this
+			any_enemy_country = {
+				original_tag = SOV
+			}
+		}
+	}
+}
+
+# Suez Canal
+faction_goal_fortify_suez_canal = {
+	name = fortify_suez_canal_goal_name
+	description = fortify_suez_canal_goal_desc
+	category = short_term
+	group = FOCUS_FILTER_CONSOLIDATION
+
+	allowed = {  }
+	visible = { always = no }
+	available = {
+
+	}
+	completed = {
+		custom_trigger_tooltip = {
+            tooltip = fortify_suez_tooltip
+			446 = {
+				any_province_building_level = {
+					province = {
+						id = 12049
+						id = 4073
+						id = 1155
+						id = 9947
+					}
+					building = coastal_bunker
+					level > 0
+				}
+				any_province_building_level = {
+					province = {
+						id = 12049
+						id = 4073
+						id = 1155
+						id = 9947
+					}
+					building = bunker
+					level > 0
+				}
+			}
+			OR = {
+				divisions_in_state = { state = 446 size > 3 }
+				any_allied_country = {
+					divisions_in_state = { state = 446 size > 3 }
+				}
+			}
+		}
+	}
+	complete_effect = {
+		add_faction_power_projection = 100
+		custom_effect_tooltip = generic_skip_one_line_tt
+		custom_effect_tooltip = TARGET_STATE_CONTROLLERS
+		every_faction_member = { 
+			visible_when_empty = yes
+			limit = {
+				controls_state = 446
+			}
+			add_faction_initiative = 1
+		}
+		446 = {
+			add_building_construction = {
+				type = anti_air_building
+				level = 1
+				instant_build = yes
+			}
+			add_building_construction = {
+				type = coastal_bunker
+				level = 1
+				province = 12049
+				instant_build = yes
+			}
+			add_building_construction = {
+				type = bunker
+				level = 1
+				province = 12049
+				instant_build = yes
+			}
+			add_building_construction = {
+				type = coastal_bunker
+				level = 1
+				province = 4073
+				instant_build = yes
+			}
+			add_building_construction = {
+				type = bunker
+				level = 1
+				province = 4073
+				instant_build = yes
+			}
+			add_building_construction = {
+				type = coastal_bunker
+				level = 1
+				province = 1155
+				instant_build = yes
+			}
+			add_building_construction = {
+				type = bunker
+				level = 1
+				province = 1155
+				instant_build = yes
+			}
+			add_building_construction = {
+				type = coastal_bunker
+				level = 1
+				province = 9947
+				instant_build = yes
+			}
+			add_building_construction = {
+				type = bunker
+				level = 1
+				province = 9947
+				instant_build = yes
+			}
+		}
+	}
+	ai_will_do = {
+		base = 1
+		modifier = {
+			add = 1 # If naval power seek to project it by expanding bases
+			has_navy_size = {
+				size > 5
+				type = capital_ship
+			}
+		}
+		modifier = {
+			add = 2 # If major naval power seek to control access
+			has_navy_size = {
+				size > 20
+				type = capital_ship
+			}
+		}
+	}
+}
+
+# Gulf of Aden
+faction_goal_expand_gulf_of_aden_bases = {
+	name = expand_gulf_of_aden_bases_goal_name
+	description = control_gulf_of_aden_bases_goal_desc
+	category = short_term
+	group = FOCUS_FILTER_CONSOLIDATION
+	allowed = {  }
+	visible = { always = no }
+	available = {
+
+	}
+	completed = {
+		992 = {
+			air_base > 2
+			any_province_building_level = {
+				province = {
+					all_provinces = yes
+				}
+				building = naval_base
+				level > 2
+			}
+		}
+	}
+	complete_effect = {
+		add_faction_power_projection = 100
+		custom_effect_tooltip = generic_skip_one_line_tt
+		custom_effect_tooltip = TARGET_STATE_CONTROLLERS
+		every_faction_member = { 
+			visible_when_empty = yes
+			limit = {
+				controls_state = 992
+			}
+			add_faction_initiative = 1
+		}
+	}
+	ai_will_do = {
+		base = 0
+		modifier = {
+			add = 2 # If convoys being threatened try to secure the suez supply lines better
+			convoy_threat > 0.5
+			collection_size = {
+				input = {
+					input = game:all_states
+					operators = {
+						limit = {
+							is_controlled_by_ROOT_or_ally = yes 
+							is_on_continent = europe
+						}
+					}
+					name = COLLECTION_FACTION_STATES_IN_EUROPE
+				}
+				value > 0
+			}
+			collection_size = {
+				input = {
+					input = game:all_states
+					operators = {
+						limit = {
+							is_controlled_by_ROOT_or_ally = yes 
+							is_on_continent = asia
+						}
+					}
+					name = COLLECTION_FACTION_STATES_IN_ASIA
+				}
+				value > 0
+			}
+		}
+		modifier = {
+			add = 1 # If naval power seek to control access
+			has_navy_size = {
+				size > 5
+				type = capital_ship
+			}
+		}
+	}
+}
+
+# Strait of Hormuz
+faction_goal_fortify_strait_of_hormuz = {
+	name = fortify_strait_of_hormuz_goal_name
+	description = fortify_strait_of_hormuz_goal_desc
+	category = short_term
+	group = FOCUS_FILTER_CONSOLIDATION
+	allowed = {  }
+	visible = { always = no }
+	available = {
+		412 = { is_controlled_by_ROOT_or_ally = yes }
+		1013 = { is_controlled_by_ROOT_or_ally = yes }
+	}
+	completed = {
+		custom_trigger_tooltip = {
+            tooltip = fortify_strait_of_hormuz_tooltip
+			412 = {
+				any_province_building_level = {
+					province = {
+						id = 7982
+					}
+					building = coastal_bunker
+					level > 0
+				}
+				any_province_building_level = {
+					province = {
+						id = 7982
+					}
+					building = bunker
+					level > 0
+				}
+			}
+			1013 = {
+				any_province_building_level = {
+					province = {
+						id = 13369
+					}
+					building = coastal_bunker
+					level > 0
+				}
+				any_province_building_level = {
+					province = {
+						id = 13369
+					}
+					building = bunker
+					level > 0
+				}
+			}
+			OR = {
+				AND = {
+					divisions_in_state = { state = 412 size > 0 }
+					divisions_in_state = { state = 1013 size > 0 }
+				}
+				any_allied_country = {
+					divisions_in_state = { state = 412 size > 0 }
+					divisions_in_state = { state = 1013 size > 0 }
+				}
+			}
+		}
+	}
+	complete_effect = {
+		add_faction_power_projection = 100
+		custom_effect_tooltip = generic_skip_one_line_tt
+		custom_effect_tooltip = TARGET_STATE_CONTROLLERS
+		every_faction_member = { 
+			visible_when_empty = yes
+			limit = {
+				OR = {
+					controls_state = 412
+					controls_state = 1013
+				}
+			}
+			add_faction_initiative = 1
+		}
+		412 = {
+			add_building_construction = {
+				type = anti_air_building
+				level = 1
+				instant_build = yes
+			}
+			add_building_construction = {
+				type = coastal_bunker
+				level = 1
+				province = 7982
+				instant_build = yes
+			}
+			add_building_construction = {
+				type = bunker
+				level = 1
+				province = 7982
+				instant_build = yes
+			}
+		}
+		1013 = {
+			add_building_construction = {
+				type = anti_air_building
+				level = 1
+				instant_build = yes
+			}
+			add_building_construction = {
+				type = coastal_bunker
+				level = 1
+				province = 13369
+				instant_build = yes
+			}
+			add_building_construction = {
+				type = bunker
+				level = 1
+				province = 13369
+				instant_build = yes
+			}
+		}
+	}
+	ai_will_do = {
+		base = 1
+		modifier = {
+			add = 2 # If convoys being threatened try to secure the suez supply lines better
+			convoy_threat > 0.5
+			collection_size = {
+				input = {
+					input = game:all_states
+					operators = {
+						limit = {
+							is_controlled_by_ROOT_or_ally = yes
+							OR = {
+								is_on_continent = europe
+								is_on_continent = asia
+							}
+						}
+					}
+					name = COLLECTION_FACTION_STATES_IN_EUROPE_OR_ASIA
+				}
+				value > 0
+			}
+			collection_size = {
+				input = {
+					input = game:all_states
+					operators = {
+						limit = {
+							is_controlled_by_ROOT_or_ally = yes 
+							is_on_continent = middle_east
+						}
+					}
+					name = COLLECTION_FACTION_STATES_IN_MIDDLE_EAST
+				}
+				value > 0
+			}
+		}
+		modifier = {
+			add = 1 # If naval power seek to control access
+			has_navy_size = {
+				size > 5
+				type = capital_ship
+			}
+		}
+	}
+}
+
+# Ceylon
+faction_goal_expand_ceylonese_bases = {
+	name = expand_ceylonese_bases_goal_name
+	description = expand_ceylonese_bases_goal_desc
+	category = short_term
+	group = FOCUS_FILTER_CONSOLIDATION
+	allowed = {  }
+	visible = { always = no }
+	available = {
+
+	}
+	completed = {
+		422 = {
+			air_base > 4
+			any_province_building_level = {
+				province = {
+					all_provinces = yes
+				}
+				building = naval_base
+				level > 6
+			}
+		}
+	}
+	complete_effect = {
+		add_faction_power_projection = 100
+		custom_effect_tooltip = generic_skip_one_line_tt
+		custom_effect_tooltip = TARGET_STATE_CONTROLLERS
+		every_faction_member = { 
+			visible_when_empty = yes
+			limit = {
+				controls_state = 422
+			}
+			add_faction_initiative = 1
+		}
+	}
+	ai_will_do = {
+		base = 0
+		modifier = {
+			add = 2 # If convoys being threatened try to secure the supply lines better
+			convoy_threat > 0.5
+			collection_size = {
+				input = {
+					input = game:all_states
+					operators = {
+						limit = {
+							is_controlled_by_ROOT_or_ally = yes 
+							is_on_continent = europe
+						}
+					}
+					name = COLLECTION_FACTION_STATES_IN_EUROPE
+				}
+				value > 0
+			}
+			collection_size = {
+				input = {
+					input = game:all_states
+					operators = {
+						limit = {
+							is_controlled_by_ROOT_or_ally = yes 
+							is_on_continent = asia
+						}
+					}
+					name = COLLECTION_FACTION_STATES_IN_ASIA
+				}
+				value > 0
+			}
+		}
+		modifier = {
+			add = 1 # If naval power seek to project it by expanding bases
+			has_navy_size = {
+				size > 5
+				type = capital_ship
+			}
+		}
+	}
+}
+
+# Singapore
+faction_goal_expand_singapore_naval_base = {
+	name = expand_singapore_naval_base_goal_name
+	description = expand_singapore_naval_base_goal_desc
+	category = short_term
+	group = FOCUS_FILTER_CONSOLIDATION
+	allowed = {  }
+	visible = { always = no }
+	available = {
+
+	}
+	completed = {
+		1021 = {
+			air_base > 7
+			any_province_building_level = {
+				province = {
+					all_provinces = yes
+				}
+				building = naval_base
+				level > 9
+			}
+			any_province_building_level = {
+				province = {
+					all_provinces = yes
+				}
+				building = coastal_bunker
+				level > 3
+			}
+		}
+	}
+	complete_effect = {
+		add_faction_power_projection = 100
+		custom_effect_tooltip = generic_skip_one_line_tt
+		custom_effect_tooltip = TARGET_STATE_CONTROLLERS
+		every_faction_member = { 
+			visible_when_empty = yes
+			limit = {
+				controls_state = 1021
+			}
+			add_faction_initiative = 1
+		}
+		1021 = {
+			add_building_construction = {
+				type = anti_air_building
+				level = 1
+				instant_build = yes
+			}
+		}
+	}
+	ai_will_do = {
+		base = 1
+		modifier = {
+			add = 2 # If convoys being threatened try to secure the supply lines better
+			convoy_threat > 0.5
+			collection_size = {
+				input = {
+					input = game:all_states
+					operators = {
+						limit = {
+							is_controlled_by_ROOT_or_ally = yes 
+							is_on_continent = europe
+						}
+					}
+					name = COLLECTION_FACTION_STATES_IN_EUROPE
+				}
+				value > 0
+			}
+			collection_size = {
+				input = {
+					input = game:all_states
+					operators = {
+						limit = {
+							is_controlled_by_ROOT_or_ally = yes 
+							is_on_continent = asia
+						}
+					}
+					name = COLLECTION_FACTION_STATES_IN_ASIA
+				}
+				value > 0
+			}
+		}
+		modifier = {
+			add = 1 # If naval power seek to project it by expanding bases
+			has_navy_size = {
+				size > 5
+				type = capital_ship
+			}
+		}
+		modifier = {
+			add = 5 # ENG should really want to do this
+			is_historical_focus_on = yes
+			original_tag = ENG
+		}
+	}
+}
+
+# Manila
+faction_goal_fortify_manila_bay = {
+	name = fortify_manila_bay_goal_name
+	description = fortify_manila_bay_goal_desc
+	category = short_term
+	group = FOCUS_FILTER_CONSOLIDATION
+	allowed = {  }
+	visible = { always = no }
+	available = {
+
+	}
+	completed = {
+		custom_trigger_tooltip = {
+			tooltip = fortify_manila_tooltip
+			327 = {
+				air_base > 7
+				any_province_building_level = {
+					province = {
+						id = 10265
+					}
+					building = naval_base
+					level > 6
+				}
+				any_province_building_level = {
+					province = {
+						id = 10265
+					}
+					building = coastal_bunker
+					level > 1
+				}
+			}
+		}
+	}
+	complete_effect = {
+		add_faction_power_projection = 100
+		custom_effect_tooltip = generic_skip_one_line_tt
+		custom_effect_tooltip = TARGET_STATE_CONTROLLERS
+		every_faction_member = { 
+			visible_when_empty = yes
+			limit = {
+				controls_state = 327
+			}
+			add_faction_initiative = 1
+		}
+		327 = {
+			add_building_construction = {
+				type = anti_air_building
+				level = 1
+				instant_build = yes
+			}
+			add_building_construction = {
+				type = coastal_bunker
+				level = 1
+				province = 10265
+				instant_build = yes
+			}
+		}
+	}
+	ai_will_do = {
+		base = 1
+		modifier = {
+			add = 1 # If naval power seek to protect it by expandin/fortifying bases
+			has_navy_size = {
+				size > 5
+				type = capital_ship
+			}
+		}
+		modifier = {
+			add = 1 # If PHI prioritize this
+			original_tag = PHI
+		}
+	}
+}
+
+# Okinawa
+faction_goal_fortify_okinawa = {
+	name = fortify_okinawa_goal_name
+	description = fortify_okinawa_goal_desc
+	category = short_term
+	group = FOCUS_FILTER_CONSOLIDATION
+
+	allowed = {  }
+	visible = { always = no }
+	available = {
+
+	}
+	completed = {
+		custom_trigger_tooltip = {
+			tooltip = fortify_okinawa_tooltip
+			526 = {
+				air_base > 4
+				anti_air_building > 0
+				any_province_building_level = {
+					province = {
+						id = 10265
+					}
+					building = coastal_bunker
+					level > 1
+				}
+			}
+		}
+	}
+	complete_effect = {
+		add_faction_power_projection = 100
+		custom_effect_tooltip = generic_skip_one_line_tt
+		custom_effect_tooltip = TARGET_STATE_CONTROLLERS
+		every_faction_member = { 
+			visible_when_empty = yes
+			limit = {
+				controls_state = 526
+			}
+			add_faction_initiative = 1
+		}
+		526 = {
+			add_building_construction = {
+				type = anti_air_building
+				level = 1
+				instant_build = yes
+			}
+			add_building_construction = {
+				type = coastal_bunker
+				level = 1
+				province = 11932
+				instant_build = yes
+			}
+		}
+	}
+	ai_will_do = {
+		base = 0
+		modifier = {
+			add = 1 # If at war with JAP then expand airbases
+			has_war_with = JAP
+		}
+		modifier = {
+			add = 10 # If Japan and vulnerable at sea prioritize this
+			original_tag = JAP
+			has_navy_size = {
+			    size < 10
+			    type = capital_ship
+			}
+			has_navy_size = {
+				type = carrier
+				size < 4
+			}
+		}
+	}
+}
+
+# Iwo Jima
+faction_goal_fortify_iwo_jima = {
+	name = fortify_iwo_jima_goal_name
+	description = fortify_iwo_jima_goal_desc
+	category = short_term
+	group = FOCUS_FILTER_CONSOLIDATION
+	allowed = {  }
+	visible = { always = no }
+	available = {
+
+	}
+	completed = {
+		645 = {
+			air_base > 2
+			anti_air_building > 0
+			any_province_building_level = {
+				province = {
+					id = 10265
+				}
+				building = coastal_bunker
+				level > 1
+			}
+		}
+	}
+	complete_effect = {
+		add_faction_power_projection = 100
+		custom_effect_tooltip = generic_skip_one_line_tt
+		custom_effect_tooltip = TARGET_STATE_CONTROLLERS
+		every_faction_member = { 
+			visible_when_empty = yes
+			limit = {
+				controls_state = 645
+			}
+			add_faction_initiative = 1
+		}
+		645 = {
+			add_building_construction = {
+				type = anti_air_building
+				level = 1
+				instant_build = yes
+			}
+			add_building_construction = {
+				type = coastal_bunker
+				level = 1
+				province = 13025
+				instant_build = yes
+			}
+		}
+	}
+	ai_will_do = {
+		base = 0
+		modifier = {
+			add = 1 # If at war with JAP then expand airbases
+			has_war_with = JAP
+		}
+		modifier = {
+			add = 10 # If Japan and vulnerable at sea prioritize this
+			original_tag = JAP
+			has_navy_size = {
+			    size < 10
+			    type = capital_ship
+			}
+			has_navy_size = {
+				type = carrier
+				size < 4
+			}
+		}
+	}
+}
+
+# Caroline Islands
+faction_goal_expand_caroline_islands_bases = {
+	name = expand_caroline_islands_bases_goal_name
+	description = expand_caroline_islands_bases_goal_desc
+	category = short_term
+	group = FOCUS_FILTER_CONSOLIDATION
+	allowed = {  }
+	visible = { always = no }
+	available = {
+
+	}
+	completed = {
+		684 = {
+			air_base > 4
+			any_province_building_level = {
+				province = {
+					all_provinces = yes
+				}
+				building = naval_base
+				level > 7
+			}
+		}
+	}
+	complete_effect = {
+		add_faction_power_projection = 100
+		custom_effect_tooltip = generic_skip_one_line_tt
+		custom_effect_tooltip = TARGET_STATE_CONTROLLERS
+		every_faction_member = { 
+			visible_when_empty = yes
+			limit = {
+				controls_state = 684
+			}
+			add_faction_initiative = 1
+		}
+	}
+	ai_will_do = {
+		base = 0
+		modifier = {
+			add = 2 # If convoys being threatened try to secure the transpacific supply lines better
+			convoy_threat > 0.5
+			collection_size = {
+				input = {
+					input = game:all_states
+					operators = {
+						limit = {
+							is_controlled_by_ROOT_or_ally = yes 
+							is_on_continent = north_america
+						}
+					}
+					name = COLLECTION_FACTION_STATES_IN_NORTH_AMERICA
+				}
+				value > 0
+			}
+			collection_size = {
+				input = {
+					input = game:all_states
+					operators = {
+						limit = {
+							is_controlled_by_ROOT_or_ally = yes 
+							is_on_continent = asia
+						}
+					}
+					name = COLLECTION_FACTION_STATES_IN_ASIA
+				}
+				value > 0
+			}
+		}
+		modifier = {
+			add = 1 # If naval power seek to project it by expanding bases
+			has_navy_size = {
+				size > 5
+				type = capital_ship
+			}
+		}
+	}
+}
+
+# Guadalcanal
+faction_goal_expand_guadalcanal_bases = {
+	name = expand_guadalcanal_bases_goal_name
+	description = expand_guadalcanal_bases_goal_desc
+	category = short_term
+	group = FOCUS_FILTER_CONSOLIDATION
+	allowed = {  }
+	visible = { always = no }
+	available = {
+
+	}
+	completed = {
+		634 = {
+			air_base > 1
+			any_province_building_level = {
+				province = {
+					all_provinces = yes
+				}
+				building = naval_base
+				level > 3
+			}
+		}
+	}
+	complete_effect = {
+		add_faction_power_projection = 100
+		custom_effect_tooltip = generic_skip_one_line_tt
+		custom_effect_tooltip = TARGET_STATE_CONTROLLERS
+		every_faction_member = { 
+			visible_when_empty = yes
+			limit = {
+				controls_state = 634
+			}
+			add_faction_initiative = 1
+		}
+	}
+	ai_will_do = {
+		base = 0
+		modifier = {
+			add = 1 # Always care if Australia or NZL
+			OR = {
+				original_tag = AST
+				original_tag = NZL
+			}
+		}
+		modifier = {
+			add = 2 # If convoys being threatened try to secure the transpacific supply lines better
+			convoy_threat > 0.5
+			collection_size = {
+				input = {
+					input = game:all_states
+					operators = {
+						limit = {
+							is_controlled_by_ROOT_or_ally = yes
+							OR = {
+								is_on_continent = north_america
+								is_on_continent = asia
+							}
+						}
+					}
+					name = COLLECTION_FACTION_STATES_IN_NORTH_AMERICA_OR_ASIA
+				}
+				value > 0
+			}
+			collection_size = {
+				input = {
+					input = game:all_states
+					operators = {
+						limit = {
+							is_controlled_by_ROOT_or_ally = yes 
+							is_on_continent = australia
+						}
+					}
+					name = COLLECTION_FACTION_STATES_IN_AUSTRALIA
+				}
+				value > 0
+			}
+		}
+		modifier = {
+			add = 1 # If naval power seek to project it by expanding bases
+			has_navy_size = {
+				size > 5
+				type = capital_ship
+			}
+		}
+	}
+}
+
+# Wake Island
+faction_goal_expand_wake_island_bases = {
+	name = expand_wake_island_bases_goal_name
+	description = control_wake_island_goal_desc
+	category = short_term
+	group = FOCUS_FILTER_CONSOLIDATION
+	allowed = {  }
+	visible = { always = no }
+	available = {
+
+	}
+	completed = {
+		632 = {
+			air_base > 1
+			any_province_building_level = {
+				province = {
+					all_provinces = yes
+				}
+				building = naval_base
+				level > 2
+			}
+		}
+	}
+	complete_effect = {
+		add_faction_power_projection = 100
+		custom_effect_tooltip = generic_skip_one_line_tt
+		custom_effect_tooltip = TARGET_STATE_CONTROLLERS
+		every_faction_member = { 
+			visible_when_empty = yes
+			limit = {
+				controls_state = 632
+			}
+			add_faction_initiative = 1
+		}
+	}
+	ai_will_do = {
+		base = 0
+		modifier = {
+			add = 2 # If convoys being threatened try to secure the transpacific supply lines better
+			convoy_threat > 0.5
+			collection_size = {
+				input = {
+					input = game:all_states
+					operators = {
+						limit = {
+							is_controlled_by_ROOT_or_ally = yes 
+							is_on_continent = north_america
+						}
+					}
+					name = COLLECTION_FACTION_STATES_IN_NORTH_AMERICA
+				}
+				value > 0
+			}
+			collection_size = {
+				input = {
+					input = game:all_states
+					operators = {
+						limit = {
+							is_controlled_by_ROOT_or_ally = yes 
+							is_on_continent = asia
+						}
+					}
+					name = COLLECTION_FACTION_STATES_IN_ASIA
+				}
+				value > 0
+			}
+		}
+		modifier = {
+			add = 1 # If naval power seek to project it by expanding bases
+			has_navy_size = {
+				size > 5
+				type = capital_ship
+			}
+		}
+	}
+}
+
+# Midway Island
+faction_goal_expand_midway_island_bases = {
+	name = expand_midway_island_bases_goal_name
+	description = expand_midway_island_bases_goal_desc
+	category = short_term
+	group = FOCUS_FILTER_CONSOLIDATION
+	allowed = {  }
+	visible = { always = no }
+	available = {
+
+	}
+	completed = {
+		631 = {
+			air_base > 1
+			any_province_building_level = {
+				province = {
+					all_provinces = yes
+				}
+				building = naval_base
+				level > 2
+			}
+		}
+	}
+	complete_effect = {
+		add_faction_power_projection = 100
+		custom_effect_tooltip = generic_skip_one_line_tt
+		custom_effect_tooltip = TARGET_STATE_CONTROLLERS
+		every_faction_member = { 
+			visible_when_empty = yes
+			limit = {
+				controls_state = 631
+			}
+			add_faction_initiative = 1
+		}
+	}
+	ai_will_do = {
+		base = 0
+		modifier = {
+			add = 2 # If convoys being threatened try to secure the transpacific supply lines better
+			convoy_threat > 0.5
+			collection_size = {
+				input = {
+					input = game:all_states
+					operators = {
+						limit = {
+							is_controlled_by_ROOT_or_ally = yes 
+							is_on_continent = north_america
+						}
+					}
+					name = COLLECTION_FACTION_STATES_IN_NORTH_AMERICA
+				}
+				value > 0
+			}
+			collection_size = {
+				input = {
+					input = game:all_states
+					operators = {
+						limit = {
+							is_controlled_by_ROOT_or_ally = yes 
+							is_on_continent = asia
+						}
+					}
+					name = COLLECTION_FACTION_STATES_IN_ASIA
+				}
+				value > 0
+			}
+		}
+		modifier = {
+			add = 1 # If naval power seek to project it by expanding bases
+			has_navy_size = {
+				size > 5
+				type = capital_ship
+			}
+		}
+	}
+}
