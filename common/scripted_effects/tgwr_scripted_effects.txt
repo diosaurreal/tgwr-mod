@@ -1002,6 +1002,8 @@ clear_all_relations = {
 		}
 	}
 	clr_country_flag = protectorate
+	clr_country_flag = colony
+	clr_country_flag = monarchist_puppet
 	if = {
 		limit = { is_in_faction = yes }
 		leave_faction = yes
@@ -1113,6 +1115,8 @@ clear_all_relations_with_TARGET = {
 		}
 	}
 	clr_country_flag = protectorate
+	clr_country_flag = colony
+	clr_country_flag = monarchist_puppet
 	if = {
 		limit = { is_in_faction_with = var:target }
 		leave_faction = yes
@@ -2114,6 +2118,20 @@ take_all_subjects_FROM = {
 			}
 			restore_previous_government_type = yes
 		}
+		else_if = {
+			limit = {
+				has_autonomy_state = autonomy_tgwr_self_governing_colony
+			}
+			FROM = { end_puppet = PREV }
+			get_current_government_type = yes
+			ROOT = {
+				set_autonomy = {
+					target = PREV
+					autonomous_state = autonomy_tgwr_self_governing_colony
+				}
+			}
+			restore_previous_government_type = yes
+		}
 		else = {
 			FROM = { end_puppet = PREV }
 			get_current_government_type = yes
@@ -2472,6 +2490,20 @@ take_all_subjects_ROOT = {
 			}
 			restore_previous_government_type = yes
 		}
+		else_if = {
+			limit = {
+				has_autonomy_state = autonomy_tgwr_self_governing_colony
+			}
+			ROOT = { end_puppet = PREV }
+			get_current_government_type = yes
+			PREV = {
+				set_autonomy = {
+					target = PREV
+					autonomous_state = autonomy_tgwr_self_governing_colony
+				}
+			}
+			restore_previous_government_type = yes
+		}
 		else = {
 			ROOT = { end_puppet = PREV }
 			get_current_government_type = yes
@@ -2485,13 +2517,13 @@ copy_autonomy_from_ROOT = {
 	ROOT = {
 		if = {
 			limit = {
-				has_autonomy_state = autonomy_dominion
+				has_autonomy_state = autonomy_satellite
 			}
 			OVERLORD = {
 				end_puppet = PREV
 				set_autonomy = {
 					target = PREV.PREV
-					autonomous_state = autonomy_dominion
+					autonomous_state = autonomy_satellite
 				}
 			}
 		}
@@ -2779,6 +2811,18 @@ copy_autonomy_from_ROOT = {
 				}
 			}
 		}
+		else_if = {
+			limit = {
+				has_autonomy_state = autonomy_tgwr_self_governing_colony
+			}
+			OVERLORD = {
+				end_puppet = PREV
+				set_autonomy = {
+					target = PREV.PREV
+					autonomous_state = autonomy_tgwr_self_governing_colony
+				}
+			}
+		}
 		else = {
 			OVERLORD = {
 				end_puppet = PREV
@@ -3014,10 +3058,11 @@ create_AOF = {
 			original_tag = FRA
 			set_country_flag = AOF
 			set_cosmetic_tag = AOF
+			set_country_flag = colony
 			PREV = {
 				set_autonomy = {
 					target = PREV
-					autonomous_state = autonomy_integrated_puppet
+					autonomous_state = autonomy_colony
 				}
 			}
 			set_country_flag = empty_focus
@@ -3186,10 +3231,11 @@ create_AEF = {
 			original_tag = FRA
 			set_country_flag = AEF
 			set_cosmetic_tag = AEF
+			set_country_flag = colony
 			PREV = {
 				set_autonomy = {
 					target = PREV
-					autonomous_state = autonomy_integrated_puppet
+					autonomous_state = autonomy_colony
 				}
 			}
 			set_country_flag = empty_focus
@@ -3805,9 +3851,9 @@ vassal_of_vassal_logic = {
 			limit = { 
 				is_subject = yes
 			}
-			PREV = {
-				give_market_access = PREV.OVERLORD
-			}	
+			# PREV = {
+			# 	give_market_access = PREV.OVERLORD
+			# }	
 			if = {
 				limit = { 
 					OVERLORD = {
