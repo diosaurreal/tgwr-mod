@@ -462,7 +462,7 @@ TUR_millet_system = {
 			}
 		}
 	}
-	TRS_compulsory_jewish_citizen_documentation = {
+	TRS_displace_jewish_settlements = {
 		icon = GFX_decision_generic_political_rally
 		allowed = { tag = TRS }
 		state_target = yes
@@ -470,7 +470,7 @@ TUR_millet_system = {
 		highlight_states = { highlight_state_targets = { state = FROM } }
 		on_map_mode = map_only
 		visible = {
-			has_completed_focus = TUR_integrate_jewish_colonies
+			has_completed_focus = TUR_deport_jewish_settlements
 			controls_state = FROM
 			FROM = {
 				OR = {
@@ -479,12 +479,64 @@ TUR_millet_system = {
 				}
 			}
 		}
-		cost = 50
-		complete_effect = {
+		days_remove = 60
+		custom_cost_text = command_power_more_than_10_political_power_more_than_10
+		custom_cost_trigger = {
+			has_political_power > 9.9
+			command_power > 9.9
+		}
+		available = {
 			FROM = {
-				custom_effect_tooltip = TUR_integrate_jewish_colonies_tt
-				add_to_variable = { TUR_ottoman_state_production_speed_buildings_factor_jewish = -0.02 }
-				add_to_variable = { TUR_ottoman_local_building_slots_factor_jewish = 0.05 }
+				NOT = {
+					has_dynamic_modifier = { modifier = TUR_autonomous_vilayet }
+					has_dynamic_modifier = { modifier = TUR_semi_autonomous_vilayet }
+				}
+			}
+			has_equipment = { train_equipment > 4 }
+		}
+		complete_effect = {
+			hidden_effect = {
+				add_command_power = -10
+				add_political_power = -10
+			}
+			add_equipment_to_stockpile = { type = train_equipment amount = -5 }
+			hidden_effect = {
+				FROM = {
+					if = {
+						limit = { NOT = { has_variable = TRS_displace_jewish_settlements } }
+						set_temp_variable = { TRS_displace_jewish_settlements = state_population }
+						divide_temp_variable = { TRS_displace_jewish_settlements = -5 }
+						set_temp_variable = { THIS.TRS_displace_jewish_settlements_2 = TRS_displace_jewish_settlements }
+						divide_temp_variable = { THIS.TRS_displace_jewish_settlements_2 = -5 }
+						set_variable = { TRS_displace_jewish_settlements = state_population }
+						divide_variable = { TRS_displace_jewish_settlements = -5 }
+						set_variable = { TRS_displace_jewish_settlements_2 = TRS_displace_jewish_settlements }
+						divide_variable = { TRS_displace_jewish_settlements_2 = -5 }
+					}
+				}
+			}
+		}
+		remove_effect = {
+			add_equipment_to_stockpile = { type = train_equipment amount = 5 }
+			FROM = {
+				TUR_reduce_jewish_judaic_level = yes
+				if = {
+					limit = { NOT = { has_variable = TRS_displace_jewish_settlements } }
+					set_temp_variable = { TRS_displace_jewish_settlements = state_population }
+					divide_temp_variable = { TRS_displace_jewish_settlements = -5 }
+					set_temp_variable = { global.TRS_displace_jewish_settlements_2 = TRS_displace_jewish_settlements }
+					divide_temp_variable = { global.TRS_displace_jewish_settlements_2 = -5 }
+				}
+				add_manpower = TRS_displace_jewish_settlements
+				every_state = {
+					limit = { is_controlled_by = ROOT }
+					random_select_amount = 5
+					if = {
+						limit = { NOT = { has_variable = TRS_displace_jewish_settlements } }
+						add_manpower = global.TRS_displace_jewish_settlements_2
+					}
+					else = { add_manpower = TRS_displace_jewish_settlements_2 }
+				}
 			}
 			if = {
 				limit = { FROM = { state = 454 } }
@@ -492,11 +544,15 @@ TUR_millet_system = {
 				add_to_variable = { global.TUR_jerusalem_centralization = 5 }
 			}
 			if = {
-				limit = { FROM = { has_dynamic_modifier = { modifier = TUR_haci_adil_committee } } }
-				add_stability = 0.01
+				limit = { FROM = { state = 858 } }
+				custom_effect_tooltip = TUR_increase_beirut_centralization_5
+				add_to_variable = { global.TUR_beirut_centralization = 5 }
 			}
+			ottoman_armenian_variable_check_only = yes
 			ottoman_centralization_variable_check = yes
 		}
+		cancel_trigger = { NOT = { controls_state = FROM } }
+		cancel_effect = { add_equipment_to_stockpile = { type = train_equipment amount = 5 } }
 		ai_will_do = {
 			base = 80
 		}
@@ -1036,7 +1092,7 @@ economy_decisions = {
 			consumer_goods_factor = -0.05
 		}
 		remove_effect = {
-			custom_effect_tooltip = TUR_increase_beirut_centralization_05
+			custom_effect_tooltip = TUR_increase_beirut_centralization_5
 			add_to_variable = { global.TUR_beirut_centralization = 5 }
 		}
 		cancel_effect = { add_political_power = 15 }
@@ -1057,7 +1113,7 @@ economy_decisions = {
 		fire_only_once = yes
 		cost = 15
 		complete_effect = {
-			custom_effect_tooltip = TUR_increase_beirut_centralization_05
+			custom_effect_tooltip = TUR_increase_beirut_centralization_5
 			add_to_variable = { global.TUR_beirut_centralization = 5 }
 			reverse_add_opinion_modifier = {
 				target = FRA
