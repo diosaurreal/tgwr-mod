@@ -1603,8 +1603,27 @@ focus = {
 			NOT = { has_war_with = ENT }
 			is_great_war_ongoing = yes
 		}
+		bypass = {
+			is_in_faction_with = ENT
+		}
 		mutually_exclusive = {
 			focus = GRE_commit_to_neutrality
+		}
+		bypass_effect = {
+			mark_focus_tree_layout_dirty = yes
+			every_country = {
+				limit = {
+					is_in_faction_with = ENT
+					capital_scope = {
+						is_on_continent = europe
+					}
+				}
+				add_opinion_modifier = {
+					target = ROOT
+					modifier = large_increase
+				}
+			}
+			remove_state_claim = 871
 		}
 		completion_reward = {
 			mark_focus_tree_layout_dirty = yes
@@ -1672,7 +1691,10 @@ focus = {
 			}
 		}
 		bypass = {
-			has_country_flag = GRE_national_schism_flag
+			OR = {
+				has_country_flag = GRE_national_defense_flag
+				has_defensive_war = yes
+			}
 		}
 		relative_position_id = GRE_commit_to_neutrality
 		prerequisite = {
@@ -1695,16 +1717,21 @@ focus = {
 			}
 		}
 		bypass_effect = {
-			add_popularity = {
-				ideology = neutrality
-				popularity = 0.05
-			}
 			if = {
-				limit = {
-					GRE_has_idea_schism = no
+				limit = { 
+					has_defensive_war = no
 				}
-				add_ideas = GRE_idea_national_schism2
-			}
+				add_popularity = {
+					ideology = neutrality
+					popularity = 0.05
+				}
+				if = {
+					limit = {
+						GRE_has_idea_schism = no
+					}
+					add_ideas = GRE_idea_national_schism2
+				}
+			}		
 		}
 		offset = {
 			x = -1
@@ -1746,6 +1773,7 @@ focus = {
 			OR = {
 				GRE_has_venizelist_government = yes
 				has_power_balance = { id = GRE_venizelos_constantine }
+				is_in_faction_with = ENT
 			}
 		}
 		completion_reward = {
@@ -1775,6 +1803,7 @@ focus = {
 			OR = {
 				GRE_has_venizelist_government = yes
 				has_power_balance = { id = GRE_venizelos_constantine }
+				is_in_faction_with = ENT
 			}
 		}
 		search_filters = {
@@ -1838,7 +1867,7 @@ focus = {
 			}
 			hidden_effect = {
 				if = {
-					limit = { NOT = { has_country_flag = civil_war_has_been_triggered }}
+					limit = { NOT = { has_country_flag = civil_war_has_been_triggered is_in_faction_with = ENT }}
 					country_event = { id = ww1_greece.88 days = 16 }
 				}		
 			}
@@ -1955,8 +1984,16 @@ focus = {
 					has_country_leader = {
 						character = GRE_eleftherios_venizelos
 					}
-					has_idea = GRE_idea_dual_power
-				}
+					OR = {
+						has_idea = GRE_idea_dual_power
+						AND = {
+							NOT = {
+								has_country_flag = GRE_national_schism_flag
+							}
+							is_in_faction_with = ENT
+						}
+					}			
+				}			
 				has_country_flag = civil_war_has_been_triggered
 			}		
 		}
@@ -1991,7 +2028,15 @@ focus = {
 			}
 		}
 		bypass = {
-			has_country_flag = civil_war_has_been_triggered
+			OR = {
+				AND = {
+					NOT = {
+						has_country_flag = GRE_national_schism_flag
+					}
+					is_in_faction_with = ENT
+				}
+				has_country_flag = civil_war_has_been_triggered
+			}	
 		}
 		relative_position_id = GRE_force_new_elections
 		prerequisite = {
@@ -2256,7 +2301,10 @@ focus = {
 			}
 		}
 		bypass = {
-			has_country_flag = civil_war_has_been_triggered
+			OR = {
+				NOT = { has_power_balance = { id = GRE_venizelos_constantine } }
+				has_country_flag = civil_war_has_been_triggered
+			}			
 		}
 		completion_reward = {
 			add_political_power = 75
@@ -2495,6 +2543,7 @@ focus = {
 			has_global_flag = gre_federacion
 			NOT = {
 				has_country_flag = gre_federacion_kicked
+				is_in_faction_with = ENT
 			}
 		}
 		allow_branch = {
@@ -2575,7 +2624,10 @@ focus = {
 			}
 		}
 		bypass = {
-			has_country_flag = GRE_national_defense_flag
+			OR = {
+				has_country_flag = GRE_national_defense_flag
+				is_in_faction_with = ENT			
+			}		
 		}
 		ai_will_do = {
 			factor = 125
@@ -2626,10 +2678,16 @@ focus = {
 					check_variable = { var = GRE_garrison_control value = 4 compare = greater_than_or_equals }
 				}
 			}
-			NOT = { has_global_flag = great_war_ends }
+			NOT = { 
+				has_war_with = ENT
+				has_global_flag = great_war_ends 
+			}
 		}
 		bypass = {
-			has_country_flag = GRE_national_defense_flag
+			OR = {
+				has_country_flag = GRE_national_defense_flag
+				is_in_faction_with = ENT
+			}		
 		}
 		relative_position_id = GRE_organize_the_committee_of_national_defence
 		prerequisite = {
@@ -2673,6 +2731,32 @@ focus = {
 				ITA = { transfer_state = 803 }
 			}
 			hidden_effect = { news_event = { id = ww1_greece.53 hours = 6 } }
+		}
+		bypass_effect = {
+			if = {
+				limit = { 
+					is_in_faction_with = ENT
+				}
+				clr_country_flag = battle_of_influence
+				clr_country_flag = battle_of_influence_royalist_side
+				remove_power_balance = { id = GRE_venizelos_constantine }
+				remove_mission = GRE_escalating_schism
+				random_state = {
+					limit = { has_state_flag = french_salonika }
+					transfer_state_to = ROOT
+				}
+				if = {
+					limit = { 
+						has_government = neutrality
+					}
+					promote_character = GRE_eleftherios_venizelos
+					add_ideas = GRE_idea_constantine
+					set_politics = {
+						ruling_party = democratic
+						elections_allowed = yes
+					}
+				}
+			}
 		}
 		ai_will_do = { factor = 200 }
 	}
