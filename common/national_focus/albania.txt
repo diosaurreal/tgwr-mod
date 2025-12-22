@@ -2399,6 +2399,21 @@ focus_tree = {
 					}
 				}
 			}
+			set_party_name = {
+				ideology = democratic
+				name = ALB_national_party
+				long_name = ALB_national_party_long
+			}
+			set_party_name = {
+				ideology = fascism
+				name = ALB_national_party
+				long_name = ALB_national_party_long
+			}
+			set_party_name = {
+				ideology = communism
+				name = ALB_national_party
+				long_name = ALB_national_party_long
+			}
 			mark_focus_tree_layout_dirty = yes
 		}
 		ai_will_do = { factor = 100 }
@@ -2627,11 +2642,13 @@ focus_tree = {
 							promote_leader = yes
 							country_leader = {
 								ideology = semi_constitutional_monarchy
-								traits = { ALB_foreign_expert }
+								traits = { ALB_foreign_monarch ALB_perceived_neutrality }
 							}
 						}
 					}
 				}
+				reverse_add_opinion_modifier = { target = AUS modifier = medium_increase }
+				reverse_add_opinion_modifier = { target = ITA modifier = medium_increase }
 			}
 		}
 		ai_will_do = { factor = 20 }
@@ -2646,7 +2663,7 @@ focus_tree = {
 			FOCUS_FILTER_INTERNAL_AFFAIRS
 		}
 		prerequisite = { focus = ALB_congress_of_trieste }
-		mutually_exclusive = { focus = ALB_prince_king_vilhelm_i focus = ALB_prince_king_viktor_i focus = ALB_prince_king_fuadi }
+		mutually_exclusive = { focus = ALB_prince_king_vilhelm_i focus = ALB_prince_king_viktor_i focus = ALB_prince_king_fuadi_i }
 		x = -1
 		y = 1
 		relative_position_id = ALB_congress_of_trieste
@@ -2672,11 +2689,12 @@ focus_tree = {
 							promote_leader = yes
 							country_leader = {
 								ideology = semi_constitutional_monarchy
-								traits = { ALB_foreign_expert }
+								traits = { ALB_foreign_monarch ALB_catholic_prince }
 							}
 						}
 					}
 				}
+				reverse_add_opinion_modifier = { target = AUS modifier = large_increase }
 			}
 		}
 		ai_will_do = { factor = 20 }
@@ -2717,11 +2735,12 @@ focus_tree = {
 							promote_leader = yes
 							country_leader = {
 								ideology = semi_constitutional_monarchy
-								traits = { ALB_foreign_expert }
+								traits = { ALB_foreign_monarch ALB_italian_connections }
 							}
 						}
 					}
 				}
+				reverse_add_opinion_modifier = { target = ITA modifier = large_increase }
 			}
 		}
 		ai_will_do = { factor = 20 }
@@ -2762,11 +2781,14 @@ focus_tree = {
 							promote_leader = yes
 							country_leader = {
 								ideology = semi_constitutional_monarchy
-								traits = { ALB_foreign_expert }
+								traits = { ALB_foreign_monarch ALB_muslim_prince }
 							}
 						}
 					}
 				}
+				reverse_add_opinion_modifier = { target = AUS modifier = small_increase }
+				reverse_add_opinion_modifier = { target = ITA modifier = small_increase }
+				reverse_add_opinion_modifier = { target = EGY modifier = large_increase }
 			}
 		}
 		ai_will_do = { factor = 20 }
@@ -2792,7 +2814,7 @@ focus_tree = {
 
 	focus = {
 		id = ALB_princes_council_of_ministers
-		icon = GFX_focus_generic_industrialists
+		icon = GFX_focus_generic_ministeral_meeting
 		cost = 5
 		search_filters = {
 			FOCUS_FILTER_HISTORICAL
@@ -2979,9 +3001,21 @@ focus_tree = {
 		relative_position_id = ALB_unify_the_country
 		available = { has_war_with = EPR }
 		completion_reward = {
-			country_event = { id = ww1_albania.39 hours = 8 }
-			EPR = { country_event = { id = ww1_albania.39 hours = 8 } }
-			GRE = { country_event = { id = ww1_albania.39 hours = 8 } }
+			every_possible_country = {
+				limit = {
+					OR = {
+						tag = ROOT
+						AND = {
+							original_tag = ALB
+							has_war_with = EPR
+						}
+						tag = EPR
+						tag = GRE
+					}
+				}
+				country_event = { id = albania.58 hours = 8 }
+			}
+			event_option_tooltip = albania.58.a
 		}
 		ai_will_do = { factor = 20 }
 	}
@@ -3006,7 +3040,14 @@ focus_tree = {
 			}
 		}
 		completion_reward = {
-
+			activate_advisor = ALB_esad_toptani
+			ITA = {
+				add_opinion_modifier = {
+					target = ROOT
+					modifier = ALB_appointed_pro_italian_government
+				}
+			}
+			add_political_power = 25
 		}
 		ai_will_do = { factor = 20 }
 	}
@@ -3031,7 +3072,14 @@ focus_tree = {
 			}
 		}
 		completion_reward = {
-
+			activate_advisor = ALB_aqif_bicaku
+			AUS = {
+				add_opinion_modifier = {
+					target = ROOT
+					modifier = ALB_appointed_pro_austrian_government
+				}
+			}
+			add_political_power = 25
 		}
 		ai_will_do = { factor = 20 }
 	}
@@ -3048,8 +3096,83 @@ focus_tree = {
 		x = 1
 		y = 1
 		relative_position_id = ALB_appoint_pro_italian_government
+		complete_tooltip = {
+			custom_effect_tooltip = ALB_government_reshuffle_tt
+			if = {
+				limit = { has_completed_focus = ALB_appoint_pro_italian_government }
+				deactivate_advisor = ALB_aqif_bicaku
+				if = {
+					limit = { has_country_flag = ALB_appoint_pro_italian_government_character }
+					set_can_be_fired_in_advisor_role = { character = ALB_esad_toptani value = no }
+					remove_opinion_modifier = {
+						target = ROOT
+						modifier = ALB_appointed_pro_austrian_government
+					}
+					activate_advisor = ALB_aqif_bicaku
+					add_opinion_modifier = {
+						target = ROOT
+						modifier = ALB_appointed_pro_italian_government
+					}
+				}
+			}
+			if = {
+				limit = { has_completed_focus = ALB_appoint_pro_austrian_government }
+				deactivate_advisor = ALB_aqif_bicaku
+				if = {
+					limit = { has_country_flag = ALB_appoint_pro_austrian_government_character }
+					set_can_be_fired_in_advisor_role = { character = ALB_aqif_bicaku value = no }
+					remove_opinion_modifier = {
+						target = ROOT
+						modifier = ALB_appointed_pro_austrian_government
+					}
+					activate_advisor = ALB_esad_toptani
+					add_opinion_modifier = {
+						target = ROOT
+						modifier = ALB_appointed_pro_italian_government
+					}
+				}
+			}
+			add_political_power = 50
+		}
 		completion_reward = {
-
+			custom_effect_tooltip = ALB_government_reshuffle_tt
+			if = {
+				limit = { has_completed_focus = ALB_appoint_pro_italian_government }
+				deactivate_advisor = ALB_aqif_bicaku
+				if = {
+					limit = { ALB_esad_toptani = { advisor_can_be_fired = no } }
+					set_can_be_fired_in_advisor_role = { character = ALB_esad_toptani value = no }
+					set_country_flag = ALB_appoint_pro_italian_government_character
+					remove_opinion_modifier = {
+						target = ROOT
+						modifier = ALB_appointed_pro_austrian_government
+					}
+					activate_advisor = ALB_aqif_bicaku
+					add_opinion_modifier = {
+						target = ROOT
+						modifier = ALB_appointed_pro_italian_government
+					}
+				}
+			}
+			if = {
+				limit = { has_completed_focus = ALB_appoint_pro_austrian_government }
+				deactivate_advisor = ALB_aqif_bicaku
+				if = {
+					limit = { ALB_aqif_bicaku = { advisor_can_be_fired = no } }
+					set_can_be_fired_in_advisor_role = { character = ALB_aqif_bicaku value = no }
+					set_country_flag = ALB_appoint_pro_austrian_government_character
+					remove_opinion_modifier = {
+						target = ROOT
+						modifier = ALB_appointed_pro_austrian_government
+					}
+					activate_advisor = ALB_esad_toptani
+					add_opinion_modifier = {
+						target = ROOT
+						modifier = ALB_appointed_pro_italian_government
+					}
+				}
+			}
+			add_political_power = 50
 		}
 		ai_will_do = { factor = 20 }
 	}
@@ -3077,9 +3200,16 @@ focus_tree = {
 					has_completed_focus = ALB_government_reshuffle
 				}
 			}
+			ITA = {
+				has_opinion = {
+					target = ROOT
+					value > 24
+				}
+			}
 		}
 		completion_reward = {
-
+			add_ideas = ALB_italian_investments
+			custom_effect_tooltip = ALB_italian_investments_instant_desc
 		}
 		ai_will_do = { factor = 20 }
 	}
@@ -3107,9 +3237,16 @@ focus_tree = {
 					has_completed_focus = ALB_government_reshuffle
 				}
 			}
+			AUS = {
+				has_opinion = {
+					target = ROOT
+					value > 24
+				}
+			}
 		}
 		completion_reward = {
-
+			add_ideas = ALB_austrian_investments
+			custom_effect_tooltip = ALB_austrian_investments_instant_desc
 		}
 		ai_will_do = { factor = 20 }
 	}
@@ -3699,7 +3836,7 @@ focus_tree = {
 				}
 				add_opinion_modifier = {
 					target = ALB
-					modifier = medium_increase
+					modifier = large_increase
 				}
 			}
 		}
@@ -3782,7 +3919,7 @@ focus_tree = {
 				}
 				add_opinion_modifier = {
 					target = ALB
-					modifier = medium_increase
+					modifier = large_increase
 				}
 			}
 		}
