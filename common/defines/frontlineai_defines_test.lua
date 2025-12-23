@@ -272,20 +272,13 @@ NDefines.NAI.MAX_SCREEN_TASKFORCES_FOR_MINE_LAYING = 0.05 -- maximum ratio of sc
 
 NDefines.NAI.MISSING_CONVOYS_BOOST_FACTOR = 0.0
 
-
-NDefines.NAI.CAPITAL_TASKFORCE_MAX_CAPITAL_COUNT = 6 		-- optimum capital count for capital taskforces
-NDefines.NAI.SCREEN_TASKFORCE_MAX_SHIP_COUNT = 8			-- optimum screen count for screen taskforces
-NDefines.NAI.SUB_TASKFORCE_MAX_SHIP_COUNT = 10 				-- optimum sub count for sub taskforces
-
-
-
 NDefines.NAI.MIN_NAVAL_MISSION_PRIO_TO_ASSIGN = {  -- priorities for regions to get assigned to a mission
 	0, -- HOLD (consumes fuel HOLD_MISSION_MOVEMENT_COST fuel while moving)
-	200, -- PATROL		
+	300, -- PATROL		
 	200, -- STRIKE FORCE 
 	200, -- CONVOY RAIDING
 	100, -- CONVOY ESCORT
-	200, -- MINES PLANTING	
+	100, -- MINES PLANTING	
 	100, -- MINES SWEEPING	
 	0, -- TRAIN
 	0, -- RESERVE_FLEET
@@ -296,7 +289,7 @@ NDefines.NAI.HIGH_PRIO_NAVAL_MISSION_SCORES = {  -- priorities for regions to ge
 	0, -- HOLD (consumes fuel HOLD_MISSION_MOVEMENT_COST fuel while moving)
 	100000, -- PATROL
 	1000, -- STRIKE FORCE
-	1500, -- CONVOY RAIDING
+	1000, -- CONVOY RAIDING
 	1000, -- CONVOY ESCORT
 	-1, -- MINES PLANTING
 	300, -- MINES SWEEPING
@@ -322,17 +315,14 @@ NDefines.NAI.MAX_MISSION_PER_TASKFORCE = {  -- max mission region/taskforce rati
 -- naval invasions
 -------------------------
 
+NDefines.NAI.INVASION_TARGET_NO_PORT_FACTOR = 0.05					-- When selecting invasion target, multiply score with this if the target has no port
+NDefines.NAI.ENEMY_HOME_AREA_RATIO_TO_DISABLE_INVASIONS = 1000		-- if we are fighting against an enemy home area from our home area and if the enemy area is larger than this ratio, non strategy invasions are disabled
+NDefines.NAI.ENEMY_NAVY_STRENGTH_DONT_BOTHER = 4					-- If the enemy has a navy at least these many times stronger that the own, don't bother invading
+NDefines.NAI.RELATIVE_STRENGTH_TO_INVADE = 0 --0.08					-- Compares the estimated strength of the country/faction compared to it's enemies to see if it should invade or stay at home to defend.
+NDefines.NAI.RELATIVE_STRENGTH_TO_INVADE_DEFENSIVE = 0 --0.4		-- Compares the estimated strength of the country/faction compared to it's enemies to see if it should invade or stay at home to defend, but while being a defensive country.
+NDefines.NAI.AI_MIN_DOMINANCE_MARGIN = 500
 
-NDefines.NAI.ENEMY_NAVY_STRENGTH_DONT_BOTHER = 2.5							-- If the enemy has a navy at least these many times stronger that the own, don't bother invading
-NDefines.NAI.RELATIVE_STRENGTH_TO_INVADE = 0 --0.08			-- Compares the estimated strength of the country/faction compared to it's enemies to see if it should invade or stay at home to defend.
-NDefines.NAI.RELATIVE_STRENGTH_TO_INVADE_DEFENSIVE = 0 --0.4	-- Compares the estimated strength of the country/faction compared to it's enemies to see if it should invade or stay at home to defend, but while being a defensive country.
-
-
-NDefines.NAI.INVASION_DISTANCE_RANDOMNESS = 300									-- This higher the value the more unpredictable the invasions. Compares to actual map distance in pixels.
 NDefines.NAI.INVASION_COASTAL_PROVS_PER_ORDER = 12 --24								-- AI will consider one extra invasion per number of provinces stated here (num orders = total coast / this)
-
-
-NDefines.NAI.MAX_INVASION_SIZE = 18 --24									-- max invasion group size
 
 
 -------------------------
@@ -475,4 +465,4 @@ NDefines.NAI.AIFC_UNIT_OFFENSIVE_SCORE_FACTOR_HARD_ATTACK = 0
 NDefines.NAI.AIFC_UNIT_OFFENSIVE_SCORE_FACTOR_HARDNESS = 0
 NDefines.NAI.AIFC_UNIT_OFFENSIVE_SCORE_FACTOR_ARMOR = 1000
 
-NDefines.NAI.ASSIGN_INVASION_AMPHIBIOUS_ATTACK_FACTOR = 100
+NDefines.NAI.ASSIGN_INVASION_AMPHIBIOUS_ATTACK_FACTOR = 50

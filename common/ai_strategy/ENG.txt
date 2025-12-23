@@ -26,11 +26,6 @@ ENG_early_tank_unit_production = {
 		id = armored_car
 		value = -5
 	}
- 
-	ai_strategy = {
-		type = air_factory_balance # focus on tanks
-		value = -75
-	}
 
 	ai_strategy = {
 		type = equipment_production_min_factories
@@ -84,9 +79,7 @@ ENG_unit_production = {
 	enable = {
 		always = yes
 	}
-	abort = {
-		always = no
-	}
+	abort_when_not_enabled = yes
 	
 	ai_strategy = {
 		type = role_ratio
@@ -122,7 +115,7 @@ ENG_unit_production = {
 	ai_strategy = {
 		type = unit_ratio
 		id = fighter
-		value = 15 # From 70 to 75
+		value = 50 # From 70 to 75
 	}
 	
 	ai_strategy = {
@@ -173,6 +166,49 @@ ENG_unit_production = {
 		type = unit_ratio
 		id = convoy
 		value = 20
+	}
+}
+
+ENG_air_producation = {
+	allowed = {
+		original_tag = ENG
+	}
+	enable = {
+		war_length_with = {
+			tag = GER
+			months > 1
+		}
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = equipment_production_factor
+		id = strategic_bomber
+		value = -10
+	}
+	ai_strategy = {
+		type = equipment_production_factor
+		id = maritime_patrol_plane
+		value = -10
+	}
+	ai_strategy = {
+		type = equipment_production_factor
+		id = fighter
+		value = 70
+	}
+	ai_strategy = {
+		type = equipment_production_factor
+		id = tactical_bomber
+		value = 40
+	}
+	ai_strategy = {
+		type = unit_ratio
+		id = scout_plane
+		value = -10
+	}
+	ai_strategy = {
+		type = unit_ratio
+		id = strategic_bomber
+		value = -35
 	}
 }
 
@@ -408,19 +444,6 @@ ENG_french_in_need = {
 	enable = {
 		is_in_faction_with = FRA
 		has_war_with = GER
-		FRA = {
-			OR = {
-				NOT = {
-					has_full_control_of_state = 29
-				}
-				NOT = {
-					has_full_control_of_state = 17
-				}
-				NOT = {
-					has_full_control_of_state = 864
-				}
-			}
-		}
 	}
 	abort_when_not_enabled = yes
 	ai_strategy = {
@@ -1148,7 +1171,9 @@ ENTENTE_dont_help_serbia = {
 			is_ally_with = ENT # anyone in allies
 			tag = ENT
 		}		
-		date < 1918.1.1
+		NOT = {
+			is_in_faction_with = GRE
+		}
 		SER = { has_capitulated = no }
 	}
 	abort_when_not_enabled = yes
@@ -1419,6 +1444,33 @@ dont_join_darfur_war = {
 		value = -2000 
 	}
 }
+
+dont_join_afghan_war = {
+	allowed = {		
+		NOT = {
+			tag = RAJ
+			tag = ENG
+		}
+	}
+	enable = {
+		is_ally_with = ENG
+		ENG = { has_war_with = AFG }
+		is_great_war_ongoing = no
+	}
+	abort_when_not_enabled = yes
+
+	ai_strategy = {
+		type = dont_join_wars_with
+		target_country = AFG
+		value = 99999
+	}
+
+	ai_strategy = {
+		type = declare_war
+		id = AFG
+		value = -2000 
+	}
+}
 # ENG_occupy_persia = {
 # 	allowed = {
 # 		original_tag = ENG
@@ -1466,46 +1518,36 @@ dont_join_darfur_war = {
 # 		value = 50
 # 	}
 # }
-ENG_occupy_persia = {
+ENG_fight_gendarme = {
 	allowed = {
 		original_tag = ENG
 	}
 	enable = {
-		OR = {
-			any_enemy_country = {
-				original_tag = PER
-			}
-			AND = {
-				has_global_flag = great_war
-				is_in_faction_with = RUS
-				NOT = {
-					is_in_faction_with = TUR
-				}
-			}	
+		NOT = {
+			has_global_flag = great_war_ends
+		}
+		any_enemy_country = {
+			has_country_flag = PER_gendarmerie_flag
 		}
 		is_subject = no
 		has_civil_war = no
 		surrender_progress < 0.4
-		NOT = {
-			has_global_flag = great_war_ends
-		}	
 	}
 	abort_when_not_enabled = yes
 	ai_strategy = {
 		type = front_unit_request
 		country_trigger = {
-			original_tag = PER
+			has_country_flag = PER_gendarmerie_flag
 		}
-		value = 50
+		value = 100
 	}
 	ai_strategy = {
 		type = front_control
 		country_trigger = {
-			original_tag = PER
+			has_country_flag = PER_gendarmerie_flag
 		}
 		ordertype = front
 		execution_type = balanced
-		execute_order = yes
 	}
 }
 
@@ -1514,7 +1556,12 @@ nepal_saves_britain = {
 		tag = NEP
 	}
 	enable = {
-		is_subject_of = ENG
+		OR = {
+			is_subject_of = ENG
+			OVERLORD = {
+				is_subject_of = ENG
+			}
+		}
 		is_great_war_ongoing = yes
 		ENG = {
 			is_in_faction = yes
@@ -2549,13 +2596,22 @@ ENG_invade_darfur = {
 
 ENG_support_muscat = {
 	allowed = {
-		tag = ENG
+		OR = {
+			tag = ENG
+			tag = RAJ
+		}
 	}
 	enable = {
-		has_subject = MSC
 		MSC = {
 			has_war_with = OMA
 		}
+		OR = {
+			has_subject = MSC
+			any_subject_country = {
+				has_subject = MSC
+			}
+		}
+		NOT = { has_war_together_with = MSC }	
 	}
 	abort_when_not_enabled = yes
 	ai_strategy = {
