@@ -915,6 +915,13 @@
 					}
 				}
 			}
+			if = {
+				limit = {
+					original_tag = PHI
+					has_cosmetic_tag = PHI_war
+				}
+				drop_cosmetic_tag = yes
+			}
 		}
 	}
 	
@@ -2298,8 +2305,8 @@
 				set_cosmetic_tag = BLR_WHR
 				set_party_name = {
 					ideology = neutrality
-					long_name = GER_neutrality_party
-					name = GER_neutrality_party
+					long_name = BLR_hohenzollern_party
+					name = BLR_hohenzollern_party
 				}
 				if = {
 					limit = {
@@ -2415,38 +2422,42 @@
 							is_GER_a_monarchy = yes
 						}
 					}
-					if = {
-						limit = {
-							has_character = FRA_victoire
-						}
-						FRA_victoire = {
-							if = {
-								limit = {
-									is_country_leader = yes
-								}
-								promote_character = personalistic_dictatorship
-							}
-							else = {
-								add_country_leader_role = {
-									promote_leader = yes
-									country_leader = {
-										ideology = personalistic_dictatorship
-										traits = { victoria_iii foreign_leader german_agent }
+					random_list = {
+						80 = {
+							GER = {
+								GER_eitel_friedrich = {
+									set_character_name = FRA_eitel_friedrich
+									set_nationality = PREV.PREV
+									
+									if = {
+										limit = {
+											has_ideology = semi_constitutional_monarchy_reserve
+										}
+										promote_character = semi_constitutional_monarchy_reserve
+									}
+									else = {
+										add_country_leader_role = {
+											promote_leader = yes
+											country_leader = {
+												ideology = semi_constitutional_monarchy_reserve
+												traits = { unpopular_monarch soldier_king foreign_leader german_agent }
+											}
+										}
 									}
 								}
 							}
 						}
-						else = {
+						20 = { # rare chance meme
+							modifier = {
+								factor = 0
+								is_historical_focus_on = yes
+							}
 							create_country_leader = {
-								name = "FRA_victoire"
+								name = FRA_victoire
 								picture = "gfx/leaders/GER/GER_Victoria_Louise.png"
-								ideology = personalistic_dictatorship
+								ideology = semi_constitutional_monarchy_reserve
 								female = yes
-								traits = {
-									victoria_iii
-									foreign_leader
-									german_agent
-								}
+								traits = { illegitimate_monarch victoria_iii foreign_leader german_agent }
 							}
 						}
 					}
@@ -3921,8 +3932,8 @@
 				set_cosmetic_tag = BLR_WHR
 				set_party_name = {
 					ideology = neutrality
-					long_name = GER_neutrality_party
-					name = GER_neutrality_party
+					long_name = BLR_hohenzollern_party
+					name = BLR_hohenzollern_party
 				}
 				if = {
 					limit = {
@@ -5351,14 +5362,29 @@
 			ITA = {
 				if = {
 					limit = {
-						has_game_rule = {
-							rule = ITA_ai_behavior
-							option = RANDOM
+						OR = {
+							has_game_rule = {
+								rule = ITA_ai_behavior
+								option = RANDOM
+							}
+							AND = {
+								has_game_rule = {
+									rule = ITA_ai_behavior
+									option = DEFAULT
+								}
+								is_historical_focus_on = no
+							}
 						}
 					}
 					random_list = {
-						60 = { ITA = { set_country_flag = ITA_AI_RANDOM_HISTORICAL } }
-						40 = { ITA = { set_country_flag = ITA_AI_RANDOM_CP } }
+						12.5 = { ITA = { set_country_flag = ITA_AI_RANDOM_HISTORICAL } }
+						12.5 = { ITA = { set_country_flag = ITA_AI_RANDOM_LEONIDA_BISSOLATI } }
+						12.5 = { ITA = { set_country_flag = ITA_AI_RANDOM_ROMOLO_MURRI } }
+						12.5 = { ITA = { set_country_flag = ITA_AI_RANDOM_RADICALS } }
+						12.5 = { ITA = { set_country_flag = ITA_AI_RANDOM_LUIGI_LUZZATTI } }
+						12.5 = { ITA = { set_country_flag = ITA_AI_RANDOM_SIDNEY_SONNINO } }
+						12.5 = { ITA = { set_country_flag = ITA_AI_RANDOM_ENRICO_CORRADINI } }
+						12.5 = { ITA = { set_country_flag = ITA_AI_RANDOM_ALBERTO_POLLIO } }
 					}
 				}
 			}
@@ -8650,6 +8676,44 @@
 					}
 				}	
 			}
+			else_if = {
+				limit = {
+					original_tag = BRA
+				}
+				set_capital = { state = 500 }
+				FROM = {
+					every_character = {
+						set_nationality = ROOT
+						if = {
+							limit = {
+								ROOT = {
+									NOT = {
+										has_government = communism
+									}
+								}
+								is_character = BRA_jose_oiticica
+							}
+							promote_character = yes
+						}
+					}
+				}
+				delete_unit_template_and_units = {
+					division_template = "Guarda Vermelha"
+					disband = no
+				}
+				every_state = {
+					limit = {
+						is_claimed_by = FROM
+					}
+					remove_claim_by = FROM
+				}
+				every_state = {
+					limit = {
+						is_core_of = FROM
+					}
+					remove_core_of = FROM
+				}
+			}	
 			if = {
 				limit = {
 					has_idea = standing_alone
@@ -11138,6 +11202,12 @@
 					}
 				}
 			}
+			if = {
+				limit = {
+					original_tag = PHI
+				}
+				set_cosmetic_tag = PHI_war
+			}
 		}
 	}
 	on_war_relation_added = {
@@ -11156,6 +11226,7 @@
 									original_tag = RUS
 									original_tag = ENG
 									original_tag = FRA
+									tag = ENT
 								}
 							}						
 						}
@@ -11166,6 +11237,7 @@
 									original_tag = RUS
 									original_tag = ENG
 									original_tag = FRA
+									tag = ENT
 								}
 							}	
 						}
@@ -11174,6 +11246,23 @@
 				set_global_flag = great_war
 				ROOT = {
 					news_event = kis_news.1
+
+					set_country_flag = joined_great_war
+					every_allied_country = {
+						limit = {
+							has_war_with = FROM
+						}
+						set_country_flag = joined_great_war
+					}
+				}
+				FROM = {
+					set_country_flag = joined_great_war
+					every_allied_country = {
+						limit = {
+							has_war_with = FROM
+						}
+						set_country_flag = joined_great_war
+					}
 				}
 				GER = {
 					country_event = ww1_germanrework.40
@@ -11300,6 +11389,21 @@
 					}
 				}
 					
+			}
+			if = {
+				limit = {
+					is_great_war_ongoing = yes
+					NOT = {
+						has_country_flag = joined_great_war
+					}
+					FROM = {
+						OR = {
+							original_tag = GER
+							tag = ENT
+						}
+					}
+				}
+				set_country_flag = joined_great_war
 			}
 			log = "[GetDateText]: [ROOT.GetName] has entered a state of war with [FROM.GetName]"
 		}
