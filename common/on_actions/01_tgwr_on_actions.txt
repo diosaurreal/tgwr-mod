@@ -821,22 +821,9 @@
 			if = {
 				limit = {
 					is_in_faction = yes
-					OR = {
-						has_autonomy_state = autonomy_tgwr_protectorate
-						has_autonomy_state = autonomy_tgwr_informal_protectorate
-						has_autonomy_state = autonomy_tgwr_ottoman_emirate
-						has_autonomy_state = autonomy_tgwr_concession
-					}
+					protectorate_type_subject = yes
 				}
-				leave_faction = yes
-				OVERLORD = {
-					diplomatic_relation = {
-						country = PREV
-						relation = military_access
-						active = yes
-					}
-				}
-				country_event = { id = ww1_political.7 hours = 1 } #needed if the faction leader is at war, don't ask
+				protectorate_logic = yes
 			}
 			if = {
 				limit = {
@@ -999,15 +986,9 @@
 					remove_claim_by = FROM
 				}
 			}
-			if = {
-				limit = {
-					FROM = {
-						has_country_flag = protectorate
-					}
-				}
-				FROM = {
-					clr_country_flag = protectorate
-				}
+			FROM = {
+				clr_country_flag = protectorate
+				clr_country_flag = colony
 			}
 			if = {
 				limit = {
@@ -1321,14 +1302,8 @@
 					retire_ideology_leader = neutrality
 				}
 			}
-			if = {
-				limit = {
-					ROOT = {
-						has_country_flag = protectorate
-					}
-				}
-				clr_country_flag = protectorate
-			}
+			clr_country_flag = protectorate
+			clr_country_flag = colony
 			abandon_puppet_tag = yes
 			log = "[GetDateText]: [ROOT.GetName] has been released as a free country"
 		}
@@ -2135,7 +2110,7 @@
 					original_tag = SER
 					FROM = { tag = AUS }
 					NOT = {
-						has_autonomy_state = autonomy_dominion
+						has_autonomy_state = autonomy_satellite
 						has_autonomy_state = autonomy_tgwr_real_union
 					}
 				}
@@ -3137,22 +3112,18 @@
 			if = {
 				limit = {
 					is_in_faction = yes
-					has_war = no
-					OR = {
-						has_autonomy_state = autonomy_tgwr_protectorate
-						has_autonomy_state = autonomy_tgwr_informal_protectorate
-						has_autonomy_state = autonomy_tgwr_ottoman_emirate
-						has_autonomy_state = autonomy_tgwr_concession
+					protectorate_type_subject = yes
+					NOT = { has_war_together_with = OVERLORD }
+				}
+				protectorate_logic = yes
+			}
+			if = {
+				limit = {
+					OVERLORD = {
+						is_subject = yes
 					}
 				}
-				leave_faction = yes	
-				OVERLORD = {
-					diplomatic_relation = {
-						country = PREV
-						relation = military_access
-						active = yes
-					}
-				}
+				vassal_of_vassal_logic = yes
 			}
 			log = "[GetDateText]: [ROOT.GetName] has been puppeted by [FROM.GetName]"
 		}
@@ -3624,16 +3595,6 @@
 			}
 			if = {
 				limit = {
-					ROOT = {
-						has_country_flag = protectorate
-					}
-				}
-				ROOT = {
-					clr_country_flag = protectorate
-				}
-			}
-			if = {
-				limit = {
 					original_tag = QBC
 					FROM = { tag = FRA }
 					FRA = {
@@ -3749,7 +3710,7 @@
 					original_tag = SER
 					FROM = { tag = AUS }
 					NOT = {
-						has_autonomy_state = autonomy_dominion
+						has_autonomy_state = autonomy_satellite
 						has_autonomy_state = autonomy_tgwr_real_union
 					}
 				}
@@ -4749,12 +4710,15 @@
 						has_autonomy_state = autonomy_wtt_imperial_subject
 						has_autonomy_state = autonomy_wtt_imperial_protectorate
 						has_autonomy_state = autonomy_colony
+						has_autonomy_state = autonomy_tgwr_self_governing_colony
 						has_autonomy_state = autonomy_tgwr_ottoman_emirate #they have no diplomatic rights
 						has_autonomy_state = autonomy_tgwr_unilateral_union #they don't want to be a independent nation
 					}
 				}
 				join_the_league_of_nations = yes
 			}
+			clr_country_flag = protectorate
+			clr_country_flag = colony
 			log = "[GetDateText]: [ROOT.GetName] has been released as puppet by [FROM.GetName]"
 		}
 	}
@@ -5567,23 +5531,19 @@
 			}
 			every_country = {
 				limit = {
-					is_in_faction = yes
-					has_war = no					
-					OR = {
-						has_autonomy_state = autonomy_tgwr_protectorate
-						has_autonomy_state = autonomy_tgwr_informal_protectorate
-						has_autonomy_state = autonomy_tgwr_ottoman_emirate
-						has_autonomy_state = autonomy_tgwr_concession
+					protectorate_type_subject = yes
+					NOT = { has_war_together_with = OVERLORD }
+				}		
+				protectorate_logic = yes
+			}
+			every_country = {
+				limit = {
+					is_subject = yes
+					OVERLORD = {
+						is_subject = yes
 					}
-				}
-				leave_faction = yes			
-				OVERLORD = {
-					diplomatic_relation = {
-						country = PREV
-						relation = military_access
-						active = yes
-					}
-				}
+				}		
+				vassal_of_vassal_logic = yes
 			}
 		}
 	}
@@ -5607,6 +5567,7 @@
 						tag = ALB
 					}
 					transfer_state = 803
+					transfer_state = 1225
 				}
                 ITA = {
 					white_peace = {
@@ -5655,6 +5616,7 @@
 						tag = ALB
 					}
 					transfer_state = 803
+					transfer_state = 1225
 				}
 			}
 			if = {
@@ -9154,8 +9116,19 @@
 								}												
 							}
 							set_cosmetic_tag = RUS_socialism
-							else = {
-								set_cosmetic_tag = SOV
+							else_if = {
+								limit = {
+									OR = {
+										has_cosmetic_tag = RUS_republic
+										has_cosmetic_tag = RUS_republic_democratic
+										has_cosmetic_tag = RUS_prov
+										has_cosmetic_tag = RUS_republic_vanguardism
+									}
+								}
+								set_cosmetic_tag = RUS_republic_vanguardism
+								else = {
+									set_cosmetic_tag = SOV
+								}
 							}	
 						}					
 					}			
@@ -10727,32 +10700,17 @@
 			}
 			if = {
 				limit = {
-					OR = {
-						has_focus_tree = generic_focus
-						has_focus_tree = white_guard_focus
-					}	
+					has_focus_tree = white_guard_focus
 				}
 				mark_focus_tree_layout_dirty = yes
 			}
 			if = {
 				limit = {
-					is_in_faction = yes
-					has_war = no			
-					OR = {
-						has_autonomy_state = autonomy_tgwr_protectorate
-						has_autonomy_state = autonomy_tgwr_informal_protectorate
-						has_autonomy_state = autonomy_tgwr_ottoman_emirate
-						has_autonomy_state = autonomy_tgwr_concession
-					}					
+					is_in_faction = yes			
+					protectorate_type_subject = yes
+					NOT = { has_war_together_with = OVERLORD }				
 				}
-				leave_faction = yes
-				OVERLORD = {
-					diplomatic_relation = {
-						country = PREV
-						relation = military_access
-						active = yes
-					}
-				}
+				protectorate_logic = yes
 			}
 			log = "[GetDateText]: [ROOT.GetName] has changed ruling party from [ROOT.old_ideology_token] to [ROOT.GetRulingIdeologyName]"
 		}
@@ -10972,24 +10930,22 @@
 				}			
 			}
 			every_subject_country = {
-				limit = {
-					has_war = no
-					OR = {
-						has_autonomy_state = autonomy_tgwr_protectorate
-						has_autonomy_state = autonomy_tgwr_informal_protectorate
-						has_autonomy_state = autonomy_tgwr_ottoman_emirate
-						has_autonomy_state = autonomy_tgwr_concession
+				if = {
+					limit = {
+						protectorate_type_subject = yes
+						NOT = { has_war_together_with = OVERLORD }
 					}
+					protectorate_logic = yes
+				}		
+				every_subject_country = {
+					if = {
+						limit = {
+							protectorate_type_subject = yes
+							NOT = { has_war_together_with = OVERLORD }
+						}
+						protectorate_logic = yes
+					}				
 				}
-				leave_faction = yes
-				OVERLORD = {
-					diplomatic_relation = {
-						country = PREV
-						relation = military_access
-						active = yes
-					}
-				}
-				country_event = { id = ww1_political.7 hours = 1 } #needed if the faction leader is at war, don't ask
 			}
 			log = "[GetDateText]: [ROOT.GetName] has joined [FROM.GetFactionName] which leader is [FROM.GetName]"
 		}
@@ -11551,23 +11507,22 @@
 			}
 			FROM = {			
 				every_subject_country = {
-					limit = {
-						has_war = no
-						OR = {
-							has_autonomy_state = autonomy_tgwr_protectorate
-							has_autonomy_state = autonomy_tgwr_informal_protectorate
-							has_autonomy_state = autonomy_tgwr_ottoman_emirate
-							has_autonomy_state = autonomy_tgwr_concession
+					if = {
+						limit = {
+							protectorate_type_subject = yes
+							NOT = { has_war_together_with = OVERLORD }
 						}
+						protectorate_logic = yes
+					}		
+					every_subject_country = {
+						if = {
+							limit = {
+								protectorate_type_subject = yes
+								NOT = { has_war_together_with = OVERLORD }
+							}
+							protectorate_logic = yes
+						}				
 					}
-					OVERLORD = {
-						diplomatic_relation = {
-							country = PREV
-							relation = military_access
-							active = yes
-						}
-					}
-					country_event = { id = ww1_political.7 hours = 1 } #needed if the faction leader is at war, don't ask
 				}
 			}		
 			if = {
@@ -12014,23 +11969,11 @@
 		effect = {
 			if = {
 				limit = {
-					is_in_faction = yes
-					has_war = no				
-					OR = {
-						has_autonomy_state = autonomy_tgwr_protectorate
-						has_autonomy_state = autonomy_tgwr_informal_protectorate
-						has_autonomy_state = autonomy_tgwr_ottoman_emirate
-						has_autonomy_state = autonomy_tgwr_concession
-					}
+					is_in_faction = yes				
+					protectorate_type_subject = yes
+					NOT = { has_war_together_with = OVERLORD }
 				}
-				leave_faction = yes
-				OVERLORD = {
-					diplomatic_relation = {
-						country = PREV
-						relation = military_access
-						active = yes
-					}
-				}
+				protectorate_logic = yes
 			}
 			else_if = {
 				limit = {
@@ -12044,51 +11987,45 @@
 					add_to_faction = ROOT
 				}
 			}
+			if = {
+				limit = { 
+					is_subject = yes
+					OVERLORD = {
+						is_subject = yes
+					}
+				}
+				vassal_of_vassal_logic = yes
+			}
 		}
 	}
 	#FROM is the one that joins the faction
 	on_create_faction = {
 		effect = {
 			every_subject_country = {
-				limit = {
-					has_war = no				
-					OR = {
-						has_autonomy_state = autonomy_tgwr_protectorate
-						has_autonomy_state = autonomy_tgwr_informal_protectorate
-						has_autonomy_state = autonomy_tgwr_ottoman_emirate
-						has_autonomy_state = autonomy_tgwr_concession
+				if = {
+					limit = {
+						protectorate_type_subject = yes
+						NOT = { has_war_together_with = OVERLORD }
 					}
+					protectorate_logic = yes
+				}		
+				every_subject_country = {
+					if = {
+						limit = {
+							protectorate_type_subject = yes
+							NOT = { has_war_together_with = OVERLORD }
+						}
+						protectorate_logic = yes
+					}				
 				}
-				leave_faction = yes
-				OVERLORD = {
-					diplomatic_relation = {
-						country = PREV
-						relation = military_access
-						active = yes
-					}
-				}
-				country_event = { id = ww1_political.7 hours = 1 } #needed if the faction leader is at war, don't ask
 			}
 			FROM = {
 				if = {
-					limit = {
-						has_war = no				
-						OR = {
-							has_autonomy_state = autonomy_tgwr_protectorate
-							has_autonomy_state = autonomy_tgwr_informal_protectorate
-							has_autonomy_state = autonomy_tgwr_ottoman_emirate
-							has_autonomy_state = autonomy_tgwr_concession
-						}
+					limit = {			
+						protectorate_type_subject = yes
+						NOT = { has_war_together_with = OVERLORD }
 					}
-					leave_faction = yes
-					OVERLORD = {
-						diplomatic_relation = {
-							country = PREV
-							relation = military_access
-							active = yes
-						}
-					}
-					country_event = { id = ww1_political.7 hours = 1 } #needed if the faction leader is at war, don't ask
+					protectorate_logic = yes
 				}
 			}
 		}
