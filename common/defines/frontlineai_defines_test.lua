@@ -362,9 +362,6 @@ NDefines.NAI.LAND_COMBAT_OUR_COMBATS_AIR_IMPORTANCE = 400		-- vanilla 155
 -- Defense
 -------------------------
 
-NDefines.NAI.LAND_DEFENSE_FIGHERS_PER_PLANE = 1				-- Amount of air superiority planes requested per enemy plane
-NDefines.NAI.LAND_DEFENSE_INTERSEPTORS_PER_BOMBERS = 1		-- Amount of air interceptor planes requested per enemy bomber
-
 
 --NDefines.NAI.LAND_DEFENSE_CIVIL_FACTORY_IMPORTANCE = 800 -- 50			-- Strategic importance of civil factories
 --NDefines.NAI.LAND_DEFENSE_MILITARY_FACTORY_IMPORTANCE = 880 -- 70		-- Strategic importance of military factories
@@ -389,7 +386,6 @@ NDefines.NAI.STR_BOMB_MIN_EXCORT_PLANES = 0					-- Min amount of planes requeste
 -------------------------
 
 
-NDefines.NAI.NAVAL_STRIKE_PLANES_PER_SHIP = 40					-- Amount of bombers requested per enemy ship
 NDefines.NAI.SUPPLY_PRIO_FACTOR = -100 --100 						--	AI is bad with that
 NDefines.NAI.NAVAL_SHIP_AIR_IMPORTANCE = 1 --2.0					-- Naval ship air importance
 NDefines.NAI.STR_BOMB_IMPORTANCE_SCALE = 5 --1.0
