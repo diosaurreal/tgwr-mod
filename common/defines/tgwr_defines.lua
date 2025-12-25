@@ -156,5 +156,3 @@ NDefines.NNavy.BASE_NAVAL_INVASION_DIVISION_CAP = 0	--4						-- base cap of divi
 NDefines.NNavy.NAVAL_INVASION_PREPARE_DAYS = 30	--60						-- base days needed to prepare a naval invasion
 
 NDefines.NDoctrines.TRAINING_MASTERY_GAIN_FACTOR = 0.01
-
-NDefines.NFactions.AI_THEATER_CREATION_PENALTY = 1
