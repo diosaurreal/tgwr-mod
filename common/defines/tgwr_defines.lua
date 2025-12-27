@@ -118,8 +118,6 @@ NDefines.NRailwayGun.RAILWAY_GUN_POSSIBLE_RANGES = { 15, 10, 30 }	-- Possible va
 NDefines.NGraphics.VICTORY_POINT_MAP_ICON_TEXT_CUTOFF = {200, 350, 600}  	-- Vanilla is 100, 250, 500
 NDefines.NGraphics.VICTORY_POINTS_DISTANCE_CUTOFF = {300, 500, 1000} 		-- Vanilla is 300, 500, 1500
 
-NDefines_Graphics.NGraphics.POLITICAL_GRID_SMALL_BOX_LIMIT = 18              	-- Limit for gridbox in political view before it will be replaced with extended gridbox, Vanilla is 6
-
 NDefines.NSupply.CAPITAL_SUPPLY_BASE = 1.0
 NDefines.NSupply.CAPITAL_SUPPLY_CIVILIAN_FACTORIES = 0.6
 NDefines.NSupply.CAPITAL_SUPPLY_MILITARY_FACTORIES = 0.5
