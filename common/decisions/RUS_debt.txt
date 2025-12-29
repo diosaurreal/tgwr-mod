@@ -1,4 +1,27 @@
 RUS_foreign_investments_decision_category = {
+	RUS_credit_score_assessment = {
+		icon = GFX_decision_generic_political_discourse
+		allowed = { original_tag = RUS }
+		activation = {
+			always = no
+		}
+		available = {
+			hidden_trigger = {
+				always = no
+			}
+		}
+		cancel_trigger = {
+			has_country_flag = RUS_state_loans_annulled
+		}
+		fire_only_once = no
+		is_good = yes
+		days_mission_timeout = 91
+		selectable_mission = no
+		timeout_effect = {
+			RUS_calculate_credit_score = yes
+			activate_mission = RUS_credit_score_assesment
+		}
+	}
 	RUS_internal_loan = {
 		icon = GFX_decision_ger_mefo_bills
 		allowed = {
@@ -9,7 +32,7 @@ RUS_foreign_investments_decision_category = {
 		}
 		available = {
 			NOT = {
-				has_country_flag = RUS_currently_taking_out_loan
+				has_country_flag = RUS_currently_taking_out_a_loan
 				has_country_flag = RUS_currently_repaying_internal_debt
 			}
 		}
@@ -17,13 +40,13 @@ RUS_foreign_investments_decision_category = {
 			consumer_goods_factor = -0.15
 		}
 		complete_effect = {
-			set_country_flag = RUS_currently_taking_out_loan
+			set_country_flag = RUS_currently_taking_out_a_loan
 			set_country_flag = RUS_currently_issuing_domestic_bonds
 		}
 		remove_effect = {
-			set_temp_variable = { RUS_modify_internal_debt_var = 0.01 }
+			set_temp_variable = { RUS_modify_internal_debt_var = 0.015 }
 			RUS_modify_internal_debt = yes
-			clr_country_flag = RUS_currently_taking_out_loan
+			clr_country_flag = RUS_currently_taking_out_a_loan
 			clr_country_flag = RUS_currently_issuing_domestic_bonds
 		}
 		cost = 25
@@ -42,12 +65,12 @@ RUS_foreign_investments_decision_category = {
 				has_country_flag = RUS_currently_issuing_domestic_bonds
 			}
 			check_variable = {
-				RUS_internal_debt > 0
-				tooltip = RUS_more_than_0_internal_debt
+				RUS_internal_debt_var > 0
+				tooltip = RUS_has_internal_debt
 			}
 		}
 		modifier = {
-			consumer_goods_factor = 0.15
+			consumer_goods_factor = 0.25
 		}
 		complete_effect = {
 			set_country_flag = RUS_currently_repaying_internal_debt
@@ -60,465 +83,139 @@ RUS_foreign_investments_decision_category = {
 		cost = 25
 		days_remove = 180
 	}
-	RUS_loan_from_FROM = {
-		icon = GFX_decision_generic_fundraising
+	RUS_small_foreign_loan = {
+		icon = GFX_decision_ger_mefo_bills
 		allowed = {
 			original_tag = RUS
 		}
-		target_trigger = {
-			FROM = {
-				OR = {
-					tag = ENG
-					tag = FRA
-					tag = GER
-					tag = USA
-					tag = BEL
-				}
-			}
-		}
 		visible = {
 			original_tag = RUS
-			NOT = { 
-				is_embargoed_by = FROM
-				has_war_with = FROM
-			}
-			FROM = {
-				has_opinion = {
-					target = ROOT
-					value > 0
-				}
-			}
 		}
 		available = {
-			NOT = {
-				has_country_flag = RUS_currently_taking_out_loan
+			check_variable = {
+				RUS_credit_score_token_var = RUS_credit_score_fair_tt
+				tooltip = RUS_credit_score_fair_check_tt
 			}
-			FROM = {
-				has_opinion = {
-					target = ROOT
-					value > 0
-				}
+			NOT = {
+				has_country_flag = RUS_currently_taking_out_a_loan
+				has_country_flag = RUS_currently_repaying_foreign_debt
 			}
 		}
 		modifier = {
-			consumer_goods_factor = -0.25
-		}
-		cancel_trigger = {
-			OR = {
-				is_embargoed_by = FROM
-				has_war_with = FROM
-			}	
+			consumer_goods_factor = -0.1
 		}
 		complete_effect = {
-			set_country_flag = RUS_currently_taking_out_loan
+			set_country_flag = RUS_currently_taking_out_a_loan
+			set_country_flag = RUS_currently_taking_out_a_foreign_loan
 		}
 		remove_effect = {
-			set_temp_variable = { RUS_modify_external_debt_var = 0.01 }
-			RUS_modify_external_debt = yes
-			clr_country_flag = RUS_currently_taking_out_loan
-		}
-		cancel_effect = {
-			clr_country_flag = RUS_currently_taking_out_loan
+			set_temp_variable = { RUS_modify_foreign_debt_var = 0.01 }
+			RUS_modify_foreign_debt = yes
+			clr_country_flag = RUS_currently_taking_out_a_loan
+			clr_country_flag = RUS_currently_taking_out_a_foreign_loan
 		}
 		cost = 25
 		days_remove = 180
-		days_re_enable = 20
 	}
-	RUS_attract_investors_from_FROM = {
-		icon = GFX_decision_hol_exchange_intelligence_data
+	RUS_moderate_foreign_loan = {
+		icon = GFX_decision_ger_mefo_bills
 		allowed = {
 			original_tag = RUS
 		}
-		target_trigger = {
-			FROM = {
-				OR = {
-					tag = ENG
-					tag = FRA
-					tag = GER
-					tag = USA
-					tag = BEL
-				}
-			}
-		}
 		visible = {
 			original_tag = RUS
-			NOT = { 
-				is_embargoed_by = FROM
-				has_war_with = FROM
-			}
-			FROM = {
-				has_opinion = {
-					target = ROOT
-					value > 0
-				}
-			}
+			has_completed_focus = RUS_attract_foreign_investment
 		}
 		available = {
-			NOT = {
-				has_country_flag = RUS_currently_attracting_investors
+			check_variable = {
+				RUS_credit_score_token_var = RUS_credit_score_fair_tt
+				tooltip = RUS_credit_score_fair_check_tt
 			}
-			FROM = {
-				has_opinion = {
-					target = ROOT
-					value > 0
-				}
+			NOT = {
+				has_country_flag = RUS_currently_taking_out_a_loan
+				has_country_flag = RUS_currently_repaying_foreign_debt
 			}
 		}
 		modifier = {
-			production_speed_buildings_factor = 0.15
-		}
-		cancel_trigger = {
-			OR = {
-				is_embargoed_by = FROM
-				has_war_with = FROM
-			}	
+			consumer_goods_factor = -0.2
 		}
 		complete_effect = {
-			set_country_flag = RUS_currently_attracting_investors
+			set_country_flag = RUS_currently_taking_out_a_loan
+			set_country_flag = RUS_currently_taking_out_a_foreign_loan
 		}
 		remove_effect = {
-			set_temp_variable = { RUS_modify_external_debt_var = 0.01 }
-			RUS_modify_external_debt = yes
-			clr_country_flag = RUS_currently_attracting_investors
-		}
-		cancel_effect = {
-			clr_country_flag = RUS_currently_attracting_investors
+			set_temp_variable = { RUS_modify_foreign_debt_var = 0.02 }
+			RUS_modify_foreign_debt = yes
+			clr_country_flag = RUS_currently_taking_out_a_loan
+			clr_country_flag = RUS_currently_taking_out_a_foreign_loan
 		}
 		cost = 25
 		days_remove = 180
-		days_re_enable = 20
 	}
-	RUS_import_tools_from_FROM = {
-		icon = GFX_decision_generic_industry
+	RUS_large_foreign_loan = {
+		icon = GFX_decision_ger_mefo_bills
 		allowed = {
 			original_tag = RUS
 		}
-		target_trigger = {
-			FROM = {
-				OR = {
-					tag = ENG
-					tag = FRA
-					tag = GER
-					tag = USA
-					tag = BEL
-				}
-			}
-		}
 		visible = {
 			original_tag = RUS
-			NOT = { 
-				is_embargoed_by = FROM
-				has_war_with = FROM
-			}
-			FROM = {
-				has_opinion = {
-					target = ROOT
-					value > 0
-				}
-			}
+			has_completed_focus = RUS_attract_foreign_investment
 		}
 		available = {
-			NOT = {
-				has_country_flag = RUS_currently_importing_tools
+			check_variable = {
+				RUS_credit_score_token_var = RUS_credit_score_good_tt
+				tooltip = RUS_credit_score_good_check_tt
 			}
-			FROM = {
-				has_opinion = {
-					target = ROOT
-					value > 0
-				}
+			NOT = {
+				has_country_flag = RUS_currently_taking_out_a_loan
+				has_country_flag = RUS_currently_repaying_foreign_debt
 			}
 		}
 		modifier = {
-			industrial_capacity_factory = 0.15
-			industrial_capacity_dockyard = 0.15
-		}
-		cancel_trigger = {
-			OR = {
-				is_embargoed_by = FROM
-				has_war_with = FROM
-			}	
+			consumer_goods_factor = -0.3
 		}
 		complete_effect = {
-			set_country_flag = RUS_currently_importing_tools
+			set_country_flag = RUS_currently_taking_out_a_loan
+			set_country_flag = RUS_currently_taking_out_a_foreign_loan
 		}
 		remove_effect = {
-			set_temp_variable = { RUS_modify_external_debt_var = 0.01 }
-			RUS_modify_external_debt = yes
-			clr_country_flag = RUS_currently_importing_tools
-		}
-		cancel_effect = {
-			clr_country_flag = RUS_currently_importing_tools
+			set_temp_variable = { RUS_modify_foreign_debt_var = 0.03 }
+			RUS_modify_foreign_debt = yes
+			clr_country_flag = RUS_currently_taking_out_a_loan
+			clr_country_flag = RUS_currently_taking_out_a_foreign_loan
 		}
 		cost = 25
 		days_remove = 180
-		days_re_enable = 20
 	}
-	RUS_repay_debt_to_FROM = {
-		icon = GFX_decision_generic_fundraising
+	RUS_repay_foreign_debt = {
+		icon = GFX_decision_ger_mefo_bills
 		allowed = {
 			original_tag = RUS
 		}
-		target_trigger = {
-			FROM = {
-				OR = {
-					tag = ENG
-					tag = FRA
-					tag = GER
-					tag = USA
-					tag = BEL
-				}
-			}
-		}
 		visible = {
 			original_tag = RUS
-			NOT = { 
-				is_embargoed_by = FROM
-				has_war_with = FROM
-			}
-			OR = {
-				AND = {
-					FROM = {
-						tag = ENG
-					}
-					check_variable = { RUS_debt_to_uk > 0 }
-				}
-				AND = {
-					FROM = {
-						tag = FRA
-					}
-					check_variable = { RUS_debt_to_france > 0 }
-				}
-				AND = {
-					FROM = {
-						tag = GER
-					}
-					check_variable = { RUS_debt_to_germany > 0 }
-				}
-				AND = {
-					FROM = {
-						tag = USA
-					}
-					check_variable = { RUS_debt_to_usa > 0 }
-				}
-				AND = {
-					FROM = {
-						tag = BEL
-					}
-					check_variable = { RUS_debt_to_belgium > 0 }
-				}
-			}
 		}
 		available = {
 			NOT = {
-				has_country_flag = RUS_currently_repaying_external_debt
-				has_country_flag = RUS_currently_taking_out_loan
+				has_country_flag = RUS_currently_taking_out_a_foreign_loan
 			}
-			if = {
-				limit = {
-					FROM = {
-						tag = ENG
-					}
-				}
-				check_variable = { RUS_debt_to_uk > 0 tooltip = RUS_has_external_debt_to_FROM }
-			}
-			else_if = {
-				limit = {
-					FROM = {
-						tag = FRA
-					}
-				}
-				check_variable = { RUS_debt_to_france > 0 tooltip = RUS_has_external_debt_to_FROM }
-			}
-			else_if = {
-				limit = {
-					FROM = {
-						tag = GER
-					}
-				}
-				check_variable = { RUS_debt_to_germany > 0 tooltip = RUS_has_external_debt_to_FROM }
-			}
-			else_if = {
-				limit = {
-					FROM = {
-						tag = USA
-					}
-				}
-				check_variable = { RUS_debt_to_usa > 0 tooltip = RUS_has_external_debt_to_FROM }
-			}
-			else_if = {
-				limit = {
-					FROM = {
-						tag = USA
-					}
-				}
-				check_variable = { RUS_debt_to_belgium > 0 tooltip = RUS_has_external_debt_to_FROM }
+			check_variable = {
+				RUS_foreign_debt_var > 0
+				tooltip = RUS_has_foreign_debt
 			}
 		}
 		modifier = {
-			consumer_goods_factor = 0.25
-		}
-		cancel_trigger = {
-			OR = {
-				is_embargoed_by = FROM
-				has_war_with = FROM
-			}	
+			consumer_goods_factor = 0.15
 		}
 		complete_effect = {
-			set_country_flag = RUS_currently_repaying_external_debt
+			set_country_flag = RUS_currently_repaying_foreign_debt
 		}
 		remove_effect = {
-			set_temp_variable = { RUS_modify_external_debt_var = -0.01 }
-			RUS_modify_external_debt = yes
-			clr_country_flag = RUS_currently_repaying_external_debt
-		}
-		cancel_effect = {
-			clr_country_flag = RUS_currently_repaying_external_debt
+			set_temp_variable = { RUS_modify_foreign_debt_var = -0.01 }
+			RUS_modify_foreign_debt = yes
+			clr_country_flag = RUS_currently_repaying_foreign_debt
 		}
 		cost = 25
 		days_remove = 180
-		days_re_enable = 20
-	}
-	RUS_renounce_debt_to_FROM = {
-		icon = GFX_decision_generic_fundraising
-		allowed = {
-			original_tag = RUS
-		}
-		target_trigger = {
-			FROM = {
-				OR = {
-					tag = ENG
-					tag = FRA
-					tag = GER
-					tag = USA
-					tag = BEL
-				}
-			}
-		}
-		visible = {
-			original_tag = RUS
-			OR = { 
-				is_embargoed_by = FROM
-				has_war_with = FROM
-			}
-			OR = {
-				AND = {
-					FROM = {
-						tag = ENG
-					}
-					check_variable = { RUS_debt_to_uk > 0 }
-				}
-				AND = {
-					FROM = {
-						tag = FRA
-					}
-					check_variable = { RUS_debt_to_france > 0 }
-				}
-				AND = {
-					FROM = {
-						tag = GER
-					}
-					check_variable = { RUS_debt_to_germany > 0 }
-				}
-				AND = {
-					FROM = {
-						tag = USA
-					}
-					check_variable = { RUS_debt_to_usa > 0 }
-				}
-				AND = {
-					FROM = {
-						tag = BEL
-					}
-					check_variable = { RUS_debt_to_belgium > 0 }
-				}
-			}
-		}
-		available = {
-			if = {
-				limit = {
-					FROM = {
-						tag = ENG
-					}
-				}
-				check_variable = { RUS_debt_to_uk > 0 tooltip = RUS_has_external_debt_to_FROM }
-			}
-			else_if = {
-				limit = {
-					FROM = {
-						tag = FRA
-					}
-				}
-				check_variable = { RUS_debt_to_france > 0 tooltip = RUS_has_external_debt_to_FROM }
-			}
-			else_if = {
-				limit = {
-					FROM = {
-						tag = GER
-					}
-				}
-				check_variable = { RUS_debt_to_germany > 0 tooltip = RUS_has_external_debt_to_FROM }
-			}
-			else_if = {
-				limit = {
-					FROM = {
-						tag = USA
-					}
-				}
-				check_variable = { RUS_debt_to_usa > 0 tooltip = RUS_has_external_debt_to_FROM }
-			}
-			else_if = {
-				limit = {
-					FROM = {
-						tag = BEL
-					}
-				}
-				check_variable = { RUS_debt_to_belgium > 0 tooltip = RUS_has_external_debt_to_FROM }
-			}
-		}
-		complete_effect = {
-			custom_effect_tooltip = RUS_renounce_debt_tt
-			if = {
-				limit = {
-					FROM = {
-						tag = ENG
-					}
-				}
-				set_variable = { RUS_debt_to_uk = 0 }
-			}
-			else_if = {
-				limit = {
-					FROM = {
-						tag = FRA
-					}
-				}
-				set_variable = { RUS_debt_to_france = 0 }
-			}
-			else_if = {
-				limit = {
-					FROM = {
-						tag = GER
-					}
-				}
-				set_variable = { RUS_debt_to_germany = 0 }
-			}
-			else_if = {
-				limit = {
-					FROM = {
-						tag = USA
-					}
-				}
-				set_variable = { RUS_debt_to_usa = 0 }
-			}
-			else_if = {
-				limit = {
-					FROM = {
-						tag = USA
-					}
-				}
-				set_variable = { RUS_debt_to_belgium = 0 }
-			}
-			RUS_recalculate_debt = yes
-		}
-		cost = 25
 	}
 }
