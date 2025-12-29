@@ -536,32 +536,37 @@ GER_great_war = {
 						}
 						custom_effect_tooltip = get_great_war_loser
 						set_country_flag = great_war_loser
-						add_ideas = idea_armistice
-						# Army Restriction checker
-						#i.e. you can't force usa or japan to restrict its army
 						if = {
 							limit = {
-								OR = {
-									has_capitulated = yes
-									surrender_progress > 0.01
-									casualties_inflicted_by = {
-										opponent = PREV
-										thousands > 1
-									}
-									any_home_area_neighbor_country = {
-										is_major = yes
-										has_country_flag = great_war_winner
-									}
-								}
+								is_arabian_peninsula_tag = no
 							}
+							add_ideas = idea_armistice
+							# Army Restriction checker
+							#i.e. you can't force usa or japan to restrict its army
 							if = {
 								limit = {
-									has_capitulated = yes
+									OR = {
+										has_capitulated = yes
+										surrender_progress > 0.01
+										casualties_inflicted_by = {
+											opponent = PREV
+											thousands > 1
+										}
+										any_home_area_neighbor_country = {
+											is_major = yes
+											has_country_flag = great_war_winner
+										}
+									}
 								}
-								set_country_flag = has_capitulated_in_great_war
+								if = {
+									limit = {
+										has_capitulated = yes
+									}
+									set_country_flag = has_capitulated_in_great_war
+								}
+								set_country_flag = army_should_be_restricted
 							}
-							set_country_flag = army_should_be_restricted
-						}
+						}					
 						# Preventing civil wars from ending
 						if = {
 							limit = {
@@ -619,70 +624,52 @@ GER_great_war = {
 							set_country_flag = great_war_winner
 						}
 						add_ideas = idea_armistice
-						ENT = {
-							white_peace = {
-								tag = GER
-								message = frankfurt_armistice_message
-							}
-							set_truce = {
-								target = GER
-								days = 365
-							}
-							white_peace = {
-								tag = PREV
-								message = frankfurt_armistice_message
-							}
-							set_truce = {
-								target = PREV
-								days = 365
-							}
-						}
-						every_enemy_country = {
-							limit = {
+						
+					}
+				}
+
+
+				ENT = {
+					white_peace = {
+						tag = GER
+						message = frankfurt_armistice_message
+					}
+					set_truce = {
+						target = GER
+						days = 365
+					}
+				}	
+				every_country = {
+					limit = {
+						OR = {
+							tag = GER
+							is_ally_with = GER
+							has_country_flag = member_of_central_powers
+							has_country_flag = accepted_entente_surrender
+							any_enemy_country = {
+								has_offensive_war_with = PREV
 								OR = {
+									tag = FRA
+									is_ally_with = FRA
 									has_country_flag = member_of_entente
-									tag = ENT
-									is_ally_with = ENT
-									has_country_flag = FRA_surrender_alone
-									has_country_flag = RUS_surrender_alone
 								}
 								NOT = {
 									has_country_flag = refused_to_surrender
+									original_tag = PREV
+									civilwar_target = PREV
 								}
-							}				
-							white_peace = {
-								tag = PREV
-								message = frankfurt_armistice_message
 							}
-							set_truce = {
-								target = PREV
-								days = 365
-							}				
+						}
+						NOT = {
+							has_country_flag = refused_to_surrender
 						}
 					}
-					# PEACE WITH NON-FACTIONAL ENEMIES
-					# YOU CANNOT CONDUCT WAR ANYMORE SINCE YOU ARE GONNA LOST THE GREAT WAR
-					# BUT THEY ARE NOT GONNA RECOGNISED AS VICTOR OF THE GREAT WAR
-					else_if = {
-						limit = {
-							any_enemy_country = {
-								OR = {
-									tag = ENT
-									is_ally_with = ENT
-									has_country_flag = member_of_entente
-								}
-								NOT = {
-									has_country_flag = refused_to_surrender
-									original_tag = PREV
-									civilwar_target = PREV
-								}
-								has_offensive_war_with = PREV
-							}			
-							is_in_faction = no
-							is_subject = no
+					if = {
+						limit = { 
+							has_war_with = ENT
 							NOT = {
-								has_country_flag = member_of_central_powers
-								has_country_flag = refused_to_surrender
+								original_tag = ENT
+								civilwar_target = ENT
 							}
 						}
 						ENT = {
@@ -695,28 +682,36 @@ GER_great_war = {
 								days = 365
 							}
 						}
-						every_enemy_country = {
-							limit = {
+					}
+					every_enemy_country = {
+						limit = {
+							OR = {
+								tag = ENT
+								is_ally_with = ENT
+								has_country_flag = member_of_entente
+							}
+							NOT = {
+								has_country_flag = refused_to_surrender
+								original_tag = PREV
+								civilwar_target = PREV
+							}
+							PREV = {
 								OR = {
-									tag = ENT
-									is_ally_with = ENT
-									has_country_flag = member_of_entente
-								}
-								NOT = {
-									has_country_flag = refused_to_surrender
-									original_tag = PREV
-									civilwar_target = PREV
-								}
-								has_offensive_war_with = PREV
-							}
-							white_peace = {
-								tag = PREV
-								message = frankfurt_armistice_message
-							}
-							set_truce = {
-								target = PREV
-								days = 365
-							}
+									tag = GER
+									is_ally_with = GER
+									has_country_flag = member_of_central_powers
+									has_country_flag = accepted_entente_surrender
+									has_defensive_war_with = PREV.PREV
+								}							
+							}							
+						}
+						white_peace = {
+							tag = PREV
+							message = frankfurt_armistice_message
+						}
+						set_truce = {
+							target = PREV
+							days = 365
 						}
 					}
 				}
@@ -1310,9 +1305,7 @@ GER_great_war = {
 		is_good = no
 		timeout_effect = {
 			if = {
-				limit = {
-					tag = ENT
-				}
+				limit = { tag = ENT }
 				set_global_flag = compiegne_armistice
 				set_global_flag = great_war_ends
 				every_country = {
@@ -1344,6 +1337,7 @@ GER_great_war = {
 									}
 								}
 							}
+							custom_effect_tooltip = get_great_war_loser
 							set_country_flag = great_war_loser
 							add_ideas = idea_armistice
 							# Army Restriction checker
@@ -1420,29 +1414,31 @@ GER_great_war = {
 							limit = {
 								is_arabian_peninsula_tag = no
 							}
+							custom_effect_tooltip = get_great_war_winner
 							set_country_flag = great_war_winner
 							add_ideas = idea_armistice
 						}
-						GER = {
-							white_peace = {
-								tag = ENT
-								message = compiegne_armistice_message
-							}
-							set_truce = {
-								target = ENT
-								days = 365
-							}
-							white_peace = {
-								tag = PREV
-								message = compiegne_armistice_message
-							}
-							set_truce = {
-								target = PREV
-								days = 365
-							}
-						}	
-						every_enemy_country = {
-							limit = {
+					}
+				}
+				GER = {
+					white_peace = {
+						tag = ENT
+						message = compiegne_armistice_message
+					}
+					set_truce = {
+						target = ENT
+						days = 365
+					}
+				}	
+				every_country = {
+					limit = {
+						OR = {
+							tag = ENT
+							is_ally_with = ENT
+							has_country_flag = member_of_entente
+							has_country_flag = accepted_german_surrender
+							any_enemy_country = {
+								has_offensive_war_with = PREV
 								OR = {
 									tag = GER
 									is_ally_with = GER
@@ -1450,8 +1446,30 @@ GER_great_war = {
 								}
 								NOT = {
 									has_country_flag = refused_to_surrender
+									original_tag = PREV
+									civilwar_target = PREV
+									tag = SOV
+									is_ally_with = SOV
+									AND = {
+										is_russian_tag = yes
+										has_war_with = SOV
+									}
 								}
 							}
+						}
+						NOT = {
+							has_country_flag = refused_to_surrender
+						}
+					}
+					if = {
+						limit = { 
+							has_war_with = GER
+							NOT = {
+								original_tag = GER
+								civilwar_target = GER
+							}
+						}
+						GER = {
 							white_peace = {
 								tag = PREV
 								message = compiegne_armistice_message
@@ -1462,67 +1480,35 @@ GER_great_war = {
 							}
 						}
 					}
-					# PEACE WITH NON-FACTIONAL ENEMIES
-					# YOU CANNOT CONDUCT WAR ANYMORE SINCE YOU ARE GONNA LOST THE GREAT WAR
-					# BUT THEY ARE NOT GONNA RECOGNISED AS VICTOR OF THE GREAT WAR			
-					else_if = {
+					every_enemy_country = {
 						limit = {
-							any_enemy_country = {
-								OR = {
-									tag = GER
-									is_ally_with = GER
-									has_country_flag = member_of_central_powers
-								}
-								NOT = {
-									has_country_flag = refused_to_surrender
-									original_tag = PREV
-									civilwar_target = PREV
-								}
-								has_offensive_war_with = PREV
-							}							
-							is_in_faction = no
-							is_subject = no
+							OR = {
+								tag = GER
+								is_ally_with = GER
+								has_country_flag = member_of_central_powers
+							}
 							NOT = {
 								has_country_flag = refused_to_surrender
-								tag = SOV
-								AND = {
-									is_russian_tag = yes
-									has_war_with = SOV
-								}
+								original_tag = PREV
+								civilwar_target = PREV
 							}
-						}
-						GER = {
-							white_peace = {
-								tag = PREV
-								message = compiegne_armistice_message
-							}
-							set_truce = {
-								target = PREV
-								days = 365
-							}
-						}
-						every_enemy_country = {
-							limit = {
+							PREV = {
 								OR = {
-									tag = GER
-									is_ally_with = GER
-									has_country_flag = member_of_central_powers
-								}
-								NOT = {
-									has_country_flag = refused_to_surrender
-									original_tag = PREV
-									civilwar_target = PREV
-								}
-								has_offensive_war_with = PREV
-							}						
-							white_peace = {
-								tag = PREV
-								message = compiegne_armistice_message
-							}
-							set_truce = {
-								target = PREV
-								days = 365
-							}
+									tag = ENT
+									is_ally_with = ENT
+									has_country_flag = member_of_entente
+									has_country_flag = accepted_german_surrender
+									has_defensive_war_with = PREV.PREV
+								}								
+							}							
+						}						
+						white_peace = {
+							tag = PREV
+							message = compiegne_armistice_message
+						}
+						set_truce = {
+							target = PREV
+							days = 365
 						}
 					}
 				}
