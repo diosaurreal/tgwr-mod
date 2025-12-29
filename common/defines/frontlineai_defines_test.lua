@@ -1,6 +1,6 @@
 --Hello, if you're looking to put this in a modpack, ask and link, but jokes on you, it's compatible in theory with literally every mod so you shouldn't have to put it in a modpack!						
 		
---NDefines.NAI.GARRISON_FRACTION = 0.2					-- How large part of a front should always be holding the line rather than advancing at the enemy
+NDefines.NAI.GARRISON_FRACTION = 0.2					-- How large part of a front should always be holding the line rather than advancing at the enemy
 	
 NDefines.NAI.DIPLOMACY_REJECTED_WAIT_MONTHS_BASE = 1	-- AI will not repeat offers until at least this time has passed, and at most the double
 	
@@ -455,10 +455,16 @@ NDefines.NAI.MINIMUM_FUEL_DAYS_TO_ACCEPT_LEND_LEASE = 5
 NDefines.NAI.DIPLOMACY_ACCEPT_ATTACHE_OPINION_TRASHHOLD = 0
 
 NDefines.NAI.ASSIGN_TANKS_TO_WAR_FRONT = 1000
-NDefines.NAI.ASSIGN_TANKS_TO_NON_WAR_FRONT = 0
+NDefines.NAI.ASSIGN_TANKS_TO_NON_WAR_FRONT = -1000
+
+NDefines.NAI.AIFC_UPDATE_FREQUENCY_DAYS = 10
 
 NDefines.NAI.AIFC_UNIT_OFFENSIVE_SCORE_FACTOR_HARD_ATTACK = 0
 NDefines.NAI.AIFC_UNIT_OFFENSIVE_SCORE_FACTOR_HARDNESS = 0
+NDefines.NAI.AIFC_UNIT_OFFENSIVE_SCORE_FACTOR_SPEED = 0
 NDefines.NAI.AIFC_UNIT_OFFENSIVE_SCORE_FACTOR_ARMOR = 1000
+
+NDefines.NAI.AIFC_TARGET_CAPITAL_SCORE_EXTRA = 15
+NDefines.NAI.AIFC_TARGET_IGNORE_VP_THRESHOLD = 5
 
 NDefines.NAI.ASSIGN_INVASION_AMPHIBIOUS_ATTACK_FACTOR = 50
