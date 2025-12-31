@@ -1002,6 +1002,8 @@ clear_all_relations = {
 		}
 	}
 	clr_country_flag = protectorate
+	clr_country_flag = colony
+	clr_country_flag = monarchist_puppet
 	if = {
 		limit = { is_in_faction = yes }
 		leave_faction = yes
@@ -1113,6 +1115,8 @@ clear_all_relations_with_TARGET = {
 		}
 	}
 	clr_country_flag = protectorate
+	clr_country_flag = colony
+	clr_country_flag = monarchist_puppet
 	if = {
 		limit = { is_in_faction_with = var:target }
 		leave_faction = yes
@@ -2114,6 +2118,20 @@ take_all_subjects_FROM = {
 			}
 			restore_previous_government_type = yes
 		}
+		else_if = {
+			limit = {
+				has_autonomy_state = autonomy_tgwr_self_governing_colony
+			}
+			FROM = { end_puppet = PREV }
+			get_current_government_type = yes
+			ROOT = {
+				set_autonomy = {
+					target = PREV
+					autonomous_state = autonomy_tgwr_self_governing_colony
+				}
+			}
+			restore_previous_government_type = yes
+		}
 		else = {
 			FROM = { end_puppet = PREV }
 			get_current_government_type = yes
@@ -2468,6 +2486,20 @@ take_all_subjects_ROOT = {
 				set_autonomy = {
 					target = PREV
 					autonomous_state = autonomy_tgwr_personal_union
+				}
+			}
+			restore_previous_government_type = yes
+		}
+		else_if = {
+			limit = {
+				has_autonomy_state = autonomy_tgwr_self_governing_colony
+			}
+			ROOT = { end_puppet = PREV }
+			get_current_government_type = yes
+			PREV = {
+				set_autonomy = {
+					target = PREV
+					autonomous_state = autonomy_tgwr_self_governing_colony
 				}
 			}
 			restore_previous_government_type = yes
@@ -2843,13 +2875,13 @@ copy_autonomy_from_ROOT = {
 	ROOT = {
 		if = {
 			limit = {
-				has_autonomy_state = autonomy_dominion
+				has_autonomy_state = autonomy_satellite
 			}
 			OVERLORD = {
 				end_puppet = PREV
 				set_autonomy = {
 					target = PREV.PREV
-					autonomous_state = autonomy_dominion
+					autonomous_state = autonomy_satellite
 				}
 			}
 		}
@@ -3137,6 +3169,18 @@ copy_autonomy_from_ROOT = {
 				}
 			}
 		}
+		else_if = {
+			limit = {
+				has_autonomy_state = autonomy_tgwr_self_governing_colony
+			}
+			OVERLORD = {
+				end_puppet = PREV
+				set_autonomy = {
+					target = PREV.PREV
+					autonomous_state = autonomy_tgwr_self_governing_colony
+				}
+			}
+		}
 		else = {
 			OVERLORD = {
 				end_puppet = PREV
@@ -3184,6 +3228,34 @@ set_up_sykes_picot_anizah_border = {
 		916 = { remove_core_of = JBS add_core_of = IRQ }
 		transfer_state = 917
 		917 = { remove_core_of = JBS add_core_of = IRQ }
+	}
+}
+
+set_up_syrian_monarchs = {
+	if = {
+		limit = {
+			SYR = {
+				NOT = {
+					has_character = HJZ_faisal_bin_hussein_bin_ali
+				}
+			}
+		}
+		HJZ = {
+			HJZ_faisal_bin_hussein_bin_ali = {
+				set_nationality = SYR
+				set_character_name = SYR_faisal_i
+				promote_leader = yes
+				add_country_leader_role = {
+					promote_leader = yes
+					country_leader = {
+						ideology = semi_constitutional_monarchy
+					}
+				}
+			}
+			HJZ_ghazi_bin_faisal = {
+				set_nationality = SYR
+			}
+		}
 	}
 }
 
@@ -3372,10 +3444,11 @@ create_AOF = {
 			original_tag = FRA
 			set_country_flag = AOF
 			set_cosmetic_tag = AOF
+			set_country_flag = colony
 			PREV = {
 				set_autonomy = {
 					target = PREV
-					autonomous_state = autonomy_integrated_puppet
+					autonomous_state = autonomy_colony
 				}
 			}
 			set_country_flag = empty_focus
@@ -3544,10 +3617,11 @@ create_AEF = {
 			original_tag = FRA
 			set_country_flag = AEF
 			set_cosmetic_tag = AEF
+			set_country_flag = colony
 			PREV = {
 				set_autonomy = {
 					target = PREV
-					autonomous_state = autonomy_integrated_puppet
+					autonomous_state = autonomy_colony
 				}
 			}
 			set_country_flag = empty_focus
@@ -4139,4 +4213,379 @@ research_trucks_to_improve_supply_effect = {
 			}	
 		}
 	}	
+}
+protectorate_logic = {
+	leave_faction = yes
+	OVERLORD = {
+		if = {
+			limit = {
+				is_in_faction = yes
+				NOT = { has_military_access_to = PREV }
+			}
+			diplomatic_relation = {
+				country = PREV
+				relation = military_access
+				active = yes
+			}
+		}
+	}
+	country_event = { id = ww1_political.7 hours = 1 } #needed if the faction leader is at war, don't ask
+}
+vassal_of_vassal_logic = {
+	OVERLORD = {
+		if = {
+			limit = { 
+				is_subject = yes
+			}
+			# PREV = {
+			# 	give_market_access = PREV.OVERLORD
+			# }	
+			if = {
+				limit = { 
+					OVERLORD = {
+						NOT = { 
+							has_military_access_to = PREV.PREV 
+							is_in_faction_with = PREV.PREV 
+						}
+					}
+				}
+				PREV = {
+					PREV.OVERLORD = {
+						#give_guarantee = PREV
+						diplomatic_relation = {
+							country = PREV
+							relation = military_access
+							active = yes
+						}
+					}
+				}	
+			}
+		}
+	}
+}
+
+clear_all_ledgers = {
+    if = {
+        limit = { has_idea = TUR_ittihadist_academy_spirit_no_remove }
+        remove_ideas = TUR_ittihadist_academy_spirit_no_remove
+    }
+    if = {
+        limit = { has_idea = TUR_ittihadist_academy_spirit }
+        remove_ideas = TUR_ittihadist_academy_spirit
+    }
+    if = {
+        limit = { has_idea = TUR_halaskaran_academy_spirit }
+        remove_ideas = TUR_halaskaran_academy_spirit
+    }
+    if = {
+        limit = { has_idea = bold_attack_spirit }
+        remove_ideas = bold_attack_spirit
+    }
+    if = {
+        limit = { has_idea = tenacious_defense_spirit }
+        remove_ideas = tenacious_defense_spirit
+    }
+    if = {
+        limit = { has_idea = meticulous_preparation_spirit }
+        remove_ideas = meticulous_preparation_spirit
+    }
+    if = {
+        limit = { has_idea = best_of_the_best_spirit }
+        remove_ideas = best_of_the_best_spirit
+    }
+    if = {
+        limit = { has_idea = academy_scholarships_spirit }
+        remove_ideas = academy_scholarships_spirit
+    }
+    if = {
+        limit = { has_idea = political_loyalty_spirit }
+        remove_ideas = political_loyalty_spirit
+    }
+    if = {
+        limit = { has_idea = inventive_leadership_spirit }
+        remove_ideas = inventive_leadership_spirit
+    }
+    if = {
+        limit = { has_idea = mobile_warfare_academy_spirit }
+        remove_ideas = mobile_warfare_academy_spirit
+    }
+    if = {
+        limit = { has_idea = superior_firepower_academy_spirit }
+        remove_ideas = superior_firepower_academy_spirit
+    }
+    if = {
+        limit = { has_idea = theatre_training_spirit }
+        remove_ideas = theatre_training_spirit
+    }
+    if = {
+        limit = { has_idea = mass_assault_academy_spirit }
+        remove_ideas = mass_assault_academy_spirit
+    }
+    
+    if = {
+        limit = { has_idea = professional_officer_corps_spirit }
+        remove_ideas = professional_officer_corps_spirit
+    }
+    if = {
+        limit = { has_idea = elevated_engineering_corps_spirit }
+        remove_ideas = elevated_engineering_corps_spirit
+    }
+    if = {
+        limit = { has_idea = proper_heritage_spirit }
+        remove_ideas = proper_heritage_spirit
+    }
+    if = {
+        limit = { has_idea = quick_improvisation_spirit }
+        remove_ideas = quick_improvisation_spirit
+    }
+    if = {
+        limit = { has_idea = relief_of_command_spirit }
+        remove_ideas = relief_of_command_spirit
+    }
+    if = {
+        limit = { has_idea = ideological_loyalty_spirit }
+        remove_ideas = ideological_loyalty_spirit
+    }
+    if = {
+        limit = { has_idea = state_serves_the_military_spirit }
+        remove_ideas = state_serves_the_military_spirit
+    }
+    if = {
+        limit = { has_idea = mobile_warfare_army_spirit }
+        remove_ideas = mobile_warfare_army_spirit
+    }
+    if = {
+        limit = { has_idea = superior_firepower_army_spirit }
+        remove_ideas = superior_firepower_army_spirit
+    }
+    if = {
+        limit = { has_idea = grand_battleplan_army_spirit }
+        remove_ideas = grand_battleplan_army_spirit
+    }
+    if = {
+        limit = { has_idea = mass_assault_army_spirit }
+        remove_ideas = mass_assault_army_spirit
+    }
+    if = {
+        limit = { has_idea = heritage_of_accomplishment }
+        remove_ideas = heritage_of_accomplishment
+    }
+    
+    if = {
+        limit = { has_idea = static_warfare_spirit }
+        remove_ideas = static_warfare_spirit
+    }
+    if = {
+        limit = { has_idea = flexible_organization_spirit }
+        remove_ideas = flexible_organization_spirit
+    }
+    if = {
+        limit = { has_idea = aggressive_reconnaisance_spirit }
+        remove_ideas = aggressive_reconnaisance_spirit
+    }
+    if = {
+        limit = { has_idea = reserve_officers_spirit }
+        remove_ideas = reserve_officers_spirit
+    }
+    if = {
+        limit = { has_idea = victory_or_death_spirit }
+        remove_ideas = victory_or_death_spirit
+    }
+    if = {
+        limit = { has_idea = maneuver_warfare_spirit }
+        remove_ideas = maneuver_warfare_spirit
+    }
+    if = {
+        limit = { has_idea = smoke_and_fire_spirit }
+        remove_ideas = smoke_and_fire_spirit
+    }
+    if = {
+        limit = { has_idea = logistical_focus_spirit }
+        remove_ideas = logistical_focus_spirit
+    }
+    if = {
+        limit = { has_idea = operational_reserve_spirit }
+        remove_ideas = operational_reserve_spirit
+    }
+
+    if = {
+        limit = { has_idea = independent_air_force_spirit }
+        remove_ideas = independent_air_force_spirit
+    }
+    if = {
+        limit = { has_idea = industrial_destruction_spirit }
+        remove_ideas = industrial_destruction_spirit
+    }
+    if = {
+        limit = { has_idea = dive_bombing_spirit }
+        remove_ideas = dive_bombing_spirit
+    }
+    if = {
+        limit = { has_idea = material_destruction_spirit }
+        remove_ideas = material_destruction_spirit
+    }
+    if = {
+        limit = { has_idea = industry_liasons_spirit }
+        remove_ideas = industry_liasons_spirit
+    }
+    if = {
+        limit = { has_idea = effective_training_programs_spirit }
+        remove_ideas = effective_training_programs_spirit
+    }
+    if = {
+        limit = { has_idea = branch_independence_spirit }
+        remove_ideas = branch_independence_spirit
+    }
+    if = {
+        limit = { has_idea = air_crew_surveys_spirit }
+        remove_ideas = air_crew_surveys_spirit
+    }
+    
+    if = {
+        limit = { has_idea = battlefield_air_interdiction_spirit }
+        remove_ideas = battlefield_air_interdiction_spirit
+    }
+    if = {
+        limit = { has_idea = cag_night_fighting_spirit }
+        remove_ideas = cag_night_fighting_spirit
+    }
+    if = {
+        limit = { has_idea = veteran_air_instructors_spirit }
+        remove_ideas = veteran_air_instructors_spirit
+    }
+    if = {
+        limit = { has_idea = centralized_control_spirit }
+        remove_ideas = centralized_control_spirit
+    }
+    if = {
+        limit = { has_idea = steel_wings_steel_hearts_spirit }
+        remove_ideas = steel_wings_steel_hearts_spirit
+    }
+    if = {
+        limit = { has_idea = home_defence_spirit }
+        remove_ideas = home_defence_spirit
+    }
+    if = {
+        limit = { has_idea = air_power_projection_spirit }
+        remove_ideas = air_power_projection_spirit
+    }
+    if = {
+        limit = { has_idea = massed_strike_spirit }
+        remove_ideas = massed_strike_spirit
+    }
+    if = {
+        limit = { has_idea = continuous_strike_spirit }
+        remove_ideas = continuous_strike_spirit
+    }
+    if = {
+        limit = { has_idea = strategic_strike_spirit }
+        remove_ideas = strategic_strike_spirit
+    }
+    
+    if = {
+        limit = { has_idea = TUR_bahriye_navy_school }
+        remove_ideas = TUR_bahriye_navy_school
+    }
+    if = {
+        limit = { has_idea = instilled_aggression_spirit }
+        remove_ideas = instilled_aggression_spirit
+    }
+    if = {
+        limit = { has_idea = calculated_restraint_spirit }
+        remove_ideas = calculated_restraint_spirit
+    }
+    if = {
+        limit = { has_idea = signals_training_spirit }
+        remove_ideas = signals_training_spirit
+    }
+    if = {
+        limit = { has_idea = fleet_in_being_academy_spirit }
+        remove_ideas = fleet_in_being_academy_spirit
+    }
+    if = {
+        limit = { has_idea = trade_interdiction_academy_spirit }
+        remove_ideas = trade_interdiction_academy_spirit
+    }
+    if = {
+        limit = { has_idea = base_strike_academy_spirit }
+        remove_ideas = base_strike_academy_spirit
+    }
+    if = {
+        limit = { has_idea = best_of_the_best_naval_academy_spirit }
+        remove_ideas = best_of_the_best_naval_academy_spirit
+    }
+    if = {
+        limit = { has_idea = naval_academy_scholarships_spirit }
+        remove_ideas = naval_academy_scholarships_spirit
+    }
+    
+    if = {
+        limit = { has_idea = jeune_ecole_spirit }
+        remove_ideas = jeune_ecole_spirit
+    }
+    if = {
+        limit = { has_idea = flexible_contracts_spirit }
+        remove_ideas = flexible_contracts_spirit
+    }
+    if = {
+        limit = { has_idea = integrated_designers_spirit }
+        remove_ideas = integrated_designers_spirit
+    }
+    if = {
+        limit = { has_idea = naval_reform_spirit }
+        remove_ideas = naval_reform_spirit
+    }
+    if = {
+        limit = { has_idea = naval_refit_yards_spirit }
+        remove_ideas = naval_refit_yards_spirit
+    }
+    if = {
+        limit = { has_idea = fleet_in_being_navy_spirit }
+        remove_ideas = fleet_in_being_navy_spirit
+    }
+    if = {
+        limit = { has_idea = trade_interdiction_navy_spirit }
+        remove_ideas = trade_interdiction_navy_spirit
+    }
+    if = {
+        limit = { has_idea = base_strike_navy_spirit }
+        remove_ideas = base_strike_navy_spirit
+    }
+    
+    if = {
+        limit = { has_idea = close_combat_navy_spirit }
+        remove_ideas = close_combat_navy_spirit
+    }
+    if = {
+        limit = { has_idea = night_fighting_spirit }
+        remove_ideas = night_fighting_spirit
+    }
+    if = {
+        limit = { has_idea = surprise_attacks_spirit }
+        remove_ideas = surprise_attacks_spirit
+    }
+    if = {
+        limit = { has_idea = efficient_communications_spirit }
+        remove_ideas = efficient_communications_spirit
+    }
+    if = {
+        limit = { has_idea = surface_raiders_spirit }
+        remove_ideas = surface_raiders_spirit
+    }
+    if = {
+        limit = { has_idea = decisive_battle_spirit }
+        remove_ideas = decisive_battle_spirit
+    }
+    if = {
+        limit = { has_idea = inclimate_weather_experience_spirit }
+        remove_ideas = inclimate_weather_experience_spirit
+    }
+    if = {
+        limit = { has_idea = brave_commanders_spirit }
+        remove_ideas = brave_commanders_spirit
+    }
+    if = {
+        limit = { has_idea = bureau_of_ordnance_spirit }
+        remove_ideas = bureau_of_ordnance_spirit
+    }
 }
