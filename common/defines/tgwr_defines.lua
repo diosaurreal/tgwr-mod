@@ -154,3 +154,16 @@ NDefines.NNavy.BASE_NAVAL_INVASION_DIVISION_CAP = 0	--4						-- base cap of divi
 NDefines.NNavy.NAVAL_INVASION_PREPARE_DAYS = 30	--60						-- base days needed to prepare a naval invasion
 
 NDefines.NDoctrines.TRAINING_MASTERY_GAIN_FACTOR = 0.01
+
+-- Factions
+NDefines.NFactions.FACTION_SCIENTIST_CONTRIBUTION_VALUE = 0.01              --how much contribution one scientists gives to you if it is working for somebody else.
+NDefines.NFactions.FACTION_ASSIGN_SCIENTIST_COST = 50                      --how much political power it costs to assign a supportive scientist
+
+-- Special Projects
+NDefines.NProject.RECRUIT_SCIENTIST_COST = {                                -- Amount of pp to hire a scientist based on available scientist
+    100,            -- pp cost if no available scientist
+    100,            -- pp cost if 1 available scientist
+    100,            -- pp cost if 2 available scientist
+    100             -- pp cost if more than 2 available scientist
+}
+NDefines.NProject.AMOUNT_OF_SUPPORTIVE_SCIENTISTS = 2                       -- The amount of supportive scientists a facility can have
