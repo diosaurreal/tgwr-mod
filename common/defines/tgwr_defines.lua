@@ -166,4 +166,3 @@ NDefines.NProject.RECRUIT_SCIENTIST_COST = {                                -- A
     100,            -- pp cost if 2 available scientist
     100             -- pp cost if more than 2 available scientist
 }
-NDefines.NProject.AMOUNT_OF_SUPPORTIVE_SCIENTISTS = 2                       -- The amount of supportive scientists a facility can have
