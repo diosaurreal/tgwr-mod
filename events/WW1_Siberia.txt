@@ -921,16 +921,55 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_siberia.3.a
+		# if = {
+		# 	limit = {
+		# 		CRI = {
+		# 			is_puppet_of = SRA
+		# 		}	
+		# 	}
+		# 	SRA = {
+		# 		annex_country = {
+		# 			target = CRI
+		# 			transfer_troops = yes
+		# 		}
+		# 	}
+		# }
 		if = {
+			limit = { tag = NWA }
+			set_cosmetic_tag = NWA
+		}
+		else_if = {
 			limit = {
-				CRI = {
-					is_puppet_of = SRA
-				}	
+				tag = TRC
+				FROM = { has_government = fascism }
 			}
-			SRA = {
-				annex_country = {
-					target = CRI
-					transfer_troops = yes
+			set_politics = {
+				ruling_party = fascism
+				elections_allowed = no
+			}
+			add_popularity = {
+				ideology = fascism
+				popularity = 0.1
+			}
+		}
+		else_if = {
+			limit = { tag = UCH }
+			set_cosmetic_tag = UCH_RUS
+		}
+		else_if = {
+			limit = { tag = ORE }
+			set_cosmetic_tag = ORE_RUS
+			if = {
+				limit = { 
+					FROM = { has_government = democratic }
+				}
+				set_politics = {
+					ruling_party = democratic
+					elections_allowed = no
+				}
+				add_popularity = {
+					ideology = democratic
+					popularity = 0.1
 				}
 			}
 		}
@@ -1275,11 +1314,29 @@ country_event = {
 					}
 				}
 			}
-			every_country = {
+			every_subject_country = {
 				limit = {
-					is_subject_of = ROOT
+					NOT = {
+						AND = {
+							has_subject = SRA
+							OR = {
+								tag = SRA
+								tag = UCH
+								tag = TRC
+							}
+						}			
+					}
 				}
 				ROOT = { end_puppet = PREV }
+			}
+			if = {
+				limit = { 
+					has_subject = SRA
+				}
+				ROOT = { end_puppet = SRA }
+				SRA = {
+					take_all_subjects_PREV = yes
+				}
 			}
 			every_country = {
 				limit = {
