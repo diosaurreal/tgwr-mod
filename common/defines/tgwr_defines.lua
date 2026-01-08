@@ -166,5 +166,3 @@ NDefines.NProject.RECRUIT_SCIENTIST_COST = {                                -- A
     100,            -- pp cost if 2 available scientist
     100             -- pp cost if more than 2 available scientist
 }
-
-NDefines.NMilitary.MAX_DIVISION_SUPPORT_HEIGHT = 6
