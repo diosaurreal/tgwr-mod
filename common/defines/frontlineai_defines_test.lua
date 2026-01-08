@@ -1,6 +1,6 @@
 --Hello, if you're looking to put this in a modpack, ask and link, but jokes on you, it's compatible in theory with literally every mod so you shouldn't have to put it in a modpack!						
 		
---NDefines.NAI.GARRISON_FRACTION = 0.2					-- How large part of a front should always be holding the line rather than advancing at the enemy
+NDefines.NAI.GARRISON_FRACTION = 0.2					-- How large part of a front should always be holding the line rather than advancing at the enemy
 	
 NDefines.NAI.DIPLOMACY_REJECTED_WAIT_MONTHS_BASE = 1	-- AI will not repeat offers until at least this time has passed, and at most the double
 	
@@ -8,7 +8,7 @@ NDefines.NAI.MIN_INVASION_PLAN_VALUE_TO_EXECUTE	 = 0.20	-- AI will typically avo
 
 NDefines.NAI.ENTRENCHMENT_WEIGHT = 4.0					-- AI should favour units with less entrenchment when assigning units around.
 
-NDefines.NAI.UNIT_ASSIGNMENT_TERRAIN_IMPORTANCE = 150.0	-- Terrain score for units are multiplied by this when the AI is deciding which front they should be assigned to
+NDefines.NAI.UNIT_ASSIGNMENT_TERRAIN_IMPORTANCE = 20.0	-- Terrain score for units are multiplied by this when the AI is deciding which front they should be assigned to
 	
 NDefines.NAI.SEND_VOLUNTEER_EVAL_BASE_DISTANCE = 175.0  -- How far away it will evaluate sending volunteers if not a major power
 NDefines.NAI.SEND_VOLUNTEER_EVAL_MAJOER_POWER = 1.0 	-- How willing major powers are to send volunteers.
@@ -21,13 +21,13 @@ NDefines.NAI.PLAN_VALUE_TO_EXECUTE = 0.15 --default ??
 
 NDefines.NAI.MIN_PLAN_VALUE_TO_MICRO_INACTIVE = 0.2 --default 0.2				-- The AI will not consider members of groups which plan is not activated AND evaluates lower than this.
 	
-NDefines.NAI.MAX_UNITS_FACTOR_AREA_ORDER = 1.0 --default 1.0					-- Factor for max number of units to assign to area defense orders
-NDefines.NAI.DESIRED_UNITS_FACTOR_AREA_ORDER = 1.0	--default^			-- Factor for desired number of units to assign to area defense orders
+NDefines.NAI.MAX_UNITS_FACTOR_AREA_ORDER = 1.75 --default 1.0					-- Factor for max number of units to assign to area defense orders
+NDefines.NAI.DESIRED_UNITS_FACTOR_AREA_ORDER = 0.7	--default^			-- Factor for desired number of units to assign to area defense orders
 NDefines.NAI.MIN_UNITS_FACTOR_AREA_ORDER = 1.0	--default^^				-- Factor for min number of units to assign to area defense orders
 
-NDefines.NAI.MAX_UNITS_FACTOR_FRONT_ORDER = 3.0	--default 1.5			-- Factor for max number of units to assign to area front orders
-NDefines.NAI.DESIRED_UNITS_FACTOR_FRONT_ORDER = 3.0	--default ^			-- Factor for desired number of units to assign to area front orders
-NDefines.NAI.MIN_UNITS_FACTOR_FRONT_ORDER = 2.0	--default 1.0			-- Factor for min number of units to assign to area front orders
+NDefines.NAI.MAX_UNITS_FACTOR_FRONT_ORDER = 1.0	--default 1.5			-- Factor for max number of units to assign to area front orders
+NDefines.NAI.DESIRED_UNITS_FACTOR_FRONT_ORDER = 1.1	--default ^			-- Factor for desired number of units to assign to area front orders
+NDefines.NAI.MIN_UNITS_FACTOR_FRONT_ORDER = 1.0	--default 1.0			-- Factor for min number of units to assign to area front orders
 
 NDefines.NAI.MAX_UNITS_FACTOR_INVASION_ORDER = 1.0	--default 1.0	-- Factor for max number of units to assign to naval invasion orders
 NDefines.NAI.DESIRED_UNITS_FACTOR_INVASION_ORDER = 1.0	--default ^		-- Factor for desired number of units to assign to naval invasion orders
@@ -362,9 +362,6 @@ NDefines.NAI.LAND_COMBAT_OUR_COMBATS_AIR_IMPORTANCE = 400		-- vanilla 155
 -- Defense
 -------------------------
 
-NDefines.NAI.LAND_DEFENSE_FIGHERS_PER_PLANE = 1				-- Amount of air superiority planes requested per enemy plane
-NDefines.NAI.LAND_DEFENSE_INTERSEPTORS_PER_BOMBERS = 1		-- Amount of air interceptor planes requested per enemy bomber
-
 
 --NDefines.NAI.LAND_DEFENSE_CIVIL_FACTORY_IMPORTANCE = 800 -- 50			-- Strategic importance of civil factories
 --NDefines.NAI.LAND_DEFENSE_MILITARY_FACTORY_IMPORTANCE = 880 -- 70		-- Strategic importance of military factories
@@ -389,7 +386,6 @@ NDefines.NAI.STR_BOMB_MIN_EXCORT_PLANES = 0					-- Min amount of planes requeste
 -------------------------
 
 
-NDefines.NAI.NAVAL_STRIKE_PLANES_PER_SHIP = 40					-- Amount of bombers requested per enemy ship
 NDefines.NAI.SUPPLY_PRIO_FACTOR = -100 --100 						--	AI is bad with that
 NDefines.NAI.NAVAL_SHIP_AIR_IMPORTANCE = 1 --2.0					-- Naval ship air importance
 NDefines.NAI.STR_BOMB_IMPORTANCE_SCALE = 5 --1.0
@@ -399,7 +395,7 @@ NDefines.NAI.NAVAL_IMPORTANCE_SCALE = 0.5 --0.65						-- Naval total importance 
 NDefines.NMilitary.PLAN_EXECUTE_BALANCED_LIMIT = -1.0			-- When looking for an attach target, this score limit ---is required in the battle plan to consider province for attack suggested define by SensitiveDannyBoi
 NDefines.NMilitary.PLAN_PORVINCE_PORT_BASE_IMPORTANCE = 18.0		-- Added importance for area defense province with a port
 NDefines.NMilitary.PLAN_PORVINCE_PORT_LEVEL_FACTOR = 0.5			-- Bonus factor for port level
-NDefines.NAI.MAIN_ENEMY_FRONT_IMPORTANCE = 15.0			-- How much extra focus the AI should put on who it considers to be its current main enemy.
+NDefines.NAI.MAIN_ENEMY_FRONT_IMPORTANCE = 4.0			-- How much extra focus the AI should put on who it considers to be its current main enemy.
 NDefines.NAI.AREA_DEFENSE_BASE_IMPORTANCE = 5.0					-- Area defense order base importance value (used for determining order of troop selections) default 1
 NDefines.NAI.AREA_DEFENSE_CIVIL_WAR_IMPORTANCE = 5.0				-- Area defense order importance value when a country is in a civil war as target or revolter. vanilla 10000 lolwut?? am I missing something here :
 NDefines.NMilitary.PLAN_PORVINCE_RESISTANCE_BASE_IMPORTANCE = 150.0 -- Used when calculating the calue of defense area provinces for the battle plan system (factored by resistance level) vanilla 10.0
@@ -419,19 +415,19 @@ NDefines.NDiplomacy.NAP_BREAK_FORCE_BALANCE_1 = 5.0              	-- 2-1 brigade
 NDefines.NDiplomacy.NAP_BREAK_FORCE_BALANCE_2 = 1.0              	-- 1-1 brigades along the border required to break NAP
 NDefines.NDiplomacy.NAP_BREAK_FORCE_BALANCE_3 = 0.5 
 NDefines.NAI.MAX_VOLUNTEER_ARMY_FRACTION = 0.05			-- Countries will not send more than their forces time this number to aid another country
-NDefines.NAI.DIPLO_PREFER_OTHER_FACTION = -400		-- The country has yet to ask some other faction it would prefer to be a part of.
+NDefines.NAI.DIPLO_PREFER_OTHER_FACTION = -400			-- The country has yet to ask some other faction it would prefer to be a part of.
 NDefines.NTrade.DISTANCE_TRADE_FACTOR = -0.0001			-- Trade factor is modified by distance times this vanilla -.02
-NDefines.NAI.TRADEABLE_FACTORIES_FRACTION = 0.6	-- Will at most trade away this fraction of factories.
-NDefines.NDiplomacy.NOT_READY_FOR_WAR_BASE = -100 -- AI should be unwilling to enter accept a call to war if not ready ---for war against the relevant enemies. vanilla -50 - suggested define by SensitiveDannyBoi
+NDefines.NAI.TRADEABLE_FACTORIES_FRACTION = 0.6			-- Will at most trade away this fraction of factories.
+NDefines.NDiplomacy.NOT_READY_FOR_WAR_BASE = -100 		-- AI should be unwilling to enter accept a call to war if not ready ---for war against the relevant enemies. vanilla -50 - suggested define by SensitiveDannyBoi
 NDefines.NAI.LENDLEASE_FRACTION_OF_PRODUCTION = 0.1		-- Base fraction AI would send as lendlease 0.5 vanilla less base production used, perhaps will promote AI to send more?
 
 --- AI Defines
 NDefines.NAI.MICRO_POCKET_SIZE = 1						-- Pockets with a size equal to or lower than this will be mocroed by the AI, for efficiency.
-NDefines.NAI.UPGRADE_DIVISION_RELUCTANCE = .0042 -- aggressively trying to get the AI to upgrade divisions to newer templates, may work, may not, but it doesn't break anything. vanilla is 14, .0042 is just over 1 hour, where I believe the vanilla value at 14 = 14 days. So it should be checking to upgrade ONE division every single hour. 
+NDefines.NAI.UPGRADE_DIVISION_RELUCTANCE = .0042 		-- aggressively trying to get the AI to upgrade divisions to newer templates, may work, may not, but it doesn't break anything. vanilla is 14, .0042 is just over 1 hour, where I believe the vanilla value at 14 = 14 days. So it should be checking to upgrade ONE division every single hour. 
 NDefines.NAI.RESEARCH_BONUS_FACTOR = 4.5 				-- To which extent AI should care about bonuses to research
 NDefines.NAI.RESEARCH_AHEAD_OF_TIME_FACTOR = 7.0 		-- To which extent AI should care about ahead of time penalties to research
 NDefines.NAI.COMBINED_ARMS_LEVEL = 1                    -- 0 = Never, 1 = Infantry/Artillery, 2 = Go wild
-NDefines.NAI.MAX_SUPPLY_DIVISOR = 3.0							-- To make sure the AI does not overdeploy divisions. Higher number means more supply per unit. van 2.0
+NDefines.NAI.MAX_SUPPLY_DIVISOR = 3.0					-- To make sure the AI does not overdeploy divisions. Higher number means more supply per unit. van 2.0
 NDefines.NAI.PLAN_FACTION_WEAK_TO_ABORT = 0.50			-- % or more of units in an order to consider ececuting the plan
 NDefines.NAI.PLAN_FACTION_NORMAL_TO_EXECUTE = 0.50
 
@@ -459,10 +455,16 @@ NDefines.NAI.MINIMUM_FUEL_DAYS_TO_ACCEPT_LEND_LEASE = 5
 NDefines.NAI.DIPLOMACY_ACCEPT_ATTACHE_OPINION_TRASHHOLD = 0
 
 NDefines.NAI.ASSIGN_TANKS_TO_WAR_FRONT = 1000
-NDefines.NAI.ASSIGN_TANKS_TO_NON_WAR_FRONT = 0
+NDefines.NAI.ASSIGN_TANKS_TO_NON_WAR_FRONT = -1000
+
+NDefines.NAI.AIFC_UPDATE_FREQUENCY_DAYS = 10
 
 NDefines.NAI.AIFC_UNIT_OFFENSIVE_SCORE_FACTOR_HARD_ATTACK = 0
 NDefines.NAI.AIFC_UNIT_OFFENSIVE_SCORE_FACTOR_HARDNESS = 0
+NDefines.NAI.AIFC_UNIT_OFFENSIVE_SCORE_FACTOR_SPEED = 0
 NDefines.NAI.AIFC_UNIT_OFFENSIVE_SCORE_FACTOR_ARMOR = 1000
+
+NDefines.NAI.AIFC_TARGET_CAPITAL_SCORE_EXTRA = 15
+NDefines.NAI.AIFC_TARGET_IGNORE_VP_THRESHOLD = 5
 
 NDefines.NAI.ASSIGN_INVASION_AMPHIBIOUS_ATTACK_FACTOR = 50

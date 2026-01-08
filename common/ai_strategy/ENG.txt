@@ -432,7 +432,7 @@ ENG_keep_suez = {
 #	}
 #}
 
-ENG_french_in_need = {
+COMMONWEALTH_help_FRA = {
 	allowed = {
 		OR = {
 			original_tag = ENG
@@ -454,38 +454,105 @@ ENG_french_in_need = {
 	}
 
 	ai_strategy = {
-		type = dont_defend_ally_borders
-		id = FRA
-		value = -100 #its false or true, putting 9999 is useless
-	}
-
-	ai_strategy = {
 		type = force_defend_ally_borders
 		id = FRA
-		value = 100 #its false or true, putting 9999 is useless
+		value = 1000
 	}
 
 	ai_strategy = {
 		type = front_unit_request
-		tag = FRA
+		area = europe
 		value = 100
 	}
 
 	ai_strategy = {
-		type = front_unit_request
-		tag = GER
-		value = 50
+		type = spare_unit_factor
+		value = 1000
 	}
 
 	ai_strategy = {
 		type = area_priority
-		id = northern_france_and_benelux
-		value = 100
+		id = europe
+		value = 500
 	}
 
 	ai_strategy = {
 		type = garrison_reinforcement_priority
 		value = -25
+	}
+}
+
+COMMONWEALTH_less_prio_on_german_colonies = {
+	allowed = {
+		OR = {
+			original_tag = ENG
+			original_tag = CAN
+			original_tag = AST
+			original_tag = NZL
+		}
+	}
+	enable = {
+		OR = {
+			has_war_with = GER
+			has_global_flag = crisis_in_progress
+		}
+		any_state_in = {
+			continent = africa
+			is_controlled_by = GER
+		}
+	}
+	abort_when_not_enabled = yes
+	abort = {
+		GER = {
+			is_ai = no
+		}		
+	}
+	ai_strategy = {
+		type = area_priority
+		id = africa
+		value = -500
+	}
+	ai_strategy = {
+		type = front_unit_request
+		state_trigger = {
+			is_on_continent = africa
+			is_controlled_by = GER
+		}
+		value = -20
+	}
+}
+
+COMMONWEALTH_dont_help_SAF = {
+	allowed = {
+		OR = {
+			original_tag = ENG
+			original_tag = CAN
+			original_tag = AST
+			original_tag = NZL
+		}
+	}
+	enable = {
+		SAF = {
+			has_war_with = SFR
+		}
+	}
+	abort_when_not_enabled = yes
+	abort = {
+		OR = {
+			SFR = {
+				exists = no
+			}
+			SFR = {
+				is_ai = no
+			}
+		}
+	}
+	ai_strategy = {
+		type = front_unit_request
+		country_trigger = {
+			has_country_flag = boer_rebellion
+		}
+		value = -1000
 	}
 }
 
@@ -607,7 +674,10 @@ ENG_dont_help_belgium = {
 		}
 		has_war_with = GER
 		BEL = { has_capitulated = no }
-		date < 1915.6.1
+		war_length_with = {
+			tag = GER
+			months < 6
+		}
 		NOT = {
 			BEL = {
 				has_country_flag = BEL_tripartite_security_meeting
@@ -616,29 +686,26 @@ ENG_dont_help_belgium = {
 	}
 	
 	abort = {
-		OR = {
-			date > 1915.6.1
-			BEL = { has_capitulated = yes }
-		}
+		BEL = { has_capitulated = yes }
 	}
 	ai_strategy = {
 		type = dont_defend_ally_borders
-		id = "BEL"
-		value = 10000
+		id = BEL
+		value = 1
 	}
 	ai_strategy = {
 		type = ignore
-		id = "BEL"
+		id = BEL
 		value = 10000
 	}
 	ai_strategy = {
 		type = dont_defend_ally_borders
-		id = "LUX"
-		value = 10000
+		id = LUX
+		value = 1
 	}
 	ai_strategy = {
 		type = ignore
-		id = "LUX"
+		id = LUX
 		value = 10000
 	}
 }
@@ -675,14 +742,20 @@ ENG_prepare_for_fao = {
 		NOT = {
 			has_country_flag = eng_fao_landing
 		}
-		date > 1914.1.1
+		OR = {
+			has_war_with = TUR
+			TUR = {
+				has_active_mission = TUR_black_sea_raid_mission
+			}
+		}
 	}
 	abort_when_not_enabled = yes
 	ai_strategy = {
 		type = put_unit_buffers
-		ratio = 0.1
-		states = { 656 658 294}
-		subtract_fronts_from_need = yes
+		ratio = 0.9
+		states = {
+			658
+		}
 	}
 }
 
@@ -729,7 +802,23 @@ ENG_basrah_front_after_russian_collapse = {
 	}
 }
 
-ENG_invade_ottomans = {
+ENG_blockade_GER = {
+	allowed = {
+		original_tag = ENG
+	}
+	enable = {
+		has_war_with = GER
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = naval_blockade
+		target_country = GER
+		id = 173
+		value = 50
+	}
+}
+
+ENG_blockade_TUR = {
 	allowed = {
 		original_tag = ENG
 	}
@@ -737,52 +826,18 @@ ENG_invade_ottomans = {
 		has_war_with = TUR
 	}
 	abort_when_not_enabled = yes
-
-
 	ai_strategy = {
-		type = naval_invasion_focus
-		value = 100
-	}
-	ai_strategy = {
-		type = invade
-		id = TUR
-		value = 100
-	}
-	ai_strategy = {
-		type = area_priority
-		id = mesopotamia_landing_zone
+		type = naval_blockade
+		target_country = TUR
+		id = 69
 		value = 50
 	}
-	#ai_strategy = {
-	#	type = invasion_unit_request
-	#	area = mesopotamia_landing_zone
-	#	value = 1000
-	#}
 	ai_strategy = {
-		type = strike_force_home_base
-		id = 203 
-		value = 500
+		type = naval_blockade
+		target_country = TUR
+		id = 202
+		value = 50
 	}
-	ai_strategy = {
-		type = strike_force_home_base
-		id = 202 
-		value = 500
-	}
-	ai_strategy = {
-		type = strike_force_home_base
-		id = 69 
-		value = 500
-	}
-	#ai_strategy = {
-    #    type = invasion_unit_request
-    #    country_trigger = { tag = TUR }
-	#	state_trigger = {
-	#		NOT = {
-	#			state = 874
-	#		}
-	#	}	
-    #    value = -400
-    #}
 }
 
 # ENG_ignore_west_pacific_region = {
@@ -1114,7 +1169,7 @@ ENTENTE_dont_help_egypt = {
 	ai_strategy = {
 		type = dont_defend_ally_borders
 		id = EGY
-		value = 10000
+		value = 1
 	}
 }
 
@@ -1558,8 +1613,11 @@ nepal_saves_britain = {
 	enable = {
 		OR = {
 			is_subject_of = ENG
-			OVERLORD = {
-				is_subject_of = ENG
+			AND = {
+				is_subject = yes
+				OVERLORD = {
+					is_subject_of = ENG
+				}			
 			}
 		}
 		is_great_war_ongoing = yes
@@ -2338,12 +2396,6 @@ ENG_prioritize_suez = {
 		area = suez
         value = 120
     }
-	
-	ai_strategy = {
-		type = dont_defend_ally_borders
-		id = EGY
-		value = -100
-	}
 
 	ai_strategy = {
 		type = force_defend_ally_borders
@@ -2370,11 +2422,6 @@ ENG_defend_sinai = {
 		area = suez
         value = 120
     }
-	ai_strategy = {
-		type = dont_defend_ally_borders
-		id = EGY
-		value = -100
-	}
 
 	ai_strategy = {
 		type = force_defend_ally_borders
@@ -2404,11 +2451,7 @@ ENG_sinai_campaign = {
         type = front_control
         area = suez
         ordertype = front
-        ratio = 0.1
-		priority = 1000
         execution_type = rush
-        execute_order = yes
-		manual_attack = yes
     }
 
     ai_strategy = {
@@ -2416,11 +2459,6 @@ ENG_sinai_campaign = {
 		area = suez
         value = 100
     }
-	ai_strategy = {
-		type = dont_defend_ally_borders
-		id = EGY
-		value = -100
-	}
 
 	ai_strategy = {
 		type = force_defend_ally_borders
@@ -2443,21 +2481,16 @@ COMMONWEALTH_defend_egypt = {
 			is_subject_of = ENG
 		}
 		has_war_with = TUR
-        date > 1915.1.28
+        war_length_with = {
+			tag = TUR
+			months > 5
+		}
     }
 	abort = {
-		surrender_progress > 0.2
+		surrender_progress > 0.1
 	}
 
 	abort_when_not_enabled = yes
-
-	ai_strategy = {
-        type = front_control
-        area = suez
-        ratio = 0.15
-        ordertype = front
-        priority = 100
-    }
 	
     ai_strategy = {
 		type = area_priority
@@ -2468,12 +2501,6 @@ COMMONWEALTH_defend_egypt = {
 		type = front_unit_request
 		area = suez
 		value = 150
-	}
-	
-	ai_strategy = {
-		type = dont_defend_ally_borders
-		id = EGY
-		value = -100
 	}
 
 	ai_strategy = {
@@ -2638,5 +2665,30 @@ ENG_support_muscat = {
 		type = dont_defend_ally_borders
 		id = MSC
 		value = 1
+	}
+}
+
+ENG_support_RAJ = {
+	allowed = {
+		original_tag = ENG
+	}
+	enable = {
+		has_subject = RAJ
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = support
+		id = RAJ
+		value = 200
+	}
+	ai_strategy = {
+		type = send_lend_lease_desire
+		id = RAJ
+		value = 200
+	}
+	ai_strategy = {
+		type = equipment_market_trade_desire
+		id = RAJ
+		value = 200
 	}
 }

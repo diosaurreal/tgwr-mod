@@ -36,126 +36,6 @@ RUS_civil_war = {
 			}
 		}
 	}
-	# AI is too retar to spawn troops
-	SIB_spawn_troops_ffs = {
-		icon = GFX_decision_generic_reorganize_irregulars
-		allowed = {
-			tag = SIB
-		}
-		visible = {
-			is_ai = yes
-			has_war_with = SOV
-		}
-		available = {
-			has_completed_focus = SIB_mobilization_of_the_siberian_army
-			# NOT = {
-			# 	has_idea = SIB_mobilization_of_the_siberian_army
-			# }
-			has_manpower > 25800
-			has_equipment = {
-				infantry_equipment > 3000
-			}
-			has_equipment = {
-				field_gun_equipment > 36
-			}
-			has_equipment = {
-				support_equipment > 90
-			}
-			has_capitulated = no
-		}
-		
-		cost = 0
-		days_re_enable = 7
-		days_remove = 21
-
-		complete_effect = {
-			add_manpower = -25800
-			add_equipment_to_stockpile = {
-				type = infantry_equipment
-				amount = -3000
-			}
-			add_equipment_to_stockpile = {
-				type = field_gun_equipment
-				amount = -36
-			}
-			add_equipment_to_stockpile = {
-				type = support_equipment
-				amount = -90
-			}
-		}
-		remove_effect = {
-			hidden_effect = {
-				if = {
-					limit = {
-						NOT = {
-							has_template = "Sibirskaya Diviziya"
-						}
-					}
-					division_template = {
-						name = "Sibirskaya Diviziya"
-						division_names_group = RUS_GAR_01
-						is_locked = yes
-						regiments = {
-							infantry = { x = 0 y = 0 }
-							infantry = { x = 0 y = 1 }
-							infantry = { x = 0 y = 2 }
-							infantry = { x = 0 y = 3 }
-							infantry = { x = 1 y = 0 }
-							infantry = { x = 1 y = 1 }
-							infantry = { x = 1 y = 2 }
-							infantry = { x = 1 y = 3 }
-						}
-						support = { 
-							field_gun = { x = 0 y = 0 }
-							engineer = { x = 0 y = 1 }
-						}
-					}
-				}
-			}
-			if = {
-				limit = {
-					has_full_control_of_state = 571
-				}
-				571 = {
-					create_unit = {
-						division = "division_template = \"Sibirskaya Diviziya\" start_experience_factor = 0.2"
-						owner = ROOT
-						count = 3
-						allow_spawning_on_enemy_provs = no
-					}
-				}
-			}
-			else = {
-				capital_scope = {
-					create_unit = {
-						division = "division_template = \"Sibirskaya Diviziya\" start_experience_factor = 0.2"
-						owner = ROOT
-						count = 3
-						allow_spawning_on_enemy_provs = no
-					}
-				}
-			}
-		}
-
-		ai_will_do = {
-			base = 1000
-			# modifier = {
-			# 	add = 1000
-			# 	has_army_manpower = {
-			# 		size < 250000
-			# 	}
-			# }
-			modifier = {
-				add = -3000
-				OR = {
-					has_equipment = {
-						infantry_equipment < 7500
-					}
-					has_manpower < 50000
-				}
-			}
-		}
-	}
 	SIB_looming_reactionary_revolt = {
 		icon = GFX_decision_revolt
 
@@ -488,8 +368,15 @@ RUS_civil_war = {
 					tag = URA
 					tag = KAZ
 					tag = AMU
+					tag = ALT
+				}
+				NOT = {
+					has_war_with = ROOT
 				}
 			}
+		}
+		target_root_trigger = {
+			has_completed_focus = SIB_solidify_control
 		}
 		cancel_trigger = {
 			FROM = {
@@ -497,12 +384,14 @@ RUS_civil_war = {
 					has_war_with = ROOT
 					NOT = {
 						exists = yes
+						is_neighbor_of = ROOT
 					}
 				}
 			}
 		}
 		available = {
 			FROM = {
+				is_neighbor_of = ROOT
 				NOT = {
 					has_war_with = ROOT
 					is_subject_of = SOV
@@ -514,12 +403,6 @@ RUS_civil_war = {
 		fire_only_once = no
 		days_remove = 10
 		visible = {
-			FROM = {
-				exists = yes
-				NOT = {
-					has_war_with = ROOT
-				}
-			}
 			has_completed_focus = SIB_solidify_control
 		}
 		remove_effect = {
@@ -538,12 +421,20 @@ RUS_civil_war = {
 		}
 		target_trigger = {
 			FROM = {
+				is_subject_of = ROOT
 				OR = {
 					tag = UCH
 					tag = ORE
 					tag = USS
+					tag = NWA
+				}
+				NOT = {
+					has_war_with = ROOT
 				}
 			}
+		}
+		target_root_trigger = {
+			has_completed_focus = SIB_form_russian_army
 		}
 		cancel_trigger = {
 			FROM = {
@@ -551,12 +442,14 @@ RUS_civil_war = {
 					has_war_with = ROOT
 					NOT = {
 						exists = yes
+						is_neighbor_of = ROOT
 					}
 				}
 			}
 		}
 		available = {
 			FROM = {
+				is_neighbor_of = ROOT
 				NOT = {
 					has_war_with = ROOT
 					is_subject_of = SOV
@@ -568,12 +461,6 @@ RUS_civil_war = {
 		fire_only_once = no
 		days_remove = 10
 		visible = {
-			FROM = {
-				exists = yes
-				NOT = {
-					has_war_with = ROOT
-				}
-			}
 			has_completed_focus = SIB_form_russian_army
 		}
 		remove_effect = {
@@ -601,6 +488,13 @@ RUS_civil_war = {
 					tag = TRC
 				}	
 			}
+		}
+		target_root_trigger = {
+			OR = {
+				has_completed_focus = SIB_demand_recognition_from_generals
+				has_completed_focus = SIB_contact_the_white_forces
+				has_completed_focus = SIB_finish_the_whites_off
+			}	
 		}
 		visible = {
 			has_global_flag = russian_civil_war
@@ -651,6 +545,21 @@ RUS_civil_war = {
 					}
 				}
 			}
+			modifier = {
+				factor = 0
+				is_historical_focus_on = yes
+				FROM = {
+					OR = {
+						tag = TRC
+						tag = DON
+						tag = KUB
+					}				
+				}
+				SRA = {
+					exists = yes
+					NOT = { has_war_with = ROOT }
+				}		
+			}
 		}
 	}
 	RUS_demand_vladivostok = {
@@ -662,6 +571,9 @@ RUS_civil_war = {
 			FROM = {
 				tag = CER	
 			}
+		}
+		target_root_trigger = {
+			has_completed_focus = SIB_demand_recognition_from_generals
 		}
 		visible = {
 			has_global_flag = russian_civil_war
@@ -711,6 +623,9 @@ RUS_civil_war = {
 					tag = TRC
 				}	
 			}
+		}
+		target_root_trigger = {
+			has_completed_focus = SIB_finish_the_whites_off
 		}
 		visible = {
 			has_global_flag = russian_civil_war
@@ -773,6 +688,9 @@ RUS_civil_war = {
 					original_tag = KYR
 				}	
 			}
+		}
+		target_root_trigger = {
+			has_completed_focus = SIB_federative_republic
 		}
 		visible = {
 			has_global_flag = russian_civil_war
@@ -960,6 +878,13 @@ SIB_import_weapons_category = {
 				}
 			}
 		}
+		target_root_trigger = {
+			has_dynamic_modifier = { modifier = SIB_gold_reserve_dynamic_modifier }
+			OR = {
+				has_completed_focus = SIB_lobby_for_foreign_aid
+				has_completed_focus = SIB_support_from_entente
+			}
+		}
 		cancel_trigger = {
 			has_war_with = FROM
 			FROM = {
@@ -1086,6 +1011,13 @@ SIB_import_weapons_category = {
 				}
 			}
 		}
+		target_root_trigger = {
+			has_dynamic_modifier = { modifier = SIB_gold_reserve_dynamic_modifier }
+			OR = {
+				has_completed_focus = SIB_lobby_for_foreign_aid
+				has_completed_focus = SIB_support_from_entente
+			}
+		}
 		cancel_trigger = {
 			has_war_with = FROM
 			FROM = {
@@ -1210,6 +1142,13 @@ SIB_import_weapons_category = {
 					tag = USA
 					tag = GER
 				}
+			}
+		}
+		target_root_trigger = {
+			has_dynamic_modifier = { modifier = SIB_gold_reserve_dynamic_modifier }
+			OR = {
+				has_completed_focus = SIB_lobby_for_foreign_aid
+				has_completed_focus = SIB_support_from_entente
 			}
 		}
 		cancel_trigger = {
@@ -1341,16 +1280,12 @@ SIB_mobilize_volunteers_category = {
 		available = {
 			controls_state = FROM
 		}
-		
-		visible = {
-			tag = SIB
-			controls_state = FROM
-		}
 	
 		cost = 5
 		
 		on_map_mode = map_only
 		state_target = yes
+		target_array = SIB.controlled_states
 		target_trigger = {
 			FROM = {
 				OR = {
@@ -1461,7 +1396,6 @@ SIB_mobilize_volunteers_category = {
 		}
 		
 		visible = {
-			tag = SIB
 			controls_state = FROM
 			NOT = {
 				owns_state = FROM
@@ -1473,10 +1407,9 @@ SIB_mobilize_volunteers_category = {
 		
 		on_map_mode = map_only
 		state_target = yes
-		target_trigger = {
-			FROM = {
-				is_core_of = ROOT
-			}
+		target_array = SIB.core_states
+		target_root_trigger = {
+			has_completed_focus = SIB_volunteers_of_the_constituent_assembly
 		}
 		
 		fire_only_once = yes
@@ -1487,7 +1420,7 @@ SIB_mobilize_volunteers_category = {
 		complete_effect = {
 			FROM = {
 				create_unit = {
-					division = "name = \"Diviziya Dobroboltsev\" division_template = \"Diviziya Dobrovoltsev\" start_experience_factor = 0 start_equipment_factor = 0.7"
+					division = "division_template = \"Diviziya Dobrovoltsev\" start_experience_factor = 0 start_equipment_factor = 0.7"
 					owner = ROOT
 					allow_spawning_on_enemy_provs = yes
 				}
