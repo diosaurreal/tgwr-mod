@@ -387,13 +387,8 @@ country_event = {
 				ruling_party = democratic
 				elections_allowed = yes
 			}
-			if = {
-				limit = {
-					NOT = { has_idea = BUL_idea_boris_iii }
-				}
-				add_ideas = BUL_idea_boris_iii
-			}
 		}
+		new_term_elections = yes
 		set_party_name = {
 			ideology = democratic
 			long_name = BUL_agrarian_party_long
@@ -445,6 +440,15 @@ news_event = {
 	option = {
 		name = ww1_bulgaria.13.a
 		retire_character = BUL_ferdinand_i
+		if = {
+			limit = {
+				has_idea = BUL_ferdinand_i
+			}
+			swap_ideas = {
+				remove_idea = BUL_ferdinand_i
+				add_idea = BUL_idea_boris_iii
+			}
+		}
 	}
 }
 
@@ -459,9 +463,12 @@ country_event = {
 	trigger = {
 		tag = BUL
 		has_country_flag = great_war_loser
-		has_country_leader = {
-			character = BUL_ferdinand_i
-			ruling_only = yes
+		OR = {
+			has_country_leader = {
+				character = BUL_ferdinand_i
+				ruling_only = yes
+			}
+			has_idea = BUL_ferdinand_i
 		}
 	}
 	mean_time_to_happen = {
@@ -472,9 +479,12 @@ country_event = {
 			promote_character = BUL_boris_iii
 			if = {
 				limit = {
-					NOT = { has_government = neutrality }
+					has_idea = BUL_ferdinand_i
 				}
-				add_ideas = BUL_idea_boris_iii
+				swap_ideas = {
+					remove_idea = BUL_ferdinand_i
+					add_idea = BUL_idea_boris_iii
+				}
 			}
 		}
 	}
@@ -1396,8 +1406,8 @@ unit_leader_event = {
 	}
 }
 
- #Radko Dimitriev resigns
- country_event = {
+#Radko Dimitriev resigns
+country_event = {
  	id = ww1_bulgaria.40
  	title = ww1_bulgaria.40.t
  	desc = ww1_bulgaria.40.d
@@ -1429,13 +1439,15 @@ unit_leader_event = {
  			factor = 4
  		}
  	}
- }
- # Assassination of Aleksandar Stamboliyski and 1923 Bulgarian coup d'état
- ###############################################################################
+}
+
+# Assassination of Aleksandar Stamboliyski and 1923 Bulgarian coup d'état
+###############################################################################
 country_event = {
 	id = ww1_bulgaria.42
 	title = ww1_bulgaria.42.t
 	desc = ww1_bulgaria.42.d
+	picture = GFX_report_event_bul_military_parade_vidin
 	fire_only_once = yes
 	trigger = {
 		has_country_flag = great_war_loser
@@ -1451,53 +1463,62 @@ country_event = {
 	}
 	option = {
 		name = ww1_bulgaria.42.a
-		set_country_flag = bul_1923_coup
-		kill_ideology_leader = democratic
 		set_party_name = {
 			ideology = democratic
 			long_name = BUL_democratic_alliance
 			name = BUL_democratic_alliance
 		}
+		set_party_name = {
+			ideology = neutrality
+			long_name = BUL_democratic_alliance
+			name = BUL_democratic_alliance
+		}
+		new_term_elections = yes
 		set_politics = {
-			ruling_party = fascism
+			ruling_party = neutrality
 			elections_allowed = yes
-			last_election = "1919.11.18"
+		}
+		add_popularity = {
+			ideology = neutrality
+			popularity = 0.2
 		}
 		add_popularity = {
 			ideology = fascism
-			popularity = 0.2
+			popularity = 0.1
 		}
 		BUL_aleksandar_tsankov = {
 			add_country_leader_role = {
-				country_leader={
-					ideology=conservatism
-					traits={ anti_communist  }
-					
+				country_leader = {
+					ideology = civilian_dictatorship
+					traits = { anti_communist }
 				}
 				promote_leader = yes
 			}	
 		}
-		if = {
-			limit = {
-				NOT = {
-					has_cosmetic_tag = BUL_radomir
+		add_ideas = communism_banned
+		hidden_effect = {
+			BUL_andrey_lyapchev = {
+				add_country_leader_role = {
+					promote_leader = yes
+					country_leader = {
+						ideology = conservatism
+					}
 				}
 			}
-			set_cosmetic_tag = BUL_neutrality
-		}	
-		if = {
-			limit = {
-				NOT = {
-					has_idea = BUL_idea_boris_iii
-					has_cosmetic_tag = BUL_radomir
+			if = {
+				limit = {
+					NOT = { has_cosmetic_tag = BUL_radomir }
 				}
-				has_country_leader = {
-					character = BUL_boris_iii
-					ruling_only = no
+				set_cosmetic_tag = BUL_neutrality
+				if = {
+					limit = {
+						NOT = { has_idea = BUL_idea_boris_iii }
+					}
+					add_ideas = BUL_idea_boris_iii
 				}
 			}
-			add_ideas = BUL_idea_boris_iii
 		}
+		retire_character = BUL_aleksandar_stamboliyski
 	}
 }
 
@@ -1508,14 +1529,14 @@ country_event = {
 	title = ww1_bulgaria.43.t
 	desc = ww1_bulgaria.43.d
 	fire_only_once = yes
+	picture = GFX_report_event_bul_military_parade_vidin
 	trigger = {
 		has_country_flag = great_war_loser
-		has_country_leader = {
-			character = BUL_nikola_mushanov
-			ruling_only = yes
-		}
 		date > 1934.5.1
 		has_war = no
+		NOT = {
+			has_government = communism
+		}
 	}
 	mean_time_to_happen = {
 		days = 19
@@ -1545,15 +1566,16 @@ country_event = {
 			ideology = neutrality
 			popularity = 0.2
 		}
+		new_term_elections = yes
 		set_politics = {
 			ruling_party = neutrality
-			elections_allowed = no
+			elections_allowed = yes
 		}
 		BUL_kimon_georgiev = {
 			add_country_leader_role = {
 				promote_leader = yes
 				country_leader = {
-					ideology = authoritarian_democracy
+					ideology = civilian_dictatorship
 					traits = { hardened_officer }
 				}
 			}
@@ -1562,14 +1584,11 @@ country_event = {
 			limit = {
 				NOT = {
 					has_idea = BUL_idea_boris_iii
+					has_idea = BUL_idea_boris_iii_20s
 					has_cosmetic_tag = BUL_radomir
 				}
-				has_country_leader = {
-					character = BUL_boris_iii
-					ruling_only = no
-				}
 			}
-			add_ideas = BUL_idea_boris_iii
+			add_ideas = BUL_idea_boris_iii_20s
 		}
 	}
 	option = {
@@ -1600,7 +1619,7 @@ country_event = {
 				add_country_leader_role = {
 					promote_leader = yes
 					country_leader = {
-						ideology = authoritarian_democracy
+						ideology = civilian_dictatorship
 						traits = { hardened_officer }
 					}
 				}
@@ -1617,65 +1636,100 @@ country_event = {
 		}
 	}
 }
-# # 1923 Elections
+
+# # 1926 Elections
 # ###############################################################################
 country_event = {
 	id = ww1_bulgaria.44
 	title = ww1_bulgaria.44.t
 	desc = ww1_bulgaria.44.d
 	fire_only_once = yes
+	picture = GFX_report_event_election_vote
 	trigger = {
-		has_country_flag = bul_1923_coup
-		has_country_leader = {
-			character = BUL_aleksandar_tsankov
-			ruling_only = yes
-		}
-		date > 1923.11.1
-		has_government = fascism
+		date > 1926.1.1
+		has_elections = yes
 	}
 	mean_time_to_happen = {
-		days = 17
+		days = 4
 	}
 	option = {
 		name = ww1_bulgaria.44.a
+		hidden_effect = {
+			if = {
+				limit = {
+					has_country_leader_ideology = civilian_dictatorship
+				}
+				set_party_name = {
+					ideology = neutrality
+					long_name = BUL_neutrality_party_long
+					name = BUL_neutrality_party
+				}
+				BUL_aleksandar_tsankov = {
+					remove_country_leader_role = {
+						ideology = civilian_dictatorship
+					}
+				}
+				remove_ideas = communism_banned
+			}
+			else = {
+				set_party_name = {
+					ideology = democratic
+					long_name = BUL_democratic_party
+					name = BUL_democratic_party
+				}
+			}
+			BUL_boris_iii = {
+				set_portraits = {
+					civilian = {
+						large="gfx/leaders/BUL/BUL_Boris_III_20s.png"
+					}
+				}
+			}
+			if = {
+				limit = {
+					has_idea = BUL_idea_boris_iii
+				}
+				swap_ideas = {
+					remove_idea = BUL_idea_boris_iii
+					add_idea = BUL_idea_boris_iii_20s
+				}
+			}
+		}
+		new_term_elections = yes
 		set_politics = {
 			ruling_party = democratic
 			elections_allowed = yes
 		}
 		add_popularity = {
-			ideology = fascism
+			ideology = neutrality
 			popularity = -0.05
 		}
 		drop_cosmetic_tag = yes
-		BUL_boris_iii = {
-			set_portraits = {
-				civilian = {
-					large="gfx/leaders/BUL/BUL_Boris_III_20s.png"
-				}
-			}
-		}
 	}
 }
-# # 1931 Elections - Popular Block
-# ###############################################################################
+
+# Death of PM Aleksandar Malinov
 country_event = {
 	id = ww1_bulgaria.45
 	title = ww1_bulgaria.45.t
 	desc = ww1_bulgaria.45.d
 	fire_only_once = yes
+	picture = GFX_report_event_election_vote
 	trigger = {
+		has_elections = yes
+		date > 1931.10.1
 		has_country_leader = {
-			character = BUL_aleksandar_tsankov
+			character = BUL_aleksandar_malinov
 			ruling_only = yes
 		}
-		date > 1931.6.1
-		has_government = democratic
 	}
 	mean_time_to_happen = {
-		days = 20
+		days = 12
 	}
 	option = {
 		name = ww1_bulgaria.45.a
+		retire_character = BUL_aleksandar_malinov
+		new_term_elections = yes
 		set_party_name = {
 			ideology = democratic
 			long_name = BUL_democratic_party
@@ -1683,18 +1737,32 @@ country_event = {
 		}
 		BUL_nikola_mushanov = {
 			add_country_leader_role = {
-				country_leader={
-					ideology=classical_liberalism
-					traits={ appeaser  }
-					
+				country_leader = {
+					ideology = classical_liberalism
+					traits = { appeaser }
 				}
 				promote_leader = yes
+			}
+		}
+		hidden_effect = {
+			set_party_name = {
+				ideology = neutrality
+				long_name = BUL_national_social_movement
+				name = BUL_national_social_movement
+			}
+			BUL_aleksandar_tsankov = {
+				add_country_leader_role = {
+					promote_leader = yes
+					country_leader = {
+						ideology = gen_nazism
+					}
+				}
 			}
 		}
 	}
 }
 
- #Konstantin Zhostov dies
+#Konstantin Zhostov dies
 country_event = {
  	id = ww1_bulgaria.46
  	title = ww1_bulgaria.46.t
@@ -2065,12 +2133,18 @@ country_event = {
 					}
 				}
 				effect_tooltip = {
-					activate_decision = BUL_sue_for_peace_TUR_2
+					activate_targeted_decision = {
+						target = TUR
+						decision = BUL_sue_for_peace_TUR_2
+					}
 				}
 			}
 		}
 		effect_tooltip = {
-			activate_decision = BUL_sue_for_peace_SER
+			activate_targeted_decision = {
+				target = SER
+				decision = BUL_sue_for_peace_SER
+			}
 		}
 		ai_chance = {
 			factor = 500
@@ -2100,7 +2174,7 @@ country_event = {
 					rule = second_balkan_war_outcome
 					option = BUL_BULGARIAN_VICTORY
 				}
-				factor = 1000
+				add = 1000
 			}
 		}
 	}
@@ -2317,6 +2391,7 @@ country_event = {
 	}
 }
 
+# Macedonian Opportunity
 country_event = {
 	id = ww1_bulgaria.68
 	title = ww1_bulgaria.68.t
@@ -2358,6 +2433,7 @@ country_event = {
 	}
 }
 
+# Bulgarian Offer
 country_event = {
 	id = ww1_bulgaria.69
 	title = ww1_bulgaria.69.t
@@ -2398,6 +2474,7 @@ country_event = {
 	}
 }
 
+# Serbia Agreed
 country_event = {
 	id = ww1_bulgaria.70
 	title = ww1_bulgaria.70.t
@@ -2413,6 +2490,7 @@ country_event = {
 	}
 }
 
+# Serbia Refused
 country_event = {
 	id = ww1_bulgaria.71
 	title = ww1_bulgaria.71.t
@@ -2425,6 +2503,7 @@ country_event = {
 	}
 }
 
+# Macedonian Question
 country_event = {
 	id = ww1_bulgaria.72
 	title = ww1_bulgaria.72.t
@@ -2436,9 +2515,11 @@ country_event = {
 		country_exists = MAC
 	}
 	immediate = {
-		annex_country = {
-			target = MAC
-		}		
+		hidden_effect = {
+			annex_country = {
+				target = MAC
+			}
+		}
 	}
 	option = {
 		name = ww1_bulgaria.72.a
@@ -2446,6 +2527,56 @@ country_event = {
 			annex_country = {
 				target = MAC
 			}		
+		}
+	}
+}
+
+# 1931 Elections
+country_event = {
+	id = ww1_bulgaria.73
+	title = ww1_bulgaria.73.t
+	desc = ww1_bulgaria.73.d
+	picture = GFX_report_event_election_vote
+	fire_only_once = yes
+	trigger = {
+		tag = BUL
+		has_elections = yes
+		date > 1931.6.1
+	}
+	mean_time_to_happen = {
+		days = 30
+	}
+	option = {
+		name = ww1_bulgaria.73.a
+		new_term_elections = yes
+		if = {
+			limit = {
+				has_character = BUL_aleksandar_malinov
+			}
+			BUL_aleksandar_malinov = {
+				promote_leader = yes
+				add_country_leader_role = {
+					country_leader = {
+						ideology = classical_liberalism
+					}
+				}
+			}
+		}
+		else = {
+			BUL_nikola_mushanov = {
+				add_country_leader_role = {
+					promote_leader = yes
+					country_leader = {
+						ideology = classical_liberalism
+						traits = { appeaser }
+					}
+				}
+			}
+		}
+		set_party_name = {
+			ideology = democratic
+			long_name = BUL_democratic_party
+			name = BUL_democratic_party
 		}
 	}
 }

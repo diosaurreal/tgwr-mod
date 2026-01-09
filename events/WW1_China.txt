@@ -580,6 +580,8 @@ country_event = {
 						state = 330
 						state = 982
 						state = 983
+						state = 1228
+						state = 1229
 					}
 				}
 				add_core_of = PREV
@@ -1471,7 +1473,9 @@ country_event = {
 				}
 				transfer_state = 330
 				transfer_state = 982
-				load_oob = "MON_army"
+				transfer_state = 1228
+				transfer_state = 1229
+				load_oob = "MON_1911"
 				hidden_effect = {
 					country_event = {
 						id = ww1_mongolia.2
@@ -4472,7 +4476,7 @@ country_event = {
 # 							}
 # 							transfer_state = 329
 # 						}
-# 						load_oob = "MON_army"
+# 						load_oob = "MON_1911"
 # 					}
 # 					if = {
 # 						limit = {
@@ -5826,6 +5830,7 @@ country_event = {
 			}
 			AND = {
 				owns_state = 330
+				owns_state = 1228
 				OR = {
 					has_idea = idea_army_restrictions
 					NOT = { owns_state = 608 }
@@ -5882,11 +5887,27 @@ country_event = {
 					limit = { is_subject = yes }
 					OVERLORD = { end_puppet = PREV }
 				}
-				transfer_state = 330
-				transfer_state = 329
-				transfer_state = 982
+				else_if = {
+					limit = {
+						exists = no
+					}
+					transfer_state = 1228
+					330 = {
+						OWNER = {
+							PREV.PREV = {
+								declare_war_on = {
+									target = PREV
+									type = take_state
+									generator = { 329 330 982 983 1228 1229 }
+								}
+							}
+						}
+					}
+				}
 				set_politics = {
 					ruling_party = fascism
+					long_name = MON_ungern_party
+					name = MON_ungern_party
 					elections_allowed = no
 				}
 				add_ideas = MON_bogd_khan_sternberg
@@ -5902,21 +5923,9 @@ country_event = {
 					long_name = MON_neutrality_party
 					name = MON_neutrality_party
 				}
-				set_party_name = {
-					ideology = fascism
-					long_name = MON_ungern_party
-					name = MON_ungern_party
-				}
 				set_cosmetic_tag = MON_Ungern
-				every_other_country = {
-					limit = {
-						is_china_or_warlord = yes
-					}
-					remove_state_core = 329
-					remove_state_core = 330
-					remove_state_claim = 329
-					remove_state_claim = 330
-				}
+
+				load_oob = MON_1921
 			}
 		}
 	}
@@ -5937,8 +5946,12 @@ country_event = {
 		}
 		modifier = {
 			factor = 0.1
-			BYA = {
-				has_war_with = SOV
+			TBK = {
+				OR = {
+					has_war_with = SOV
+					has_war_with = FER
+
+				}				
 				surrender_progress > 0.10
 			}
 		}
@@ -5949,13 +5962,10 @@ country_event = {
 			tag = MON
 		}
 		effect_tooltip = {
-			set_party_name = {
-				ideology = fascism
-				long_name = MON_ungern_party
-				name = MON_ungern_party
-			}
 			set_politics = {
 				ruling_party = fascism
+				long_name = MON_ungern_party
+				name = MON_ungern_party
 				elections_allowed = no
 			}
 			RUS_roman_ungern_sternberg = {
@@ -5968,25 +5978,53 @@ country_event = {
 		trigger = {
 			NOT = { tag = MON }
 		}
-		add_political_power = -100
-		add_manpower = -1100
 		effect_tooltip = {
 			MON = {
-				set_party_name = {
-					ideology = fascism
-					long_name = MON_ungern_party
-					name = MON_ungern_party
-				}
 				set_politics = {
 					ruling_party = fascism
+					long_name = MON_ungern_party
+					name = MON_ungern_party
 					elections_allowed = no
 				}
 				RUS_roman_ungern_sternberg = {
 					promote_character = stratocracy
 				}
-				transfer_state = 329
-				transfer_state = 330
-				transfer_state = 982
+				declare_war_on = {
+					target = ROOT
+					type = take_state
+					generator = { 329 330 982 983 1228 1229 }
+				}
+			}
+		}
+	}
+	option = {
+		name = ww1_china.27.a
+		trigger = {
+			NOT = { tag = MON }
+			is_ai = no
+			MON = { is_ai = yes }
+		}
+		add_political_power = -100
+		add_manpower = -1100
+		MON = {
+			change_tag_from = ROOT
+		}
+		effect_tooltip = {
+			MON = {
+				set_politics = {
+					ruling_party = fascism
+					long_name = MON_ungern_party
+					name = MON_ungern_party
+					elections_allowed = no
+				}
+				RUS_roman_ungern_sternberg = {
+					promote_character = stratocracy
+				}
+				declare_war_on = {
+					target = ROOT
+					type = take_state
+					generator = { 329 330 982 983 1228 1229 }
+				}
 			}
 		}
 	}
@@ -6034,11 +6072,14 @@ country_event = {
 						state = 613
 						state = 983
 						state = 1062
+						state = 1227
 
 						#Mongol
 						state = 330
 						state = 329
 						state = 982
+						state = 1228
+						state = 1229
 					}
 				}
 				set_demilitarized_zone = yes
@@ -8556,6 +8597,50 @@ country_event = {
 						message = zhili_anhui_war_end_message
 					}
 				}
+				#Release Mongolia as subject
+				# Chinese troops remnants
+				if = {
+					limit = {
+						NOT = {
+							country_exists = MON
+						}
+					}
+					every_owned_state = {
+						limit = {
+							OR = {
+								state = 329
+								state = 330
+								state = 982
+								state = 983
+								state = 1228
+								state = 1229
+							}
+						}
+						transfer_state_to = MON
+					}
+					MON = { get_current_government_type = yes }
+					set_autonomy = {
+						target = MON
+						autonomy_state = autonomy_tgwr_regional_government
+						freedom_level = 0.8
+					}
+					MON = { restore_previous_government_type = yes }
+				}
+				else = {
+					every_owned_state = {
+						limit = {
+							OR = {
+								state = 329
+								state = 330
+								state = 982
+								state = 983
+								state = 1228
+								state = 1229
+							}
+						}
+						transfer_state_to = MON
+					}
+				}
 				if = {
 					limit = {
 						FNG = { has_country_flag = zhili_anhui_war_victor }
@@ -8578,12 +8663,15 @@ country_event = {
 								state = 611
 								state = 612
 								state = 983
+								state = 1227
 
 								#mongolia
-								state = 329
-								state = 330
-								state = 982
-								state = 983
+								# state = 329
+								# state = 330
+								# state = 982
+								# state = 983
+								# state = 1228
+								# state = 1229
 							}
 						}
 						transfer_state_to = FNG
@@ -9891,6 +9979,8 @@ country_event = {
 										state = 329
 										state = 330
 										state = 982
+										state = 1228
+										state = 1229
 									}
 								}
 								transfer_state_to = FNG
@@ -9950,6 +10040,9 @@ country_event = {
 									state = 891
 									state = 982
 									state = 983
+									state = 1227
+									state = 1228
+									state = 1229
 								}
 							}
 							transfer_state_to = GMJ
@@ -9957,7 +10050,7 @@ country_event = {
 					}
 					GMJ = {
 						set_capital = {
-							state = 611
+							state = 1227
 						}
 					}
 					ZHC = {
@@ -10058,6 +10151,8 @@ country_event = {
 								state = 330
 								state = 982
 								state = 983
+								state = 1228
+								state = 1229
 							}
 						}
 						612 = {
@@ -10297,6 +10392,7 @@ country_event = {
 							state = 611
 							state = 612
 							state = 983
+							state = 1227
 						}
 					}
 					add_core_of = PREV
@@ -10584,6 +10680,7 @@ country_event = {
 						state = 872
 						state = 942
 						state = 983
+						state = 1227
 					}
 				}
 				keep_unit_leaders_trigger = {
@@ -14881,8 +14978,8 @@ country_event = {
 				keep_political_party_members = yes
 				keep_unit_leaders_trigger = {
 					OR = {
-						has_trait = kmt_allegiance
-						has_trait = zhili_allegiance
+						has_character_flag = kmt_allegiance
+						has_character_flag = zhili_allegiance
 					}
 				}
 				PREV = {
@@ -14892,8 +14989,8 @@ country_event = {
 					every_unit_leader = {
 						limit = {
 							OR = {
-								has_trait = kmt_allegiance
-								has_trait = zhili_allegiance
+								has_character_flag = kmt_allegiance
+								has_character_flag = zhili_allegiance
 							}
 							NOT = { is_character = CHI_yan_xishan }
 						}
@@ -15014,8 +15111,8 @@ country_event = {
 				every_unit_leader = {
 					limit = {
 						OR = {
-							has_trait = kmt_allegiance
-							has_trait = zhili_allegiance
+							has_character_flag = kmt_allegiance
+							has_character_flag = zhili_allegiance
 						}
 						NOT = { is_character = CHI_yan_xishan }
 					}
@@ -15978,6 +16075,38 @@ country_event = {
 				country_leader = {
 					ideology = semi_constitutional_monarchy
 					traits = { divisive_emperor }
+				}
+			}
+		}
+		hidden_effect = {
+			if = {
+				limit = {
+					OR = {
+						original_tag = MON
+						original_tag = TIB
+					}
+					any_subject_country = {
+						has_autonomy_state = autonomy_tgwr_regional_government
+					}
+				}
+				every_subject_country = {
+					limit = {
+						OR = {
+							original_tag = MON
+							original_tag = TIB
+						}
+						any_subject_country = {
+							has_autonomy_state = autonomy_tgwr_regional_government
+						}
+					}
+					PREV = {
+						set_autonomy = {
+							target = PREV
+							autonomy_state = autonomy_tgwr_personal_union
+							end_civil_wars = no
+							end_wars = no
+						}
+					}
 				}
 			}
 		}
@@ -17197,6 +17326,7 @@ country_event = {
 					state = 610
 					state = 611
 					state = 612
+					state = 1227
 				}
 			}
 			remove_core_of = ROOT
@@ -17221,6 +17351,7 @@ country_event = {
 					state = 610
 					state = 611
 					state = 612
+					state = 1227
 				}
 			}
 			remove_core_of = ROOT
@@ -18953,14 +19084,24 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_china.163.a
-		FROM = {
-			set_autonomy = {
-				target = ROOT
-				autonomy_state = autonomy_wtt_imperial_protectorate
+		if = {
+			limit = {
+				has_monarchy = yes
+			}
+			FROM = {
+				set_autonomy = {
+					target = ROOT
+					autonomy_state = autonomy_tgwr_personal_union
+				}
 			}
 		}
-		hidden_effect = {
-			set_cosmetic_tag = MON_CHI_subject
+		else = {
+			FROM = {
+				set_autonomy = {
+					target = ROOT
+					autonomy_state = autonomy_tgwr_integrated_protectorate
+				}
+			}
 		}
 		ai_chance = {
 			base = 10
@@ -19103,14 +19244,24 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_china.165.a
-		FROM = {
-			set_autonomy = {
-				target = ROOT
-				autonomy_state = autonomy_wtt_imperial_protectorate
+		if = {
+			limit = {
+				has_monarchy = yes
+			}
+			FROM = {
+				set_autonomy = {
+					target = ROOT
+					autonomy_state = autonomy_tgwr_personal_union
+				}
 			}
 		}
-		hidden_effect = {
-			set_cosmetic_tag = TIB_CHINESE
+		else = {
+			FROM = {
+				set_autonomy = {
+					target = ROOT
+					autonomy_state = autonomy_tgwr_integrated_protectorate
+				}
+			}
 		}
 		ai_chance = {
 			factor = 10
@@ -25909,8 +26060,8 @@ country_event = {
 		hidden_effect = {
 			FROM = {
 				add_named_threat = {
-					threat = chinese_eastern_railway_incident
-					name = 2
+					name = chinese_eastern_railway_incident
+					threat = 2
 				}
 			}
 		}
@@ -26633,7 +26784,7 @@ country_event = {
 					limit = {
 						is_government_in_exile = yes
 					}
-					end_exile = yes
+					end_exile = THIS
 				}
 				if = {
 					limit = {
@@ -28114,6 +28265,31 @@ country_event = {
 				}
 				days = 120
 			}
+		}
+	}
+}
+
+# Decision over Mongolian Autonomy
+country_event = {
+	id = ww1_china.330
+	title = ww1_china.330.t
+	desc = ww1_china.330.d
+	picture = GFX_report_event_SOV_mongolia_cavalry
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_china.330.a
+		add_political_power = -20
+	}
+	option = {
+		name = ww1_china.330.b
+		ai_chance = { base = 0 }
+		every_state = {
+			limit = {
+				is_owned_or_subject_trigger = yes
+				is_core_of = MON
+			}
+			transfer_state_to = MON
 		}
 	}
 }
