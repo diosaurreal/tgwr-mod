@@ -461,10 +461,7 @@ country_event = {
 		}
 		has_war = yes
 		has_capitulated = no
-		has_global_flag = great_war
-		NOT = {
-			has_global_flag = great_war_ends
-		}
+		is_great_war_ongoing = yes
 	}
 	fire_only_once = yes
 	option = {
@@ -498,7 +495,7 @@ country_event = {
 		effect_tooltip = {
 			set_autonomy = {
 				target = EGY
-				autonomy_state = autonomy_dominion
+				autonomy_state = autonomy_satellite
 			}
 		}
 		hidden_effect = {
@@ -519,6 +516,7 @@ country_event = {
 						OR = {
 							state = 447
 							state = 453
+							state = 1207
 							is_core_of = ROOT
 						}
 					}
@@ -583,7 +581,7 @@ country_event = {
 				}
 				set_autonomy = {
 					target = EGY
-					autonomous_state = autonomy_dominion
+					autonomous_state = autonomy_satellite
 					freedom_level = 0.8
 				}
 				# For the Ottoman socialist path
@@ -705,6 +703,7 @@ country_event = {
 		}
 		add_state_claim = 447
 		add_state_claim = 453
+		add_state_claim = 1207
 		create_wargoal = {
 			type = puppet_wargoal_focus
 			target = EGY
@@ -850,6 +849,7 @@ country_event = {
 					352
 					758
 					803
+					1225
 					106
 					760
 					761
@@ -863,6 +863,7 @@ country_event = {
 					858
 					856
 					852
+					1213
 				}
 				keep_unit_leaders_trigger = {
 					NOT = {
@@ -1702,7 +1703,7 @@ country_event = {
 					x = 0
 					y = 1
 				}
-				artillery = {
+				field_gun = {
 					x = 0
 					y = 2
 				}
@@ -2057,7 +2058,6 @@ news_event = {
 	picture = GFX_news_event_042
 	major = yes
 	is_triggered_only = yes
-	fire_only_once = yes
 	option = {
 		name = ww1_ottoman.42.a
 		ai_chance = {
@@ -2158,7 +2158,33 @@ country_event = {
 		days = 7
 	}
 	option = {
+		name = ww1_ottoman.46.b		#Ignor Faisal
+		custom_effect_tooltip = historical_tt
+		every_state = {
+			limit = {
+				is_core_of = TUR
+				is_core_of = SYR
+				NOT = {
+					OR = {
+						state = 829
+						has_dynamic_modifier = { modifier = TUR_arab_minority }
+					}
+				}
+			}
+			remove_core_of = TUR
+		}
+		ai_chance = {
+			base = 25
+		}
+	}
+	option = {
 		name = ww1_ottoman.46.a		#Independence for Syria
+		trigger = {
+			NOT = {
+				has_global_flag = sykes_picot_lawrence
+				has_global_flag = sykes_picot_mcmahon
+			}
+		}
 		every_owned_state = {
 			limit = {
 				OR = {
@@ -2194,6 +2220,7 @@ country_event = {
 				}
 			}
 		}
+		set_up_syrian_monarchs = yes
 		HJZ = {
 			clear_all_relations = yes
 			give_military_access = SYR
@@ -2218,25 +2245,6 @@ country_event = {
 				factor = 0
 				is_historical_focus_on = yes
 			}
-		}
-	}
-	option = {
-		name = ww1_ottoman.46.b		#Ignor Faisal
-		every_state = {
-			limit = {
-				is_core_of = TUR
-				is_core_of = SYR
-				NOT = {
-					OR = {
-						state = 829
-						has_dynamic_modifier = { modifier = TUR_arab_minority }
-					}
-				}
-			}
-			remove_core_of = TUR
-		}
-		ai_chance = {
-			base = 25
 		}
 	}
 }
@@ -2622,7 +2630,7 @@ country_event = {
 	}
 }
 
-# Berlin-Baghdad: Germany changes route
+# Berlin-Baghdad: Germany ignores
 ####
 country_event = {
 	id = ww1_ottoman.58
@@ -2634,9 +2642,41 @@ country_event = {
 		name = ww1_ottoman.58.a
 		news_event = ww1_ottoman.59
 		add_political_power = -100
-		create_wargoal = {
-			type = topple_government
-			target = GER
+		if = {
+			limit = {
+				OR = {
+					is_in_faction_with = FRA
+					NOT = {
+						has_war_with = FRA
+						has_global_flag = great_war
+					}
+				}
+			}
+			FRA = {
+				country_event = {
+					id = ww1_ottoman.166
+					hours = 3
+				}
+			}
+			if = {
+				limit = {
+					RUS = {
+						is_in_faction_with = FRA
+					}
+				}
+				RUS = {
+					country_event = {
+						id = ww1_ottoman.166
+						hours = 3
+					}
+				}
+			}
+		}
+		else = {
+			create_wargoal = {
+				type = topple_government
+				target = GER
+			}
 		}
 		ai_chance = {
 			base = 15
@@ -2654,14 +2694,14 @@ country_event = {
 			modifier = embargo
 		}
 		ai_chance = {
-			factor = 65
+			base = 65
 		}
 	}
 	option = {
 		name = ww1_ottoman.58.c
 		add_war_support = -0.1
 		ai_chance = {
-			factor = 25
+			base = 25
 		}
 	}
 }
@@ -3029,72 +3069,42 @@ country_event = {
 					target = TUR
 				}
 			}
-			if = {
-				limit = { has_dlc = "Man the Guns" }
-					create_ship = {
-					type = ship_hull_light_1
-					equipment_variant = "S138 Class"
-					creator = GER
-					name = "Gayret-i Vataniyye"
-				}
-				create_ship = {
-					type = ship_hull_light_1
-					equipment_variant = "S138 Class"
-					creator = GER
-					name = "Muavenet-i Milliye"
-				}
-				create_ship = {
-					type = ship_hull_light_1
-					equipment_variant = "S138 Class"
-					creator = GER
-					name = "Yadigar-ı Millet"
-				}
-				create_ship = {
-					type = ship_hull_light_1
-					equipment_variant = "S138 Class"
-					creator = GER
-					name = "Nümune-i Hamiyet"
-				}
+			create_ship = {
+				type = ship_hull_light_1
+				equipment_variant = "S138 Class"
+				creator = GER
+				name = "Gayret-i Vataniyye"
 			}
-			if = {
-				limit = { NOT = { has_dlc = "Man the Guns" } }
-				create_ship = {
-					type = destroyer_1
-					equipment_variant = "S138 Class"
-					creator = GER
-					name = "Gayret-i Vataniyye"
-				}
-				create_ship = {
-					type = destroyer_1
-					equipment_variant = "S138 Class"
-					creator = GER
-					name = "Muavenet-i Milliye"
-				}
-				create_ship = {
-					type = destroyer_1
-					equipment_variant = "S138 Class"
-					creator = GER
-					name = "Yadigar-ı Millet"
-				}
-				create_ship = {
-					type = destroyer_1
-					equipment_variant = "S138 Class"
-					creator = GER
-					name = "Nümune-i Hamiyet"
-				}
+			create_ship = {
+				type = ship_hull_light_1
+				equipment_variant = "S138 Class"
+				creator = GER
+				name = "Muavenet-i Milliye"
+			}
+			create_ship = {
+				type = ship_hull_light_1
+				equipment_variant = "S138 Class"
+				creator = GER
+				name = "Yadigar-ı Millet"
+			}
+			create_ship = {
+				type = ship_hull_light_1
+				equipment_variant = "S138 Class"
+				creator = GER
+				name = "Nümune-i Hamiyet"
 			}
 		}
 		GER = {
 			country_event = { id = ww1_ottoman.93 hours = 8 }
 		}
 		ai_chance = {
-			factor = 25
+			base = 25
 		}
 	}
 	option = {
 		name = ww1_ottoman.92.b
 		ai_chance = {
-			factor = 0
+			base = 0
 		}
 	}
 }
@@ -3110,7 +3120,7 @@ country_event = {
 	option = {
 		name = ww1_ottoman.93.a
 		ai_chance = {
-			factor = 100
+			base = 100
 		}
 		add_timed_idea = {
 			idea = TUR_ottoman_ship_sale
@@ -3129,59 +3139,29 @@ country_event = {
 				target = TUR
 			}
 			TUR = {
-				if = {
-					limit = { has_dlc = "Man the Guns" }
-						create_ship = {
-						type = ship_hull_light_1
-						equipment_variant = "S138 Class"
-						creator = GER
-						name = "Gayret-i Vataniyye"
-					}
-					create_ship = {
-						type = ship_hull_light_1
-						equipment_variant = "S138 Class"
-						creator = GER
-						name = "Muavenet-i Milliye"
-					}
-					create_ship = {
-						type = ship_hull_light_1
-						equipment_variant = "S138 Class"
-						creator = GER
-						name = "Yadigar-ı Millet"
-					}
-					create_ship = {
-						type = ship_hull_light_1
-						equipment_variant = "S138 Class"
-						creator = GER
-						name = "Nümune-i Hamiyet"
-					}
+				create_ship = {
+					type = ship_hull_light_1
+					equipment_variant = "S138 Class"
+					creator = GER
+					name = "Gayret-i Vataniyye"
 				}
-				if = {
-					limit = { NOT = { has_dlc = "Man the Guns" } }
-						create_ship = {
-						type = destroyer_1
-						equipment_variant = "S138 Class"
-						creator = GER
-						name = "Gayret-i Vataniyye"
-					}
-					create_ship = {
-						type = destroyer_1
-						equipment_variant = "S138 Class"
-						creator = GER
-						name = "Muavenet-i Milliye"
-					}
-					create_ship = {
-						type = destroyer_1
-						equipment_variant = "S138 Class"
-						creator = GER
-						name = "Yadigar-ı Millet"
-					}
-					create_ship = {
-						type = destroyer_1
-						equipment_variant = "S138 Class"
-						creator = GER
-						name = "Nümune-i Hamiyet"
-					}
+				create_ship = {
+					type = ship_hull_light_1
+					equipment_variant = "S138 Class"
+					creator = GER
+					name = "Muavenet-i Milliye"
+				}
+				create_ship = {
+					type = ship_hull_light_1
+					equipment_variant = "S138 Class"
+					creator = GER
+					name = "Yadigar-ı Millet"
+				}
+				create_ship = {
+					type = ship_hull_light_1
+					equipment_variant = "S138 Class"
+					creator = GER
+					name = "Nümune-i Hamiyet"
 				}
 			}
 		}
@@ -3194,7 +3174,7 @@ country_event = {
 	option = {
 		name = ww1_ottoman.93.b
 		ai_chance = {
-			factor = 0
+			base = 0
 		}
 		hidden_effect = {
 			TUR = {
@@ -3216,7 +3196,7 @@ country_event = {
 	option = {
 		name = ww1_ottoman.94.a
 		ai_chance = {
-			factor = 100
+			base = 100
 		}
 		set_global_flag = TUR_GER_battleship_purchase
 		if = {
@@ -3249,59 +3229,29 @@ country_event = {
 				target = TUR
 			}
 		}
-		if = {
-			limit = { has_dlc = "Man the Guns" }
-			create_ship = {
-				type = ship_hull_light_1
-				equipment_variant = "S138 Class"
-				creator = GER
-				name = "Gayret-i Vataniyye"
-			}
-			create_ship = {
-				type = ship_hull_light_1
-				equipment_variant = "S138 Class"
-				creator = GER
-				name = "Muavenet-i Milliye"
-			}
-			create_ship = {
-				type = ship_hull_light_1
-				equipment_variant = "S138 Class"
-				creator = GER
-				name = "Yadigar-ı Millet"
-			}
-			create_ship = {
-				type = ship_hull_light_1
-				equipment_variant = "S138 Class"
-				creator = GER
-				name = "Nümune-i Hamiyet"
-			}
+		create_ship = {
+			type = ship_hull_light_1
+			equipment_variant = "S138 Class"
+			creator = GER
+			name = "Gayret-i Vataniyye"
 		}
-		if = {
-			limit = { NOT = { has_dlc = "Man the Guns" } }
-			create_ship = {
-				type = destroyer_1
-				equipment_variant = "S138 Class"
-				creator = GER
-				name = "Gayret-i Vataniyye"
-			}
-			create_ship = {
-				type = destroyer_1
-				equipment_variant = "S138 Class"
-				creator = GER
-				name = "Muavenet-i Milliye"
-			}
-			create_ship = {
-				type = destroyer_1
-				equipment_variant = "S138 Class"
-				creator = GER
-				name = "Yadigar-ı Millet"
-			}
-			create_ship = {
-				type = destroyer_1
-				equipment_variant = "S138 Class"
-				creator = GER
-				name = "Nümune-i Hamiyet"
-			}
+		create_ship = {
+			type = ship_hull_light_1
+			equipment_variant = "S138 Class"
+			creator = GER
+			name = "Muavenet-i Milliye"
+		}
+		create_ship = {
+			type = ship_hull_light_1
+			equipment_variant = "S138 Class"
+			creator = GER
+			name = "Yadigar-ı Millet"
+		}
+		create_ship = {
+			type = ship_hull_light_1
+			equipment_variant = "S138 Class"
+			creator = GER
+			name = "Nümune-i Hamiyet"
 		}
 	}
 }
@@ -4107,7 +4057,7 @@ country_event = {
 			TUR = {
 				set_autonomy = {
 					target = EGY
-					autonomous_state = autonomy_colony
+					autonomous_state = autonomy_tgwr_ottoman_emirate
 					freedom_level = 0.8
 				}
 			}
@@ -4185,11 +4135,12 @@ country_event = {
 		TUR = {
 			set_autonomy = {
 				target = EGY
-				autonomous_state = autonomy_colony
+				autonomous_state = autonomy_tgwr_ottoman_emirate
 				freedom_level = 0.8
 			}
 		}
 		EGY = {
+			clr_country_flag = protectorate
 			promote_character = EGY_abbas_ii_helmy
 			drop_cosmetic_tag = yes
 			hidden_effect = {
@@ -6405,7 +6356,7 @@ country_event = {
 }
 
 
-###ottomans ask french to join them
+###ottomans ask ENT to join them
 country_event = {
 	id = ottoman.47
 	title = ottoman.47.t
@@ -6540,11 +6491,7 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ottoman.471.a
-		random_country = {
-			limit = {
-				is_in_faction_with = RUS
-				is_faction_leader = yes
-			}
+		ENT = {
 			add_to_faction = TUR
 			hidden_effect = { TUR = { country_event = { id = ottoman.48 hours = 8 } } }
 		}
@@ -6593,7 +6540,7 @@ country_event = {
 	option = {
 		name = ottoman.471.b
 		TUR = {
-			country_event = { id = ottoman.493 hours = 8 }
+			country_event = { id = ottoman.472 hours = 8 }
 			custom_effect_tooltip = TUR_our_traditional_allies_tt
 			effect_tooltip = {
 				diplomatic_relation = {
@@ -6616,7 +6563,7 @@ country_event = {
 	option = {
 		name = ottoman.471.c
 		TUR = {
-			country_event = { id = ottoman.493 hours = 8 }
+			country_event = { id = ottoman.473 hours = 8 }
 			custom_effect_tooltip = TUR_our_traditional_allies_tt
 			effect_tooltip = {
 				remove_ideas = TUR_diplomatic_isolation_1
@@ -6625,7 +6572,7 @@ country_event = {
 		effect_tooltip = {
 			set_autonomy = {
 				target = TUR
-				autonomy_state = autonomy_dominion
+				autonomy_state = autonomy_satellite
 				end_wars = yes
 				end_civil_wars = no
 			}
@@ -6650,11 +6597,7 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ottoman.472.a
-		random_country = {
-			limit = {
-				is_in_faction_with = RUS
-				is_faction_leader = yes
-			}
+		ENT = {
 			add_to_faction = TUR
 		}
 		remove_ideas = TUR_diplomatic_isolation_1
@@ -6669,16 +6612,7 @@ country_event = {
 			set_global_flag = TUR_allowed_russian_passage
 		}
 		hidden_effect = {
-			random_country = {
-				limit = {
-					OR = {
-						AND = {
-							is_in_faction_with = RUS
-							is_faction_leader = yes
-						}
-						tag = RUS
-					}
-				}
+			ENT = {
 				country_event = { id = ottoman.474 hours = 8 }
 			}
 		}
@@ -6688,16 +6622,7 @@ country_event = {
 	}
 	option = {
 		name = ottoman.472.b
-		random_country = {
-			limit = {
-				OR = {
-					AND = {
-						is_in_faction_with = RUS
-						is_faction_leader = yes
-					}
-					tag = RUS
-				}
-			}
+		ENT = {
 			country_event = { id = ottoman.475 hours = 8 }
 		}
 		ai_chance = {
@@ -6713,11 +6638,7 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ottoman.473.a
-		random_country = {
-			limit = {
-				is_in_faction_with = RUS
-				is_faction_leader = yes
-			}
+		ENT = {
 			add_to_faction = TUR
 		}
 		remove_ideas = TUR_diplomatic_isolation_1
@@ -6772,7 +6693,7 @@ country_event = {
 		RUS = {
 			set_autonomy = {
 				target = TUR
-				autonomy_state = autonomy_dominion
+				autonomy_state = autonomy_satellite
 				end_wars = yes
 				end_civil_wars = no
 			}
@@ -6845,16 +6766,7 @@ country_event = {
 			}
 		}
 		hidden_effect = {
-			random_country = {
-				limit = {
-					OR = {
-						AND = {
-							is_in_faction_with = RUS
-							is_faction_leader = yes
-						}
-						tag = RUS
-					}
-				}
+			ENT = {
 				country_event = { id = ottoman.474 hours = 8 }
 			}
 		}
@@ -6865,16 +6777,7 @@ country_event = {
 	option = {
 		name = ottoman.473.b
 		hidden_effect = {
-			random_country = {
-				limit = {
-					OR = {
-						AND = {
-							is_in_faction_with = RUS
-							is_faction_leader = yes
-						}
-						tag = RUS
-					}
-				}
+			ENT = {
 				country_event = { id = ottoman.475 hours = 8 }
 			}
 		}
@@ -6902,6 +6805,7 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ottoman.475.a
+		hidden_effect = { TUR = { country_event = { id = ottoman.49 hours = 8 } } }
 	}
 }
 
@@ -6922,7 +6826,7 @@ country_event = {
 	}
 }
 
-#french agree
+#ENT agree
 country_event = {
 	id = ottoman.48
 	title = ottoman.48.t
@@ -6931,7 +6835,7 @@ country_event = {
 	option = {
 		name = ottoman.48.a
 		effect_tooltip = {
-			FRA = {
+			ENT = {
 				add_to_faction = TUR
 			}
 		}
@@ -6942,7 +6846,7 @@ country_event = {
 	}
 }
 
-#french refuse
+#ENT refuse
 country_event = {
 	id = ottoman.49
 	title = ottoman.49.t
@@ -7267,7 +7171,7 @@ country_event = {
 		effect_tooltip = {
 			set_autonomy = {
 				target = TUR
-				autonomy_state = autonomy_dominion
+				autonomy_state = autonomy_satellite
 				end_wars = yes
 				end_civil_wars = no
 			}
@@ -9357,16 +9261,7 @@ country_event = { #unintended consequences - macedonian resistance
 			remove_state_core = 345
 			every_controlled_state = {
 				limit = {
-					OR = {
-						state = 184
-						state = 345
-						state = 788
-						state = 225
-						state = 759
-						state = 731
-						state = 203
-						state = 106
-					}
+					is_ottoman_macedonia_state = yes
 				}
 				set_variable = { TUR_ottoman_resistance_target = 0.15 }
 			}
@@ -9379,38 +9274,23 @@ country_event = { #unintended consequences - macedonian resistance
 			remove_state_core = 345
 			every_controlled_state = {
 				limit = {
-					OR = {
-						state = 184
-						state = 345
-						state = 788
-						state = 225
-						state = 759
-						state = 731
-						state = 203
-						state = 106
-					}
-					has_state_flag = TUR_greek_state
+					is_ottoman_macedonia_state = yes
 				}
-				custom_effect_tooltip = TUR_ottoman_greek_minority_modify_resistance_target_negative_15
-				set_variable = { TUR_ottoman_resistance_target = 0.15 }
-			}
-			every_controlled_state = {
-				limit = {
-					OR = {
-						state = 184
-						state = 345
-						state = 788
-						state = 225
-						state = 759
-						state = 731
-						state = 203
-						state = 106
+				if = {
+					limit = {
+						has_state_flag = TUR_greek_state
 					}
-					has_state_flag = TUR_southslav_state
+					custom_effect_tooltip = TUR_ottoman_greek_minority_modify_resistance_target_negative_15
+					set_variable = { TUR_ottoman_resistance_target = 0.15 }
 				}
-				custom_effect_tooltip = TUR_ottoman_greek_minority_modify_resistance_target_negative_15
-				custom_effect_tooltip = TUR_ottoman_south_slav_minority_modify_resistance_target_negative_15
-				set_variable = { TUR_ottoman_resistance_target = 0.15 }
+				if = {
+					limit = {
+						has_state_flag = TUR_southslav_state
+					}
+					custom_effect_tooltip = TUR_ottoman_greek_minority_modify_resistance_target_negative_15
+					custom_effect_tooltip = TUR_ottoman_south_slav_minority_modify_resistance_target_negative_15
+					set_variable = { TUR_ottoman_resistance_target = 0.15 }
+				}
 			}
 		}
 		ai_chance = {
@@ -9433,6 +9313,12 @@ country_event = { #unintended consequences - christian massacre
 					days = 180
 				}
 			}
+			1022 = {
+				add_dynamic_modifier = {
+					modifier = TUR_massacre_on_christian
+					days = 180
+				}
+			}
 			828 = {
 				add_dynamic_modifier = {
 					modifier = TUR_massacre_on_christian
@@ -9445,6 +9331,12 @@ country_event = { #unintended consequences - christian massacre
 		name = ottoman.103.a
 		effect_tooltip = {
 			352 = {
+				add_dynamic_modifier = {
+					modifier = TUR_massacre_on_christian
+					days = 180
+				}
+			}
+			1022 = {
 				add_dynamic_modifier = {
 					modifier = TUR_massacre_on_christian
 					days = 180
@@ -9475,6 +9367,7 @@ country_event = { #unintended consequences - egyptian opposition
 				limit = {
 					OR = {
 						state = 453
+						state = 1207
 						state = 447
 						state = 446
 						state = 452
@@ -9497,6 +9390,7 @@ country_event = { #unintended consequences - egyptian opposition
 				limit = {
 					OR = {
 						state = 453
+						state = 1207
 						state = 447
 						state = 446
 						state = 452
@@ -12566,6 +12460,7 @@ country_event = { #egyptians get mad
 					has_state_flag = TUR_arab_state
 					OR = {
 						state = 453
+						state = 1207
 						state = 447
 						state = 446
 						state = 452
@@ -12610,6 +12505,7 @@ country_event = { #egyptians get mad
 					has_state_flag = TUR_arab_state
 					OR = {
 						state = 453
+						state = 1207
 						state = 447
 						state = 446
 						state = 452
@@ -13611,6 +13507,7 @@ country_event = { #yemen declares autonomy
 	}
 	option = {
 		name = ottoman.167.a
+		custom_effect_tooltip = historical_tt
 		set_country_flag = TUR_treaty_of_daan_autonomy
 		effect_tooltip = {
 			293 = {
@@ -13700,6 +13597,7 @@ country_event = { #egyptian revolt
 					has_state_flag = TUR_arab_state
 					OR = {
 						state = 453
+						state = 1207
 						state = 447
 						state = 446
 						state = 452
@@ -13748,6 +13646,7 @@ country_event = { #egyptian revolt
 					has_state_flag = TUR_arab_state
 					OR = {
 						state = 453
+						state = 1207
 						state = 447
 						state = 446
 						state = 452
@@ -15207,7 +15106,8 @@ country_event = { #internationalist faction
 				add_to_faction = TUR
 			}
 			else = {
-				create_faction = TUR_international_faction
+				create_faction_from_template = faction_template_third_international
+				set_faction_name = TUR_international_faction
 				add_to_faction = TUR
 			}
 		}
@@ -15298,7 +15198,8 @@ country_event = { #they accept
 				add_to_faction = TUR
 			}
 			else = {
-				create_faction = TUR_international_faction
+				create_faction_from_template = faction_template_third_international
+				set_faction_name = TUR_international_faction
 				add_to_faction = TUR
 			}
 		}
@@ -15322,7 +15223,8 @@ country_event = { #they refuse
 			remove_idea = TUR_internationalist_foreign_policy3
 			add_idea = TUR_internationalist_foreign_policy2
 		}
-		create_faction = TUR_internationalist_faction
+		create_faction_from_template = faction_template_third_international
+		set_faction_name = TUR_internationalist_faction
 		ai_chance = {
 			base = 5
 		}
@@ -15461,7 +15363,7 @@ country_event = { #muslim countries break ties
 	is_triggered_only = yes
 	immediate = {
 		hidden_effect = {
-			every_country = {
+			every_subject_country = {
 				limit = {
 					OR = {
 						tag = BOS
@@ -15483,8 +15385,8 @@ country_event = { #muslim countries break ties
 						tag = AZR
 						tag = PER
 						tag = PHI
+						is_islamic_nation = yes
 					}
-					is_subject_of = TUR
 				}
 				country_event = ottoman.199
 			}
@@ -15492,125 +15394,34 @@ country_event = { #muslim countries break ties
 	}
 	option = {
 		name = ottoman.198.a
-		if = {
+		every_subject_country = {
 			limit = {
-				has_subject = BOS
+				OR = {
+					tag = BOS
+					tag = AFG
+					tag = JBS
+					tag = LBA
+					tag = DAR
+					tag = QAT
+					tag = BHR
+					tag = KUW
+					tag = EGY
+					tag = CHA
+					tag = MOR
+					tag = ALB
+					tag = PAK
+					tag = BAN
+					tag = INS
+					tag = MAL
+					tag = AZR
+					tag = PER
+					tag = PHI
+					is_islamic_nation = yes
+				}
 			}
-			end_puppet = BOS
-		}
-		if = {
-			limit = {
-				has_subject = AFG
+			PREV = {
+				end_puppet = PREV
 			}
-			end_puppet = AFG
-		}
-		if = {
-			limit = {
-				has_subject = JBS
-			}
-			end_puppet = JBS
-		}
-		if = {
-			limit = {
-				has_subject = BOS
-			}
-			end_puppet = BOS
-		}
-		if = {
-			limit = {
-				has_subject = LBA
-			}
-			end_puppet = LBA
-		}
-		if = {
-			limit = {
-				has_subject = DAR
-			}
-			end_puppet = DAR
-		}
-		if = {
-			limit = {
-				has_subject = QAT
-			}
-			end_puppet = QAT
-		}
-		if = {
-			limit = {
-				has_subject = BHR
-			}
-			end_puppet = BHR
-		}
-		if = {
-			limit = {
-				has_subject = KUW
-			}
-			end_puppet = KUW
-		}
-		if = {
-			limit = {
-				has_subject = EGY
-			}
-			end_puppet = EGY
-		}
-		if = {
-			limit = {
-				has_subject = CHA
-			}
-			end_puppet = CHA
-		}
-		if = {
-			limit = {
-				has_subject = MOR
-			}
-			end_puppet = MOR
-		}
-		if = {
-			limit = {
-				has_subject = ALB
-			}
-			end_puppet = ALB
-		}
-		if = {
-			limit = {
-				has_subject = PAK
-			}
-			end_puppet = PAK
-		}
-		if = {
-			limit = {
-				has_subject = BAN
-			}
-			end_puppet = BAN
-		}
-		if = {
-			limit = {
-				has_subject = INS
-			}
-			end_puppet = INS
-		}
-		if = {
-			limit = {
-				has_subject = MAL
-			}
-			end_puppet = MAL
-		}
-		if = {
-			limit = {
-				has_subject = AZR
-			}
-			end_puppet = AZR
-		}
-		if = {
-			limit = {
-				has_subject = PER
-			}
-			end_puppet = PER
-		}
-		if = {
-			limit = {
-				has_subject = PHI
-			}
-			end_puppet = PHI
 		}
 		ai_chance = {
 			base = 5
@@ -15625,11 +15436,22 @@ country_event = { #muslim countries break ties
 	is_triggered_only = yes
 	option = {
 		name = ottoman.199.a
-		TUR = {
-			end_puppet = ROOT
+		effect_tooltip = {
+			FROM = {
+				end_puppet = ROOT
+			}
 		}
-		remove_ideas = TUR_wavering_ottoman_influence
-		leave_faction = yes
+		if = {
+			limit = {
+				has_idea = TUR_wavering_ottoman_influence
+			}
+		}
+		if = {
+			limit = {
+				is_in_faction_with = FROM
+			}
+			leave_faction = yes
+		}
 		ai_chance = {
 			base = 5
 		}
@@ -15921,15 +15743,14 @@ country_event = { #munition shortage
 	is_triggered_only = yes
 	trigger = {
 		tag = TUR
-		has_global_flag = great_war
-		NOT = { has_global_flag = great_war_ends }
+		is_great_war_ongoing = yes
 		has_completed_focus = TUR_undermine_democracy
 		OR = {
 			has_equipment = {
 				infantry_equipment_1 < -3000
 			}
 			has_equipment = {
-				artillery_equipment < -800
+				field_gun_equipment < -800
 			}
 			has_equipment = {
 				howitzer_equipment < -300
@@ -16406,11 +16227,11 @@ country_event = {
 	trigger = {
 		original_tag = TUR
 		# has_global_flag = brest_litovsk
-		OR = {
-			has_war_with = GEO
-			has_war_with = ARM
-			has_war_with = AZR
-		}
+		# OR = {
+		# 	has_war_with = GEO
+		# 	has_war_with = ARM
+		# 	has_war_with = AZR
+		# }
 		has_global_flag = caucasus_collapsed
 		NOT = { has_global_flag = treaty_of_batum }
 	}
@@ -16482,18 +16303,19 @@ country_event = {
 				}
 				set_demilitarized_zone = yes
 			}
-			MOU = {
-				if = {
+			if = {
+				limit = {
+					owns_state = 877
+					PER = { owns_state = 1117 }
+				}
+				every_owned_state = {
 					limit = {
-						is_in_faction = no
-						is_subject = no
-						NOT = { has_war_with = ROOT }
 						OR = {
-							has_government = ROOT
-							NOT = { has_government = communism }
+							state = 877
+							state = 420
 						}
 					}
-					ROOT = { give_guarantee = PREV }
+					transfer_state_to = PER
 				}
 			}
 		}
@@ -16533,7 +16355,10 @@ country_event = {
 			amount = -1500
 		}
 		effect_tooltip = {
-			FROM = { set_country_flag = protectorate }
+			FROM = { 
+				set_country_flag = protectorate
+				set_country_flag = released_by_germany #needed for peace conference to not count them as a winner nor a loser
+			}
 			set_autonomy = {
 				target = FROM
 				autonomy_state = autonomy_tgwr_informal_protectorate
@@ -17466,9 +17291,9 @@ country_event = {
 	trigger = {
 		tag = TUR
 		has_war = yes
+		is_great_war_ongoing = yes
 		454 = { is_owned_or_subject_trigger = yes }
 		856 = { is_owned_or_subject_trigger = yes }
-		has_global_flag = great_war
 		any_enemy_country = {
 			controls_state = 454
 		}
@@ -17476,7 +17301,6 @@ country_event = {
 			controls_state = 856
 		}
 		NOT = {
-			has_global_flag = great_war_ends
 			has_subject = EGY
 			owns_state = 446
 		}
@@ -17584,6 +17408,7 @@ country_event = {
 					OR = {
 						owns_state = 447
 						owns_state = 453
+						owns_state = 1207
 						owns_state = 454
 						owns_state = 856
 						owns_state = 858
@@ -17600,6 +17425,7 @@ country_event = {
 				OR = {
 					state = 447
 					state = 453
+					state = 1207
 					state = 454
 					state = 856
 					state = 858
@@ -17781,7 +17607,7 @@ country_event = {
 	is_triggered_only = yes
 	trigger = {
 		has_war_with = ITA
-		NOT = { has_global_flag = italo_turkish_war_ends }
+		NOT = { has_global_flag = libyan_crisis_resolved }
 	}
 	option = {
 		name = ww1_ottoman.137.a
@@ -17884,20 +17710,7 @@ country_event = {
 		}
 		custom_effect_tooltip = tur_british_ships_1914
 		effect_tooltip = {
-			if = {
-				limit = {
-					NOT = {
-						has_dlc = "Man the Guns"
-					}
-				}
-				hidden_effect = { load_oob = TUR_seized_naval_legacy }
-			}
-			if = {
-				limit = {
-					has_dlc = "Man the Guns"
-				}
-				hidden_effect = { load_oob = TUR_seized_naval_mtg }
-			}
+			hidden_effect = { load_oob = TUR_seized_naval_mtg }
 		}
 		ENG = { country_event = { id = ww1_ottoman.147 hours = 8 } }
 	}
@@ -17943,20 +17756,7 @@ country_event = {
 		name = ww1_ottoman.147.b
 		trigger = { has_war_with = GER }
 		custom_effect_tooltip = eng_british_ships_1914
-		if = {
-			limit = {
-				NOT = {
-					has_dlc = "Man the Guns"
-				}
-			}
-			hidden_effect = { load_oob = ENG_seized_naval_legacy }
-		}
-		if = {
-			limit = {
-				has_dlc = "Man the Guns"
-			}
-			hidden_effect = { load_oob = ENG_seized_naval_mtg }
-		}
+		hidden_effect = { load_oob = ENG_seized_naval_mtg }
 		TUR = { country_event = { id = ww1_ottoman.149 hours = 8 } }
 		ai_chance = {
 			base = 0
@@ -17997,20 +17797,7 @@ country_event = {
 	option = {
 		name = ww1_ottoman.148.a
 		custom_effect_tooltip = tur_british_ships_1914
-		if = {
-			limit = {
-				NOT = {
-					has_dlc = "Man the Guns"
-				}
-			}
-			hidden_effect = { load_oob = TUR_seized_naval_legacy }
-		}
-		if = {
-			limit = {
-				has_dlc = "Man the Guns"
-			}
-			hidden_effect = { load_oob = TUR_seized_naval_mtg }
-		}
+		hidden_effect = { load_oob = TUR_seized_naval_mtg }
 		ai_chance = {
 			factor = 100
 		}
@@ -18048,20 +17835,7 @@ country_event = {
 	option = {
 		name = ww1_ottoman.150.a
 		custom_effect_tooltip = eng_british_ships_1914
-		if = {
-			limit = {
-				NOT = {
-					has_dlc = "Man the Guns"
-				}
-			}
-			hidden_effect = { load_oob = ENG_seized_naval_legacy }
-		}
-		if = {
-			limit = {
-				has_dlc = "Man the Guns"
-			}
-			hidden_effect = { load_oob = ENG_seized_naval_mtg }
-		}
+		hidden_effect = { load_oob = ENG_seized_naval_mtg }
 		ai_chance = {
 			factor = 100
 		}
@@ -18388,14 +18162,7 @@ country_event = {
 		hidden_effect = {
 			FROM = {
 				# Army
-				every_state = {
-					PREV = {
-						delete_unit = {
-							state = PREV
-							disband = yes
-						}
-					}
-				}
+				delete_unit = { disband = yes }
 				every_other_country = {
 					limit = { is_in_faction_with = PREV }
 					every_state = {
@@ -18473,18 +18240,21 @@ country_event = {
 					}
 				}
 				## France
-				every_state = {
-					limit = {
-						is_owned_or_subject_FROM_trigger = yes
-						region = 228
-						is_coastal = yes
-						NOT = {
-							state = 455
-							state = 859
+				if = {
+					limit = { has_war_with = FRA }
+					every_state = {
+						limit = {
+							is_owned_or_subject_FROM_trigger = yes
+							region = 228
+							is_coastal = yes
+							NOT = {
+								state = 455
+								state = 859
+							}
 						}
+						transfer_state_to = FRA
 					}
-					transfer_state_to = FRA
-				}
+				}	
 				## Syria
 				every_state = {
 					limit = {
@@ -18493,6 +18263,7 @@ country_event = {
 						NOT = {
 							state = 447
 							state = 453
+							state = 1207
 							state = 859
 							state = 677
 							state = 680
@@ -18501,6 +18272,7 @@ country_event = {
 							state = 1029
 						}
 					}
+					set_up_syrian_monarchs = yes
 					transfer_state_to = SYR
 				}
 				if = {
@@ -18579,75 +18351,7 @@ country_event = {
 					limit = {
 						has_global_flag = treaty_of_batum
 					}
-					every_owned_state = {
-						limit = {
-							region = 134
-							OR = {
-								is_core_of = TUR
-								state = 748
-								state = 787
-								state = 806
-								state = 816
-								state = 855
-							}
-						}
-						add_core_of = KRS
-						transfer_state_to = KRS
-					}
-					give_guarantee = KRS
-					give_market_access = KRS
-					if = {
-						limit = {
-							has_war_with = ENG
-						}
-						ENG = {
-							give_guarantee = KRS
-							KRS = {
-								get_current_government_type = yes
-								set_country_flag = protectorate
-							}
-							set_autonomy = {
-								target = KRS
-								autonomy_state = autonomy_tgwr_informal_protectorate
-							}
-							KRS = {
-								restore_previous_government_type = yes
-								add_ideas = ENG_british_military_occupation
-							}
-						}
-					}
-					KRS = {
-						set_country_flag = great_war_loser
-						set_country_flag = member_of_central_powers
-						add_ideas = idea_armistice
-						set_country_flag = army_should_be_restricted
-						country_lock_all_division_template = yes
-						add_ideas = idea_army_restrictions
-						inherit_technology = PREV
-						give_military_access = PREV
-						every_other_country = {
-							limit = {
-								OR = {
-									is_neighbor_of = PREV
-									has_war_with = PREV.PREV
-									is_in_faction_with = PREV.PREV
-								}
-							}
-							set_truce = {
-								target = PREV
-								days = 365
-							}
-						}
-						if = {
-							limit  = {
-								is_neighbor_of = GEO
-							}
-							# Georgia supported them because they don't want Azerbaijan to expand west
-							GEO = {
-								give_guarantee = PREV
-							}
-						}
-					}
+					create_kars_republic = yes
 					if = {
 						limit = {
 							country_exists = ARM
@@ -18855,12 +18559,13 @@ country_event = {
 						OR = {
 							state = 184
 							state = 185
-							state = 200
+							#state = 200
 							state = 345
 							state = 731
-							state = 757
+							#state = 757
 							state = 758
 							state = 803
+							state = 1225
 							state = 826
 						}
 					}
@@ -18882,14 +18587,14 @@ country_event = {
 						is_owned_or_subject_FROM_trigger = yes
 						OR = {
 							state = 184
-							state = 200
+							#state = 200
 							state = 225
-							state = 451
-							state = 756
-							state = 757
+							#state = 451
+							#state = 756
+							#state = 757
 							state = 759
 							state = 788
-							state = 849
+							#state = 849
 							state = 1141
 						}
 					}
@@ -18916,6 +18621,7 @@ country_event = {
 							state = 760
 							state = 847
 							state = 1140
+							state = 1213
 						}
 					}
 					809 = {
@@ -18940,38 +18646,24 @@ country_event = {
 				}
 
 				# Clear relations
-				leave_faction = yes
-				every_other_country = {
+				white_peace = ENT
+				clear_all_relations = yes
+				every_country = {
 					limit = {
-						PREV = { has_wargoal_against = PREV }
+						OR = {
+							tag = ENT
+							AND = {
+								is_ally_with = ENT
+								has_war_together_with = ENT
+							}
+						}						
 					}
-					PREV = {
-						remove_wargoal = {
-							type = all
-							target = PREV
-						}
-					}
-				}
-				every_enemy_country = {
-					limit = {
-						is_faction_leader = yes
-					}
-					white_peace = PREV
 					PREV = { give_military_access = PREV }
-				}
-				every_enemy_country = {
-					white_peace = PREV
-					PREV = { give_military_access = PREV }
-				}
-				every_subject_country = {
-					limit = {
-						has_autonomy_state = autonomy_tgwr_ottoman_emirate
-					}
-					clear_all_relations = yes
 				}
 				set_country_flag = great_war_loser
 				set_country_flag = member_of_central_powers
 				add_ideas = idea_armistice
+				TUR_army_restrictions = yes
 
 				#entente divisions to cosntantinople
 				every_other_country = {
@@ -19055,7 +18747,7 @@ country_event = {
 	option = {
 		name = ww1_ottoman.163.a
 		effect_tooltip = {
-			white_peace = FRA
+			white_peace = ENT
 			add_ideas = idea_armistice
 			add_ideas = idea_army_restrictions
 		}
@@ -19071,7 +18763,7 @@ country_event = {
 			}
 		}
 		else = {
-			FRA = {
+			ENT = {
 				country_event = {
 					id = ww1_ottoman.161
 					hours = 3
@@ -19147,5 +18839,206 @@ country_event = {
 		name = ww1_ottoman.165.a
 		set_global_flag = TUR_abdulhamid_ii_dead
 		retire_character = TUR_abdulhamid_ii
+	}
+}
+
+# Berlin-Baghdad: France/Russia Answers to Britain
+country_event = {
+	id = ww1_ottoman.166
+	title = ww1_ottoman.166.t
+	desc = ww1_ottoman.166.d
+	is_triggered_only = yes
+	picture = GFX_report_event_generic_sign_treaty2
+	option = {
+		name = ww1_ottoman.166.a
+		set_country_flag = berlin_baghdad_dispute_guaranteed
+		FROM = {
+			country_event = {
+				id = ww1_ottoman.167
+				hours = 3
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+	}
+	option = {
+		name = ww1_ottoman.166.b
+		effect_tooltip = {
+			FROM = {
+				add_opinion_modifier = {
+					target = ROOT
+					modifier = HOI4TGW_Opinion_alliance_malus
+				}
+			}
+		}
+		FROM = {
+			country_event = {
+				id = ww1_ottoman.168
+				hours = 3
+			}
+		}
+		ai_chance = {
+			base = 0
+			modifier = {
+				add = 50
+				has_opinion = {
+					target = FROM
+					value < 0
+				}
+			}
+			modifier = {
+				add = 50
+				has_opinion = {
+					target = GER
+					value > 30
+				}
+			}
+			modifier = {
+				add = 100
+				has_opinion = {
+					target = GER
+					value > 50
+				}
+			}
+			modifier = {
+				add = 100
+				has_war_support < 0.3
+			}
+		}
+	}
+}
+
+# Berlin-Baghdad: France/Russia Says Yes To War
+country_event = {
+	id = ww1_ottoman.167
+	title = ww1_ottoman.167.t
+	desc = ww1_ottoman.167.d
+	is_triggered_only = yes
+	picture = GFX_report_event_generic_sign_treaty2
+	option = {
+		name = ww1_ottoman.167.a
+		set_country_flag = berlin_baghdad_dispute_guaranteed
+	}
+}
+
+# Berlin-Baghdad: France/Russia Says No To War
+country_event = {
+	id = ww1_ottoman.168
+	title = ww1_ottoman.168.t
+	desc = ww1_ottoman.168.d
+	is_triggered_only = yes
+	picture = GFX_report_event_generic_sign_treaty2
+	option = {
+		name = ww1_ottoman.168.a
+		add_opinion_modifier = {
+			target = FROM
+			modifier = HOI4TGW_Opinion_alliance_malus
+		}
+	}
+}
+
+# Berlin-Baghdad: British Decides To War
+country_event = {
+	id = ww1_ottoman.169
+	title = ww1_ottoman.169.t
+	desc = ww1_ottoman.169.d
+	picture = GFX_report_event_british_inspect_troops
+	fire_only_once = yes
+	trigger = {
+		has_country_flag = berlin_baghdad_dispute_guaranteed
+		tag = ENG
+		is_subject = no
+		has_capitulated = no
+		NOT = {
+			has_global_flag = great_war
+			has_country_flag = great_war_loser
+			has_war_with = GER
+		}
+		country_exists = GER
+	}
+	mean_time_to_happen = {
+		days = 30
+	}
+	option = {
+		name = ww1_ottoman.169.a
+		GER = {
+			country_event = {
+				id = ww1_ottoman.170
+				hours = 3
+			}
+		}
+		custom_effect_tooltip = disagree_effect_tooltip
+		effect_tooltip = {
+			declare_war_on = {
+				target = GER
+				type = topple_government
+			}
+		}
+	}
+}
+
+# Berlin-Baghdad: German Final Answer
+country_event = {
+	id = ww1_ottoman.170
+	title = ww1_ottoman.170.t
+	desc = ww1_ottoman.170.d
+	is_triggered_only = yes
+	picture = GFX_report_event_german_inspect_troops
+	trigger = {
+		NOT = {
+			has_global_flag = great_war
+			has_war_with = ENG
+		}
+	}
+	option = {
+		name = ww1_ottoman.56.a		#change route
+		ENG = {
+			country_event = {
+				id = ww1_ottoman.57
+				hours = 15
+			}
+		}
+		add_political_power = -75
+		set_global_flag = berlin_baghdad_dispute_ended
+		676 = {
+			set_state_flag = TUR_berlin_baghdad_railway_state_blocked
+		}
+		291 = {
+			set_state_flag = TUR_berlin_baghdad_railway_state_blocked
+		}
+		ai_chance = {
+			factor = 10
+		}
+	}
+	option = {
+		name = ww1_ottoman.170.a		#war
+		FROM = {
+			declare_war_on = {
+				target = ROOT
+				type = topple_government
+			}
+			every_other_country = {
+				limit = {
+					has_country_flag = berlin_baghdad_dispute_guaranteed
+				}
+				add_to_war = {
+					targeted_alliance = PREV
+					enemy = ROOT
+					hostility_reason = berlin_baghdad_dispute_guaranteed
+				}
+			}
+		}
+		add_named_threat = {
+			threat = 5
+			name = ww1_ottoman.58.t
+		}
+		ai_chance = {
+			factor = 2
+			modifier = {
+				factor = 0
+				is_historical_focus_on = yes
+			}
+		}
 	}
 }

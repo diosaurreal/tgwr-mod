@@ -139,6 +139,7 @@ country_event = {
 					tag = ORE
 					tag = AMU
 					tag = TBK
+					tag = USS
 				}
 				NOT = {
 					has_war_with = ROOT
@@ -363,7 +364,22 @@ country_event = {
 			base = 100
 			modifier = {
 				factor = 0
-				tag = TBK
+				OR = {
+					tag = AMU
+					tag = TBK
+					tag = USS
+				}
+			}
+			modifier = {
+				factor = 0.5
+				is_historical_focus_on = no
+				FROM = {
+					any_other_country = {
+						is_actual_major = yes
+						has_guaranteed = ROOT
+						NOT = { has_guaranteed = FROM }
+					}
+				}
 			}
 		}
 	}
@@ -380,7 +396,22 @@ country_event = {
 			base = 0
 			modifier = {
 				add = 100
-				tag = TBK
+				OR = {
+					tag = AMU
+					tag = TBK
+					tag = USS
+				}
+			}
+			modifier = {
+				add = 50
+				is_historical_focus_on = no
+				FROM = {
+					any_other_country = {
+						is_actual_major = yes
+						has_guaranteed = ROOT
+						NOT = { has_guaranteed = FROM }
+					}
+				}
 			}
 		}
 	}
@@ -397,6 +428,30 @@ country_event = {
 		name = ww1_siberia.7.a
 		effect_tooltip = { 
 			ROOT = { puppet = FROM }
+		}
+		FROM = {
+			if = {
+				limit = { tag = UCH }
+				set_cosmetic_tag = UCH_RUS
+			}
+			else_if = {
+				limit = { tag = ORE }
+				set_cosmetic_tag = ORE_RUS
+			}
+			else_if = {
+				limit = { 
+					tag = AMU
+					ROOT = { has_government = fascism }
+				}
+				set_politics = {
+					ruling_party = fascism
+					elections_allowed = no
+				}
+				add_popularity = {
+					ideology = fascism
+					popularity = 0.1
+				}
+			}
 		}
 		if = {
 			limit = {
@@ -520,13 +575,13 @@ country_event = {
 		set_country_flag = SIB_kolchak_coup
 		RUS = {
 			RUS_alexander_kolchak = {
+				set_nationality = ROOT
 				set_portraits = {
 					navy = {
 						large="gfx/leaders/RUS/RUS_alexander_kolchak.png"
 						small="GFX_idea_RUS_alexander_kolchak"
 					}
 				}
-				set_nationality = SIB
 				add_country_leader_role ={
 					promote_leader = yes
 					country_leader = {
@@ -538,22 +593,20 @@ country_event = {
 				}
 			}
 		}
-		SIB = {
-			add_stability = 0.05
-			add_war_support = 0.05
-			add_political_power = -50
-			set_politics = {
-				ruling_party = fascism
- 				long_name = RUS_fascism_party_OMSK_long
-				name = RUS_fascism_party_OMSK
-				elections_allowed = no
-			}
+		add_stability = 0.05
+		add_war_support = 0.05
+		add_political_power = -50
+		set_politics = {
+			ruling_party = fascism
+ 			long_name = RUS_fascism_party_OMSK_long
+			name = RUS_fascism_party_OMSK
+			elections_allowed = no
+		}
+		hidden_effect = {
 			add_ideas = {
 				RUS_alexander_kolchak
 				RUS_alexander_kolchak_army_chief
-			}	
-		}
-		hidden_effect = {
+			}
 			set_popularities = {
 				fascism = 75
 				communism = 0
@@ -786,14 +839,46 @@ country_event = {
 				transfer_troops = yes
 			}
 		}
-		every_character = {
-			limit = {
-				is_unit_leader = yes
+		if = {
+			limit = { 
+				OR = {
+					tag = UCH
+					tag = ORE
+					tag = NWA
+				}
 			}
-			set_nationality = FROM
+			every_character = {
+				limit = {
+					is_unit_leader = yes
+				}
+				set_nationality = FROM
+			}
+			hidden_effect = {
+				every_state = {
+					limit = {
+						OR = {
+							is_core_of = ROOT
+							is_claimed_by = ROOT
+						}				
+					}
+					remove_core_of = ROOT
+					remove_claim_by = ROOT
+				}
+			}
 		}
 		ai_chance = {
 			base = 100
+			modifier = {
+				factor = 0.5
+				is_historical_focus_on = no
+				FROM = {
+					any_other_country = {
+						is_actual_major = yes
+						has_guaranteed = ROOT
+						NOT = { has_guaranteed = FROM }
+					}
+				}
+			}
 		}
 	}
 	option = {
@@ -805,8 +890,28 @@ country_event = {
 				type = annex_everything
 			}
 		}
+		if = {
+			limit = { 
+				OR = {
+					has_cosmetic_tag = ORE_RUS
+					has_cosmetic_tag = UCH_RUS
+				}
+			}
+			drop_cosmetic_tag = yes
+		}
 		ai_chance = {
 			base = 0
+			modifier = {
+				add = 50
+				is_historical_focus_on = no
+				FROM = {
+					any_other_country = {
+						is_actual_major = yes
+						has_guaranteed = ROOT
+						NOT = { has_guaranteed = FROM }
+					}
+				}
+			}
 		}
 	}
 }
@@ -816,7 +921,6 @@ country_event = {
 	title = ww1_siberia.14.t
 	desc = ww1_siberia.14.d
 	picture = GFX_report_event_lobby_for_foreign_support
-	fire_only_once = no
 	is_triggered_only = yes
 	option = {
 		name = ww1_siberia.14.a
@@ -849,7 +953,6 @@ country_event = {
 	title = ww1_siberia.15.t
 	desc = ww1_siberia.15.d
 	picture = GFX_report_event_lobby_for_foreign_support
-	fire_only_once = no
 	is_triggered_only = yes
 	option = {
 		name = ww1_siberia.15.a
@@ -905,7 +1008,6 @@ country_event = {
 	title = ww1_siberia.16.t
 	desc = ww1_siberia.16.d
 	picture = GFX_report_event_lobby_for_foreign_support
-	fire_only_once = no
 	is_triggered_only = yes
 	option = {
 		name = ww1_siberia.16.a
@@ -924,19 +1026,19 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_siberia.3.a
-		if = {
-			limit = {
-				CRI = {
-					is_puppet_of = SRA
-				}	
-			}
-			SRA = {
-				annex_country = {
-					target = CRI
-					transfer_troops = yes
-				}
-			}
-		}
+		# if = {
+		# 	limit = {
+		# 		CRI = {
+		# 			is_puppet_of = SRA
+		# 		}	
+		# 	}
+		# 	SRA = {
+		# 		annex_country = {
+		# 			target = CRI
+		# 			transfer_troops = yes
+		# 		}
+		# 	}
+		# }
 		get_current_government_type = yes
 		FROM = { 
 			puppet = {
@@ -956,9 +1058,13 @@ country_event = {
 			base = 100
 			modifier = {
 				factor = 0.5
-				any_other_country = {
-					is_actual_major = yes
-					has_guaranteed = ROOT
+				is_historical_focus_on = no
+				FROM = {
+					any_other_country = {
+						is_actual_major = yes
+						has_guaranteed = ROOT
+						NOT = { has_guaranteed = FROM }
+					}
 				}
 			}
 			modifier = {
@@ -982,9 +1088,13 @@ country_event = {
 			base = 0
 			modifier = {
 				add = 50
-				any_other_country = {
-					is_actual_major = yes
-					has_guaranteed = ROOT
+				is_historical_focus_on = no
+				FROM = {
+					any_other_country = {
+						is_actual_major = yes
+						has_guaranteed = ROOT
+						NOT = { has_guaranteed = FROM }
+					}
 				}
 			}
 			modifier = {
@@ -992,6 +1102,17 @@ country_event = {
 				OR = {
 					controls_state = 195
 					controls_state = 219
+				}
+			}
+			modifier = {
+				add = 100
+				tag = NWA
+				OR = {
+					has_completed_focus = NWA_with_german_support
+					focus_progress = {
+						focus = NWA_with_german_support
+						progress > 0
+					}
 				}
 			}
 		}
@@ -1011,6 +1132,61 @@ country_event = {
 			ROOT = { puppet = FROM }
 		}
 		add_political_power = 25
+		FROM = {
+			if = {
+				limit = { tag = NWA }
+				set_cosmetic_tag = NWA
+			}
+			else_if = {
+				limit = {
+					tag = TRC
+					ROOT = { has_government = fascism }
+				}
+				set_politics = {
+					ruling_party = fascism
+					elections_allowed = no
+				}
+				add_popularity = {
+					ideology = fascism
+					popularity = 0.1
+				}
+			}
+			else_if = {
+				limit = { tag = UCH }
+				set_cosmetic_tag = UCH_RUS
+			}
+			else_if = {
+				limit = { tag = ORE }
+				set_cosmetic_tag = ORE_RUS
+				if = {
+					limit = { 
+						ROOT = { has_government = democratic }
+					}
+					set_politics = {
+						ruling_party = democratic
+						elections_allowed = no
+					}
+					add_popularity = {
+						ideology = democratic
+						popularity = 0.1
+					}
+				}
+			}
+			else_if = {
+				limit = { 
+					tag = AMU
+					ROOT = { has_government = fascism }
+				}
+				set_politics = {
+					ruling_party = fascism
+					elections_allowed = no
+				}
+				add_popularity = {
+					ideology = fascism
+					popularity = 0.1
+				}
+			}
+		}
 		ai_chance = {
 			base = 100
 		}
@@ -1036,11 +1212,25 @@ country_event = {
 		ai_chance = {
 			base = 100
 			modifier = {
-				add = 50
+				factor = 0
 				any_other_country = {
 					is_actual_major = yes
 					has_guaranteed = FROM
+					NOT = { has_guaranteed = ROOT }
 				}
+			}
+			modifier = {
+				factor = 0
+				FROM = {
+					tag = NWA
+					OR = {
+						has_completed_focus = NWA_with_german_support
+						focus_progress = {
+							focus = NWA_with_german_support
+							progress > 0
+						}
+					}
+				}				
 			}
 		}
 	}
@@ -1055,7 +1245,12 @@ country_event = {
 				any_other_country = {
 					is_actual_major = yes
 					has_guaranteed = FROM
+					NOT = { has_guaranteed = ROOT }
 				}
+			}
+			modifier = {
+				add = 150
+				is_historical_focus_on = yes
 			}
 		}
 	}
@@ -1229,7 +1424,7 @@ country_event = {
 	fire_only_once = yes
 	immediate = {
 		hidden_effect = {
-			RUS = {
+			KOM = {
 				RUS_florian_fyodorovich = {
 					set_nationality = SIB
 					promote_character = agrarian_socialism
@@ -1259,11 +1454,44 @@ country_event = {
 			}
 			set_cosmetic_tag = POLITCENTRE
 			set_country_flag = POLITCENTRE
+			set_global_flag = kolchak_dead
 			every_country = {
 				limit = {
-					is_subject_of = ROOT
+					is_russian_tag = yes
+				}
+				if = {
+					limit = {
+						has_template = "Chekhoslovatskiy Polk"
+					}
+					delete_unit_template_and_units = {
+						division_template = "Chekhoslovatskiy Polk"
+						disband = no
+					}
+				}
+			}
+			every_subject_country = {
+				limit = {
+					NOT = {
+						AND = {
+							has_subject = SRA
+							OR = {
+								tag = SRA
+								tag = UCH
+								tag = TRC
+							}
+						}			
+					}
 				}
 				ROOT = { end_puppet = PREV }
+			}
+			if = {
+				limit = { 
+					has_subject = SRA
+				}
+				ROOT = { end_puppet = SRA }
+				SRA = {
+					take_all_subjects_PREV = yes
+				}
 			}
 			every_country = {
 				limit = {
@@ -1412,6 +1640,7 @@ country_event = {
 					}
 				}	
 			}
+			create_USS = yes
 			if = {
 				limit = {
 					has_character = CZE_radola_gajda #should be fired by Kolchak a bit earlier
@@ -1444,6 +1673,7 @@ country_event = {
 				}
 				set_nationality = RXL
 			}
+			clear_all_relations_except_wars = yes
 		}	
 	}
 	#This is a disaster
@@ -1452,6 +1682,13 @@ country_event = {
 		add_stability = -0.25
 		add_political_power = -500
 		custom_effect_tooltip = we_are_doomed_tt
+		SOV = {
+			country_event = {
+				id = ww1_siberia.201
+				days = 33
+			}
+		}
+		news_event = ww1_siberia.102
 		ai_chance = {
 			base = 100
 		}
@@ -1523,59 +1760,56 @@ country_event = {
 		}
 	}
 }
-# Death of Kolchak
+# Execution of Kolchak
 country_event = {
 	id = ww1_siberia.201
 	title = ww1_siberia.201.t
 	desc = ww1_siberia.201.d
 	picture = GFX_report_event_kolchak_execution
-	trigger = {
-		tag = SIB
-		has_country_leader = {
-			character = RUS_alexander_kolchak
-		}
-		has_capitulated = yes
+	is_triggered_only = yes
+	immediate = {
+		hidden_effect = {
+			if = {
+				limit = { 
+					tag = SOV
+				}
+				RUS = {
+					RUS_alexander_kolchak = {
+						set_nationality = ROOT
+					}				
+				}
+				SIB = {
+					SIB_viktor_pepelyayev = {
+						set_nationality = ROOT
+					}
+				}
+			}
+		}	
 	}
-	fire_only_once = yes
-	mean_time_to_happen = { days = 14 }
+	option = {
+		name = ww1_siberia.101.b
+		trigger = {
+			tag = SOV
+		}
+		retire_character = RUS_alexander_kolchak
+		retire_character = SIB_viktor_pepelyayev
+		add_war_support = 0.05
+		every_other_country = {
+			limit = {
+				is_russian_tag = yes
+				NOT = { has_government = communism }
+			}
+			country_event = ww1_siberia.201
+		}
+	}
 	option = {
 		name = ww1_siberia.201.a
-		retire_character = RUS_alexander_kolchak
-		add_war_support = -0.20
-		add_stability = -0.15
-		add_political_power = -200
-		hidden_effect = {
-			set_global_flag = kolchak_dead
-			if = {
-				limit = {
-					has_template = "Czechoslovak Legion"
-				}
-				delete_unit_template_and_units = {
-					division_template = "Czechoslovak Legion"
-					disband = no
-				}
-			}
-			if = {
-				limit = {
-					has_character = CZE_radola_gajda
-				}
-				CZE_radola_gajda = {
-					set_nationality = CZE
-					hidden_effect = {
-						promote_character = yes
-					}
-				}	
-			}
-			if = {
-				limit = {
-					has_character = CZE_stanislav_cecek
-				}
-				CZE_stanislav_cecek = {
-					set_nationality = CZE
-				}	
-			}
+		trigger = {
+			NOT = { tag = SOV }	
 		}
-		news_event = ww1_siberia.101
+		add_war_support = -0.05
+		add_stability = -0.05
+		add_political_power = -20	
 	}
 }
 
@@ -1694,9 +1928,8 @@ country_event = {
 			days = -30
 		}
 		hidden_effect = {
-			every_country = {
+			every_subject_country = {
 				limit = {
-					is_subject_of = ROOT
 					OR = {
 						has_government = fascism
 						has_government = neutrality
@@ -1722,6 +1955,15 @@ country_event = {
 		name = ww1_siberia.28.a
 		FROM = {
 			end_puppet = ROOT
+		}
+		if = {
+			limit = { 
+				OR = {
+					has_cosmetic_tag = ORE_RUS
+					has_cosmetic_tag = UCH_RUS
+				}
+			}
+			drop_cosmetic_tag = yes
 		}
 		hidden_effect = {
 			FROM = {
@@ -1844,20 +2086,60 @@ news_event = {
 	}
 }
 
-# Kolchak executed
+# Fall of the Russian State
 news_event = {
 	id = ww1_siberia.101
 	title = ww1_siberia.101.t
 	desc = ww1_siberia.101.d
-	picture = GFX_news_event_soviet_soldiers_ruins
+	picture = GFX_news_event_siberian_ice_march
 	is_triggered_only = yes
 	major = yes
+	immediate = {
+		set_global_flag = kolchak_dead
+		hidden_effect = {
+			every_country = {
+				limit = {
+					is_russian_tag = yes
+				}
+				if = {
+					limit = {
+						has_template = "Chekhoslovatskiy Polk"
+					}
+					delete_unit_template_and_units = {
+						division_template = "Chekhoslovatskiy Polk"
+						disband = no
+					}
+				}
+				if = {
+					limit = {
+						has_character = CZE_radola_gajda
+					}
+					CZE_radola_gajda = {
+						set_nationality = CZE
+						hidden_effect = {
+							promote_character = yes
+						}
+					}	
+				}
+				if = {
+					limit = {
+						has_character = CZE_stanislav_cecek
+					}
+					CZE_stanislav_cecek = {
+						set_nationality = CZE
+					}	
+				}
+			}		
+		}
+	}
 	option = {
 		name = ww1_siberia.101.a
 		trigger = {
 			original_tag = RUS
 			NOT = {
 				tag = SOV
+				is_ally_with = SOV
+				has_government = communism
 			}	
 		}
 	}
@@ -1866,8 +2148,7 @@ news_event = {
 		trigger = {
 			OR = {
 				tag = SOV
-				is_in_faction_with = SOV
-				is_subject_of = SOV
+				is_ally_with = SOV
 				has_government = communism
 			}
 		}
@@ -1878,8 +2159,51 @@ news_event = {
 			NOT = {
 				original_tag = RUS
 				tag = SOV
-				is_in_faction_with = SOV
-				is_subject_of = SOV
+				is_ally_with = SOV
+				has_government = communism
+			}
+		}
+	}
+}
+#Uprising of the Politcenter
+news_event = {
+	id = ww1_siberia.102
+	title = ww1_siberia.102.t
+	desc = ww1_siberia.102.d
+	picture = GFX_news_event_policentre
+	is_triggered_only = yes
+	major = yes
+	option = {
+		name = ww1_siberia.101.a
+		trigger = {
+			original_tag = RUS
+			NOT = {
+				has_cosmetic_tag = POLITCENTRE
+				tag = SOV
+				is_ally_with = SOV
+				has_government = communism
+			}	
+		}
+	}
+	option = {
+		name = ww1_siberia.101.b
+		trigger = {
+			OR = {
+				has_cosmetic_tag = POLITCENTRE
+				tag = SOV
+				is_ally_with = SOV
+				has_government = communism
+			}
+		}
+	}
+	option = {
+		name = ww1_siberia.101.c
+		trigger = {
+			NOT = {
+				has_cosmetic_tag = POLITCENTRE
+				original_tag = RUS
+				tag = SOV
+				is_ally_with = SOV
 				has_government = communism
 			}
 		}

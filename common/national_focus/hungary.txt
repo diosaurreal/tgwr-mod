@@ -8,7 +8,7 @@ focus_tree = {
 			tag = HUN 
 		} 
 	}	
-	continuous_focus_position = { x = 1800 y = 750 }
+	continuous_focus_position = { x = 0 y = 750 }
 	shared_focus = state_of_the_country_army
 	shared_focus = AUH_hungarian_aluminium_production
 	shared_focus = AUH_croatian_industrialisation
@@ -54,7 +54,7 @@ focus_tree = {
 		id = HUN_unite_F48P
 		icon = GFX_focus_generic_diplomatic_treaty
 		cost = 5
-		x = -4
+		x = 18
 		y = 0
 		available = {
 			NOT = {
@@ -94,7 +94,7 @@ focus_tree = {
 		id = HUN_merge_liberal_parties
 		icon = GFX_focus_generic_home_defense
 		cost = 5
-		x = -2
+		x = 20
 		y = 0
 		mutually_exclusive = {
 			focus = HUN_unite_F48P
@@ -103,10 +103,7 @@ focus_tree = {
 			has_country_flag = HUN_1910_elections_done
 		}
 		allow_branch = {
-			OR = {
-				is_subject_of = AUS
-				has_idea = AUH_ww1_House_Habsburg_Lorraine
-			}	
+			is_subject_of = AUS
 		}
 		completion_reward = {		
 			add_popularity = {
@@ -520,8 +517,8 @@ focus_tree = {
 		id = HUN_organise_national_uprising
 		icon = GFX_focus_AUH_support_hungary
 		cost = 10
-		x = -7
-		y = 0
+		x = 5
+		y = 4
 		available = {
 			has_capitulated = no
 			has_war_with = AUS	
@@ -753,7 +750,7 @@ focus_tree = {
 			add_tech_bonus = {
 				name = HUN_weapons_modernization
 				bonus = 1
-				category = artillery
+				category = cat_artillery
 				uses = 1
 			}
 		}
@@ -853,7 +850,7 @@ focus_tree = {
 		id = HUN_open_dunauijvaros_iron_mines
 		icon = GFX_focus_generic_steel
 		cost = 10
-		x = 18
+		x = 0
 		y = 0
 		available = {
 			owns_state = 43
@@ -865,9 +862,23 @@ focus_tree = {
 					level = 1
 					instant_build = yes
 				}
-				add_resource = {
-					type = steel
-					amount = 8
+				if = {
+					limit = {
+						has_start_date < 1914.1.1
+					}
+					# for 1914 transfered to on_startup
+					add_resource = {
+						type = steel
+						amount = 8
+					}
+				}
+				else = {
+					effect_tooltip = {
+						add_resource = {
+							type = steel
+							amount = 8
+						}
+					}
 				}
 			}
 		}
@@ -988,7 +999,7 @@ focus_tree = {
 			}
 			build_railway = {
 				level = 1
-				path = { 6700 679 6682 }
+				path = { 6700 679 9656 6682 }
 			}
 			build_railway = {
 				level = 1
@@ -1060,17 +1071,482 @@ focus_tree = {
 		}
 	}
 
+	focus = {
+		id = HUN_soviet_coup
+		icon = GFX_focus_HUN_soviet_coup
+		cost = 0
+		x = 20
+		y = 0
+		allow_branch = {
+			has_global_flag = has_had_communist_revolution_HUN
+		}
+		available = {
+			always = no
+		}
+		completion_reward = {	
+			effect_tooltip = {
+				set_politics = {
+					ruling_party = communism
+					elections_allowed = no
+				}	
+				promote_character = HUN_bela_kun
+			}	
+		}
+	}
+	focus = {
+		id = HUN_crush_opposition
+		icon = GFX_focus_HUN_reinstate_the_lenin_boys
+		cost = 2
+		x = 0
+		y = 1
+		relative_position_id = HUN_soviet_coup
+		prerequisite = {
+			focus = HUN_soviet_coup
+		}
+		available = {
+			has_government = communism
+		}
+		completion_reward = {		
+			swap_ideas = {
+				remove_idea = HUN_anti_communist_opposition
+				add_idea = HUN_lenin_boys
+			}
+		}
+		ai_will_do = { 
+			base = 10 
+		}
+	}
+	focus = {
+		id = HUN_mass_socialization
+		icon = GFX_focus_communist_heavy_industry
+		cost = 2
+		x = 2
+		y = 1
+		relative_position_id = HUN_soviet_coup
+		prerequisite = {
+			focus = HUN_soviet_coup
+		}
+		available = {
+			has_government = communism
+		}
+		completion_reward = {
+			random_owned_controlled_state = {
+				limit = {
+					is_core_of = ROOT
+				}
+				prioritize = {
+					43
+				}
+				add_extra_state_shared_building_slots = 1
+				add_building_construction = {
+					type = arms_factory
+					level = 1
+					instant_build = yes
+				}
+			}
+			add_ideas = HUN_socialist_economy
+		}
+		ai_will_do = { 
+			base = 10 
+		}
+	}
+	focus = {
+		id = HUN_collectivise_farming
+		icon = GFX_focus_agrarian_socialism
+		cost = 2
+		x = 1
+		y = 2
+		relative_position_id = HUN_soviet_coup
+		prerequisite = {
+			focus = HUN_mass_socialization
+		}
+		available = {
+			has_government = communism
+		}
+		completion_reward = {		
+			if = {
+				limit = {
+					has_idea = HUN_socialist_economy_union
+				}
+				swap_ideas = {
+					remove_idea = HUN_socialist_economy_union
+					add_idea = HUN_socialist_economy_final
+				}
+			}
+			else = {
+				swap_ideas = {
+					remove_idea = HUN_socialist_economy
+					add_idea = HUN_socialist_economy_collectivised
+				}
+			}
+			custom_effect_tooltip = HUN_has_taken_union_focus.tt
+			unlock_decision_tooltip = HUN_war_communism
+			custom_effect_tooltip = when_taken
+			effect_tooltip = {
+				add_stability = -0.1
+				if = {
+					limit = {
+						has_idea = HUN_socialist_economy_collectivised
+					}
+					swap_ideas = {
+						remove_idea = HUN_socialist_economy_collectivised
+						add_idea = HUN_socialist_economy_final
+					}
+				}
+				else = {
+					swap_ideas = {
+						remove_idea = HUN_socialist_economy
+						add_idea = HUN_socialist_economy_union
+					}
+				}
+			}
+		}
+		ai_will_do = { 
+			base = 10 
+		}
+	}
+	focus = {
+		id = HUN_union_decision_making
+		icon = GFX_focus_socialist_worker
+		cost = 2
+		x = 3
+		y = 2
+		relative_position_id = HUN_soviet_coup
+		prerequisite = {
+			focus = HUN_mass_socialization
+		}
+		available = {
+			has_government = communism
+		}
+		completion_reward = {		
+			if = {
+				limit = {
+					has_idea = HUN_socialist_economy_collectivised
+				}
+				swap_ideas = {
+					remove_idea = HUN_socialist_economy_collectivised
+					add_idea = HUN_socialist_economy_final
+				}
+			}
+			else = {
+				swap_ideas = {
+					remove_idea = HUN_socialist_economy
+					add_idea = HUN_socialist_economy_union
+				}
+			}
+			custom_effect_tooltip = HUN_has_taken_collectivise_focus.tt
+			unlock_decision_tooltip = HUN_war_communism
+			custom_effect_tooltip = when_taken
+			effect_tooltip = {
+				add_stability = -0.1
+				if = {
+					limit = {
+						has_idea = HUN_socialist_economy_collectivised
+					}
+					swap_ideas = {
+						remove_idea = HUN_socialist_economy_collectivised
+						add_idea = HUN_socialist_economy_final
+					}
+				}
+				else = {
+					swap_ideas = {
+						remove_idea = HUN_socialist_economy
+						add_idea = HUN_socialist_economy_union
+					}
+				}
+			}
+		}
+		ai_will_do = { 
+			base = 10 
+		}
+	}
+	focus = {
+		id = HUN_found_the_red_army
+		icon = GFX_focus_HUN_found_the_red_army
+		cost = 1
+		relative_position_id = HUN_soviet_coup
+		x = -2
+		y = 1
+		prerequisite = {
+			focus = HUN_soviet_coup
+		}
+		available = {
+			has_government = communism
+		}
+		completion_reward = {		
+			hidden_effect = {
+				division_template = {
+					name = "Milícia"
+					is_locked = yes
+					regiments = {
+						militia = {
+							x = 0
+							y = 0
+						}
+						militia = {
+							x = 0
+							y = 1
+						}
+						militia = {
+							x = 0
+							y = 2
+						}
+						militia = {
+							x = 0
+							y = 3
+						}
+					}
+				}
+				division_template = {
+					name = "Vörös Hadosztály"
+					is_locked = yes
+					regiments = {
+						infantry = {
+							x = 0
+							y = 0
+						}
+						infantry = {
+							x = 0
+							y = 1
+						}
+						infantry = {
+							x = 0
+							y = 2
+						}
+						infantry = {
+							x = 0
+							y = 3
+						}
+					}
+					support = {
+						engineer = {
+							x = 0
+							y = 1
+						}
+						field_gun = {
+							x = 0
+							y = 1
+						}
+						recon = {
+							x = 0
+							y = 2
+						}
+					}
+				}
+			}
+			43 = {
+				create_unit = {
+					division = "name = \"I Brigád\" division_template = \"Vörös Hadosztály\" start_experience_factor = 0.2 start_equipment_factor = 0.15"
+					owner = ROOT
+				}
+				create_unit = {
+					division = "name = \"II Brigád\" division_template = \"Vörös Hadosztály\" start_experience_factor = 0.2 start_equipment_factor = 0.15"
+					owner = ROOT
+				}
+				create_unit = {
+					division = "name = \"Munkás Milícia\" division_template = \"Milícia\" start_experience_factor = 0 start_equipment_factor = 0.1"
+					owner = ROOT
+					count = 2
+				}
+		    }
+			custom_effect_tooltip = empty_space_tt
+			unlock_decision_tooltip = HUN_found_the_international_brigade
+			custom_effect_tooltip = when_taken
+			custom_effect_tooltip = HUN_voros_division.tt
+			effect_tooltip = {
+				43 = {
+					create_unit = {
+						division = "name = \"80th Nemzetközi Brigád\" division_template = \"Vörös Hadosztály\" start_experience_factor = 0.3"
+						owner = ROOT
+					}
+				}
+			}
+		}
+		ai_will_do = { 
+			base = 10 
+		}
+	}
+	focus = {
+		id = HUN_conscript_factory_workers
+		icon = GFX_focus_army_is_ready
+		cost = 2
+		relative_position_id = HUN_soviet_coup
+		x = -3
+		y = 2
+		prerequisite = {
+			focus = HUN_found_the_red_army
+		}
+		available = {
+			has_government = communism
+		}
+		completion_reward = {	
+			custom_effect_tooltip = HUN_milicia_division.tt	
+			43 = {
+				create_unit = {
+					division = "name = \"Gyári Munkás Milícia\" division_template = \"Milícia\" start_experience_factor = 0 start_equipment_factor = 0.1"
+					owner = ROOT
+					count = 4
+					prioritize_location = 9660
+				}
+				create_unit = {
+					division = "name = \"Gyári Munkás Milícia\" division_template = \"Milícia\" start_experience_factor = 0 start_equipment_factor = 0.1"
+					owner = ROOT
+					count = 1
+					prioritize_location = 6751
+				}
+			}
+		}
+		ai_will_do = { 
+			base = 10 
+		}
+	}
+	focus = {
+		id = HUN_mass_recruitment
+		icon = GFX_focus_HUN_mass_recruitment
+		cost = 2
+		relative_position_id = HUN_soviet_coup
+		x = -1
+		y = 2
+		prerequisite = {
+			focus = HUN_found_the_red_army
+		}
+		available = {
+			has_government = communism
+		}
+		completion_reward = {
+			43 = {
+				create_unit = {
+					division = "name = \"Gyári Munkás Milícia\" division_template = \"Milícia\" start_experience_factor = 0.1 start_equipment_factor = 0.5"
+					owner = ROOT
+					count = 4
+					prioritize_location = 9660
+				}
+			}	
+			if = {
+				limit = {
+					NOT = {
+						has_idea = all_adults_serve
+						has_idea = scraping_the_barrel
+					}
+				}
+				add_ideas = all_adults_serve
+			}
+		}
+		ai_will_do = { 
+			base = 10 
+		}
+	}
+	focus = {
+		id = HUN_offensive_against_czechs
+		icon = GFX_focus_generic_attack_czechoslovakia
+		cost = 1
+		relative_position_id = HUN_soviet_coup
+		x = -2
+		y = 3
+		prerequisite = {
+			focus = HUN_found_the_red_army
+		}
+		available = {
+			has_government = communism
+			has_country_flag = HUN_czechs_making_moves
+		}
+		completion_reward = {		
+			hidden_effect = {
+				news_event = {
+					days = 1
+					id = ww1_romania.209
+				}
+			}
+			declare_war_on = {
+				target = CZE
+				type = take_core_state
+			}
+			activate_mission = HUN_capture_presov
+			custom_effect_tooltip = HUN_take_presov.tt
+			add_timed_idea = {
+				idea = HUN_czech_offensive
+				days = 50
+			}
+			custom_effect_tooltip = empty_space_tt
+			unlock_decision_tooltip = HUN_establish_slovak_soviet_republic
+			custom_effect_tooltip = when_taken
+			effect_tooltip = {
+				71 = {
+					set_state_owner_to = SLO
+				}
+				every_owned_state = {
+					limit = {
+						is_core_of = SLO
+						is_fully_controlled_by = HUN
+					}
+					transfer_state_to = SLO
+				}
+				SLO = {
+					set_politics = {
+						ruling_party = communism
+						elections_allowed = no 
+					}
+					set_capital = {
+						state = 71
+					}
+					set_cosmetic_tag = SLO_socialism
+				}
+				puppet = SLO
+			}
+		}
+		ai_will_do = { 
+			base = 100
+		}
+	}
+	focus = {
+		id = HUN_the_great_gambit
+		icon = GFX_focus_generic_attack_romania
+		cost = 2
+		relative_position_id = HUN_soviet_coup
+		x = -1
+		y = 4
+		prerequisite = {
+			focus = HUN_mass_recruitment
+		}
+		prerequisite = {
+			focus = HUN_offensive_against_czechs
+		}
+		available = {
+			has_government = communism
+			has_country_flag = HUN_preparing_rom_offensive
+		}
+		completion_reward = {		
+			custom_effect_tooltip = HUN_demarcations_broken.tt
+			clr_country_flag = HUN_preparing_rom_offensive
+			add_timed_idea = {
+				idea = HUN_desperate_rom_offensive
+				days = 50
+			}
+			hidden_effect = {
+				remove_ideas = HUN_armistice
+				ROM = {
+					remove_ideas = ROM_armistice
+				}
+			}
+			set_country_flag = HUN_rom_offensive
+		}
+		ai_will_do = { 
+			base = 100
+		}
+	}
 
 	focus = {
 		id = HUN_establish_the_hungarian_political_sphere
 		icon = GFX_focus_HUN_coat_of_arms
 		cost = 10
-		x = -1
+		x = 18
 		y = 0
 		allow_branch = {
 			is_subject = no
 			NOT = {
+				has_idea = AUH_ww1_House_Habsburg_Lorraine
 				has_global_flag = HUN_want_independence
+				has_global_flag = has_had_communist_revolution_HUN
 			}
 		}
 		available = {
@@ -1095,10 +1571,7 @@ focus_tree = {
 				has_war_with = AUS
 				has_global_flag = HUN_want_independence	
 			}
-			OR = {
-				is_in_faction_with = AUS
-				is_subject_of = AUS
-			}
+			is_ally_with = AUS
 		}
 		prerequisite = {
 			focus = HUN_establish_the_hungarian_political_sphere
@@ -1172,10 +1645,7 @@ focus_tree = {
 				has_government = communism
 				has_global_flag = HUN_want_independence	
 			}
-			OR = {
-				is_in_faction_with = AUS
-				is_subject_of = AUS
-			}
+			is_ally_with = AUS
 			AUS = {
 				OR = {
 					has_idea = AUH_karl_i
@@ -1318,7 +1788,7 @@ focus_tree = {
 		id = HUN_expand_the_honvedseg
 		icon = GFX_focus_AUH_the_army_question
 		cost = 10
-		x = 4
+		x = 6
 		y = 0
 		available = {
 			NOT = {
@@ -1370,9 +1840,21 @@ focus_tree = {
 					level = 1
 				}
 			}
-			custom_effect_tooltip = available_designer
-			show_ideas_tooltip = mavag
-			
+			if = {
+				limit = { 
+					NOT = { has_completed_focus = AUH_mavag_gyarak }
+				}
+				custom_effect_tooltip = available_designer
+				show_ideas_tooltip = mavag
+			}
+			IF = {
+				limit = {
+					has_dlc = "Arms Against Tyranny"
+				}
+				mio:HUN_mavag_organization  = {
+					add_mio_size = 1
+				}
+			}
 		}
 		ai_will_do = { factor = 100 }
 	}

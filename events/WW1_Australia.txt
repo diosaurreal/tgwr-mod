@@ -354,12 +354,6 @@ country_event = {
 			}
 			remove_ideas = AST_idea_Dominion_Army
 		}
-		if = {
-			limit = {
-				has_idea = AST_idea_Citizen_Army
-			}
-			remove_ideas = AST_idea_Citizen_Army
-		}
 	}
 	option = {
 		name = ww1_australia.12.b
@@ -423,12 +417,6 @@ country_event = {
 
 		if = {
 			limit = {
-				has_idea = AST_idea_Citizen_Army
-			}
-			remove_ideas = AST_idea_Citizen_Army
-		}
-		if = {
-			limit = {
 				ENG = {
 					has_idea = ENG_Staff
 				}
@@ -459,8 +447,15 @@ country_event = {
 			limit = {
 				NZL = {
 					is_subject = no
-					has_government = democratic
+					OR = {
+						has_government = democratic
+						has_government = neutrality
+					}					
 				}
+			}
+			NZL = {
+				get_current_government_type = yes
+				set_country_flag = colony
 			}
 			set_autonomy = {
 				target = NZL
@@ -469,16 +464,8 @@ country_event = {
 			}
 
 			NZL = {
-				set_politics = {
-					ruling_party = democratic
-					elections_allowed = yes
-				}
-				set_popularities = {
-					democratic = 90
-					fascism = 0
-					communism = 1
-					neutrality = 9
-				}
+				restore_previous_government_type = yes
+				set_country_flag = colony
 			}
 		}
 	}
@@ -707,7 +694,7 @@ country_event = {
 			start_civil_war = {
 				ideology = fascism
 				size = 0.4
-				capital = 285
+				capital = 1106
 				states = { 522 674 520 521 519 }
 				keep_political_party_members = yes
 			}
@@ -803,20 +790,20 @@ country_event = {
 					priority = 0
 					division_names_group = ENG_DEM_01
 					regiments = {
-						irregular_infantry = { x = 0 y = 0 }
-						irregular_infantry = { x = 0 y = 1 }
-						irregular_infantry = { x = 0 y = 2 }
-						irregular_infantry = { x = 1 y = 0 }
-						irregular_infantry = { x = 1 y = 1 }
-						irregular_infantry = { x = 1 y = 2 }
-						irregular_infantry = { x = 2 y = 0 }
-						irregular_infantry = { x = 2 y = 1 }
-						irregular_infantry = { x = 2 y = 2 }
-						irregular_infantry = { x = 2 y = 3 }
+						militia = { x = 0 y = 0 }
+						militia = { x = 0 y = 1 }
+						militia = { x = 0 y = 2 }
+						militia = { x = 1 y = 0 }
+						militia = { x = 1 y = 1 }
+						militia = { x = 1 y = 2 }
+						militia = { x = 2 y = 0 }
+						militia = { x = 2 y = 1 }
+						militia = { x = 2 y = 2 }
+						militia = { x = 2 y = 3 }
 					}
 					support = {
 						engineer = { x = 0 y = 0 }
-						artillery = { x = 0 y = 0 }
+						field_gun = { x = 0 y = 0 }
 						field_hospital = { x = 0 y = 0 }
 					}
 				}
@@ -872,6 +859,10 @@ country_event = {
 						owner = PREV
 					}
 				}
+			}
+			news_event = {
+				id = ww1_australia.29
+				hours = 3
 			}
 		}
 	}
@@ -977,16 +968,18 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_australia.22.a
+		set_country_flag = colony
+		get_current_government_type = yes
 		FROM = {
 			set_autonomy = {
 				target = ROOT
 				autonomy_state = autonomy_dominion
 			}
 		}
+		restore_previous_government_type = yes
 	}
 	option = {
 		name = ww1_australia.22.b
-		custom_effect_tooltip = historical_tt
 		ai_chance = { factor = 0 }
 		FROM = { country_event = ww1_australia.23 }
 	}
@@ -1001,7 +994,6 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_australia.23.a
-		custom_effect_tooltip = historical_tt
 		add_political_power = -25
 	}
 	option = {
@@ -1051,6 +1043,10 @@ country_event = {
 				neutrality = 12
 				communism = 32 #they will be enforced by influence idea
 				democratic = 20
+			}
+			news_event = {
+				id = ww1_australia.28
+				hours = 3
 			}
 		}
 	}
@@ -1126,6 +1122,7 @@ country_event = {
 		}
 		hidden_effect = {
 			get_current_government_type = yes
+			set_country_flag = colony
 			ENG = {
 				set_autonomy = {
 					target = ROOT
@@ -1174,10 +1171,7 @@ country_event = {
 		name = ww1_australia.27.a
 		custom_effect_tooltip = historical_tt
 		add_stability = 0.02
-		set_province_name = {
-			id = 7669
-			name = VICTORY_POINTS_7669_2
-		}
+		set_province_name = { id = 7669 name = DARWIN_PROV }
 		ai_chance = {
 			factor = 100 # AI always picks this option
 		}
@@ -1187,6 +1181,62 @@ country_event = {
 		add_political_power = 15
 		ai_chance = {
 			factor = 0
+		}
+	}
+}
+
+# Australian Crisis news
+news_event = {
+	id = ww1_australia.28
+	title = ww1_australia.28.t
+	desc = ww1_australia.28.d
+	picture = GFX_news_event_generic_riot
+	is_triggered_only = yes
+	major = yes
+	option = {
+		name = ww1_australia.28.a
+		trigger = {
+			is_commonwealth_tag = yes
+			NOT = {
+				has_government = communism
+			}
+		}
+	}
+	option = {
+		name = ww1_australia.28.b
+		trigger = {
+			OR = {
+				has_government = communism
+				is_commonwealth_tag = no
+			}
+		}
+	}
+}
+
+# Australian Civil War news
+news_event = {
+	id = ww1_australia.29
+	title = ww1_australia.29.t
+	desc = ww1_australia.29.d
+	picture = GFX_news_event_eng_civil_war
+	is_triggered_only = yes
+	major = yes
+	option = {
+		name = ww1_australia.29.a
+		trigger = {
+			is_commonwealth_tag = yes
+			NOT = {
+				has_government = communism
+			}
+		}
+	}
+	option = {
+		name = ww1_australia.29.b
+		trigger = {
+			OR = {
+				has_government = communism
+				is_commonwealth_tag = no
+			}
 		}
 	}
 }
