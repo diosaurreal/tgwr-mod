@@ -1,0 +1,66 @@
+RCW_core_state_FROM = {
+	add_state_core = PREV
+	if = {
+		limit = { 
+			FROM = { is_claimed_by = PREV }
+		}
+		remove_state_claim = FROM
+	}
+	FROM = {
+		if = {
+			limit = { 
+				OWNER = { is_russian_tag = yes }					
+			}
+			if = {
+				limit = {
+					is_capital = no
+					OWNER = {
+						any_owned_state = {
+							NOT = { state = FROM }
+						}
+					}				
+				}
+				add_contested_owner = OWNER
+				set_state_owner_to = PREV
+			}
+			else = {
+				add_contested_owner = PREV
+			}
+		}
+	}
+	every_possible_country = {
+		limit = {			
+			original_tag = RUS
+			NOT = { tag = PREV }
+			FROM = { is_core_of = PREV }
+		}
+		remove_state_core = FROM
+		if = {
+			limit = { exists = yes }
+			add_state_claim = FROM
+		}		
+	}
+}
+RCW_transfer_state_PREV = {
+	every_other_country = {
+		limit = {
+			has_war_with = PREV.PREV.OWNER
+			controls_state = PREV
+		}
+		PREV = { give_military_access = PREV }
+	}
+	PREV = { add_contested_owner = OWNER }
+	transfer_state = PREV
+}
+RCW_transfer_core_state_PREV = {
+	RCW_transfer_state_PREV = yes
+	add_state_core = PREV
+	every_other_country = {
+		limit = {
+			original_tag = RUS
+			any_core_state = { state = PREV.PREV.PREV }
+		}
+		remove_state_core = PREV.PREV
+		add_state_claim = PREV.PREV
+	}
+}
