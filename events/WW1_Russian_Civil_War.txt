@@ -513,6 +513,9 @@ country_event = {
 			SIB = {
 				give_military_access = TBK
 			}
+			CER = {
+				give_military_access = TBK
+			}
 			563 = {
 				create_unit = {
 					division = "division_template = \"Kazach'ya Brigada\"	start_experience_factor = 0.4	start_equipment_factor = 1"
@@ -525,7 +528,7 @@ country_event = {
 					}
 				}
                 create_unit = {
-					division = "division_template = \"Belogvardeyskiy Korpus\"	start_experience_factor = 0.4	start_equipment_factor = 1"
+					division = "division_template = \"Pekhotnaya Brigada\"	start_experience_factor = 0.4	start_equipment_factor = 1"
 					owner = TBK
                     prioritize_location = 7725
 					allow_spawning_on_enemy_provs = yes
@@ -535,7 +538,7 @@ country_event = {
 					}
 				}
                 create_unit = {
-					division = "division_template = \"Belogvardeyskiy Korpus\"	start_experience_factor = 0.4	start_equipment_factor = 1"
+					division = "division_template = \"Pekhotnaya Brigada\"	start_experience_factor = 0.4	start_equipment_factor = 1"
 					owner = TBK
                     prioritize_location = 12622
 					allow_spawning_on_enemy_provs = yes
@@ -651,12 +654,13 @@ country_event = {
 			}
 			URA = {
 				add_ideas = RUS_russian_civil_war
-				inherit_technology = SIB
+				give_military_access = ROOT
+				inherit_technology = ROOT
 				delete_obsolete_russian_templates = yes
 				load_oob = RUS_civil_war
-				declare_war_on = {
-					target = SOV
-					type = civil_war
+				add_to_war = {
+					targeted_alliance = ROOT
+					enemy = SOV
 				}
 				set_politics = {
 					ruling_party = neutrality
@@ -733,6 +737,15 @@ country_event = {
 			delete_unit_template_and_units = {
 				division_template = "Krasnaya Gvardiya"
 			}
+			load_oob = RUS_cossack
+			capital_scope = {
+				create_unit = {
+					division = "division_template = \"Kazach'ya Brigada\"	start_experience_factor = 0.4	start_equipment_factor = 0.5"
+					owner = PREV
+					allow_spawning_on_enemy_provs = yes
+					count = 2
+				}
+			}
 		}
 		declare_war_on = {
 			target = SOV
@@ -776,15 +789,14 @@ country_event = {
 				limit = {
 					OR = {
 						tag = SOV
-						is_subject_of = SOV
-						is_in_faction_with = SOV
+						is_ally_with = SOV
 					}
 				}
 				ROOT = {
 					white_peace = PREV
 				}	
 			}	
-		}	
+		}
 		hidden_effect = {
 			set_cosmetic_tag = PRI_communism
 			load_focus_tree = empty_focus
@@ -804,9 +816,50 @@ country_event = {
 				name = FER_fascism_party
 			}
 			SOV = {
-				SOV_sergey_lazo = {
-					set_nationality = PRI
+				if = {
+					limit = {
+						has_character = SOV_sergey_lazo
+					}
+					SOV_sergey_lazo = {
+						set_nationality = PRI
+					}
 				}			
+			}
+		}
+		if = {
+			limit = {
+				FER = {
+					exists = yes
+					OR = {
+						is_subject = no
+						is_subject_of = SOV
+					}
+					OR = {
+						is_in_faction_with = SOV
+						has_government = communism
+					}
+				}
+			}
+			if = {
+				limit = {
+					has_character = SOV_sergey_lazo
+				}
+				SOV_sergey_lazo = {
+					set_nationality = FER
+				}
+			}
+			FER = {
+				annex_country = {
+					target = PRI
+				}
+			}
+			hidden_effect = {
+				every_state = {
+					limit = {
+						is_core_of = PRI
+					}
+					remove_core_of = PRI
+				}
 			}
 		}
 	}
@@ -2067,17 +2120,40 @@ country_event = {
 	
 	option = {
 		name = ww1_rcw_unification.8.a #okay
+		every_owned_state = {
+			limit = {
+				NOT = {
+					is_core_of = ROOT
+					is_claimed_by = ROOT
+				}
+				OR = {
+					is_core_of = FROM
+					is_claimed_by = FROM
+				}
+			}
+			transfer_state_to = FROM
+		}
 		get_current_government_type = yes
 		FROM = {
 			set_autonomy = {
 				target = ROOT
 				end_wars = no
 				end_civil_wars = no
-				autonomy_state = autonomy_dominion
+				autonomy_state = autonomy_satellite
 			}
-		}			
-		restore_previous_government_type = yes	
-		set_cosmetic_tag = RUS_republic_democratic_no_name
+		}
+		restore_previous_government_type = yes
+		if = {
+			limit = {
+				NOT = {
+					has_cosmetic_tag = GEO_TSCN
+					has_cosmetic_tag = GEO_TSCN_commissariat
+					has_cosmetic_tag = GEO_TSCN_committee
+					has_cosmetic_tag = GEO_TSCN_communism
+				}
+			}
+			set_cosmetic_tag = RUS_puppet
+		}
 		if = {
 			limit = {
 				tag = MOU
@@ -2089,6 +2165,22 @@ country_event = {
 				id = ww1_rcw_unification.10
 				random_days = 7
 				days = 1
+			}
+			if = {
+				limit = {
+					ROOT = { original_tag = TRK }
+				}
+				every_owned_state = {
+					limit = {
+						OR = {
+							state = 585
+							state = 586
+							state = 732
+							state = 1219
+						}
+					}
+					transfer_state_to = ROOT
+				}
 			}
 		}
 		ai_chance = {
@@ -2125,12 +2217,27 @@ country_event = {
 				}
 				factor = 0
 			}
+			modifier = {
+				#Basmachi
+				OR = {
+					tag = KHI
+					tag = BUK
+					tag = TRK
+				}
+				factor = 0
+			}
 		}
 	}
 	option = {
-		name = ww1_russia.8.b # lol no
+		name = ww1_rcw_unification.8.b # lol no
 		ai_chance = {
 			base = 1
+			modifier = {
+				add = 40
+				FROM = {
+					is_neighbor_of_subject = no
+				}
+			}
 		}
 		FROM = {
 			country_event = {
@@ -2168,7 +2275,7 @@ country_event = {
 		effect_tooltip = {
 			set_autonomy = {
 				target = FROM
-				autonomy_state = autonomy_dominion
+				autonomy_state = autonomy_satellite
 			}
 		}
 	}

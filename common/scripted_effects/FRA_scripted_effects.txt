@@ -12,6 +12,45 @@ remove_french_presidents = {
 	}
 }
 
+FRA_the_first_carrier_effect = {
+	hidden_effect = {
+		set_technology = {
+			early_ship_hull_carrier = 1
+		}
+	}
+	create_equipment_variant = {
+		name = "Foudre Class"
+		type = ship_hull_carrier_conversion_ca
+		name_group = FRA_CL_HISTORICAL
+		parent_version = 0
+		modules = {
+			fixed_ship_deck_slot_1 = ship_deck_space
+			fixed_ship_deck_slot_2 = empty
+			fixed_ship_anti_air_slot = empty
+			fixed_ship_radar_slot = empty
+			fixed_ship_engine_slot = carrier_ship_engine_1
+			fixed_ship_secondaries_slot = empty
+		}
+	}
+	create_ship = {
+		type = ship_hull_carrier_conversion_ca
+		equipment_variant = "Foudre Class"
+		name = "Foudre"
+	}
+	if = {
+		limit = {
+			has_tech = seaplane1
+		}
+		add_equipment_to_stockpile = {
+			type = seaplane_equipment_1
+			amount = 10
+		}
+		else = {
+			custom_effect_tooltip = FRA_the_first_carrier_create_seaplanes
+		}
+	}
+}
+
 FRA_clear_all_alliance = {
 	clr_country_flag = SFIO_allied
 	clr_country_flag = independent_socialist_allied
@@ -1678,20 +1717,6 @@ FRA_spawn_renault_tanks = {
 			}
 		}
 	}
-	random_owned_controlled_state = {
-		limit = {
-			is_core_of = ROOT
-			is_on_continent = europe
-		}
-		create_unit = {
-			division = "name = \"1ère brigade de chars légers\" division_template = \"Brigade de cavalerie blindée\" start_equipment_factor = 0.6"
-			owner = ROOT
-		}
-		create_unit = {
-			division = "name = \"2ème brigade de chars légers\" division_template = \"Brigade de cavalerie blindée\" start_equipment_factor = 0.6"
-			owner = ROOT
-		}
-	}
 }
 
 FRA_spawn_peugeot_tanks = {
@@ -1796,20 +1821,6 @@ FRA_spawn_peugeot_tanks = {
 			}
 		}
 	}
-	random_owned_controlled_state = {
-		limit = {
-			is_core_of = ROOT
-			is_on_continent = europe
-		}
-		create_unit = {
-			division = "name = \"1ère brigade de chars légers\" division_template = \"Brigade de cavalerie blindée\" start_equipment_factor = 0.6"
-			owner = ROOT
-		}
-		create_unit = {
-			division = "name = \"2ème brigade de chars légers\" division_template = \"Brigade de cavalerie blindée\" start_equipment_factor = 0.6"
-			owner = ROOT
-		}
-	}
 }
 
 FRA_french_surrender_effect = {
@@ -1841,6 +1852,17 @@ FRA_french_surrender_effect = {
 				add_ideas = idea_armistice
 			}
 		}
+		every_state = {
+			limit = {
+				is_owned_by = FRA
+				is_on_continent = europe
+			}
+			teleport_armies = {
+				limit = {
+					has_war_with = FRA
+				}
+			}
+		}
 		every_country = {
 			limit = {
 				has_war_with = FRA
@@ -1856,6 +1878,25 @@ FRA_french_surrender_effect = {
 				set_truce = {
 					target = PREV
 					days = 365
+				}
+			}
+		}
+		every_state = {
+			limit = {
+				NOT = {
+					is_owned_by = FRA
+					owner = {
+						is_subject_of = FRA
+						has_war_with = FRA
+					}
+				}
+			}
+			teleport_armies = {
+				limit = {
+					OR = {
+						tag = FRA
+						is_subject_of = FRA
+					}
 				}
 			}
 		}
@@ -2144,5 +2185,154 @@ FRC_adopt_swiss_militias = {
 			}
 		}
 		add_ideas = FRA_garde_populaire_nationale
+	}
+}
+
+FRA_setup_german_government = {
+	create_country_leader = {
+		name = "GER_erich_ludendorff"
+		picture = "gfx/leaders/GER/GER_erich_ludendorff.png"
+		ideology = stratocracy
+		traits = { foreign_leader german_agent }
+	}
+	create_country_leader = {
+		name = "FRA_gouvernement_provisoire"
+		picture = "gfx/leaders/FRA/FRA_provisional_government.png"
+		ideology = authoritarian_democracy
+		traits = { german_agent }
+	}
+	create_country_leader = {
+		name = "FRA_gouvernement_provisoire"
+		picture = "gfx/leaders/FRA/FRA_provisional_government.png"
+		ideology = conservatism
+		traits = { german_agent }
+	}
+	set_party_name = {
+		ideology = democratic
+		long_name = NFA_fascism_party_long
+		name = NFA_fascism_party
+	}
+	set_party_name = {
+		ideology = neutrality
+		long_name = NFA_fascism_party_long
+		name = NFA_fascism_party
+	}
+	set_party_name = {
+		ideology = fascism
+		long_name = NFA_fascism_party_long
+		name = NFA_fascism_party
+	}
+	set_cosmetic_tag = FRP
+	if = {
+		limit = {
+			FROM = {
+				is_GER_a_monarchy = yes
+			}
+		}
+		FRA_setup_german_monarch = yes
+	}
+	else_if = {
+		limit = {
+			NOT = { has_government = communism }
+		}
+		set_politics = {
+			ruling_party = fascism
+			elections_allowed = no
+		}
+		set_popularities = {
+			democratic = 30
+			neutrality = 32
+			fascism = 38
+			communism = 10
+		}
+	}
+}
+
+FRA_setup_german_monarch = {
+	if = {
+		limit = {
+			NOT = {
+				any_other_country = {
+					has_country_leader = {
+						character = GER_joachim_von_preussen
+						ruling_only = no
+					}
+				}
+			}
+		}
+		GER = {
+			GER_joachim_von_preussen = {
+				set_character_name = FRA_joachim_von_preussen
+				set_nationality = PREV.PREV
+				if = {
+					limit = {
+						has_ideology = semi_constitutional_monarchy_reserve
+					}
+					promote_character = semi_constitutional_monarchy_reserve
+				}
+				else = {
+					add_country_leader_role = {
+						promote_leader = yes
+						country_leader = {
+							ideology = semi_constitutional_monarchy_reserve
+							traits = { foreign_leader german_agent }
+						}
+					}
+				}
+			}
+		}
+	}
+	else = {
+		random_list = {
+			80 = {
+				GER = {
+					GER_eitel_friedrich = {
+						set_character_name = FRA_eitel_friedrich
+						set_nationality = PREV.PREV
+						
+						if = {
+							limit = {
+								has_ideology = semi_constitutional_monarchy_reserve
+							}
+							promote_character = semi_constitutional_monarchy_reserve
+						}
+						else = {
+							add_country_leader_role = {
+								promote_leader = yes
+								country_leader = {
+									ideology = semi_constitutional_monarchy_reserve
+									traits = { unpopular_monarch soldier_king foreign_leader german_agent }
+								}
+							}
+						}
+					}
+				}
+			}
+			20 = { # rare chance meme
+				modifier = {
+					factor = 0
+					is_historical_focus_on = yes
+				}
+				create_country_leader = {
+					name = FRA_victoire
+					picture = "gfx/leaders/GER/GER_Victoria_Louise.png"
+					ideology = semi_constitutional_monarchy_reserve
+					female = yes
+					traits = { illegitimate_monarch victoria_iii foreign_leader german_agent }
+				}
+			}
+		}
+	}
+	set_politics = {
+		ruling_party = neutrality
+		long_name = FRA_hohenzollern_party
+		name = FRA_hohenzollern_party
+		elections_allowed = yes
+	}
+	set_popularities = {
+		democratic = 14
+		neutrality = 52
+		fascism = 34
+		communism = 10
 	}
 }
