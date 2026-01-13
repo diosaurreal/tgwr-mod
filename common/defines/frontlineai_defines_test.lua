@@ -237,6 +237,10 @@ NDefines.NAI.PLAN_MIN_SIZE_FOR_FALLBACK = 5000					                -- A country 
 
 NDefines.NAI.RECON_PLANES_NAVAL = 0.1
 NDefines.NAI.RECON_PLANES_LAND_COMBAT = 100
+
+NDefines.NAI.LOW_PRIO_TEMPLATE_BONUS_FOR_GARRISONS = 300000
+NDefines.NAI.LOW_PRIO_TEMPLATE_PENALTY_FOR_FRONTS = -2000
+NDefines.NAITheatre.AI_THEATRE_SUPPLY_CRISIS_LIMIT = 0.25
 --------------------------------------------------------------------------------------------------------------
 -- OlD COAST DEFENSE AI
 --------------------------------------------------------------------------------------------------------------
@@ -419,7 +423,6 @@ NDefines.NAI.DIPLO_PREFER_OTHER_FACTION = -400			-- The country has yet to ask s
 NDefines.NTrade.DISTANCE_TRADE_FACTOR = -0.0001			-- Trade factor is modified by distance times this vanilla -.02
 NDefines.NAI.TRADEABLE_FACTORIES_FRACTION = 0.6			-- Will at most trade away this fraction of factories.
 NDefines.NDiplomacy.NOT_READY_FOR_WAR_BASE = -100 		-- AI should be unwilling to enter accept a call to war if not ready ---for war against the relevant enemies. vanilla -50 - suggested define by SensitiveDannyBoi
-NDefines.NAI.LENDLEASE_FRACTION_OF_PRODUCTION = 0.1		-- Base fraction AI would send as lendlease 0.5 vanilla less base production used, perhaps will promote AI to send more?
 
 --- AI Defines
 NDefines.NAI.MICRO_POCKET_SIZE = 1						-- Pockets with a size equal to or lower than this will be mocroed by the AI, for efficiency.
@@ -445,9 +448,6 @@ NDefines.NAI.EQUIPMENT_MARKET_NR_DELIVERIES_SOFT_MAX = 7                   -- AI
 NDefines.NProduction.EQUIPMENT_LEND_LEASE_WEIGHT_FACTOR     = 0.0025
 NDefines.NProduction.LEND_LEASE_DELIVERY_TOTAL_DAYS = 15
 
-NDefines.NAI.DIPLOMACY_LEND_LEASE_MONTHS_TO_CANCEL = 16
-NDefines.NAI.MINIMUM_EQUIPMENT_TO_ASK_LEND_LEASE = 1500
-NDefines.NAI.MINIMUM_CONVOY_TO_ASK_LEND_LEASE = 500
 NDefines.NAI.MINIMUM_FUEL_DAYS_TO_ASK_LEND_LEASE = 10
 NDefines.NAI.MINIMUM_FUEL_DAYS_TO_ACCEPT_LEND_LEASE = 5
 
@@ -467,3 +467,10 @@ NDefines.NAI.AIFC_TARGET_CAPITAL_SCORE_EXTRA = 15
 NDefines.NAI.AIFC_TARGET_IGNORE_VP_THRESHOLD = 5
 
 NDefines.NAI.ASSIGN_INVASION_AMPHIBIOUS_ATTACK_FACTOR = 50
+
+NDefines.NAI.BUILDING_TARGETS_BUILDING_PRIORITIES = {
+	'air_base',
+	'infrastructure',
+	'dockyard',
+	'industrial_complex',
+}
