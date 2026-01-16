@@ -1245,7 +1245,7 @@ country_event = {
 	option = {
 		name = ww1_rcw_unification.1.b # no
 		ai_chance = {
-			factor = 0
+			base = 0
 		}
 		FROM = {
 			country_event = {
@@ -1274,6 +1274,7 @@ country_event = {
 	}
 	option = {
 		name = ww1_rcw_unification.2.a # yes
+		take_all_subjects_FROM = yes
 		if = {
 			limit = {
 				FROM = {
@@ -1373,6 +1374,15 @@ country_event = {
 				}
 			}
 		}
+		every_subject_country = {
+			limit = {
+				is_russian_tag = yes
+			}
+			country_event = {
+				id = ww1_rcw_unification.1
+				random_hours = 12
+			}	
+		}
 		if = {
 			limit = {
 				is_ai = yes
@@ -1392,6 +1402,34 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_rcw_unification.3.a # yes
+		if = {
+			limit = {
+				has_subject = FROM
+			}
+			end_puppet = FROM
+		}
+		else_if = {
+			limit = { 
+				is_subject_of = FROM
+			}
+			FROM = {
+				end_puppet = ROOT
+			}
+		}
+		if = {
+			limit = {
+				is_in_faction_with = FROM
+			}
+			if = {
+				limit = {
+					FROM = { is_faction_leader = no }
+				}
+				FROM = { leave_faction = yes }
+			}
+			else = {
+				leave_faction = yes
+			}
+		}
 		create_wargoal = {
 			type = annex_everything
 			target = FROM
@@ -1442,6 +1480,13 @@ country_event = {
 					}
 				}
 			}
+			modifier = {
+				factor = 2
+				OR = {
+					has_government = democratic
+					has_country_leader_ideology = authoritarian_democracy
+				}
+			}
 		}
 		219 = {
 			OWNER = {
@@ -1463,6 +1508,14 @@ country_event = {
 						has_country_flag = has_supported_tsardom
 					}
 				}
+			}
+			modifier = {
+				factor = 2
+				is_cossack_tag = yes
+			}
+			modifier = {
+				factor = 0
+				has_government = communism
 			}
 		}
 		trigger = {
@@ -1491,6 +1544,14 @@ country_event = {
 						has_country_flag = has_supported_dictatorship
 					}
 				}
+			}
+			modifier = {
+				factor = 2
+				has_government = fascism
+			}
+			modifier = {
+				factor = 0
+				has_government = communism
 			}
 		}
 		trigger = {
@@ -1559,10 +1620,13 @@ country_event = {
 			}
 			every_other_country = {
 				limit = {
-					is_russian_tag = yes				
+					is_russian_tag = yes
+					OR = {
+						is_subject_of = ROOT
+						is_subject = no
+					}
 					NOT = {
 						has_war_with = ROOT
-						is_subject_of = ROOT
 						has_country_leader_ideology = vanguardism
 						has_country_leader_ideology = revolutionary_socialism
 						has_country_flag = has_left_the_conference
@@ -1617,10 +1681,13 @@ country_event = {
 			}	
 			every_other_country = {
 				limit = {
-					is_russian_tag = yes				
+					is_russian_tag = yes
+					OR = {
+						is_subject_of = ROOT
+						is_subject = no
+					}
 					NOT = {
 						has_war_with = ROOT
-						is_subject_of = ROOT
 						has_country_leader_ideology = vanguardism
 						has_country_leader_ideology = revolutionary_socialism
 						has_country_flag = has_left_the_conference
@@ -1671,10 +1738,13 @@ country_event = {
 			}
 			every_other_country = {
 				limit = {
-					is_russian_tag = yes				
+					is_russian_tag = yes
+					OR = {
+						is_subject_of = ROOT
+						is_subject = no
+					}
 					NOT = {
 						has_war_with = ROOT
-						is_subject_of = ROOT
 						has_country_leader_ideology = vanguardism
 						has_country_leader_ideology = revolutionary_socialism
 						has_country_flag = has_left_the_conference
@@ -1729,10 +1799,13 @@ country_event = {
 			}
 			every_other_country = {
 				limit = {
-					is_russian_tag = yes				
+					is_russian_tag = yes
+					OR = {
+						is_subject_of = ROOT
+						is_subject = no
+					}
 					NOT = {
 						has_war_with = ROOT
-						is_subject_of = ROOT
 						has_country_leader_ideology = vanguardism
 						has_country_leader_ideology = revolutionary_socialism
 						has_country_flag = has_left_the_conference
@@ -1783,10 +1856,13 @@ country_event = {
 			}
 			every_other_country = {
 				limit = {
-					is_russian_tag = yes				
+					is_russian_tag = yes	
+					OR = {
+						is_subject_of = ROOT
+						is_subject = no
+					}
 					NOT = {
 						has_war_with = ROOT
-						is_subject_of = ROOT
 						has_country_leader_ideology = vanguardism
 						has_country_leader_ideology = revolutionary_socialism
 						has_country_flag = has_left_the_conference
@@ -1841,10 +1917,13 @@ country_event = {
 			}
 			every_other_country = {
 				limit = {
-					is_russian_tag = yes				
+					is_russian_tag = yes
+					OR = {
+						is_subject_of = ROOT
+						is_subject = no
+					}
 					NOT = {
 						has_war_with = ROOT
-						is_subject_of = ROOT
 						has_country_leader_ideology = vanguardism
 						has_country_leader_ideology = revolutionary_socialism
 						has_country_flag = has_left_the_conference
@@ -1895,9 +1974,17 @@ country_event = {
 		}
 	}
 	immediate = {
-		clr_country_flag = has_supported_dictatorship
-		clr_country_flag = has_supported_republic
-		clr_country_flag = has_supported_tsardom
+		hidden_effect = {
+			every_country = {
+				limit = {
+					is_russian_tag = yes
+					NOT = { has_country_flag = has_left_the_conference }
+				}
+				clr_country_flag = has_supported_dictatorship
+				clr_country_flag = has_supported_republic
+				clr_country_flag = has_supported_tsardom
+			}
+		}	
 	}
 	
 	option = {
@@ -1938,6 +2025,7 @@ country_event = {
 				OR = {
 					has_government = democratic
 					has_government = communism
+					is_cossack_tag = yes #wants autonomy
 				}			
 			}
 			modifier = {
@@ -2025,10 +2113,13 @@ country_event = {
 			}
 			every_other_country = {
 				limit = {
-					is_russian_tag = yes				
+					is_russian_tag = yes
+					OR = {
+						is_subject_of = ROOT
+						is_subject = no
+					}
 					NOT = {
 						has_war_with = ROOT
-						is_subject_of = ROOT
 						has_country_leader_ideology = vanguardism
 						has_country_leader_ideology = revolutionary_socialism
 						has_country_flag = has_left_the_conference
@@ -2086,10 +2177,13 @@ country_event = {
 			}
 			every_other_country = {
 				limit = {
-					is_russian_tag = yes				
+					is_russian_tag = yes
+					OR = {
+						is_subject_of = ROOT
+						is_subject = no
+					}	
 					NOT = {
 						has_war_with = ROOT
-						is_subject_of = ROOT
 						has_country_leader_ideology = vanguardism
 						has_country_leader_ideology = revolutionary_socialism
 						has_country_flag = has_left_the_conference
@@ -2147,10 +2241,13 @@ country_event = {
 			}
 			every_other_country = {
 				limit = {
-					is_russian_tag = yes				
+					is_russian_tag = yes
+					OR = {
+						is_subject_of = ROOT
+						is_subject = no
+					}		
 					NOT = {
 						has_war_with = ROOT
-						is_subject_of = ROOT
 						has_country_leader_ideology = vanguardism
 						has_country_leader_ideology = revolutionary_socialism
 						has_country_flag = has_left_the_conference
@@ -2208,10 +2305,13 @@ country_event = {
 			}
 			every_other_country = {
 				limit = {
-					is_russian_tag = yes				
+					is_russian_tag = yes
+					OR = {
+						is_subject_of = ROOT
+						is_subject = no
+					}	
 					NOT = {
 						has_war_with = ROOT
-						is_subject_of = ROOT
 						has_country_leader_ideology = vanguardism
 						has_country_leader_ideology = revolutionary_socialism
 						has_country_flag = has_left_the_conference
@@ -2272,10 +2372,13 @@ country_event = {
 			}
 			every_other_country = {
 				limit = {
-					is_russian_tag = yes				
+					is_russian_tag = yes
+					OR = {
+						is_subject_of = ROOT
+						is_subject = no
+					}
 					NOT = {
 						has_war_with = ROOT
-						is_subject_of = ROOT
 						has_country_leader_ideology = vanguardism
 						has_country_leader_ideology = revolutionary_socialism
 						has_country_flag = has_left_the_conference
@@ -2333,10 +2436,13 @@ country_event = {
 			}
 			every_other_country = {
 				limit = {
-					is_russian_tag = yes				
+					is_russian_tag = yes	
+					OR = {
+						is_subject_of = ROOT
+						is_subject = no
+					}
 					NOT = {
 						has_war_with = ROOT
-						is_subject_of = ROOT
 						has_country_leader_ideology = vanguardism
 						has_country_leader_ideology = revolutionary_socialism
 						has_country_flag = has_left_the_conference
@@ -2668,6 +2774,12 @@ country_event = {
 				}
 			}
 		}
+		ai_chance = {
+			modifier = {
+				factor = 0
+				original_tag = CER
+			}		
+		}
 	}
 }
 
@@ -2685,7 +2797,7 @@ country_event = {
 	}
 	option = {
 		name = ww1_rcw_unification.12.a
-		RUS = {
+		RXL = {
 			RUS_kirill_vladimirovich_romanov = {
 				set_nationality = ROOT
 				set_character_name = RUS_kirill_i
@@ -2702,7 +2814,7 @@ country_event = {
 	}
 	option = {
 		name = ww1_rcw_unification.12.b
-		RUS = {
+		RXL = {
 			RUS_dmitriy_pavlovich_romanov = {
 				set_nationality = ROOT
 				set_character_name = RUS_dmitriy_ii
@@ -2719,7 +2831,7 @@ country_event = {
 	}
 	option = {
 		name = ww1_rcw_unification.12.c
-		RUS = {
+		RXL = {
 			RUS_nikolai_nikolaevich_romanov = {
 				set_nationality = ROOT
 				set_character_name = RUS_nikolai_iii
