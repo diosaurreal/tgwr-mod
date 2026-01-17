@@ -52,8 +52,35 @@ focus_tree = {
 		y = 0
 		completion_reward = {
 			add_political_power = 50
-			custom_effect_tooltip = ALB_banka_kombetare_e_shqipnis
-			show_ideas_tooltip = ROM_landlord_association
+			custom_effect_tooltip = available_industrial_concern
+			show_ideas_tooltip = ALB_banka_kombetare_e_shqipnis
+			set_variable = { ALB_national_bank_value = 1 }
+		}
+		ai_will_do = { factor = 100 }
+	}
+	focus = {
+		id = ALB_print_the_national_currency
+		icon = GFX_focus_generic_printing_press
+		cost = 5
+		search_filters = {
+			FOCUS_FILTER_POLITICAL
+			FOCUS_FILTER_MANPOWER
+			FOCUS_FILTER_HISTORICAL
+		}
+		prerequisite = { focus = ALB_national_bank_of_albania }
+		x = 0
+		y = 1
+		relative_position_id = ALB_national_bank_of_albania
+		completion_reward = {
+			add_timed_idea = {
+				idea = ALB_money_printing
+				days = 270
+			}
+			custom_effect_tooltip = ALB_print_the_national_currency_tt
+			effect_tooltip = {
+				add_stability = 0.03
+				ALB_improve_national_bank = yes
+			}
 		}
 		ai_will_do = { factor = 100 }
 	}
@@ -4648,6 +4675,7 @@ focus_tree = {
 					traits = { ALB_wicked_ambitions }
 				}
 			}
+			set_cosmetic_tag = ALB_toptani_flag
 			hidden_effect = {
 				set_portraits = {
 					character = ALB_esad_toptani
@@ -4709,6 +4737,72 @@ focus_tree = {
 			}
 		}
 		ai_will_do = { factor = 20 }
+	}
+
+	focus = {
+		id = ALB_albanian_serbian_union
+		icon = GFX_TUR_temporary_law_of_deportation
+		cost = 5
+		search_filters = {
+			FOCUS_FILTER_INTERNAL_AFFAIRS
+		}
+		prerequisite = { focus = ALB_albanian_serbian_political_integration }
+		x = 0
+		y = 1
+		relative_position_id = ALB_albanian_serbian_political_integration
+		allow_branch = { original_tag = ALB }
+		available = {
+			ALB = { has_country_leader = { character = ALB_esad_toptani } }
+			custom_trigger_tooltip = {
+				tooltip = ALB_has_signed_treaty_of_nis
+				has_global_flag = ALB_treaty_of_nis
+			}
+		}
+		completion_reward = {
+			set_politics = {
+				ruling_party = neutrality
+				elections_allowed = no
+				name = ALB_house_of_toptani_party
+				long_name = ALB_house_of_toptani_party
+			}
+			effect_tooltip = {
+				ALB_esad_toptani = { custom_effect_tooltip = ALB_albanian_serbian_union_tt }
+				SER = {
+					set_autonomy = {
+						target = ALB
+						autonomous_state = autonomy_tgwr_unilateral_union
+						end_wars = no
+						end_civil_wars = no
+					}
+				}
+			}
+			hidden_effect = {
+				ALB_esad_toptani = {
+					set_character_name = ALB_esad_toptani_prince
+					add_country_leader_role = {
+						promote_leader = yes
+						country_leader = {
+							ideology = absolute_monarchy
+							traits = { ALB_fulfilled_ambitions }
+						}
+					}
+
+				}
+				SER = { country_event = { id = albania.77 hours = 8 } }
+			}
+			set_portraits = {
+				character = ALB_esad_toptani
+				civilian = {
+					large = "gfx/leaders/ALB/ALB_esad_toptani_civilized.png"
+					small = "gfx/interface/ideas/ALB/ALB_esad_toptani_civilized.png"
+				}
+				army = {
+					large = "gfx/leaders/ALB/ALB_esad_toptani_civilized.png"
+					small = "gfx/interface/ideas/ALB/ALB_esad_toptani_civilized_army.png"
+				}
+			}
+		}
+		ai_will_do = { factor = 100 }
 	}
 
 	focus = {
@@ -5499,7 +5593,10 @@ joint_focus = {
 	}
 	available = {
 		ALB = { has_country_leader = { character = ALB_esad_toptani } }
-		has_global_flag = ALB_treaty_of_nis
+		custom_trigger_tooltip = {
+			tooltip = ALB_has_signed_treaty_of_nis
+			has_global_flag = ALB_treaty_of_nis
+		}
 	}
 	completion_reward_joint_originator = {
 		add_ideas = ALB_albanian_serbian_commission
@@ -5544,7 +5641,10 @@ joint_focus = {
 	}
 	available = {
 		ALB = { has_country_leader = { character = ALB_esad_toptani } }
-		has_global_flag = ALB_treaty_of_nis
+		custom_trigger_tooltip = {
+			tooltip = ALB_has_signed_treaty_of_nis
+			has_global_flag = ALB_treaty_of_nis
+		}
 	}
 	completion_reward_joint_originator = {
 		if = {
@@ -5614,7 +5714,10 @@ joint_focus = {
 	}
 	available = {
 		ALB = { has_country_leader = { character = ALB_esad_toptani } }
-		has_global_flag = ALB_treaty_of_nis
+		custom_trigger_tooltip = {
+			tooltip = ALB_has_signed_treaty_of_nis
+			has_global_flag = ALB_treaty_of_nis
+		}
 	}
 	completion_reward_joint_originator = {
 		if = {
@@ -5630,10 +5733,38 @@ joint_focus = {
 				add_idea = ALB_albanian_serbian_commission_3
 			}
 		}
+		if = {
+			limit = {
+				tag = ALB
+				has_dynamic_modifier = { modifier = ALB_progressive_customs_duty }
+			}
+			custom_effect_tooltip = ALB_progressive_customs_union_bad_tt
+			add_to_variable = { ALB_pcd_consumer_goods_factor = -0.01 }
+		}
 		add_cic = 500
 	}
 	completion_reward_joint_member = {
-		add_ideas = ALB_albanian_serbian_commission
+		if = {
+			limit = { has_idea = ALB_albanian_serbian_commission_2 }
+			swap_ideas = {
+				remove_idea = ALB_albanian_serbian_commission_2
+				add_idea = ALB_albanian_serbian_commission_4
+			}
+		}
+		else = {
+			swap_ideas = {
+				remove_idea = ALB_albanian_serbian_commission
+				add_idea = ALB_albanian_serbian_commission_3
+			}
+		}
+		if = {
+			limit = {
+				tag = ALB
+				has_dynamic_modifier = { modifier = ALB_progressive_customs_duty }
+			}
+			custom_effect_tooltip = ALB_progressive_customs_union_bad_tt
+			add_to_variable = { ALB_pcd_consumer_goods_factor = -0.01 }
+		}
 	}
 	ai_will_do = {
 		modifier = {
@@ -5671,7 +5802,10 @@ joint_focus = {
 	}
 	available = {
 		ALB = { has_country_leader = { character = ALB_esad_toptani } }
-		has_global_flag = ALB_treaty_of_nis
+		custom_trigger_tooltip = {
+			tooltip = ALB_has_signed_treaty_of_nis
+			has_global_flag = ALB_treaty_of_nis
+		}
 	}
 	completion_reward_joint_originator = {
 		build_railway = {
@@ -5701,7 +5835,7 @@ joint_focus = {
 }
 
 joint_focus = {
-	id = ALB_albanian_serbian_political_institution
+	id = ALB_albanian_serbian_political_integration
 	icon = GFX_focus_ger_return_of_the_kaiser
 	text_icon = joint_ALB_SER_focus_style
 	cost = 5
@@ -5725,7 +5859,10 @@ joint_focus = {
 	}
 	available = {
 		ALB = { has_country_leader = { character = ALB_esad_toptani } }
-		has_global_flag = ALB_treaty_of_nis
+		custom_trigger_tooltip = {
+			tooltip = ALB_has_signed_treaty_of_nis
+			has_global_flag = ALB_treaty_of_nis
+		}
 	}
 	completion_reward_joint_originator = {
 		swap_ideas = {
@@ -5739,48 +5876,6 @@ joint_focus = {
 			remove_idea = ALB_albanian_serbian_commission_4
 			add_idea = ALB_albanian_serbian_commission_5
 		}
-	}
-	ai_will_do = {
-		modifier = {
-			factor = 30
-			original_tag = ALB
-		}
-		modifier = {
-			factor = 5
-			original_tag = SER
-		}
-	}
-}
-
-joint_focus = {
-	id = ALB_albanian_serbian_personal_union
-	icon = GFX_focus_ger_return_of_the_kaiser
-	text_icon = joint_ALB_SER_focus_style
-	cost = 5
-	search_filters = {
-		FOCUS_FILTER_ARMY_XP
-		FOCUS_FILTER_HISTORICAL
-	}
-	prerequisite = { focus = ALB_albanian_serbian_political_institution }
-	x = 0
-	y = 3
-	offset = {
-		x = 11
-		y = 15
-		trigger = { original_tag = ALB }
-	}
-	offset = {
-		x = -1
-		y = 7
-		trigger = { original_tag = SER }
-	}
-	available = {
-		ALB = { has_country_leader = { character = ALB_esad_toptani } }
-		has_global_flag = ALB_treaty_of_nis
-	}
-	completion_reward_joint_originator = {
-	}
-	completion_reward_joint_member = {
 	}
 	ai_will_do = {
 		modifier = {
