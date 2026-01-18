@@ -1,4 +1,5 @@
 on_actions = {
+	on_startup = { effect = { ALB = { remove_ideas = ALB_albanian_society_idea } } }
 	on_state_control_changed = {
 		effect = {
 			if = {
@@ -146,6 +147,202 @@ on_actions = {
 					FROM.FROM = { is_core_of = ALB }
 				}
 				ROOT = { country_event = { id = albania.78 days = 1 random_days = 6 } }
+			}
+		}
+	}
+	on_capitulation = {
+		effect = {
+			if = {
+				limit = {
+					ROOT = { has_idea = ALB_decentralized_independence_movement }
+					has_country_flag = TUR_revolting_country
+				}
+				if = {
+					limit = { has_country_flag = ALB_abdulhamid_government }
+					country_event = albania.20
+				}
+				if = {
+					limit = { has_country_flag = ALB_prizren_government }
+					country_event = albania.1
+				}
+				if = {
+					limit = { has_country_flag = ALB_kimza_government }
+					country_event = albania.2
+				}
+				if = {
+					limit = { has_country_flag = ALB_toptani_government }
+					country_event = albania.3
+				}
+				if = {
+					limit = { has_country_flag = ALB_vlora_government }
+					country_event = albania.4
+				}
+				if = {
+					limit = { is_government_in_exile = no }
+					if = {
+						limit = {
+							MNT = {
+								NOT = { has_war_with = ROOT }
+								any_owned_state = {
+									is_controlled_by = MNT
+									any_neighbor_state = { is_core_of = ROOT }
+								}
+							}
+						}
+						ROOT = {
+							become_exiled_in = {
+								target = MNT
+								legitimacy = 35
+							}
+							MNT = { ROOT = { country_event = albania.6 } }
+						}
+					}
+					else_if = {
+						limit = {
+							SER = {
+								NOT = { has_war_with = ROOT }
+								any_owned_state = {
+									is_controlled_by = SER
+									any_neighbor_state = { is_core_of = ROOT }
+								}
+							}
+						}
+						ROOT = {
+							become_exiled_in = {
+								target = SER
+								legitimacy = 35
+							}
+							SER = { ROOT = { country_event = albania.6 } }
+						}
+					}
+					else_if = {
+						limit = {
+							GRE = {
+								NOT = { has_war_with = ROOT }
+								any_owned_state = {
+									is_controlled_by = GRE
+									any_neighbor_state = { is_core_of = ROOT }
+								}
+							}
+						}
+						ROOT = {
+							become_exiled_in = {
+								target = GRE
+								legitimacy = 35
+							}
+							GRE = { ROOT = { country_event = albania.6 } }
+						}
+					}
+					else = {
+						random_country = {
+							limit = {
+								NOT = { has_war_with = ROOT }
+								any_owned_state = {
+									is_controlled_by = PREV
+									any_neighbor_state = { is_core_of = ROOT }
+								}
+							}
+							ROOT = {
+								become_exiled_in = {
+									target = PREV
+									legitimacy = 35
+								}
+								PREV = { ROOT = { country_event = albania.6 } }
+							}
+						}
+					}
+					if = {
+						limit = {
+							any_other_country = {
+								is_in_faction = yes
+								is_hosting_exile = ROOT
+							}
+							ROOT = { NOT = { has_rule = can_join_factions } }
+						}
+						ROOT = { leave_faction = yes }
+					}
+				}
+			}
+		}
+	}
+	on_state_control_changed = {
+		effect = {
+			if = {
+				limit = {
+					OR = {
+						NOT = { country_exists = ALB }
+						ALB = { has_country_flag = TUR_revolting_country }
+					}
+					FROM.FROM = { check_variable = { TUR_albanian_state_level > 0 } }
+					ROOT = {
+						OR = {
+							tag = SER
+							tag = MNT
+							tag = GER
+							is_in_faction_with = SER
+							is_in_faction_with = MNT
+							is_in_faction_with = GRE
+						}
+					}
+					FROM = { original_tag = TUR }
+				}
+				TUR = { country_event = { id = ottoman.88 days = 2 } }
+			}
+		}
+		effect = { #albanians save abdulhamid II
+			if = {
+				limit = {
+					ROOT = {
+						original_tag = ALB
+						has_country_flag = TUR_revolting_country
+						OR = {
+							ALB_riza_gjakova = {
+								OR = {
+									is_leading_army = yes
+									is_leading_army_group = yes
+									is_country_leader = yes
+								}
+							}
+							ALB_isa_boletini = {
+								OR = {
+									is_leading_army = yes
+									is_leading_army_group = yes
+									is_country_leader = yes
+								}
+							}
+						}
+					}
+					FROM.FROM = { state = 345 }
+				}
+				ROOT = { country_event = { id = albania.11 hours = 2 } }
+			}
+		}
+		effect = {
+			if = {
+				limit = {
+					has_global_flag = ALB_defending_our_homeland
+					ALB = {
+						OR = {
+							all_core_state = { NOT = { is_controlled_by = TUR } }
+							has_capitulated = no
+						}
+					}
+				}
+				TUR = { country_event = { id = albania.43 } }
+			}
+		}
+	}
+	on_daily_ALB = {
+		effect = {
+			if = {
+				limit = { any_controlled_state = { has_dynamic_modifier = { modifier = TUR_vilayet_centralization } } }
+				TUR_vilayet_centralization_garrison_effect = yes
+			}
+		}
+		effect = {
+			if = {
+				limit = { has_dynamic_modifier = { modifier = ALB_sublime_realm } }
+				TUR_minority_revolt_effect = yes
 			}
 		}
 	}
@@ -307,6 +504,30 @@ on_actions = {
 					limit = { has_country_flag = ALB_contact_the_mat_tribe }
 					clr_country_flag = ALB_contact_the_mat_tribe
 				}
+			}
+		}
+	}
+	on_offer_join_faction = {
+		effect = {
+			if = {
+				limit = { ALB = { NOT = { has_rule = can_join_factions } } }
+				ALB = { leave_faction = yes }
+			}
+		}
+	}
+	on_join_faction = {
+		effect = {
+			if = {
+				limit = { ALB = { NOT = { has_rule = can_join_factions } } }
+				ALB = { leave_faction = yes }
+			}
+		}
+	}
+	on_government_exiled = {
+		effect = {
+			if = {
+				limit = { ALB = { NOT = { has_rule = can_join_factions } } }
+				ALB = { leave_faction = yes }
 			}
 		}
 	}
