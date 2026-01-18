@@ -61,7 +61,48 @@ DIPLOMACY_GUARANTEE_ENABLE_TRIGGER = {
 				option = LIMITED
 			}
 		}
-		always = yes # Handled by game logic.
+		if = {
+			limit = {
+				FROM = {
+					is_actual_major = yes
+				}
+			}
+			custom_trigger_tooltip = {
+				tooltip = cannot_guarantee_major
+				always = no
+			}
+		}
+		else_if = {
+			limit = {
+				FROM = {
+					has_opinion = {
+						target = ROOT
+						value < 0
+					}
+				}
+			}
+			custom_trigger_tooltip = {
+				tooltip = cannot_guarantee_unfriendly
+				always = no
+			}
+		}
+		else_if = {
+			limit = {
+				FROM = {
+					is_puppet = yes
+					NOT = {
+						is_ally_with = ROOT
+					}
+				}
+			}
+			custom_trigger_tooltip = {
+				tooltip = cannot_guarantee_puppet
+				always = no
+			}
+		}
+		else = {
+			always = yes # Handled by game logic.
+		}
 	}
 	else_if = {
 		limit = {
@@ -70,9 +111,50 @@ DIPLOMACY_GUARANTEE_ENABLE_TRIGGER = {
 				option = SAME_IDEOLOGY
 			}
 		}
-		custom_trigger_tooltip = {
-			tooltip = RULE_ALLOW_GUARANTEES_SAME_IDEOLOGY_TOOLTIP
-			has_government = FROM
+		if = {
+			limit = {
+				FROM = {
+					is_actual_major = yes
+				}
+			}
+			custom_trigger_tooltip = {
+				tooltip = cannot_guarantee_major
+				always = no
+			}
+		}
+		else_if = {
+			limit = {
+				FROM = {
+					has_opinion = {
+						target = ROOT
+						value < 0
+					}
+				}
+			}
+			custom_trigger_tooltip = {
+				tooltip = cannot_guarantee_unfriendly
+				always = no
+			}
+		}
+		else_if = {
+			limit = {
+				FROM = {
+					is_puppet = yes
+					NOT = {
+						is_ally_with = ROOT
+					}
+				}
+			}
+			custom_trigger_tooltip = {
+				tooltip = cannot_guarantee_puppet
+				always = no
+			}
+		}
+		else = {
+			custom_trigger_tooltip = {
+				tooltip = RULE_ALLOW_GUARANTEES_SAME_IDEOLOGY_TOOLTIP
+				has_government = FROM
+			}
 		}
 	}
 	else_if = {
@@ -100,6 +182,155 @@ DIPLOMACY_REVOKE_GUARANTEE_ENABLE_TRIGGER = {
 		custom_trigger_tooltip = {
 			tooltip = RULE_ALLOW_REVOKE_GUARANTEES_BLOCKED_TOOLTIP
 			always = no
+		}
+	}
+	else = {
+		if = {
+			limit = {
+				has_civil_war = no
+				NOT = {
+					has_global_flag = great_war
+					has_war_with = FROM
+					any_allied_country = {
+						has_war_with = FROM
+					}
+					has_wargoal_against = FROM
+					FROM = {
+						has_government = communism
+						has_government = fascism
+						has_offensive_war = yes
+					}
+					has_government = communism
+					has_government = fascism
+				}
+			}
+			if = {
+				limit = {
+					OR = {
+						tag = FRA
+						tag = ENG
+						tag = GER
+						tag = AUS
+						tag = RUS
+					}
+					FROM = {
+						OR = {
+							tag = BEL
+							tag = LUX
+						}
+					}
+				}
+				custom_trigger_tooltip = {
+					tooltip = cannot_revoke_guarantee_london_treaty
+					always = no
+				}
+			}
+			else_if = {
+				limit = {
+					OR = {
+						tag = GER
+						tag = AUS
+					}
+					FROM = { tag = ROM }
+				}
+				custom_trigger_tooltip = {
+					tooltip = cannot_revoke_guarantee_secret_treaty
+					always = no
+				}
+			}
+			else_if = {
+				limit = {
+					tag = ROM
+					FROM = {
+						OR = {
+							tag = GER
+							tag = AUS
+						}
+					}
+				}
+				custom_trigger_tooltip = {
+					tooltip = cannot_revoke_guarantee_secret_treaty
+					always = no
+				}
+			}
+			else_if = {
+				limit = {
+					OR = {
+						tag = FRA
+						tag = ITA
+						tag = ENG
+						tag = TUR
+						tag = GRE
+						tag = RUS
+					}
+					FROM = {
+						tag = CRE
+					}
+				}
+				custom_trigger_tooltip = {
+					tooltip = cannot_revoke_guarantee_crete
+					always = no
+				}
+			}
+			else_if = {
+				limit = {
+					OR = {
+						original_tag = FRA
+						tag = SPR
+						tag = AUS
+						tag = SWI
+						original_tag = ITA
+					}
+					FROM = {
+						OR = {
+							tag = ADR
+							tag = LIE
+							tag = SMR
+							AND = {
+								tag = PAP
+								NOT = { has_idea = PAP_captivus_vaticani }
+							}
+						}
+					}
+				}
+				custom_trigger_tooltip = {
+					tooltip = cannot_revoke_guarantee_micro_states
+					always = no
+				}
+			}
+			else_if = {
+				limit = {
+					is_russian_tag_no_tt = yes
+					FROM = {
+						tag = CER
+					}
+				}
+				custom_trigger_tooltip = {
+					tooltip = cannot_revoke_guarantee_concessions
+					always = no
+				}
+			}
+			else_if = {
+				limit = {
+					OR = {
+						is_china_or_warlord_no_tt = yes
+						original_tag = ITA
+					}
+					FROM = {
+						OR = {
+							tag = CER
+							AND = {
+								tag = PAP
+								has_idea = PAP_captivus_vaticani
+							}
+						}
+					}
+				}
+				custom_trigger_tooltip = {
+					tooltip = cannot_revoke_guarantee_sovereign_territory
+					always = no
+				}
+			}
 		}
 	}
 }
@@ -2053,6 +2284,47 @@ DIPLOMACY_WAR_ENABLE_TRIGGER = {
 
 DIPLOMACY_REVOKE_NONAGGRESSIONPACT_ENABLE_TRIGGER = {
 	if = {
+		limit = {
+			has_civil_war = no
+			NOT = {
+				has_global_flag = great_war
+				has_war_with = FROM
+				any_allied_country = {
+					has_war_with = FROM
+				}
+				has_wargoal_against = FROM
+				FROM = {
+					has_government = communism
+					has_government = fascism
+					has_offensive_war = yes
+				}
+				has_government = communism
+				has_government = fascism
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					tag = FRA
+					tag = ENG
+					tag = GER
+					tag = AUS
+					tag = RUS
+				}
+				FROM = {
+					OR = {
+						tag = BEL
+						tag = LUX
+					}
+				}
+			}
+			custom_trigger_tooltip = {
+				tooltip = cannot_revoke_guarantee_london_treaty
+				always = no
+			}
+		}
+	}
+	else_if = {
 		limit = {
 			FROM = {
 				OR = {
