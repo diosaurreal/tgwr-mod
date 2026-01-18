@@ -12038,7 +12038,8 @@ peace_deals = {
 		}
 		fire_only_once = yes
 		complete_effect = {
-			FROM = { country_event = { id = ww1_italianturkish.4 hours = 3 } }
+			set_global_flag = ITA_won_against_ottomans
+			effect_tooltip = { FROM = { country_event = ww1_italy.96 } }
 			if = {
 				limit = { war_length_with = { tag = FROM months < 1 } }
 				add_to_variable = {
@@ -12176,7 +12177,8 @@ peace_deals = {
 			}
 		}
 		ai_will_do = {
-			base = 0
+			base = 1
+			# historical accuracy ottoman peace out with ita ai, ita player exit war when take libyan coast line and rhodos island, also he can try to cap ottoman in mainland
 			modifier = {
 				add = -5
 				any_controlled_state = {
@@ -12199,92 +12201,139 @@ peace_deals = {
 				ITA = { is_ai = yes }
 			}
 			modifier = { # ai peace out with ita ai like in history
-				add = 100
-				OR = {
-					AND = {
-						any_owned_state = {
-							is_claimed_by = FROM
-							is_controlled_by = FROM
-						}
-						war_length_with = { tag = FROM months > 15 }
-					}
-					AND = {
-						all_owned_state = {
-							is_claimed_by = FROM
-							is_controlled_by = FROM
-						}
-						war_length_with = { tag = FROM months > 13 }
-					}
-					AND = {
-						all_owned_state = {
-							is_claimed_by = FROM
-							is_controlled_by = FROM
-						}
-						any_owned_state = {
-							has_state_flag = TUR_archipelaho
-							is_controlled_by = FROM
-						}
-						war_length_with = { tag = FROM months > 10 }
-					}
-				}
-				OR = {
-					casualties_inflicted_by = {
-						opponent = FROM
-						thousands > 50
-					}
-					AND = {
-						any_owned_state = {
-							is_controlled_by = FROM
-							OR = {
-								region = 25
-								region = 129
-								region = 202
-							}
-						}
-						OR = {
-							FROM = { controls_state = 448 }
-							FROM = { controls_state = 450 }
-						}
-					}
-					AND = {
-						surrender_progress > 0.10
-						NOT = {
-							has_war_with = BUL
-							has_war_with = SER
-							has_war_with = GRE
-						}
-					}					
-				}
-			}
-			modifier = {
-				war_length_with = { tag = FROM months > 10 }
-				add = 100
+				add = 5 
 				OR = {
 					has_war_with = BUL
-					has_war_with = SER
 					has_war_with = GRE
+					has_war_with = SER
+					date > 1913.1.1 # late war
 				}
-				OR = {
-					casualties_inflicted_by = {
-						opponent = FROM
-						thousands > 50
-					}
-					AND = {
-						FROM = { surrender_progress < 0.05 }
-						OR = {
-							FROM = {
-								controls_state = 450
-								controls_state = 1061
-							}
-							FROM = {
-								controls_state = 448
-								controls_state = 1060
-							}
-						}
-					}
-					surrender_progress > 0.2
+				war_length_with = {
+					tag = ITA
+					months > 6
+				}
+				ITA = {
+					controls_state = 448
+					controls_state = 450
 				}
 			}
+			modifier = { # smart player makes invasion in mainland
+				add = 10
+				ITA = {
+					any_controlled_state = {
+						is_owned_by = TUR
+						NOT = {
+							is_core_of = LBA
+						}
+					}
+				}
+				surrender_progress > 0.15
+				casualties_inflicted_by = {
+					opponent = ITA
+					thousands > 50
+				}
+			}
+			#old behavior
+			#modifier = {
+			#	add = -300
+			#	casualties_inflicted_by = {
+			#		opponent = ITA
+			#		thousands < 10 # i was managed to inflict only this even with encircles, but not 50k as it was, free to change but only around this number
+			#	}
+			#}
+			#modifier = {
+			#	add = -300
+			#	any_controlled_state = {
+			#		OR = {
+			#			state = 448
+			#			state = 450
+			#		}
+			#	}
+			#}
+			#modifier = {
+			#	add = 100
+			#	war_length_with = {
+			#		tag = ITA
+			#		months > 6
+			#	}
+			#	OR = {
+			#		casualties_inflicted_by = {
+			#			opponent = ITA
+			#			thousands > 35
+			#		}
+			#		NOT = {
+			#			AND = {
+			#				controls_state = 450 #Bengazi
+			#				controls_state = 448 #Tripoli
+			#				controls_state = 1060 #Tripolitania
+			#				controls_state = 1061 #Cyrenaica
+			#				controls_state = 1157 #Syrte
+			#			}
+			#		}
+			#		AND = {
+			#			surrender_progress > 0.15
+			#			NOT = {
+			#				has_war_with = BUL
+			#				has_war_with = SER
+			#				has_war_with = GRE
+			#			}
+			#		}					
+			#	}
+			#}
+			#modifier = {
+			#	add = 300
+			#	OR = {
+			#		has_war_with = BUL
+			#		has_war_with = SER
+			#		has_war_with = GRE
+			#	}
+			#	war_length_with = {
+			#		tag = ITA
+			#		months > 6
+			#	}
+			#	OR = {
+			#		casualties_inflicted_by = {
+			#			opponent = ITA
+			#			thousands > 35
+			#		}
+			#		AND = {
+			#			ITA = {
+			#				surrender_progress < 0.05
+			#			}
+			#			ITA = {
+			#				controls_state = 450 #Bengazi
+			#				controls_state = 448 #Tripoli
+			#			}
+			#		}
+			#		surrender_progress > 0.1
+			#	}
+			#}
+			#modifier = {
+			#	add = 250
+			#	all_owned_state = {
+			#		if = {
+			#			limit = {
+			#				is_core_of = LBA
+			#				impassable = no
+			#				region = 225
+			#			}
+			#		}
+			#		is_controlled_by = ITA 
+			#	}
+			#}
+			#modifier = {
+			#	add = 300
+			#	if = {
+			#		limit = {
+			#			owns_state = 899 #Rodos
+			#			owns_state = 164 #Dodecanese
+			#		}
+			#		NOT = {
+			#			controls_state = 899 #Rodos
+			#			controls_state = 164 #Dodecanese
+			#		}
+			#	}
+			#}
 		}
 	}
 	TUR_sue_for_peace_BLL = {
