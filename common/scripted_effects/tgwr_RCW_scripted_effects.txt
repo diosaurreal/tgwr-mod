@@ -118,6 +118,7 @@ RCW_ROOT_fuze_with_FROM = {
 				}
 				every_unit_leader = {
 					limit = {
+						is_generic_character = no
 						has_character_flag = soviet_character
 					}
 					set_nationality = ROOT
@@ -126,7 +127,9 @@ RCW_ROOT_fuze_with_FROM = {
 			else = {
 				every_unit_leader = {
 					limit = {
+						is_generic_character = no
 						NOT = {
+							FROM = { tag = IZH }
 							has_character_flag = soviet_character
 						}			
 					}
@@ -164,6 +167,73 @@ RCW_ROOT_fuze_with_FROM = {
 		}
 	}
 }
+RCW_FROM_fuze_with_ROOT = {
+	FROM = {
+		take_all_subjects_ROOT = yes
+		annex_country = {
+			target = ROOT
+			transfer_troops = yes
+		}
+	}
+	hidden_effect = {
+		if = {
+			limit = { 
+				FROM = {
+					OR = {
+						has_country_leader_ideology = vanguardism
+						has_country_leader_ideology = revolutionary_socialism
+					}
+				}
+			}
+			every_unit_leader = {
+				limit = {
+					is_generic_character = no
+					has_character_flag = soviet_character
+				}
+				set_nationality = FROM
+			}
+		}
+		else = {
+			every_unit_leader = {
+				limit = {
+					is_generic_character = no
+					NOT = {
+						FROM = { tag = IZH }
+						has_character_flag = soviet_character
+					}			
+				}
+				set_nationality = FROM
+			}
+		}
+		FROM = {
+			if = {
+				limit = {
+					is_ai = yes
+					ROOT = { is_ai = no }
+				}
+				change_tag_from = ROOT
+			}
+		}	
+		every_core_state = {
+			remove_core_of = ROOT
+			add_core_of = FROM
+		}
+		every_state = {
+			limit = {
+				is_claimed_by = ROOT
+			}
+			remove_claim_by = ROOT
+			add_claim_by = FROM
+		}
+		every_state = {
+			limit = {
+				has_contested_owner = ROOT
+			}
+			remove_contested_owner = ROOT
+			add_contested_owner = FROM
+		}
+	}
+}
 RCW_THIS_fuze_with_PREV = {
 	take_all_subjects_PREV = yes
 	annex_country = {
@@ -194,6 +264,7 @@ RCW_THIS_fuze_with_PREV = {
 					limit = {
 						is_generic_character = no
 						NOT = {
+							FROM = { tag = IZH }
 							has_character_flag = soviet_character
 						}			
 					}
@@ -276,4 +347,189 @@ get_RCW_lack_of_officers = {
 		}
 		add_ideas = RCW_lack_of_officers1
 	}	
-}	
+}
+
+form_RUS_state = {
+	set_cosmetic_tag = RUS_state
+	set_country_flag = RUS_state
+	set_party_name = {
+		ideology = democratic
+		long_name = RUS_democratic_party_UFA_long
+		name = RUS_democratic_party_UFA
+	}
+	set_party_name = {
+		ideology = neutrality
+		long_name = RUS_democratic_party_UFA_long
+		name = RUS_democratic_party_UFA
+	}
+	add_stability = 0.1
+	add_war_support = 0.15
+	add_political_power = 100
+	every_other_country = {
+		limit = {
+			is_subject = no
+			OR = {
+				tag = KAZ
+				tag = URA
+				tag = UCH
+				tag = ORE
+				tag = AMU
+				tag = TBK
+				tag = USS
+			}
+			NOT = {
+				has_war_with = ROOT
+				has_government = communism
+			}
+		}
+		country_event = {
+			id = ww1_siberia.6
+			random_hours = 24
+		}
+	}
+	unlock_decision_category_tooltip = RCW_terrtorial_management
+	set_country_flag = RCW_can_core_states
+	mark_focus_tree_layout_dirty = yes
+}
+SIB_KOM_unification = {
+	set_country_flag = SIB_KOM_unification
+	RUS = {
+		RUS_nikolai_avksentiev = {
+			set_nationality = PREV
+			promote_character = social_democracy
+		}
+		RUS_viktor_chernov = {
+			set_nationality = PREV
+			if = {
+				limit = { has_ideology = agrarian_socialism }
+				promote_character = agrarian_socialism
+			}
+			else = {
+				add_country_leader_role ={
+					promote_leader = yes
+					country_leader = {				
+						ideology=agrarian_socialism
+					}
+				}
+			}	
+		}
+	}
+	hidden_effect = {
+		KOM = {
+			RUS_fyodor_makhin = {
+				set_nationality = ORE
+				promote_character = social_democracy
+			}
+		}	
+	}
+	RCW_ROOT_fuze_with_FROM = yes
+	form_RUS_state = yes
+	set_party_name = {
+		ideology = communism
+		long_name = SUCH_party_long
+		name = SUCH_party
+	}
+	if = {
+		limit = {
+			has_idea = SIB_medium_eser_influence
+		}
+		swap_ideas = {
+			remove_idea = SIB_medium_eser_influence
+			add_idea = SIB_high_eser_influence
+		}
+	}
+	else_if = {
+		limit = {
+			has_idea = SIB_low_eser_influence
+		}
+		swap_ideas = {
+			remove_idea = SIB_low_eser_influence
+			add_idea = SIB_medium_eser_influence
+		}
+	}
+	set_capital = { state = 651 }
+	if = {
+		limit = { has_subject = IZH }
+		IZH = { country_event = ww1_siberia.13 }
+	}
+	hidden_effect = {
+		if = {
+			limit = {
+				FROM = {
+					has_dynamic_modifier = { modifier = RCW_gold_reserve_dynamic_modifier }
+				}
+			}
+			add_dynamic_modifier = {
+				modifier = RCW_gold_reserve_dynamic_modifier
+			}
+			FROM = {
+				remove_dynamic_modifier = {
+					modifier = RCW_gold_reserve_dynamic_modifier
+				}
+			}
+		}			
+	}
+}
+form_SUCH = {
+	set_cosmetic_tag = SUCH
+	set_country_flag = SUCH
+	RUS = {
+		RUS_nikolai_avksentiev = {
+			set_nationality = PREV
+			promote_character = social_democracy
+		}
+		RUS_viktor_chernov = {
+			set_nationality = PREV
+			if = {
+				limit = { has_ideology = agrarian_socialism }
+				promote_character = agrarian_socialism
+			}
+			else = {
+				add_country_leader_role ={
+					promote_leader = yes
+					country_leader = {				
+						ideology=agrarian_socialism
+					}
+				}
+			}			
+		}
+	}
+	hidden_effect = {
+		KOM = {
+			RUS_fyodor_makhin = {
+				set_nationality = ORE
+				promote_character = social_democracy
+			}
+		}
+	}
+	if = {
+		limit = { has_subject = IZH }
+		IZH = { country_event = ww1_siberia.13 }
+	}
+	set_party_name = {
+		ideology = democratic
+		long_name = SUCH_party_long
+		name = SUCH_party
+	}
+	set_party_name = {
+		ideology = communism
+		long_name = RUS_democratic_party_UFA_long
+		name = SUCH_party
+	}
+	add_stability = 0.1
+	add_war_support = 0.15
+	add_political_power = 100
+}
+stay_as_SIB = {
+	add_stability = 0.2
+	add_war_support = -0.1
+	add_political_power = 100
+	set_country_flag = stay_as_siberia
+	load_focus_tree = white_guard_focus
+	hidden_effect = {
+		unlock_national_focus = WHI_white_beacon
+		unlock_national_focus = WHI_form_the_goverment
+		unlock_national_focus = WHI_fill_the_officer_corp
+		unlock_national_focus = WHI_mobilize_the_people
+	}
+}

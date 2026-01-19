@@ -183,6 +183,13 @@ focus_tree = {
 		x = 3
 		y = 3
 		relative_position_id = SIB_proclaim_siberia
+		offset = {
+			x = -2
+			trigger = {
+				has_country_flag = RUS_state
+				NOT = { has_country_flag = SIB_KOM_unification }
+			}	
+		}
 		cost = 4
 		search_filters = {
 			FOCUS_FILTER_POLITICAL
@@ -212,11 +219,40 @@ focus_tree = {
 				limit = {
 					KOM = {
 						exists = yes
+						NOT = { has_war_with = ROOT }
 					}
 				}
 				declare_war_on = {
 					target = KOM
 					type = annex_everything
+				}
+				if = {
+					limit = { 
+						IZH = {
+							is_subject_of = KOM
+							NOT = { has_war_with = ROOT }
+						}
+					}
+					IZH = {
+						add_to_war = {
+							targeted_alliance = KOM
+							enemy = ROOT
+						}
+					}
+				}
+				if = {
+					limit = { 
+						URA = {
+							is_subject_of = KOM
+							NOT = { has_war_with = ROOT }
+						}
+					}
+					URA = {
+						add_to_war = {
+							targeted_alliance = KOM
+							enemy = ROOT
+						}
+					}
 				}
 			}
 			if = {
@@ -240,10 +276,6 @@ focus_tree = {
 		}
 		ai_will_do = {
 			factor = 100
-			modifier = {
-				factor = 0
-				is_historical_focus_on = yes
-			}
 		}
 	}
 	focus = {
@@ -252,6 +284,13 @@ focus_tree = {
 		x = 4
 		y = 4
 		relative_position_id = SIB_proclaim_siberia
+		offset = {
+			x = -4
+			trigger = {
+				has_country_flag = RUS_state
+				NOT = { has_country_flag = SIB_KOM_unification }
+			}	
+		}
 		cost = 1
 		search_filters = {
 			FOCUS_FILTER_POLITICAL
@@ -588,12 +627,24 @@ focus_tree = {
 			}		
 		}
 		completion_reward_joint_originator = {
-			SIB = {
+			if = {
+				limit = { tag = SIB }
 				country_event = ww1_siberia.2
+			}
+			else = {
+				country_event = komuch.2
 			}		
 		}
 		ai_will_do = {
 			factor = 100
+			modifier = {
+				factor = 0
+				tag = SIB
+				has_game_rule = {
+					rule = SIB_KOM_ai_unification
+					option = SIBERIA
+				}
+			}
 		}
 	}
 	joint_focus = {
@@ -608,17 +659,34 @@ focus_tree = {
 				has_focus_tree = komuch_focus
 			}
 		}
+		offset = {
+			x = 2
+			trigger = {
+				has_country_flag = RUS_state
+				NOT = { 
+					has_country_flag = SIB_KOM_unification
+					has_focus_tree = komuch_focus
+				}
+			}	
+		}
 		cost = 4
 		search_filters = {
 			FOCUS_FILTER_POLITICAL
 		}
 		available = {
-			OR = {
-				owns_state = 583
-				owns_state = 588
+			any_state = {
+				OR = {
+					state = 583
+					state = 588
+				}
+				OWNER = {
+					is_russian_tag = yes
+				}
 			}
-		}
-		available = {
+			OR = {
+				has_country_flag = RUS_state
+				tag = KOM
+			}
 			is_subject = no
 			NOT = {
 				has_government = fascism
@@ -627,6 +695,22 @@ focus_tree = {
 					has_country_leader_ideology = vanguardism
 				}
 				has_cosmetic_tag = POLITCENTRE
+			}
+		}
+		bypass = {
+			OR = {
+				country_exists = KAZ
+				NOT = {
+					any_state = {
+						OR = {
+							state = 583
+							state = 588
+						}
+						OWNER = {
+							is_russian_tag = yes
+						}
+					}
+				}
 			}
 		}
 		mutually_exclusive = { 
@@ -653,6 +737,13 @@ focus_tree = {
 			x = 4
 			trigger = {
 				has_focus_tree = komuch_focus
+			}
+		}
+		allow_branch = {
+			OR = {
+				has_focus_tree = komuch_focus
+				has_country_flag = SIB_KOM_unification
+				NOT = { has_country_flag = RUS_state }
 			}
 		}
 		cost = 1
@@ -685,6 +776,9 @@ focus_tree = {
 				has_cosmetic_tag = POLITCENTRE
 			}
 		}
+		bypass = {
+			has_country_flag = SUCH
+		}
 
 		completion_reward = {
 			if = {
@@ -701,10 +795,6 @@ focus_tree = {
 		}
 		ai_will_do = {
 			factor = 100
-			modifier = {
-				factor = 0
-				is_historical_focus_on = yes
-			}
 		}
 	}
 	shared_focus = {
@@ -837,17 +927,21 @@ focus_tree = {
 		available = {
 			has_government = communism
 		}
-		bypass = {
-			NOT = {
-				has_idea = SIB_red_partisans
-			}
-		}
+		# bypass = {
+		# 	NOT = {
+		# 		has_idea = SIB_red_partisans
+		# 	}
+		# }
 
 		completion_reward = {
-			remove_ideas = SIB_red_partisans
-			add_timed_idea = {
-    			idea = SIB_red_partisans
-    			days = 180
+			if = {
+				limit = { 
+					has_idea = SIB_red_partisans
+				}
+				modify_timed_idea = {
+					idea = SIB_red_partisans
+					days = 180
+				}
 			}
 			add_timed_idea = {
     			idea = SIB_black_partition
@@ -1110,10 +1204,12 @@ focus_tree = {
 			FOCUS_FILTER_POLITICAL
 		}
 		prerequisite = {
-			focus = SIB_finish_the_whites_off
 			focus = SIB_land_to_the_peasants
-			focus = SIB_contact_the_white_forces
-			focus = SIB_legalize_black_partition
+			focus = SIB_legalize_black_partition		
+		}
+		prerequisite = {
+			focus = SIB_finish_the_whites_off
+			focus = SIB_contact_the_white_forces		
 		}
 		available = {
 			OR = {
