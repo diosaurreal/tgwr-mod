@@ -144,9 +144,6 @@ NDefines.NAI.COMMAND_POWER_BEFORE_SPEND_ON_TRAITS = 30.0
 -- LAND AI
 --------------------------------------------------------------------------------------------------------------
 
-NDefines.NAI.MIN_AI_UNITS_PER_TILE_FOR_STANDARD_COHESION = 2.0	-- How many units should we have for each tile along a front in order to switch to standard cohesion (less moving around)
-NDefines.NAI.MIN_FRONT_SIZE_TO_CONSIDER_STANDARD_COHESION = 2000	-- How long should fronts be before we consider switching to standard cohesion (under this, standard cohesion fronts will switch back to relaxed)
-
 NDefines.NMilitary.PLAN_EXECUTE_RUSH = -10									-- When looking for an attach target, this score limit is required in the battle plan to consider province for attack
 
 
@@ -178,8 +175,8 @@ NDefines.NAI.STR_UNIT_WEAK = 0.4 --0.45												-- Strength (equipment) % for
 NDefines.NAI.PLAN_AVG_PREPARATION_TO_EXECUTE = 0.5				            -- % or more average plan preparation before executing
 
 
-NDefines.NAI.PLAN_ACTIVATION_MAJOR_WEIGHT_FACTOR = 1		                    -- AI countries will hold on activating plans if stronger countries have plans in the same location. Majors count extra (value of 1 will negate this)
-NDefines.NAI.PLAN_ACTIVATION_PLAYER_WEIGHT_FACTOR = 1 		                -- AI countries will hold on activating plans if player controlled countries have plans in the same location. Majors count extra (value of 1 will negate this)
+NDefines.NAI.PLAN_ACTIVATION_MAJOR_WEIGHT_FACTOR = 1.5
+NDefines.NAI.PLAN_ACTIVATION_PLAYER_WEIGHT_FACTOR = 2
 
 NDefines.NAI.PLAN_MIN_SIZE_FOR_FALLBACK = 5000					                -- A country with less provinces than this will not draw fallback plans  but rather station their troops along the front
 

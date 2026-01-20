@@ -163,11 +163,7 @@ political_actions = {
 			modifier = {
 				add = 1
 				has_stability < 0.6
-				has_political_power > 75 #Spend on other things first
-			}
-			modifier = {
-				add = 1
-				has_political_power > 100
+				has_political_power > 155 #Spend on other things first
 			}
 			modifier = {
 				factor = 0
@@ -257,7 +253,7 @@ economy_decisions = {
 
 	restructure_supply_system = { #one time boost to get a few cheap supply hubs
 
-	icon = GFX_decision_generic_construction
+		icon = GFX_decision_generic_construction
 
 		visible = { 
 			OR = {
@@ -296,7 +292,7 @@ economy_decisions = {
 	}
 	seize_some_trains_woo = { #repeating train seize
 
-		icon = GFX_decision_generic_railway
+		icon = GFX_decision_hol_draw_up_staff_plans	
 
 		visible = { 
 			num_of_factories < 60
@@ -310,15 +306,10 @@ economy_decisions = {
 		days_remove = 180
 
 		ai_will_do = {
-			factor = 1
+			base = 0
 			modifier = {
-				has_stability < 0.56
-				factor = 0
-			}
-			modifier = {
-				tag = TUR
-				has_stability < 0.90
-				factor = 0
+				add = 1
+				has_stability > 0.74
 			}
 		}
 
@@ -329,18 +320,22 @@ economy_decisions = {
 			}
 			add_stability = -0.05
 		}
-	}			
+	}	
 }
 
 propaganda_efforts = {
 	war_propaganda = {
 
-		icon = GFX_decision_eng_propaganda_campaigns
+		icon = generic_prepare_civil_war
 
 		available = {
+			NOT = { has_country_flag = war_propaganda_campaign_running }
 			if = {
-				limit = { has_completed_focus = TUR_war_propaganda }
-				hidden_trigger = { always = yes }
+				limit = { has_focus_tree = ottoman_syria_focus_tree}
+				OR = {
+					has_completed_focus = TUR_war_propaganda
+					has_war_support < 0.5
+				}
 			}
 			else = { has_war_support < 0.5 }
 		}
@@ -348,16 +343,35 @@ propaganda_efforts = {
 		visible = {
 			OR = {
 				has_war_with_non_exiled_country = yes
-				has_completed_focus = TUR_war_propaganda
+				any_neighbor_country = {
+					AND = {
+						NOT = { has_government = ROOT }
+						has_offensive_war = yes
+						has_added_tension_amount > 10
+					}
+				}
+				if = {
+					limit = { has_focus_tree = ottoman_syria_focus_tree}
+					has_completed_focus = TUR_war_propaganda 
+				}
 			}
 		}
 
-		cost = TUR_war_propaganda_cost?150
+		fire_only_once = no
+
+		cost = 150
 		days_remove = 90
 		days_re_enable = 180
 
 		modifier = {
 			war_support_weekly = 0.005
+		}
+
+		complete_effect = {
+			set_country_flag = war_propaganda_campaign_running
+		}
+		remove_effect = {
+			clr_country_flag = war_propaganda_campaign_running
 		}
 
 		ai_will_do = {
@@ -366,124 +380,6 @@ propaganda_efforts = {
 				add = 1
 				has_war_support < 0.4
 				has_war = yes
-			}
-		}
-	}
-
-	#Propaganda campaign against a country in offensive that has caused a lot of tension and started a war
-	war_propaganda_against_warmonger = {
-
-		icon = generic_prepare_civil_war
-
-		available = {
-			NOT = { has_country_flag = war_propaganda_campaign_running }
-			FROM = {
-				OR = {
-					is_justifying_wargoal_against = ROOT
-					AND = {
-						has_war_with = ROOT
-						is_neighbor_of = ROOT
-					}
-					has_offensive_war = yes
-				}
-			}
-			
-			# lower the cost for neighbors
-			if = {
-				limit = {
-					FROM = {
-						is_neighbor_of = ROOT
-					}
-					set_temp_variable = { war_propaganda_cost = 50 }
-				}
-			}
-		}
-
-		visible = {
-			FROM = {
-				NOT = { is_in_faction_with = ROOT }
-				OR = {
-					is_justifying_wargoal_against = ROOT
-					AND = {
-						is_neighbor_of = ROOT
-						OR = {
-							has_war_with = ROOT
-							AND = {
-								NOT = { has_government = ROOT }
-								has_offensive_war = yes
-								has_added_tension_amount > 5
-							}
-						}
-					}
-					AND = {
-						NOT = { is_neighbor_of = ROOT }
-						OR = {
-							has_offensive_war_with = ROOT
-							AND = {
-								NOT = { has_government = ROOT }
-								has_offensive_war = yes
-								has_added_tension_amount > 30
-							}
-						}
-					}
-				}
-			}
-		}
-
-		target_trigger = {
-			FROM = {
-				NOT = { is_in_faction_with = ROOT }
-				OR = {
-					is_justifying_wargoal_against = ROOT
-					AND = {
-						is_neighbor_of = ROOT
-						OR = {
-							has_war_with = ROOT
-							AND = {
-								NOT = { has_government = ROOT }
-								has_offensive_war = yes
-								has_added_tension_amount > 5
-							}
-						}
-					}
-					AND = {
-						NOT = { is_neighbor_of = ROOT }
-						OR = {
-							has_offensive_war_with = ROOT
-							AND = {
-								NOT = { has_government = ROOT }
-								has_offensive_war = yes
-								has_added_tension_amount > 30
-							}
-						}
-					}
-				}
-			}
-		}
-
-		days_remove = 90
-		days_re_enable = 180
-
-		fire_only_once = yes
-
-		cost = var:war_propaganda_cost?75
-
-		modifier = {
-			war_support_weekly = 0.01
-		}
-
-		complete_effect = {
-			set_country_flag = { flag = war_propaganda_campaign_running value = 1 days = 90 } #TODO_Manu: This is a nasty fix so that the flag gets eventually removed if the target is annexed. days = days_remove
-		}
-		remove_effect = {
-			clr_country_flag = war_propaganda_campaign_running
-		}
-
-		ai_will_do = {
-			factor = 1
-			modifier = {
-				factor = 0
-				has_war_support > 0.9
 			}
 		}
 	}
@@ -545,6 +441,10 @@ propaganda_efforts = {
 					has_idea = limited_conscription
 					has_idea = extensive_conscription
 				}
+			}
+			modifier = {
+				factor = 0
+				has_war_support > 0.9
 			}
 		}
 	}
@@ -680,6 +580,13 @@ propaganda_efforts = {
 				add_war_support = 0.1
 			}
 			else = { add_war_support = 0.05 }
+		}
+		ai_will_do = {
+			base = 0
+			modifier = {
+				add = 201
+				has_war_support < 0.6
+			}
 		}
 	}
 }
@@ -1655,7 +1562,7 @@ war_measures = {
 	
 	emergency_factory_conversion_defensive = {
 
-		icon = GFX_decision_generic_merge_plant_materiel
+		icon = generic_industry
 
 		available = {
 			num_of_civilian_factories > 5 #Change this if amount of factories change
@@ -1663,7 +1570,8 @@ war_measures = {
 
 		visible = {
 			has_defensive_war = yes
-			has_offensive_war = no			
+			has_offensive_war = no
+			num_of_controlled_states > 0	
 		}
 
 		fire_only_once = no
@@ -1683,7 +1591,7 @@ war_measures = {
 
 	emergency_factory_conversion_offensive = {
 
-		icon = GFX_decision_generic_merge_plant_materiel
+		icon = generic_industry
 
 		available = {
 			num_of_civilian_factories > 5 #Change this if amount of factories change
@@ -1711,7 +1619,7 @@ war_measures = {
 
 	desperate_defense = {
 
-		icon = GFX_decision_generic_military
+		icon = generic_prepare_civil_war
 
 		available = {
 			surrender_progress > 0.5
@@ -1732,6 +1640,10 @@ war_measures = {
 			modifier = {
 				surrender_progress > 0.6
 				factor = 10
+			}
+			modifier = {
+				has_capitulated = yes
+				factor = 0
 			}
 		}
 
@@ -2066,9 +1978,9 @@ economy_decisions = {
 			}
 		}
 		ai_will_do = {
-			factor = 1
+			base = 1
 			modifier = {
-				factor = 10
+				factor = 1.5
 				any_owned_state = { free_building_slots = { building = industrial_complex size < 1 include_locked = no } }
 			}
 		}
@@ -2186,17 +2098,10 @@ economy_decisions = {
 			}
 		}
 		ai_will_do = {
-			factor = 1
+			base = 0
 			modifier = {
-				factor = 10
+				add = 1
 				all_owned_state = { free_building_slots = { building = industrial_complex size < 1 include_locked = no } }
-			}
-			modifier = {
-				any_owned_state = {
-					infrastructure > 3
-					free_building_slots = { building = industrial_complex size > 0 include_locked = no }
-				}
-				factor = 0
 			}
 		}
 	}
