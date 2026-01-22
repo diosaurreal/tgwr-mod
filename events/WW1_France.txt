@@ -4320,20 +4320,6 @@ news_event = {
 	picture = GFX_ww1_france_83
 	fire_only_once = yes
 	is_triggered_only = yes																
-	immediate = {
-		hidden_effect = {
-			set_cosmetic_tag = FRA_THIRD_EMPIRE
-			FRA_napoleon_v = {
-				set_character_name = "Napoléon V"
-				set_portraits = {
-					civilian={
-						large="gfx/leaders/FRA/FRA_Napoleon_V.png"
-						small="gfx/interface/ideas/FRA/idea_FRA_napoleon.png"
-					}
-				}
-			}
-		}
-	}
 	option = {
 		trigger = {
 			OR = {
@@ -6551,6 +6537,9 @@ country_event = {
 				FRA_napoleon_v = {
 					set_nationality = NFA
 				}
+				FRA_louis_joseph_bonaparte = {
+					set_nationality = NFA
+				}
 				FRA_jacques_i = {
 					set_nationality = NFA
 				}
@@ -7911,6 +7900,7 @@ country_event = {
 		original_tag = FRA
 		has_country_leader = {
 			character = FRA_napoleon_v
+			ruling_only = no
 		}
 		date > 1926.5.1
 	}
@@ -7934,17 +7924,94 @@ country_event = {
 	}
 	option = {
 		name = ww1_france.31.a
-		FRA_louis_joseph_bonaparte = {
-			add_country_leader_role = {
-				promote_leader = yes
-				country_leader = {
-					ideology = semi_constitutional_monarchy
-					traits = { bonaparte_legacy_louis retired_minister_of_war }
+		if = {
+			limit = { 
+				has_cosmetic_tag = FRA_THIRD_EMPIRE
+			}
+			FRA_louis_joseph_bonaparte = {
+				add_country_leader_role = {
+					promote_leader = yes
+					country_leader = {
+						ideology = semi_constitutional_monarchy
+						traits = { bonaparte_legacy_louis retired_minister_of_war }
+					}
 				}
 			}
 		}
 		ai_chance = {
 			factor = 100
+		}
+	}
+}
+# Regent Napoleon dies
+country_event = {
+	id = ww1_france.3
+	title = ww1_france.3.t
+	desc = ww1_france.3.d
+	picture = GFX_report_event_europe_funeral
+	mean_time_to_happen = {
+		days = 3
+	}
+	fire_only_once = yes
+	trigger = {
+		original_tag = FRA
+		has_country_leader = {
+			character = FRA_louis_joseph_bonaparte
+			ruling_only = no
+		}
+		date > 1932.10.1
+	}
+	mean_time_to_happen = {
+		days = 14
+	}
+	immediate = {
+		hidden_effect = {
+			FRA_napoleon_vi = {
+				set_character_name = FRA_napoleon_vi
+			}	
+			if = {
+				limit = { 
+					has_idea = FRA_idea_louis_joseph_bonaparte
+				}
+				remove_ideas = FRA_idea_louis_joseph_bonaparte
+				add_ideas = FRA_napoleon_vi
+			}
+			else_if = {
+				limit = { 
+					OR = {
+						has_country_leader = {
+							character = FRA_louis_joseph_bonaparte
+						}
+						NOT = {
+							has_government = neutrality
+						}
+					}
+				}
+				FRA_napoleon_vi = {
+					if = {
+						limit = { 
+							has_ideology = semi_constitutional_monarchy
+						}
+						promote_character = semi_constitutional_monarchy
+					}
+					else = {
+						add_country_leader_role = {
+							promote_leader = yes
+							country_leader = {
+								ideology = semi_constitutional_monarchy
+								traits = { bonaparte_legacy empire_builder }
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	option = {
+		name = ww1_france.31.a
+		retire_character = FRA_louis_joseph_bonaparte
+		effect_tooltip = {
+			promote_character = FRA_napoleon_vi
 		}
 	}
 }
@@ -15450,7 +15517,7 @@ country_event = {
 		trigger = {
 			has_country_flag = FRA_allow_bonaparte_visit
 		}
-		add_ideas = FRA_napoleon_v
+		add_ideas = FRA_victor_napoleon
 		ai_chance = {
 			factor = 200
 			modifier = {
@@ -15620,36 +15687,29 @@ country_event = {
 					}
 				}	
 			}
+			FRA_napoleon_v = {
+				add_country_leader_role = {
+					promote_leader = yes
+					country_leader = {
+						ideology = semi_constitutional_monarchy
+						traits = { bonaparte_legacy empire_builder }
+					}
+				}	
+			}
 		}
-		
-		
-		promote_character = FRA_napoleon_v
-		hidden_effect = {
-			remove_french_presidents = yes
-		}
+		promote_character = {
+			character = FRA_napoleon_v
+			ideology = conservatism
+		}	
+		# hidden_effect = {
+		# 	remove_french_presidents = yes why remove them if he is a prime minister??
+		# }
 		set_party_name = {
 			ideology = neutrality
 			long_name = FRA_house_of_bonapart
 			name = FRA_house_of_bonapart
 		}
-		if = {
-			limit = {
-				has_idea = FRA_jean_iii 
-			}
-			remove_ideas = FRA_jean_iii
-		}
-		if = {
-			limit = {
-				has_idea = FRA_jacques_i 
-			}
-			remove_ideas = FRA_jacques_i
-		}
-		if = {
-			limit = {
-				has_idea = FRA_napoleon_v 
-			}
-			remove_ideas = FRA_napoleon_v
-		}
+		remove_ideas = FRA_victor_napoleon
 		ai_chance = {
 			factor = 50
 		}
@@ -15661,23 +15721,22 @@ country_event = {
 			ideology = democratic
 			popularity = 0.15
 		}
-		if = {
-			limit = {
-				has_idea = FRA_jean_iii 
+		remove_ideas = FRA_victor_napoleon
+		retire_character = FRA_napoleon_v
+		retire_character = FRA_louis_joseph_bonaparte
+		retire_character = FRA_napoleon_vi
+		clr_country_flag = FRA_emergency_figurehead
+		clr_country_flag = FRA_allow_bonaparte_visit
+		mark_focus_tree_layout_dirty = yes
+		ai_chance = {
+			base = 1
+			modifier = {
+				factor = 0
+				has_game_rule = {
+					rule = FRA_ai_behavior
+					option = DEMOCRATIC_RIGHT_NAPOLEON
+				}
 			}
-			remove_ideas = FRA_jean_iii
-		}
-		if = {
-			limit = {
-				has_idea = FRA_jacques_i 
-			}
-			remove_ideas = FRA_jacques_i
-		}
-		if = {
-			limit = {
-				has_idea = FRA_napoleon_v 
-			}
-			remove_ideas = FRA_napoleon_v
 		}
 	}
 }
@@ -16005,10 +16064,8 @@ country_event = {
 			has_government = communism
 			has_government = democratic
 		}
-		OR = {
-			has_country_leader = {
-				character = FRA_napoleon_v
-			}
+		has_country_leader = {
+			character = FRA_napoleon_v
 		}
 	}
 	mean_time_to_happen = {
@@ -16034,11 +16091,9 @@ country_event = {
 		days = 170
 	}
 	trigger =  {
+		original_tag = FRA
 		has_idea = FRA_communist_terrorism
-		OR = {
-			has_government = neutrality
-			has_government = fascism
-		}
+		has_government = neutrality
 	}
 	immediate = {
 		hidden_effect = {
@@ -16095,6 +16150,9 @@ country_event = {
 	desc = ww1_france.438.d
 	is_triggered_only = yes
 	picture = GFX_picardie_manoeuvers
+	trigger = {
+		has_cosmetic_tag = FRA_THIRD_EMPIRE
+	}
 	option = {
 		name = ww1_france.438.a #full power louis bonaparte
 		FRA_louis_joseph_bonaparte = {
@@ -16113,6 +16171,16 @@ country_event = {
 	}
 	option = {
 		name = ww1_france.438.b #figurehead louis bonaparte
+		hidden_effect = {
+			FRA_louis_joseph_bonaparte = {
+				add_country_leader_role = {
+					country_leader = {
+						ideology = semi_constitutional_monarchy
+						traits = { bonaparte_legacy_louis retired_minister_of_war }
+					}
+				}
+			}	
+		}
 		add_ideas = FRA_idea_louis_joseph_bonaparte
 		custom_effect_tooltip = FRA_emperor_will_appoint_a_prime_minister
 		country_event = {
