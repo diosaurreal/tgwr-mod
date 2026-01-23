@@ -4324,7 +4324,7 @@ news_event = {
 		hidden_effect = {
 			set_cosmetic_tag = FRA_THIRD_EMPIRE
 			FRA_napoleon_v = {
-				set_character_name = "Napoléon V"
+				set_character_name = FRA_napoleon_v
 				set_portraits = {
 					civilian={
 						large="gfx/leaders/FRA/FRA_Napoleon_V.png"
@@ -4351,6 +4351,23 @@ news_event = {
 			}
 		}
 		name = ww1_france.83.b
+	}
+	after = {
+		if = {
+			limit = {
+				has_game_rule = {
+					rule = rule_superevent
+					option = DEFAULT
+				}
+				is_ai = no
+			}
+			hidden_effect = {
+				clear_superevents = yes
+				play_song = "SE_fra_bonapartist"
+				set_country_flag = SE_fra_bonapartist
+				update_superevents = yes
+			}
+		}
 	}
 }
 
@@ -6545,14 +6562,27 @@ country_event = {
 						}
 					}
 				}
+				FRA_louis_joseph_bonaparte = {
+					set_nationality = NFA
+				}
 				FRA_napoleon_vi = {
 					set_nationality = NFA
 				}
 				FRA_napoleon_v = {
-					set_nationality = NFA
+					if = {
+						limit = {
+							NOT = { has_character_flag = character_died }
+						}
+						set_nationality = NFA
+					}
 				}
 				FRA_jacques_i = {
-					set_nationality = NFA
+					if = {
+						limit = {
+							NOT = { has_character_flag = character_died }
+						}
+						set_nationality = NFA
+					}
 				}
 				FRA_charles_xii = {
 					set_nationality = NFA
@@ -7817,6 +7847,9 @@ news_event = {
 		name = ww1_france.30.a		#royalists
 		trigger = {
 			has_monarchy = yes
+			NOT = {
+				original_tag = FRA
+			}
 		}
 	}
 	option = {
@@ -7853,6 +7886,9 @@ news_event = {
 					}
 				}
 			}
+			NOT = {
+				original_tag = FRA
+			}
 		}
 	}
 	option = {
@@ -7869,30 +7905,37 @@ news_event = {
 		}
 	}
 	after = {
-		# if = {
-		# 	limit = {
-		# 		has_game_rule = {
-		# 			rule = rule_superevent
-		# 			option = DEFAULT
-		# 		}
-		# 		is_ai = no
-		# 	}
-		# 	hidden_effect = {
-		#		clear_superevents = yes
-		# 		if = {
-		# 			limit = {
-		# 				FROM = { has_completed_focus = NFA_son_altesse_impriale }
-		# 			}
-		# 			play_song = "SE_fra_bonapartist"
-		# 			set_country_flag = SE_fra_bonapartist
-		# 		}
-		# 		else = {
-		# 			play_song = "SE_fra_orleanist"
-		# 			set_country_flag = SE_fra_orleanist
-		# 		}
-		#		update_superevents = yes
-		# 	}
-		# }
+		if = {
+			limit = {
+				has_game_rule = {
+					rule = rule_superevent
+					option = DEFAULT
+				}
+				is_ai = no
+			}
+			hidden_effect = {
+				clear_superevents = yes
+				if = {
+					limit = {
+						FROM = { has_country_leader_ideology = semi_constitutional_monarchy }
+					}
+					play_song = "SE_fra_bonapartist"
+					set_country_flag = SE_fra_bonapartist
+				}
+				else_if = {
+					limit = {
+						FROM = { has_country_leader_ideology = semi_constitutional_monarchy_reserve }
+					}
+					play_song = "SE_fra_orleanist"
+					set_country_flag = SE_fra_orleanist
+				}
+				else = {
+					play_song = "SE_fra_legitimist"
+					set_country_flag = SE_fra_legitimist
+				}
+				update_superevents = yes
+			}
+		}
 	}
 }
 
@@ -7903,9 +7946,6 @@ country_event = {
 	title = ww1_france.31.t
 	desc = ww1_france.31.d
 	picture = GFX_report_event_europe_funeral
-	mean_time_to_happen = {
-		days = 3
-	}
 	fire_only_once = yes
 	trigger = {
 		original_tag = FRA
@@ -7919,14 +7959,36 @@ country_event = {
 	}
 	immediate = {
 		hidden_effect = {
+			FRA_napoleon_v = { set_character_flag = character_died }
 			retire_character = FRA_napoleon_v
 			clr_country_flag = alt_blue_tie_to_napoleon
+			if = {
+				limit = {
+					NOT = {
+						has_character = FRA_louis_joseph_bonaparte
+					}
+				}
+				FRA = {
+					FRA_louis_joseph_bonaparte = {
+						set_nationality = ROOT
+					}
+				}
+			}
 			FRA_louis_joseph_bonaparte = {
-				add_country_leader_role = {
-					promote_leader = yes
-					country_leader = {
-						ideology = semi_constitutional_monarchy
-						traits = { bonaparte_legacy_louis retired_minister_of_war }
+				set_character_flag = FRA_napoleon_vi
+				if = {
+					limit = {
+						has_ideology = semi_constitutional_monarchy
+					}
+					promote_character = semi_constitutional_monarchy
+				}
+				else = {
+					add_country_leader_role = {
+						promote_leader = yes
+						country_leader = {
+							ideology = semi_constitutional_monarchy
+							traits = { bonaparte_legacy_louis retired_minister_of_war }
+						}
 					}
 				}
 			}
@@ -7934,17 +7996,11 @@ country_event = {
 	}
 	option = {
 		name = ww1_france.31.a
-		FRA_louis_joseph_bonaparte = {
-			add_country_leader_role = {
-				promote_leader = yes
-				country_leader = {
-					ideology = semi_constitutional_monarchy
-					traits = { bonaparte_legacy_louis retired_minister_of_war }
-				}
-			}
+		effect_tooltip = {
+			
 		}
-		ai_chance = {
-			factor = 100
+		FRA_louis_joseph_bonaparte = {
+			promote_character = semi_constitutional_monarchy
 		}
 	}
 }
@@ -7969,17 +8025,43 @@ country_event = {
 	}
 	immediate = {
 		hidden_effect = {
-			retire_character = FRA_jaime_iii
-			promote_character = FRA_charles_xi
+			FRA_jacques_i = { set_character_flag = character_died }
+			retire_character = FRA_jacques_i
+			if = {
+				limit = {
+					NOT = { has_character = FRA_charles_xii }
+				}
+				FRA = {
+					FRA_charles_xii = {
+						set_nationality = ROOT
+					}
+				}
+			}
+			FRA_charles_xii = {
+				if = {
+					limit = {
+						has_ideology = absolute_monarchy
+					}
+					promote_character = absolute_monarchy
+				}
+				else = {
+					add_country_leader_role = {
+						promote_leader = yes
+						country_leader = {
+							ideology = absolute_monarchy
+							traits = { legitimate_heir }
+						}
+					}
+				}
+			}
 		}
 	}
 	option = {
 		name = ww1_france.32.a
 		effect_tooltip = {
-			promote_character = FRA_charles_xii
-		}
-		ai_chance = {
-			factor = 100
+			FRA_charles_xii = {
+				promote_character = absolute_monarchy
+			}
 		}
 	}
 }
@@ -8064,6 +8146,7 @@ country_event = {
 	# 	}
 	# }
 }
+
 # Philippe III DIES
 ####################
 country_event = {
@@ -8084,14 +8167,42 @@ country_event = {
 	}
 	immediate = {
 		hidden_effect = {
+			FRA_philippe_viii = { set_character_flag = character_died }
 			retire_character = FRA_philippe_viii
-			promote_character = FRA_jean_iii
+			if = {
+				limit = {
+					NOT = { has_character = FRA_jean_iii }
+				}
+				FRA = {
+					FRA_jean_iii = {
+						set_nationality = ROOT
+					}
+				}
+			}
+			FRA_jean_iii = {
+				if = {
+					limit = {
+						has_ideology = semi_constitutional_monarchy_reserve
+					}
+					promote_character = semi_constitutional_monarchy_reserve
+				}
+				else = {
+					add_country_leader_role = {
+						promote_leader = yes
+						country_leader = {
+							ideology = semi_constitutional_monarchy_reserve
+						}
+					}
+				}
+			}
 		}
 	}
 	option = {
 		name = ww1_france.32.a
 		effect_tooltip = {
-			promote_character = FRA_jean_iii
+			FRA_jean_iii = {
+				promote_character = semi_constitutional_monarchy_reserve
+			}
 		}
 	}
 }
@@ -15455,6 +15566,10 @@ country_event = {
 		promote_character = FRA_maurice_pujo
 		hidden_effect = {
 			remove_french_presidents = yes
+			news_event = {
+				id = ww1_france.30
+				hours = 3
+			}
 		}
 		set_party_name = {
 			ideology = neutrality
@@ -15509,7 +15624,11 @@ country_event = {
 			elections_allowed = yes
 		}
 		hidden_effect = {
-			set_cosmetic_tag = FRA_KINGDOM
+			set_cosmetic_tag = FRA_KINGDOM_legitimist
+			news_event = {
+				id = ww1_france.30
+				hours = 3
+			}
 		}
 		promote_character = FRA_maurice_pujo
 		hidden_effect = {
