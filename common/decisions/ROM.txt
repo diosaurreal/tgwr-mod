@@ -169,7 +169,6 @@ ROM_military_category = {
 			has_completed_focus = ROM_prepare_for_the_upcoming_war
 		}
 		available = {
-			has_tech = fortification1
 			controls_province = 9617
 		}
 		modifier = {
@@ -304,9 +303,10 @@ ROM_military_category = {
 			civilian_factory_use = 1
 		}
 		remove_effect = {
-			custom_effect_tooltip = ROM_impfort.tt
+			custom_effect_tooltip = ROM_modify_economy_tt
 			add_to_variable = {
 				ROM_production_speed_bunker_army = 0.1
+				tooltip = production_speed_bunker_factor_tt
 			}
 			if = {
 				limit = {
@@ -679,7 +679,15 @@ ROM_kings_country_category = {
 				type = arms_factory
 				level = -2
 			}
-			custom_effect_tooltip = ROM_mife2.tt
+			custom_effect_tooltip = ROM_modify_economy_tt
+			add_to_variable = {
+				ROM_eco_pp_cost = -0.15
+				tooltip = political_power_cost_tt
+			}
+			add_to_variable = {
+				ROM_consumer_goods = -0.2
+				tooltip = consumer_goods_factor_tt
+			}
 		}
 	}
 	ROM_united_conservative_front = {
@@ -1178,32 +1186,16 @@ GER_great_war = {
 			FROM = {
 				owns_state = 78
 				controls_state = 78		
+				original_tag = UKR
+				has_country_flag = UKR_rumcherod
+				is_subject = yes
 				NOT = {
-					tag = MOL
-					tag = AUS
-					tag = HUN
-					tag = GER
-					tag = BUL
-					tag = TUR
-					has_war_with = ROOT
-					is_in_faction_with = ROOT
-					is_subject_of = ROOT
-				}
-				OR = {
-					78 = {
-						num_owned_neighbour_states = {
-							owner = PREV
-							count < 2
-						}
-					}
-					AND = {
-						is_subject = no
-						is_major = no
-						is_in_faction = no
-					}			
+					is_in_faction_with = ENT
+					is_in_faction_with = GER
 				}
 			}
 		}
+		fire_only_once = yes
 		available = {
 			has_war = no
 			is_subject = no
@@ -1213,7 +1205,7 @@ GER_great_war = {
 				}
 			}
 		}
-		days_remove = 10
+		days_remove = 3
 		ai_will_do = {
 			factor = 80
 		}
@@ -1242,25 +1234,16 @@ GER_great_war = {
 			hidden_trigger = {
 				FROM = {
 					NOT = {
-						owns_state = 78
-						controls_state = 78
-						78 = {
-							num_owned_neighbour_states = {
-								owner = PREV
-								count < 1
+						AND = {
+							owns_state = 78
+							controls_state = 78
+							original_tag = UKR
+							has_country_flag = UKR_rumcherod
+							is_subject = yes
+							NOT = {
+								is_in_faction_with = ENT
+								is_in_faction_with = GER
 							}
-						}
-					}
-					OR = {
-						tag = MOL
-						tag = AUS
-						tag = HUN
-						tag = GER
-						tag = BUL
-						tag = TUR
-						has_war_with = ROOT
-						ROOT = {
-							is_subject_of = PREV
 						}
 					}
 				}
@@ -1288,15 +1271,7 @@ GER_great_war = {
 		}
 		is_good = no
 		complete_effect = {
-			every_enemy_country = {
-				limit = {
-					OR = {
-						owns_state = 78	
-						any_allied_country = {
-							owns_state = 78	
-						}
-					}
-				}
+			every_enemy_country = { # i hope no one will declare war on ROM during invasion, else in case of RUC's capitulation it still in war with SOV
 				white_peace = ROOT
 			}
 			78 = {
@@ -1312,15 +1287,7 @@ GER_great_war = {
 			}
 		}
 		timeout_effect = {
-			every_enemy_country = {
-				limit = {
-					OR = {
-						owns_state = 78	
-						any_allied_country = {
-							owns_state = 78	
-						}
-					}
-				}
+			every_enemy_country = { # i hope no one will declare war on ROM during invasion, else in case of RUC's capitulation it still in war with SOV
 				ROOT = {
 					white_peace = PREV
 				}			
@@ -1334,15 +1301,7 @@ GER_great_war = {
 		}
 		cancel_effect  = {
 			hidden_effect = {
-				every_enemy_country = {
-					limit = {
-						OR = {
-							owns_state = 78	
-							any_allied_country = {
-								owns_state = 78	
-							}
-						}
-					}
+				every_enemy_country = { # i hope no one will declare war on ROM during invasion, else in case of RUC's capitulation it still in war with SOV
 					ROOT = {
 						white_peace = PREV
 					}			
@@ -1391,38 +1350,30 @@ GER_great_war = {
 			GER = {
 				add_ideas = ROM_occupation_costs_rom2
 			}
-			805 = {
-				add_dynamic_modifier = {
-					modifier = ROM_armistice_of_focsani_dobrogea_de_nord
+			if = {
+				limit = { 
+					owns_state = 805	
 				}
-				transfer_state_to = ROM
-				set_demilitarized_zone = yes
-			}
+				805 = {
+					add_dynamic_modifier = {
+						modifier = ROM_armistice_of_focsani_dobrogea_de_nord
+					}
+					set_demilitarized_zone = yes
+				}
+			}	
 			hidden_effect = {
 				set_capital = {
 					state = 79
 				}
 				set_country_flag = ROM_armistice_of_focsani_completed
 				give_military_access = RUS
-				every_country = {
-					limit = {
-						OR = {
-							tag = GER
-							is_in_faction_with = GER
-						}
-					}
+				white_peace = GER
+				every_enemy_country = {
 					ROM = {
 						white_peace = PREV
 					}
 				}
-				if = {
-					limit = {
-						ROM = {
-							is_in_faction_with = FRA
-						}
-					}
-					leave_faction = yes
-				}
+				leave_faction = yes
 			}
 			every_owned_state = {
 				limit = {
@@ -2591,22 +2542,27 @@ ROM_the_romanian_economy_cat = {
 			add_to_variable = {
 				ROM_mass_payment = 1
 			}
+			custom_effect_tooltip = ROM_modify_economy_tt
 			add_to_variable = {
 				ROM_factory_output = 0.05
+				tooltip = industrial_capacity_factory_tt
 			}
 			add_to_variable = {
 				ROM_consumer_goods = -0.225
+				tooltip = consumer_goods_factor_tt
 			}
 			add_to_variable = {
 				ROM_eco_pp_cost = 0.03
+				tooltip = political_power_cost_tt
 			}
 			add_to_variable = {
 				ROM_build_speed = 0.175
+				tooltip = production_speed_buildings_factor_tt
 			}
 			add_to_variable = {
 				ROM_eco_stability = 0.1
+				tooltip = stability_factor_tt
 			}
-			custom_effect_tooltip = ROM_big_pay_debt_decision.tt
 		}
 	}
 	ROM_repay_war_debt_small = {
@@ -2651,26 +2607,31 @@ ROM_the_romanian_economy_cat = {
 				ROM_small_repayment = 1
 			}
 			#SMALL DOSE
+			custom_effect_tooltip = ROM_modify_economy_tt
 			add_to_variable = {
 				ROM_factory_output = 0.02
+				tooltip = industrial_capacity_factory_tt
 			}
 			add_to_variable = {
 				ROM_consumer_goods = -0.09
+				tooltip = consumer_goods_factor_tt
 			}
 			add_to_variable = {
 				ROM_eco_pp_cost = 0.01
+				tooltip = political_power_cost_tt
 			}
 			add_to_variable = {
 				ROM_build_speed = 0.07
+				tooltip = production_speed_buildings_factor_tt
 			}
 			add_to_variable = {
 				ROM_eco_stability = 0.04
+				tooltip = stability_factor_tt
 			}
-			custom_effect_tooltip = ROM_small_pay_debt_decision.tt
 		}
 	}
 	ROM_open_transylvanian_coal_mines = {
-		icon = GFX_decision_generic_factory
+		icon = GFX_decision_coal
 		cost = 30
 		days_remove = 30
 		fire_only_once = yes
@@ -2700,13 +2661,14 @@ ROM_the_romanian_economy_cat = {
 		remove_effect = {
 			84 = {
 				add_resource = {
-					type = steel
-					amount = 3
+					type = coal
+					amount = 7
 				}
 			}
-			custom_effect_tooltip = ROM_ice.tt
+			custom_effect_tooltip = ROM_modify_economy_tt
 			add_to_variable = {
 				ROM_consumer_goods = -0.05
+				tooltip = consumer_goods_factor_tt
 			}
 		}
 	}
@@ -2745,9 +2707,10 @@ ROM_the_romanian_economy_cat = {
 					amount = 4
 				}
 			}
-			custom_effect_tooltip = ROM_efi
+			custom_effect_tooltip = ROM_modify_economy_tt
 			add_to_variable = {
 				ROM_build_speed = 0.05
+				tooltip = production_speed_buildings_factor_tt
 			}
 		}
 	}
@@ -2783,9 +2746,10 @@ ROM_the_romanian_economy_cat = {
 			82 = {
 				increase_state_category = yes
 			}
-			custom_effect_tooltip = ROM_ice.tt
+			custom_effect_tooltip = ROM_modify_economy_tt
 			add_to_variable = {
 				ROM_consumer_goods = -0.05
+				tooltip = consumer_goods_factor_tt
 			}
 		}
 	}
@@ -2820,9 +2784,10 @@ ROM_the_romanian_economy_cat = {
 		}
 		remove_effect = {
 			add_stability = 0.03
-			custom_effect_tooltip = ROM_ice.tt
+			custom_effect_tooltip = ROM_modify_economy_tt
 			add_to_variable = {
 				ROM_consumer_goods = -0.05
+				tooltip = consumer_goods_factor_tt
 			}
 		}
 	}
@@ -2861,9 +2826,10 @@ ROM_the_romanian_economy_cat = {
 					amount = 8
 				}
 			}
-			custom_effect_tooltip = ROM_efi
+			custom_effect_tooltip = ROM_modify_economy_tt
 			add_to_variable = {
 				ROM_build_speed = 0.05
+				tooltip = production_speed_buildings_factor_tt
 			}
 		}
 	}
@@ -2902,9 +2868,10 @@ ROM_the_romanian_economy_cat = {
 					amount = 8
 				}
 			}
-			custom_effect_tooltip = ROM_efi
+			custom_effect_tooltip = ROM_modify_economy_tt
 			add_to_variable = {
 				ROM_build_speed = 0.05
+				tooltip = production_speed_buildings_factor_tt
 			}
 		}
 	}
