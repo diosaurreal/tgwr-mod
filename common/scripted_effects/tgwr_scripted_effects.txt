@@ -569,7 +569,6 @@ GER_release_UBD = {
 		limit = {
 			OR = {
 				is_owned_by = RUS
-				is_owned_by = SOV
 				is_owned_by = GER
 			}
 			OR = {
@@ -665,49 +664,63 @@ GER_release_UBD = {
 	}
 }
 GER_release_COU = {
-	every_state = {
+	if = {
 		limit = {
-			OR = {
-				is_owned_by = RUS
-				is_owned_by = SOV
-				is_owned_by = GER
+			any_state = {
+				is_core_of = COU
+				OR = {
+					is_owned_by = RUS
+					is_owned_by = GER
+				}
 			}
-			is_core_of = COU
 		}
-		transfer_state_to = COU
-		remove_russian_claims = yes
-		remove_russian_cores = yes
-	}
-	puppet = COU
-	hidden_effect = {
-		set_global_flag = COU_released
-		COU = {
-			if = {
-				limit = {
-					GER = {
-						is_GER_a_monarchy = yes
+		clr_country_flag = COU_should_be_released
+		every_state = {
+			limit = {
+				OR = {
+					is_owned_by = RUS
+					is_owned_by = GER
+				}
+				is_core_of = COU
+			}
+			transfer_state_to = COU
+			remove_russian_claims = yes
+			remove_russian_cores = yes
+		}
+		puppet = COU
+		hidden_effect = {
+			set_global_flag = COU_released
+			COU = {
+				if = {
+					limit = {
+						GER = {
+							is_GER_a_monarchy = yes
+						}
+					}
+					set_politics = {
+						ruling_party = neutrality
+						elections_allowed = no
+					}
+					set_popularities = {
+						democratic = 25
+						communism = 22
+						neutrality = 53
 					}
 				}
-				set_politics = {
-					ruling_party = neutrality
-					elections_allowed = no
-				}
-				set_popularities = {
-					democratic = 25
-					communism = 22
-					neutrality = 53
-				}
+				set_country_flag = released_by_germany
+				inherit_technology = GER
+				delete_obsolete_russian_templates = yes
 			}
-			set_country_flag = released_by_germany
-			inherit_technology = GER
-			delete_obsolete_russian_templates = yes
-		}
-		if = {
-			limit = {
-				GER = { has_idea = RUS_idea_armistice_cp }
+			if = {
+				limit = {
+					GER = { has_idea = RUS_idea_armistice_cp }
+				}
+				COU = { add_ideas = RUS_idea_armistice_cp }
 			}
-			COU = { add_ideas = RUS_idea_armistice_cp }
 		}
+	}
+	else = {
+		set_country_flag = COU_should_be_released
 	}
 }
 
@@ -1002,6 +1015,8 @@ clear_all_relations = {
 		}
 	}
 	clr_country_flag = protectorate
+	clr_country_flag = colony
+	clr_country_flag = monarchist_puppet
 	if = {
 		limit = { is_in_faction = yes }
 		leave_faction = yes
@@ -1048,6 +1063,17 @@ clear_all_relations = {
 				country = PREV
 				relation = military_access
 				active = no
+			}
+		}
+	}
+	every_other_country = {
+		limit = {
+			PREV = { has_wargoal_against = PREV }
+		}
+		PREV = {
+			remove_wargoal = {
+				type = all
+				target = PREV
 			}
 		}
 	}
@@ -1113,6 +1139,8 @@ clear_all_relations_with_TARGET = {
 		}
 	}
 	clr_country_flag = protectorate
+	clr_country_flag = colony
+	clr_country_flag = monarchist_puppet
 	if = {
 		limit = { is_in_faction_with = var:target }
 		leave_faction = yes
@@ -1570,10 +1598,10 @@ destroy_all_ships = {
 		type = ship_hull_cruiser_panzerschiff
 		count = all
 	}
-	destroy_ships = {
-		type = ship_hull_cruiser_coastal_defense_ship
-		count = all
-	}
+	#destroy_ships = {
+	#	type = ship_hull_cruiser_coastal_defense_ship
+	#	count = all
+	#}
 	destroy_ships = {
 		type = ship_hull_pre_dreadnought
 		count = all
@@ -1705,7 +1733,10 @@ clear_iskolata = {
 				fascism = 0
 				communism = 20
 			}
-			remove_ideas = standing_alone
+			remove_ideas = {
+				standing_alone
+				SOV_idea_red_guard
+			}	
 		}
 	}
 }
@@ -1912,7 +1943,6 @@ take_all_subjects_FROM = {
 			}
 			restore_previous_government_type = yes
 		}
-		# MAN THE GUNS
 		else_if = {
 			limit = {
 				has_autonomy_state = autonomy_supervised_state
@@ -2115,6 +2145,20 @@ take_all_subjects_FROM = {
 			}
 			restore_previous_government_type = yes
 		}
+		else_if = {
+			limit = {
+				has_autonomy_state = autonomy_tgwr_self_governing_colony
+			}
+			FROM = { end_puppet = PREV }
+			get_current_government_type = yes
+			ROOT = {
+				set_autonomy = {
+					target = PREV
+					autonomous_state = autonomy_tgwr_self_governing_colony
+				}
+			}
+			restore_previous_government_type = yes
+		}
 		else = {
 			FROM = { end_puppet = PREV }
 			get_current_government_type = yes
@@ -2271,7 +2315,6 @@ take_all_subjects_ROOT = {
 			}
 			restore_previous_government_type = yes
 		}
-		# MAN THE GUNS
 		else_if = {
 			limit = {
 				has_autonomy_state = autonomy_supervised_state
@@ -2474,8 +2517,394 @@ take_all_subjects_ROOT = {
 			}
 			restore_previous_government_type = yes
 		}
+		else_if = {
+			limit = {
+				has_autonomy_state = autonomy_tgwr_self_governing_colony
+			}
+			ROOT = { end_puppet = PREV }
+			get_current_government_type = yes
+			PREV = {
+				set_autonomy = {
+					target = PREV
+					autonomous_state = autonomy_tgwr_self_governing_colony
+				}
+			}
+			restore_previous_government_type = yes
+		}
 		else = {
 			ROOT = { end_puppet = PREV }
+			get_current_government_type = yes
+			PREV = { puppet = PREV }
+			restore_previous_government_type = yes
+		}
+	}
+}
+
+take_all_subjects_PREV = {
+	every_country = {
+		limit = {
+			is_subject_of = PREV.PREV
+		}
+		if = {
+			limit = {
+				has_autonomy_state = autonomy_dominion
+			}
+			PREV.PREV = { end_puppet = PREV }
+			get_current_government_type = yes
+			PREV = {
+				set_autonomy = {
+					target = PREV
+					autonomous_state = autonomy_dominion
+				}
+			}
+			restore_previous_government_type = yes
+		}
+		else_if = {
+			limit = {
+				has_autonomy_state = autonomy_colony
+			}
+			PREV.PREV = { end_puppet = PREV }
+			get_current_government_type = yes
+			PREV = {
+				set_autonomy = {
+					target = PREV
+					autonomous_state = autonomy_colony
+				}
+			}
+			restore_previous_government_type = yes
+		}
+		else_if = {
+			limit = {
+				has_autonomy_state = autonomy_puppet
+			}
+			PREV.PREV = { end_puppet = PREV }
+			get_current_government_type = yes
+			PREV = {
+				set_autonomy = {
+					target = PREV
+					autonomous_state = autonomy_puppet
+				}
+			}
+			restore_previous_government_type = yes
+		}
+		else_if = {
+			limit = {
+				has_autonomy_state = autonomy_integrated_puppet
+			}
+			PREV.PREV = { end_puppet = PREV }
+			get_current_government_type = yes
+			PREV = {
+				set_autonomy = {
+					target = PREV
+					autonomous_state = autonomy_integrated_puppet
+				}
+			}
+			restore_previous_government_type = yes
+		}
+		# DEATH OR DISHONOUR
+		else_if = {
+			limit = {
+				has_autonomy_state = autonomy_satellite
+			}
+			PREV.PREV = { end_puppet = PREV }
+			get_current_government_type = yes
+			PREV = {
+				set_autonomy = {
+					target = PREV
+					autonomous_state = autonomy_satellite
+				}
+			}
+			restore_previous_government_type = yes
+		}
+		# else_if = {
+		# 	limit = {
+		# 		has_autonomy_state = autonomy_reichsprotectorate
+		# 	}
+		# 	PREV.PREV = { end_puppet = PREV }
+		# 	get_current_government_type = yes
+		# 	PREV = {
+		# 		set_autonomy = {
+		# 			target = PREV
+		# 			autonomous_state = autonomy_reichsprotectorate
+		# 		}
+		# 	}
+		# 	restore_previous_government_type = yes
+		# }
+		# else_if = {
+		# 	limit = {
+		# 		has_autonomy_state = autonomy_reichskommissariat
+		# 	}
+		# 	PREV.PREV = { end_puppet = PREV }
+		# 	get_current_government_type = yes
+		# 	PREV = {
+		# 		set_autonomy = {
+		# 			target = PREV
+		# 			autonomous_state = autonomy_reichskommissariat
+		# 		}
+		# 	}
+		# 	restore_previous_government_type = yes
+		# }
+		# WAKING THE TIGER
+		else_if = {
+			limit = {
+				has_autonomy_state = autonomy_wtt_imperial_subject
+			}
+			PREV.PREV = { end_puppet = PREV }
+			get_current_government_type = yes
+			PREV = {
+				set_autonomy = {
+					target = PREV
+					autonomous_state = autonomy_wtt_imperial_subject
+				}
+			}
+			restore_previous_government_type = yes
+		}
+		else_if = {
+			limit = {
+				has_autonomy_state = autonomy_wtt_imperial_associate
+			}
+			PREV.PREV = { end_puppet = PREV }
+			get_current_government_type = yes
+			PREV = {
+				set_autonomy = {
+					target = PREV
+					autonomous_state = autonomy_wtt_imperial_associate
+				}
+			}
+			restore_previous_government_type = yes
+		}
+		else_if = {
+			limit = {
+				has_autonomy_state = autonomy_wtt_imperial_protectorate
+			}
+			PREV.PREV = { end_puppet = PREV }
+			get_current_government_type = yes
+			PREV = {
+				set_autonomy = {
+					target = PREV
+					autonomous_state = autonomy_wtt_imperial_protectorate
+				}
+			}
+			restore_previous_government_type = yes
+		}
+		else_if = {
+			limit = {
+				has_autonomy_state = autonomy_supervised_state
+			}
+			PREV.PREV = { end_puppet = PREV }
+			get_current_government_type = yes
+			PREV = {
+				set_autonomy = {
+					target = PREV
+					autonomous_state = autonomy_supervised_state
+				}
+			}
+			restore_previous_government_type = yes
+		}
+		# LA RESISTANCE
+		else_if = {
+			limit = {
+				has_autonomy_state = autonomy_collaboration_government
+			}
+			PREV.PREV = { end_puppet = PREV }
+			get_current_government_type = yes
+			PREV = {
+				set_autonomy = {
+					target = PREV
+					autonomous_state = autonomy_collaboration_government
+				}
+			}
+			restore_previous_government_type = yes
+		}
+		# NO STEP BACK
+		# else_if = {
+		# 	limit = {
+		# 		has_autonomy_state = autonomy_personal_union
+		# 	}
+		# 	PREV.PREV = { end_puppet = PREV }
+		# 	get_current_government_type = yes
+		# 	PREV = {
+		# 		set_autonomy = {
+		# 			target = PREV
+		# 			autonomous_state = autonomy_personal_union
+		# 		}
+		# 	}
+		# 	restore_previous_government_type = yes
+		# }
+		# TGWR AUTONOMIES
+		else_if = {
+			limit = {
+				has_autonomy_state = autonomy_tgwr_protectorate
+			}
+			PREV.PREV = { end_puppet = PREV }
+			get_current_government_type = yes
+			PREV = {
+				PREV = { set_country_flag = protectorate }
+				set_autonomy = {
+					target = PREV
+					autonomous_state = autonomy_tgwr_protectorate
+				}
+			}
+			restore_previous_government_type = yes
+		}
+		else_if = {
+			limit = {
+				has_autonomy_state = autonomy_tgwr_informal_protectorate
+			}
+			PREV.PREV = { end_puppet = PREV }
+			get_current_government_type = yes
+			PREV = {
+				PREV = { set_country_flag = protectorate }
+				set_autonomy = {
+					target = PREV
+					autonomous_state = autonomy_tgwr_informal_protectorate
+				}
+			}
+			restore_previous_government_type = yes
+		}
+		else_if = {
+			limit = {
+				has_autonomy_state = autonomy_tgwr_integrated_protectorate
+			}
+			PREV.PREV = { end_puppet = PREV }
+			get_current_government_type = yes
+			PREV = {
+				PREV = { set_country_flag = protectorate }
+				set_autonomy = {
+					target = PREV
+					autonomous_state = autonomy_tgwr_integrated_protectorate
+				}
+			}
+			restore_previous_government_type = yes
+		}
+		else_if = {
+			limit = {
+				has_autonomy_state = autonomy_tgwr_concession
+			}
+			PREV.PREV = { end_puppet = PREV }
+			get_current_government_type = yes
+			PREV = {
+				set_autonomy = {
+					target = PREV
+					autonomous_state = autonomy_tgwr_concession
+				}
+			}
+			restore_previous_government_type = yes
+		}
+		else_if = {
+			limit = {
+				has_autonomy_state = autonomy_tgwr_balkan_federal_subject
+			}
+			PREV.PREV = { end_puppet = PREV }
+			get_current_government_type = yes
+			PREV = {
+				set_autonomy = {
+					target = PREV
+					autonomous_state = autonomy_tgwr_balkan_federal_subject
+				}
+			}
+			restore_previous_government_type = yes
+		}
+		else_if = {
+			limit = {
+				has_autonomy_state = autonomy_tgwr_ottoman_emirate
+			}
+			PREV.PREV = { end_puppet = PREV }
+			get_current_government_type = yes
+			PREV = {
+				set_autonomy = {
+					target = PREV
+					autonomous_state = autonomy_tgwr_ottoman_emirate
+				}
+			}
+			restore_previous_government_type = yes
+		}
+		else_if = {
+			limit = {
+				has_autonomy_state = autonomy_tgwr_unilateral_union
+			}
+			PREV.PREV = { end_puppet = PREV }
+			get_current_government_type = yes
+			PREV = {
+				set_autonomy = {
+					target = PREV
+					autonomous_state = autonomy_tgwr_unilateral_union
+				}
+			}
+			restore_previous_government_type = yes
+		}
+		else_if = {
+			limit = {
+				has_autonomy_state = autonomy_tgwr_regional_government
+			}
+			PREV.PREV = { end_puppet = PREV }
+			get_current_government_type = yes
+			PREV = {
+				set_autonomy = {
+					target = PREV
+					autonomous_state = autonomy_tgwr_regional_government
+				}
+			}
+			restore_previous_government_type = yes
+		}
+		else_if = {
+			limit = {
+				has_autonomy_state = autonomy_tgwr_governorate_general
+			}
+			PREV.PREV = { end_puppet = PREV }
+			get_current_government_type = yes
+			PREV = {
+				set_autonomy = {
+					target = PREV
+					autonomous_state = autonomy_tgwr_governorate_general
+				}
+			}
+			restore_previous_government_type = yes
+		}
+		else_if = {
+			limit = {
+				has_autonomy_state = autonomy_tgwr_real_union
+			}
+			PREV.PREV = { end_puppet = PREV }
+			get_current_government_type = yes
+			PREV = {
+				set_autonomy = {
+					target = PREV
+					autonomous_state = autonomy_tgwr_real_union
+				}
+			}
+			restore_previous_government_type = yes
+		}
+		else_if = {
+			limit = {
+				has_autonomy_state = autonomy_tgwr_personal_union
+			}
+			PREV.PREV = { end_puppet = PREV }
+			get_current_government_type = yes
+			PREV = {
+				set_autonomy = {
+					target = PREV
+					autonomous_state = autonomy_tgwr_personal_union
+				}
+			}
+			restore_previous_government_type = yes
+		}
+		else_if = {
+			limit = {
+				has_autonomy_state = autonomy_tgwr_self_governing_colony
+			}
+			PREV.PREV = { end_puppet = PREV }
+			get_current_government_type = yes
+			ROOT = {
+				set_autonomy = {
+					target = PREV
+					autonomous_state = autonomy_tgwr_self_governing_colony
+				}
+			}
+			restore_previous_government_type = yes
+		}
+		else = {
+			PREV.PREV = { end_puppet = PREV }
 			get_current_government_type = yes
 			PREV = { puppet = PREV }
 			restore_previous_government_type = yes
@@ -2487,13 +2916,13 @@ copy_autonomy_from_ROOT = {
 	ROOT = {
 		if = {
 			limit = {
-				has_autonomy_state = autonomy_dominion
+				has_autonomy_state = autonomy_satellite
 			}
 			OVERLORD = {
 				end_puppet = PREV
 				set_autonomy = {
 					target = PREV.PREV
-					autonomous_state = autonomy_dominion
+					autonomous_state = autonomy_satellite
 				}
 			}
 		}
@@ -2607,7 +3036,6 @@ copy_autonomy_from_ROOT = {
 				}
 			}
 		}
-		# MAN THE GUNS
 		else_if = {
 			limit = {
 				has_autonomy_state = autonomy_supervised_state
@@ -2782,6 +3210,18 @@ copy_autonomy_from_ROOT = {
 				}
 			}
 		}
+		else_if = {
+			limit = {
+				has_autonomy_state = autonomy_tgwr_self_governing_colony
+			}
+			OVERLORD = {
+				end_puppet = PREV
+				set_autonomy = {
+					target = PREV.PREV
+					autonomous_state = autonomy_tgwr_self_governing_colony
+				}
+			}
+		}
 		else = {
 			OVERLORD = {
 				end_puppet = PREV
@@ -2832,42 +3272,180 @@ set_up_sykes_picot_anizah_border = {
 	}
 }
 
+set_up_syrian_monarchs = {
+	if = {
+		limit = {
+			SYR = {
+				NOT = {
+					has_character = HJZ_faisal_bin_hussein_bin_ali
+				}
+			}
+		}
+		HJZ = {
+			HJZ_faisal_bin_hussein_bin_ali = {
+				set_nationality = SYR
+				set_character_name = SYR_faisal_i
+				promote_leader = yes
+				add_country_leader_role = {
+					promote_leader = yes
+					country_leader = {
+						ideology = semi_constitutional_monarchy
+					}
+				}
+			}
+			HJZ_ghazi_bin_faisal = {
+				set_nationality = SYR
+			}
+		}
+	}
+}
+remove_all_tech_templates = {
+	if = {
+		limit = { has_template = "Marine Division" }
+		delete_unit_template_and_units = { division_template = "Marine Division" }
+	}
+	if = {
+		limit = { has_template = "Mountaineer Division" }
+		delete_unit_template_and_units = { division_template = "Mountaineer Division" }
+	}
+	if = {
+		limit = { has_template = "Motorized Division" }
+		delete_unit_template_and_units = { division_template = "Motorized Division" }
+	}
+	if = {
+		limit = { has_template = "Armoured Division" }
+		delete_unit_template_and_units = { division_template = "Armoured Division" }
+	}
+	if = {
+		limit = { has_template = "Medium Armor Division" }
+		delete_unit_template_and_units = { division_template = "Medium Armor Division" }
+	}
+	if = {
+		limit = { has_template = "Heavy Armor Division" }
+		delete_unit_template_and_units = { division_template = "Heavy Armor Division" }
+	}
+}
+remove_all_AI_templates = {
+	hidden_effect = {
+		for_loop_effect = {
+			start = 1910
+			end = 1935
+			compare = less_than_or_equals
+
+			meta_effect = {
+				text = {
+					if = {
+						limit = { has_template = "Infantry [COUNT] A" }
+						delete_unit_template_and_units = { division_template = "Infantry [COUNT] A" disband = yes }
+					}
+					if = {
+						limit = { has_template = "Infantry [COUNT] B" }
+						delete_unit_template_and_units = { division_template = "Infantry [COUNT] B" disband = yes }
+					}
+					if = {
+						limit = { has_template = "Infantry [COUNT] C" }
+						delete_unit_template_and_units = { division_template = "Infantry [COUNT] C" disband = yes }
+					}
+					if = {
+						limit = { has_template = "Infantry [COUNT] D" }
+						delete_unit_template_and_units = { division_template = "Infantry [COUNT] D" disband = yes }
+					}
+					if = {
+						limit = { has_template = "Infantry [COUNT] E" }
+						delete_unit_template_and_units = { division_template = "Infantry [COUNT] E" disband = yes }
+					}
+					if = {
+						limit = { has_template = "Cavalry [COUNT] A" }
+						delete_unit_template_and_units = { division_template = "Cavalry [COUNT] A" disband = yes }
+					}
+					if = {
+						limit = { has_template = "Cavalry [COUNT] B" }
+						delete_unit_template_and_units = { division_template = "Cavalry [COUNT] B" disband = yes }
+					}
+					if = {
+						limit = { has_template = "Cavalry [COUNT] C" }
+						delete_unit_template_and_units = { division_template = "Cavalry [COUNT] C" disband = yes }
+					}
+					if = {
+						limit = { has_template = "Cavalry [COUNT] D" }
+						delete_unit_template_and_units = { division_template = "Cavalry [COUNT] D" disband = yes }
+					}
+					if = {
+						limit = { has_template = "Cavalry [COUNT] E" }
+						delete_unit_template_and_units = { division_template = "Cavalry [COUNT] E" disband = yes }
+					}
+					if = {
+						limit = { has_template = "Light Tank [COUNT] A" }
+						delete_unit_template_and_units = { division_template = "Light Tank [COUNT] A" disband = yes }
+					}
+					if = {
+						limit = { has_template = "Medium Tank [COUNT] A" }
+						delete_unit_template_and_units = { division_template = "Medium Tank [COUNT] A" disband = yes }
+					}		
+					if = {
+						limit = { has_template = "Heavy Tank [COUNT] A" }
+						delete_unit_template_and_units = { division_template = "Heavy Tank [COUNT] A" disband = yes }
+					}		
+					if = {
+						limit = { has_template = "Marines [COUNT] A" }
+						delete_unit_template_and_units = { division_template = "Marines [COUNT] A" disband = yes }
+					}
+					if = {
+						limit = { has_template = "Mountaineers [COUNT] A" }
+						delete_unit_template_and_units = { division_template = "Mountaineers [COUNT] A" disband = yes }
+					}
+				}
+				COUNT = "[?v]"
+			}
+		}
+	}
+}
+
 delete_obsolete_russian_templates = {
-	delete_unit_template_and_units = {
-		division_template = "Pekhotnaya Diviziya"
-		disband = yes
+	remove_all_AI_templates = yes
+	remove_all_tech_templates = yes
+	if = {
+		limit = { has_template = "Pekhotnaya Diviziya" }
+		delete_unit_template_and_units = { division_template = "Pekhotnaya Diviziya" disband = yes }
 	}
-	delete_unit_template_and_units = {
-		division_template = "Gvardeyskaya Pekhotnaya Diviziya"
-		disband = yes
+	if = {
+		limit = { has_template = "Gvardeyskaya Pekhotnaya Diviziya" }
+		delete_unit_template_and_units = { division_template = "Gvardeyskaya Pekhotnaya Diviziya" disband = yes }
 	}
-	delete_unit_template_and_units = {
-		division_template = "Grenaderskaya Diviziya"
-		disband = yes
+	if = {
+		limit = { has_template = "Grenaderskaya Diviziya" }
+		delete_unit_template_and_units = { division_template = "Grenaderskaya Diviziya" disband = yes }
 	}
-	delete_unit_template_and_units = {
-		division_template = "Strelkovaya Diviziya"
-		disband = yes
+	if = {
+		limit = { has_template = "Strelkovaya Diviziya" }
+		delete_unit_template_and_units = { division_template = "Strelkovaya Diviziya" disband = yes }
 	}
-	delete_unit_template_and_units = {
-		division_template = "Strelkovaya Brigada"
-		disband = yes
+	if = {
+		limit = { has_template = "Strelkovaya Brigada" }
+		delete_unit_template_and_units = { division_template = "Strelkovaya Brigada" disband = yes }
 	}
-	delete_unit_template_and_units = {
-		division_template = "Kavaleriyskaya Diviziya"
-		disband = yes
+	if = {
+		limit = { has_template = "Kavaleriyskaya Diviziya" }
+		delete_unit_template_and_units = { division_template = "Kavaleriyskaya Diviziya" disband = yes }
 	}
-	delete_unit_template_and_units = {
-		division_template = "Gvardeyskaya Kavaleriyskaya Diviziya"
-		disband = yes
+	if = {
+		limit = { has_template = "Gvardeyskaya Kavaleriyskaya Diviziya" }
+		delete_unit_template_and_units = { division_template = "Gvardeyskaya Kavaleriyskaya Diviziya" disband = yes }
 	}
-	delete_unit_template_and_units = {
-		division_template = "Kavaleriyskaya Brigada"
-		disband = yes
+	if = {
+		limit = { has_template = "Kavaleriyskaya Brigada" }
+		delete_unit_template_and_units = { division_template = "Kavaleriyskaya Brigada" disband = yes }
 	}
-	delete_unit_template_and_units = {
-		division_template = "Morskoy Batal'on"
-		disband = yes
+	if = {
+		limit = { has_template = "Morskoy Batal'on" }
+		delete_unit_template_and_units = { division_template = "Morskoy Batal'on" disband = yes }
+	}
+	if = {
+		limit = {
+			has_template = "Krasnaya Gvardiya"
+			NOT = { has_government = communism }
+		}
+		delete_unit_template_and_units = { division_template = "Krasnaya Gvardiya" disband = yes }
 	}
 }
 
@@ -2974,57 +3552,34 @@ GEO_withdraw_from_persia = {
 }
 
 BRA_sao_paulo_battleship_effect = {
-	if = {
-		limit = {
-			has_dlc = "Man the Guns"
-		}
-		hidden_effect = {
-			ENG = {
-				create_equipment_variant = {
-					name = "Minas Geraes Class"
-					type = ship_hull_heavy_1
-					name_group = BRA_BB_HISTORICAL
-					parent_version = 0
-					modules = {
-						fixed_ship_battery_slot = ship_heavy_battery_1
-						fixed_ship_anti_air_slot = empty
-						fixed_ship_fire_control_system_slot = ship_fire_control_system_0
-						fixed_ship_radar_slot = empty
-						fixed_ship_engine_slot = heavy_ship_engine_1
-						fixed_ship_secondaries_slot = ship_secondaries_1
-						fixed_ship_armor_slot = ship_armor_bb_1
-						front_1_custom_slot = empty
-						mid_1_custom_slot = ship_secondaries_1
-						rear_1_custom_slot = empty
-					}
-					obsolete = yes
+	hidden_effect = {
+		ENG = {
+			create_equipment_variant = {
+				name = "Minas Geraes Class"
+				type = ship_hull_heavy_1
+				name_group = BRA_BB_HISTORICAL
+				design_team = mio:ENG_armstrong_whitworth_organization
+				parent_version = 0
+				modules = {
+					fixed_ship_battery_slot = ship_heavy_battery_1
+					fixed_ship_anti_air_slot = empty
+					fixed_ship_fire_control_system_slot = ship_fire_control_system_0
+					fixed_ship_engine_slot = heavy_ship_engine_1
+					fixed_ship_secondaries_slot = ship_secondaries_1
+					fixed_ship_armor_slot = ship_armor_bb_1
+					front_1_custom_slot = empty
+					mid_1_custom_slot = ship_secondaries_1
+					rear_1_custom_slot = empty
 				}
+				obsolete = yes
 			}
-		}
-		create_ship = {
-			name = "São Paulo"
-			type = ship_hull_heavy_1
-			creator = ENG
-			equipment_variant = "Minas Geraes Class"
 		}
 	}
-	else = {
-		hidden_effect = {
-			ENG = {
-				create_equipment_variant = {
-					name = "Minas Geraes Class"
-					type = battleship_1
-					parent_version = 0
-					obsolete = yes
-				}
-			}
-		}
-		create_ship = {
-			name = "São Paulo"
-			type = battleship_1
-			creator = ENG
-			equipment_variant = "Minas Geraes Class"
-		}
+	create_ship = {
+		name = "São Paulo"
+		type = ship_hull_heavy_1
+		creator = ENG
+		equipment_variant = "Minas Geraes Class"
 	}
 }
 
@@ -3040,10 +3595,11 @@ create_AOF = {
 			original_tag = FRA
 			set_country_flag = AOF
 			set_cosmetic_tag = AOF
+			set_country_flag = colony
 			PREV = {
 				set_autonomy = {
 					target = PREV
-					autonomous_state = autonomy_integrated_puppet
+					autonomous_state = autonomy_colony
 				}
 			}
 			set_country_flag = empty_focus
@@ -3212,10 +3768,11 @@ create_AEF = {
 			original_tag = FRA
 			set_country_flag = AEF
 			set_cosmetic_tag = AEF
+			set_country_flag = colony
 			PREV = {
 				set_autonomy = {
 					target = PREV
-					autonomous_state = autonomy_integrated_puppet
+					autonomous_state = autonomy_colony
 				}
 			}
 			set_country_flag = empty_focus
@@ -3381,6 +3938,38 @@ fire_random_advisor_if_no_slots = {
 					advisor_can_be_fired = {
 						slot = political_advisor
 					}
+					NOT = {
+						has_trait = head_of_intelligence
+						has_trait = mastermind_code_cracker
+						has_trait = expert_code_cracker
+						has_trait = spymaster
+						has_trait = spymaster_no_lar
+						has_trait = commander_of_the_fetno_derash
+						has_trait = commander_of_the_fetno_derash_no_lar
+						has_trait = SWI_soviet_spy
+						has_trait = SWI_intelligence_officer
+						has_trait = special_envoy
+						has_trait = BRA_soviet_spy
+						has_trait = HUN_military_intelligence_officer
+						has_trait = AUS_secretive_priest
+						has_trait = AUS_veteran_head_of_agency
+						has_trait = BEL_illusive_mastermind
+						has_trait = GER_intelligence_coordinator
+						has_trait = GER_secretary_of_state_security
+						has_trait = GER_reich_security_main_office_director_lar
+						has_trait = GER_reich_security_main_office_director_no_lar
+						has_trait = head_of_the_abwehr
+						has_trait = head_of_the_abwehr_improved
+						has_trait = intelligence_service_deputy
+						has_trait = PRC_multi_talented_diplomat_lar
+						has_trait = PRC_multi_talented_diplomat_no_lar
+						has_trait = PRC_trained_by_the_nkvd
+						has_trait = PRC_spymaster
+						has_trait = PHI_intelligence_bureau_chief
+						has_trait = HUN_stalinist_agent
+						has_trait = JAP_tokko_chief
+						has_trait = CHI_spymaster
+					}
 				}
 				set_nationality = XXA #couldn't find another way
 				set_nationality = PREV
@@ -3449,12 +4038,12 @@ relinguish_entente_leadership_peace = {
 		if = {
 			limit = {
 				FRA = {
-					is_in_faction_with = ROOT
+					is_in_faction_with = PREV
 					is_subject = no
 					has_capitulated = no
 					NOT = {
-						has_country_flag = RUS_surrender_alone
-						tag = ROOT
+						has_country_flag = FRA_surrender_alone
+						tag = PREV
 					}
 				}
 			}
@@ -3466,7 +4055,7 @@ relinguish_entente_leadership_peace = {
 		else_if = {
 			limit = {
 				RUS = {
-					is_in_faction_with = ROOT
+					is_in_faction_with = PREV
 					is_subject = no
 					has_capitulated = no
 					tag = SOV
@@ -3474,7 +4063,7 @@ relinguish_entente_leadership_peace = {
 						has_country_flag = has_capitulated_with_france_early
 						has_global_flag = RUS_surrender_alone
 						tag = SOV
-						tag = ROOT
+						tag = PREV
 					}
 				}
 			}
@@ -3486,12 +4075,12 @@ relinguish_entente_leadership_peace = {
 		else_if = {
 			limit = {
 				ENG = {
-					is_in_faction_with = ROOT
+					is_in_faction_with = PREV
 					is_subject = no
 					has_capitulated = no
 					NOT = {
 						has_country_flag = has_capitulated_with_france_early
-						tag = ROOT
+						tag = PREV
 					}
 				}
 			}
@@ -3600,15 +4189,22 @@ relinguish_entente_leadership = {
 		if = {
 			limit = {
 				FRA = {
-					is_in_faction_with = ROOT
+					is_in_faction_with = PREV
 					has_war_with = GER
 					is_subject = no
 					has_capitulated = no
 					NOT = {
-						has_country_flag = RUS_surrender_alone
-						tag = ROOT
+						has_country_flag = FRA_surrender_alone
+						tag = PREV
 					}
 				}
+			}
+			every_country = {
+				limit = {
+					is_exiled_in = PREV
+				}
+				end_exile = THIS				
+				become_exiled_in = { target = FRA }
 			}
 			FRA = {
 				set_country_flag = entente_leader
@@ -3618,7 +4214,7 @@ relinguish_entente_leadership = {
 		else_if = {
 			limit = {
 				RUS = {
-					is_in_faction_with = ROOT
+					is_in_faction_with = PREV
 					has_war_with = GER
 					is_subject = no
 					has_capitulated = no
@@ -3626,9 +4222,16 @@ relinguish_entente_leadership = {
 						has_country_flag = has_capitulated_with_france_early
 						has_global_flag = RUS_surrender_alone
 						tag = SOV
-						tag = ROOT
+						tag = PREV
 					}
 				}
+			}
+			every_country = {
+				limit = {
+					is_exiled_in = PREV
+				}
+				end_exile = THIS				
+				become_exiled_in = { target = RUS }
 			}
 			RUS = {
 				set_country_flag = entente_leader
@@ -3638,15 +4241,22 @@ relinguish_entente_leadership = {
 		else_if = {
 			limit = {
 				ENG = {
-					is_in_faction_with = ROOT
+					is_in_faction_with = PREV
 					has_war_with = GER
 					is_subject = no
 					has_capitulated = no
 					NOT = {
 						has_country_flag = has_capitulated_with_france_early
-						tag = ROOT
+						tag = PREV
 					}
 				}
+			}
+			every_country = {
+				limit = {
+					is_exiled_in = PREV
+				}
+				end_exile = THIS				
+				become_exiled_in = { target = ENG }
 			}
 			ENG = {
 				set_country_flag = entente_leader
@@ -3675,6 +4285,13 @@ relinguish_entente_leadership = {
 						is_on_continent = europe
 					}
 				}
+				every_country = {
+					limit = {
+						is_exiled_in = PREV.PREV
+					}
+					end_exile = THIS				
+					become_exiled_in = { target = PREV }
+				}
 				set_country_flag = entente_leader
 				set_faction_leader = yes
 			}
@@ -3694,6 +4311,13 @@ relinguish_entente_leadership = {
 					is_major = yes
 					is_subject = no
 					has_capitulated = no
+				}
+				every_country = {
+					limit = {
+						is_exiled_in = PREV.PREV
+					}
+					end_exile = THIS				
+					become_exiled_in = { target = PREV }
 				}
 				set_country_flag = entente_leader
 				set_faction_leader = yes
@@ -3719,6 +4343,13 @@ relinguish_entente_leadership = {
 						is_on_continent = europe
 					}
 				}
+				every_country = {
+					limit = {
+						is_exiled_in = PREV.PREV
+					}
+					end_exile = THIS				
+					become_exiled_in = { target = PREV }
+				}
 				set_country_flag = entente_leader
 				set_faction_leader = yes
 			}
@@ -3736,6 +4367,13 @@ relinguish_entente_leadership = {
 					is_subject = no
 					has_capitulated = no
 					has_war_with = GER
+				}
+				every_country = {
+					limit = {
+						is_exiled_in = PREV.PREV
+					}
+					end_exile = THIS				
+					become_exiled_in = { target = PREV }
 				}
 				set_country_flag = entente_leader
 				set_faction_leader = yes
@@ -3774,4 +4412,459 @@ safe_transfer_state_to = {
 	else = {
 		set_state_owner = PREV
 	}
+}
+
+research_trucks_to_improve_hospital_effect = {
+	custom_effect_tooltip = empty_space_tt
+	custom_effect_tooltip = research_trucks_to_improve
+	effect_tooltip = {
+		add_unit_bonus = {
+			field_hospital = {
+				default_morale = 0.1
+				casualty_trickleback = 0.13
+				experience_loss_factor = -0.1
+				supply_consumption = 0.02
+				battalion_mult = {
+					category = category_all_infantry
+					max_strength = 0.08
+				}
+			}
+		}
+	}	
+}
+
+research_trucks_to_improve_supply_effect = {
+	custom_effect_tooltip = empty_space_tt
+	custom_effect_tooltip = research_trucks_to_improve
+	effect_tooltip = {
+		add_unit_bonus = {
+			logistics_company = {
+				default_morale = 0.1
+				supply_consumption = -0.05
+				fuel_consumption = -0.03		
+			}	
+		}
+	}	
+}
+protectorate_logic = {
+	leave_faction = yes
+	OVERLORD = {
+		if = {
+			limit = {
+				is_in_faction = yes
+				NOT = { has_military_access_to = PREV }
+			}
+			diplomatic_relation = {
+				country = PREV
+				relation = military_access
+				active = yes
+			}
+		}
+	}
+	country_event = { id = ww1_political.7 hours = 1 } #needed if the faction leader is at war, don't ask
+}
+vassal_of_vassal_logic = {
+	OVERLORD = {
+		if = {
+			limit = { 
+				is_subject = yes
+			}
+			# PREV = {
+			# 	give_market_access = PREV.OVERLORD
+			# }	
+			if = {
+				limit = { 
+					OVERLORD = {
+						NOT = { 
+							has_military_access_to = PREV.PREV 
+							is_in_faction_with = PREV.PREV 
+						}
+					}
+				}
+				PREV = {
+					PREV.OVERLORD = {
+						#give_guarantee = PREV
+						diplomatic_relation = {
+							country = PREV
+							relation = military_access
+							active = yes
+						}
+					}
+				}	
+			}
+		}
+	}
+}
+
+clear_all_ledgers = {
+    if = {
+        limit = { has_idea = TUR_ittihadist_academy_spirit_no_remove }
+        remove_ideas = TUR_ittihadist_academy_spirit_no_remove
+    }
+    if = {
+        limit = { has_idea = TUR_ittihadist_academy_spirit }
+        remove_ideas = TUR_ittihadist_academy_spirit
+    }
+    if = {
+        limit = { has_idea = TUR_halaskaran_academy_spirit }
+        remove_ideas = TUR_halaskaran_academy_spirit
+    }
+    if = {
+        limit = { has_idea = bold_attack_spirit }
+        remove_ideas = bold_attack_spirit
+    }
+    if = {
+        limit = { has_idea = tenacious_defense_spirit }
+        remove_ideas = tenacious_defense_spirit
+    }
+    if = {
+        limit = { has_idea = meticulous_preparation_spirit }
+        remove_ideas = meticulous_preparation_spirit
+    }
+    if = {
+        limit = { has_idea = best_of_the_best_spirit }
+        remove_ideas = best_of_the_best_spirit
+    }
+    if = {
+        limit = { has_idea = academy_scholarships_spirit }
+        remove_ideas = academy_scholarships_spirit
+    }
+    if = {
+        limit = { has_idea = political_loyalty_spirit }
+        remove_ideas = political_loyalty_spirit
+    }
+    if = {
+        limit = { has_idea = inventive_leadership_spirit }
+        remove_ideas = inventive_leadership_spirit
+    }
+    if = {
+        limit = { has_idea = mobile_warfare_academy_spirit }
+        remove_ideas = mobile_warfare_academy_spirit
+    }
+    if = {
+        limit = { has_idea = superior_firepower_academy_spirit }
+        remove_ideas = superior_firepower_academy_spirit
+    }
+    if = {
+        limit = { has_idea = theatre_training_spirit }
+        remove_ideas = theatre_training_spirit
+    }
+    if = {
+        limit = { has_idea = mass_assault_academy_spirit }
+        remove_ideas = mass_assault_academy_spirit
+    }
+    
+    if = {
+        limit = { has_idea = professional_officer_corps_spirit }
+        remove_ideas = professional_officer_corps_spirit
+    }
+    if = {
+        limit = { has_idea = elevated_engineering_corps_spirit }
+        remove_ideas = elevated_engineering_corps_spirit
+    }
+    if = {
+        limit = { has_idea = proper_heritage_spirit }
+        remove_ideas = proper_heritage_spirit
+    }
+    if = {
+        limit = { has_idea = quick_improvisation_spirit }
+        remove_ideas = quick_improvisation_spirit
+    }
+    if = {
+        limit = { has_idea = relief_of_command_spirit }
+        remove_ideas = relief_of_command_spirit
+    }
+    if = {
+        limit = { has_idea = ideological_loyalty_spirit }
+        remove_ideas = ideological_loyalty_spirit
+    }
+    if = {
+        limit = { has_idea = state_serves_the_military_spirit }
+        remove_ideas = state_serves_the_military_spirit
+    }
+    if = {
+        limit = { has_idea = mobile_warfare_army_spirit }
+        remove_ideas = mobile_warfare_army_spirit
+    }
+    if = {
+        limit = { has_idea = superior_firepower_army_spirit }
+        remove_ideas = superior_firepower_army_spirit
+    }
+    if = {
+        limit = { has_idea = grand_battleplan_army_spirit }
+        remove_ideas = grand_battleplan_army_spirit
+    }
+    if = {
+        limit = { has_idea = mass_assault_army_spirit }
+        remove_ideas = mass_assault_army_spirit
+    }
+    if = {
+        limit = { has_idea = heritage_of_accomplishment }
+        remove_ideas = heritage_of_accomplishment
+    }
+    
+    if = {
+        limit = { has_idea = static_warfare_spirit }
+        remove_ideas = static_warfare_spirit
+    }
+    if = {
+        limit = { has_idea = flexible_organization_spirit }
+        remove_ideas = flexible_organization_spirit
+    }
+    if = {
+        limit = { has_idea = aggressive_reconnaisance_spirit }
+        remove_ideas = aggressive_reconnaisance_spirit
+    }
+    if = {
+        limit = { has_idea = reserve_officers_spirit }
+        remove_ideas = reserve_officers_spirit
+    }
+    if = {
+        limit = { has_idea = victory_or_death_spirit }
+        remove_ideas = victory_or_death_spirit
+    }
+    if = {
+        limit = { has_idea = maneuver_warfare_spirit }
+        remove_ideas = maneuver_warfare_spirit
+    }
+    if = {
+        limit = { has_idea = smoke_and_fire_spirit }
+        remove_ideas = smoke_and_fire_spirit
+    }
+    if = {
+        limit = { has_idea = logistical_focus_spirit }
+        remove_ideas = logistical_focus_spirit
+    }
+    if = {
+        limit = { has_idea = operational_reserve_spirit }
+        remove_ideas = operational_reserve_spirit
+    }
+
+    if = {
+        limit = { has_idea = independent_air_force_spirit }
+        remove_ideas = independent_air_force_spirit
+    }
+    if = {
+        limit = { has_idea = industrial_destruction_spirit }
+        remove_ideas = industrial_destruction_spirit
+    }
+    if = {
+        limit = { has_idea = dive_bombing_spirit }
+        remove_ideas = dive_bombing_spirit
+    }
+    if = {
+        limit = { has_idea = material_destruction_spirit }
+        remove_ideas = material_destruction_spirit
+    }
+    if = {
+        limit = { has_idea = industry_liasons_spirit }
+        remove_ideas = industry_liasons_spirit
+    }
+    if = {
+        limit = { has_idea = effective_training_programs_spirit }
+        remove_ideas = effective_training_programs_spirit
+    }
+    if = {
+        limit = { has_idea = branch_independence_spirit }
+        remove_ideas = branch_independence_spirit
+    }
+    if = {
+        limit = { has_idea = air_crew_surveys_spirit }
+        remove_ideas = air_crew_surveys_spirit
+    }
+    
+    if = {
+        limit = { has_idea = battlefield_air_interdiction_spirit }
+        remove_ideas = battlefield_air_interdiction_spirit
+    }
+    if = {
+        limit = { has_idea = cag_night_fighting_spirit }
+        remove_ideas = cag_night_fighting_spirit
+    }
+    if = {
+        limit = { has_idea = veteran_air_instructors_spirit }
+        remove_ideas = veteran_air_instructors_spirit
+    }
+    if = {
+        limit = { has_idea = centralized_control_spirit }
+        remove_ideas = centralized_control_spirit
+    }
+    if = {
+        limit = { has_idea = steel_wings_steel_hearts_spirit }
+        remove_ideas = steel_wings_steel_hearts_spirit
+    }
+    if = {
+        limit = { has_idea = home_defence_spirit }
+        remove_ideas = home_defence_spirit
+    }
+    if = {
+        limit = { has_idea = air_power_projection_spirit }
+        remove_ideas = air_power_projection_spirit
+    }
+    if = {
+        limit = { has_idea = massed_strike_spirit }
+        remove_ideas = massed_strike_spirit
+    }
+    if = {
+        limit = { has_idea = continuous_strike_spirit }
+        remove_ideas = continuous_strike_spirit
+    }
+    if = {
+        limit = { has_idea = strategic_strike_spirit }
+        remove_ideas = strategic_strike_spirit
+    }
+    
+    if = {
+        limit = { has_idea = TUR_bahriye_navy_school }
+        remove_ideas = TUR_bahriye_navy_school
+    }
+    if = {
+        limit = { has_idea = instilled_aggression_spirit }
+        remove_ideas = instilled_aggression_spirit
+    }
+    if = {
+        limit = { has_idea = calculated_restraint_spirit }
+        remove_ideas = calculated_restraint_spirit
+    }
+    if = {
+        limit = { has_idea = signals_training_spirit }
+        remove_ideas = signals_training_spirit
+    }
+    if = {
+        limit = { has_idea = fleet_in_being_academy_spirit }
+        remove_ideas = fleet_in_being_academy_spirit
+    }
+    if = {
+        limit = { has_idea = trade_interdiction_academy_spirit }
+        remove_ideas = trade_interdiction_academy_spirit
+    }
+    if = {
+        limit = { has_idea = base_strike_academy_spirit }
+        remove_ideas = base_strike_academy_spirit
+    }
+    if = {
+        limit = { has_idea = best_of_the_best_naval_academy_spirit }
+        remove_ideas = best_of_the_best_naval_academy_spirit
+    }
+    if = {
+        limit = { has_idea = naval_academy_scholarships_spirit }
+        remove_ideas = naval_academy_scholarships_spirit
+    }
+    
+    if = {
+        limit = { has_idea = jeune_ecole_spirit }
+        remove_ideas = jeune_ecole_spirit
+    }
+    if = {
+        limit = { has_idea = flexible_contracts_spirit }
+        remove_ideas = flexible_contracts_spirit
+    }
+    if = {
+        limit = { has_idea = integrated_designers_spirit }
+        remove_ideas = integrated_designers_spirit
+    }
+    if = {
+        limit = { has_idea = naval_reform_spirit }
+        remove_ideas = naval_reform_spirit
+    }
+    if = {
+        limit = { has_idea = naval_refit_yards_spirit }
+        remove_ideas = naval_refit_yards_spirit
+    }
+    if = {
+        limit = { has_idea = fleet_in_being_navy_spirit }
+        remove_ideas = fleet_in_being_navy_spirit
+    }
+    if = {
+        limit = { has_idea = trade_interdiction_navy_spirit }
+        remove_ideas = trade_interdiction_navy_spirit
+    }
+    if = {
+        limit = { has_idea = base_strike_navy_spirit }
+        remove_ideas = base_strike_navy_spirit
+    }
+    
+    if = {
+        limit = { has_idea = close_combat_navy_spirit }
+        remove_ideas = close_combat_navy_spirit
+    }
+    if = {
+        limit = { has_idea = night_fighting_spirit }
+        remove_ideas = night_fighting_spirit
+    }
+    if = {
+        limit = { has_idea = surprise_attacks_spirit }
+        remove_ideas = surprise_attacks_spirit
+    }
+    if = {
+        limit = { has_idea = efficient_communications_spirit }
+        remove_ideas = efficient_communications_spirit
+    }
+    if = {
+        limit = { has_idea = surface_raiders_spirit }
+        remove_ideas = surface_raiders_spirit
+    }
+    if = {
+        limit = { has_idea = decisive_battle_spirit }
+        remove_ideas = decisive_battle_spirit
+    }
+    if = {
+        limit = { has_idea = inclimate_weather_experience_spirit }
+        remove_ideas = inclimate_weather_experience_spirit
+    }
+    if = {
+        limit = { has_idea = brave_commanders_spirit }
+        remove_ideas = brave_commanders_spirit
+    }
+    if = {
+        limit = { has_idea = bureau_of_ordnance_spirit }
+        remove_ideas = bureau_of_ordnance_spirit
+    }
+}
+
+update_superevents = {
+	set_variable_to_random = global.superevent_update
+}
+clear_superevents = {
+	clr_country_flag = se_test
+	clr_country_flag = se_great_war
+	clr_country_flag = SE_war_of_the_worlds
+	clr_country_flag = SE_great_depression
+	clr_country_flag = SE_eng_republic
+	clr_country_flag = SE_eng_kitchener
+	clr_country_flag = SE_eng_george_v
+	clr_country_flag = SE_eng_imperial_federation
+	clr_country_flag = SE_fra_socialist
+	clr_country_flag = SE_fra_orleanist
+	clr_country_flag = SE_fra_bonapartist
+	clr_country_flag = SE_fra_legitimist
+	clr_country_flag = SE_fra_national_syndicalist
+	clr_country_flag = SE_fra_victory
+	clr_country_flag = SE_rus_victory_great_war
+	clr_country_flag = SE_rus_victory_great_war_republic
+	clr_country_flag = SE_rus_february_revolution
+	clr_country_flag = SE_rus_october_revolution
+	clr_country_flag = SE_rus_civil_war_winner_white
+	clr_country_flag = SE_rus_civil_war_winner_white_siberia
+	clr_country_flag = SE_rus_civil_war_winner_white_volunteer_army
+	clr_country_flag = SE_rus_civil_war_winner_red
+	clr_country_flag = SE_rus_civil_war_winner_eser
+	clr_country_flag = SE_mex_revolution
+	clr_country_flag = SE_chi_xinhai_revolution
+	clr_country_flag = SE_chi_warlord_era
+	clr_country_flag = SE_bul_bw2_winner
+	clr_country_flag = SE_ger_nazi
+	clr_country_flag = SE_rus_savinkov_revolution
+	clr_country_flag = SE_battle_of_verdun
+	clr_country_flag = SE_eng_fall_of_america
+	clr_country_flag = SE_ger_civil_war
+	clr_country_flag = SE_ger_victory
+	clr_country_flag = SE_gre_schism
+	clr_country_flag = SE_burning_of_smyrna
+	clr_country_flag = SE_balkan_war_1
+	clr_country_flag = SE_balkan_war_2
+	clr_country_flag = SE_gre_byzantium
+	clr_country_flag = SE_greeko_turkish_war
+	clr_country_flag = SE_balkan_fed
+	clr_country_flag = SE_arab_revolt
 }

@@ -117,13 +117,9 @@ country_event = {
 					field_gun = { x = 0 y = 1 }
 				}
 			}
-			add_ai_strategy = {
-				type = front_unit_request
-				tag = BUL
-				value = 1000
-			}
 		}
 		give_military_access = FROM
+		give_guarantee = FROM
 		FROM = {
 			give_military_access = FRA
 			random_owned_state = {
@@ -226,10 +222,39 @@ country_event = {
 				}
 			}
 		}
+		FROM = {
+			every_enemy_country = {
+				limit = {
+					NOT = {
+						is_ally_with = ROOT
+					}
+				}
+				ROOT = {
+					add_to_war = {
+						targeted_alliance = FROM
+						enemy = PREV
+					}
+				}
+			}
+		}
 		# SER = {
 		# 	give_military_access = FRA
 		# }
 		news_event = kis_news.137
+	}
+	option = {
+		name = ww1_greece.5.b
+		trigger = {
+			GRE = {
+				has_war = yes
+				NOT = {
+					is_in_faction_with = ROOT
+				}
+			}
+		}
+		ai_chance = {
+			base = 0
+		}
 	}
 }
 
@@ -693,7 +718,7 @@ country_event = {
 	option = {
 		name = ww1_greece.26.b
 		custom_effect_tooltip = GRE_appoint_gounaris_tooltip
-		promote_character = GRE_dimitrios_gounaris
+		GRE_dimitrios_gounaris = { promote_character = authoritarian_democracy }
 		set_country_flag = GRE_appoint_gounaris
 		hidden_effect = { complete_national_focus = GRE_appoint_gounaris }
 		ai_chance = {
@@ -1405,7 +1430,7 @@ country_event = {
 
 	option = {
 		name = ww1_greece.46.a
-		add_ideas = gre_epistratoi
+		add_ideas = GRE_epistratoi
 		set_party_name = {
 			ideology = fascism
 			long_name = GRE_epistratoi_party_long
@@ -1508,7 +1533,12 @@ country_event = {
 		add_stability = 0.15
 		hidden_effect = {
 			GRM = {
-				every_character = { set_nationality = THE }
+				every_character = { 
+					limit = {
+						is_generic_character = no
+					}
+					set_nationality = THE 
+				}
 				every_state = {
 					limit = { is_core_of = PREV }
 					remove_core_of = PREV
@@ -1634,19 +1664,6 @@ news_event = {
 				tag = GRM
 			}
 		}
-		if = {
-			limit = {
-				has_game_rule = {
-					rule = rule_superevent
-					option = DEFAULT
-				}
-				is_ai = no
-			}
-			hidden_effect = {
-				play_song = "SE_gre_schism"
-				set_country_flag = SE_gre_schism
-			}
-		}
 	}
 	option = {
 		name = ww1_greece.53.b
@@ -1655,19 +1672,6 @@ news_event = {
 				tag = FRA
 				is_in_faction_with = FRA
 				tag = THE
-			}
-		}
-		if = {
-			limit = {
-				has_game_rule = {
-					rule = rule_superevent
-					option = DEFAULT
-				}
-				is_ai = no
-			}
-			hidden_effect = {
-				play_song = "SE_gre_schism"
-				set_country_flag = SE_gre_schism
 			}
 		}
 	}
@@ -1683,6 +1687,8 @@ news_event = {
 				is_in_faction_with = FRA
 			}
 		}
+	}
+	after = {
 		if = {
 			limit = {
 				has_game_rule = {
@@ -1692,8 +1698,10 @@ news_event = {
 				is_ai = no
 			}
 			hidden_effect = {
+				clear_superevents = yes
 				play_song = "SE_gre_schism"
 				set_country_flag = SE_gre_schism
+				update_superevents = yes
 			}
 		}
 	}
@@ -2439,7 +2447,7 @@ country_event = {
 
 	option = {
 		name = ww1_greece.83.a
-		GRE_update_political_turmoil_tooltip = yes
+		GRE_update_political_turmoil_both_tooltip = yes
 		custom_effect_tooltip = GRE_stability_pp_plus_2_tt
 		add_to_variable = { GRE_stability_var = 0.02 }
 		add_to_variable = { GRE_pp_var = 0.02 }
@@ -2533,6 +2541,7 @@ country_event = {
 		}
 		EPR = {
 			owns_state = 803
+			owns_state = 1225
 			is_subject = no
 			is_neighbor_of = ROOT
 		}
@@ -2589,6 +2598,7 @@ country_event = {
 			}
 			EPR = {
 				add_state_core = 803
+				add_state_core = 1225
 				add_manpower = 15000
 				division_template = {
 					name = "Politofylakí"
@@ -2613,6 +2623,8 @@ country_event = {
 					owner = EPR
 					allow_spawning_on_enemy_provs = yes
 				}
+			}
+			1225 = {
 				create_unit = {
 					division = "division_template = \"Politofylakí\" start_experience_factor = 0.1"
 					owner = EPR
@@ -2845,12 +2857,17 @@ country_event = {
 country_event = {
 	id = ww1_greece.89
 	title = ww1_greece.89.t
-	desc = ww1_greece.89.d
+	desc = {
+		text = ww1_greece.89.d.1
+		trigger = { GRE_has_royalist_government = no }
+	}
+	desc = {
+		text = ww1_greece.89.d.2
+		trigger = { GRE_has_royalist_government = yes }
+	}
 	picture = GFX_report_event_national_schism
 	is_triggered_only = yes
-	trigger = {
-		has_idea = GRE_idea_national_schism2
-	}
+	trigger = { has_idea = GRE_idea_national_schism2 }
 	option = {
 		name = ww1_greece.89.a
 		swap_ideas = {
@@ -2998,8 +3015,28 @@ country_event = {
 		name = ww1_greece.95.a
 		add_stability = -0.02
 		47 = {
-			damage_building = { type = infrastructure damage = 1 }
-			damage_building = { type = industrial_complex damage = 1 }
+			damage_building = {
+				type = infrastructure
+				damage = 1
+			}
+			damage_building = {
+				type = industrial_complex
+				damage = 1
+			}
+			damage_building = {
+				type = rail_way
+				damage = 1
+			}
+			add_province_modifier = {
+				static_modifiers = { earthquake_aftershock }
+				province = {
+					id = 417
+					id = 976
+					id = 1205
+					id = 11895
+				}
+				days = 120
+			}
 		}
 
 	}
@@ -3300,6 +3337,7 @@ country_event = {
 		}
 	}
 }
+
 ###French hand over occupied territory
 country_event = {
 	id = ww1_greece.103
@@ -3308,7 +3346,7 @@ country_event = {
 	picture = GFX_report_event_salonika_retreat
 	fire_only_once = yes
 	mean_time_to_happen = {
-		days = 1
+		days = 30
 	}
 	trigger = {
 		tag = GRE
@@ -3316,18 +3354,16 @@ country_event = {
 		is_in_faction = no
 		has_war = no
 		OR = {
-            has_global_flag = frankfurt_treaty
-            has_global_flag = versailles_treaty
+            has_global_flag = compiegne_armistice
+            has_global_flag = frankfurt_armistice
         }
-		has_completed_focus = GRE_limited_neutrality
+		OR = {
+			has_completed_focus = GRE_limited_neutrality
+			NOT = { has_completed_focus = GRE_form_the_provisional_government_of_national_defence }
+		}
 		any_state = {
 			is_owned_by = FRA
-			OR = {
-				state = 184
-				state = 731
-				state = 803
-				state = 345
-			}   
+			has_state_flag = french_salonika
 		}
 	}
 	option = {
@@ -3335,21 +3371,17 @@ country_event = {
 		add_stability = 0.02
 		every_state = {
 			limit = {
-			  is_owned_by = FRA
-			  OR = {
-				state = 184
-				state = 731
-				state = 803
-				state = 345
-			    }
+				is_owned_by = FRA
+				has_state_flag = french_salonika
 			}
-			transfer_state_to = GRE
+			transfer_state_to = ROOT
 		}
 		FRA = {
 			country_event = ww1_greece.104
 		}
 	}
 }
+
 ###French hand over occupied territory (French POV)
 country_event = {
 	id = ww1_greece.104
@@ -3363,7 +3395,7 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_greece.104.a
-		custom_effect_tooltip = gre_french_retreat_tooltip		
+		custom_effect_tooltip = gre_french_retreat_tooltip
 	}
 }
 
@@ -3378,27 +3410,15 @@ country_event = {
 	option = {
 		name = ww1_greece.105.a
 		FROM = {
-			country_event = {
-				id = ww1_greece.106
-				days = 2
-			}
+			country_event = { id = ww1_greece.106 hours = 8 }
+			event_option_tooltip = ww1_greece.106.a
 		}
-		
-		ai_chance = {
-			factor = 99
-		}
+		ai_chance = { factor = 99 }
 	}
 	option = {
 		name = ww1_greece.105.b
-		FROM = {
-			country_event = {
-				id = ww1_greece.107
-				days = 2
-			}
-		}
-		ai_chance = {
-			factor = 1
-		}
+		FROM = { country_event = { id = ww1_greece.107 hours = 8 } }
+		ai_chance = { factor = 1 }
 	}
 }
 
@@ -3416,22 +3436,22 @@ country_event = {
 			limit = {
 				OR = {
 					is_claimed_by = BUL
-					is_core_of = BUL
+					has_state_flag = GRE_sign_a_non_aggression_pact_with_bulgaria1
 				}
 			}
 			remove_claim_by = BUL
-			remove_core_of = BUL
-		}	
-		BUL ={
+			set_state_flag = GRE_sign_a_non_aggression_pact_with_bulgaria1
+		}
+		BUL = {
 			every_owned_state = {
 				limit = {
 					OR = {
 						is_claimed_by = ROOT
-						is_core_of = ROOT
+						has_state_flag = GRE_sign_a_non_aggression_pact_with_bulgaria2
 					}
 				}
 				remove_claim_by = ROOT
-				remove_core_of = ROOT
+				set_state_flag = GRE_sign_a_non_aggression_pact_with_bulgaria2
 			}
 			diplomatic_relation = {
 				country = ROOT
@@ -3457,7 +3477,6 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_greece.107.a
-			
 	}
 }
 ###The Battle Continues (NOEMVRIANA)
@@ -3832,13 +3851,9 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_greece.121.a
-		add_power_balance_value = {
-			id = GRE_venizelos_constantine
-			value = -0.10
-		}
 		custom_effect_tooltip = GRE_missions_to_increase_monarchist_support
 		set_country_flag = battle_of_influence_royalist_side
-		GRE_national_schism_effect = yes
+		#GRE_national_schism_effect = yes
 	}
 }
 ## Greco Serbian Alliance of 1913
@@ -3999,20 +4014,13 @@ country_event = {
 	}
 }
 ##Massacre at Phocaea
-country_event = {
+country_event = { #suppression on greeks
 	id = ww1_greece.129
 	title = ww1_greece.129.t
 	desc = ww1_greece.129.d
 	picture = GFX_report_phocaea
 	fire_only_once = yes
-	mean_time_to_happen = {
-		days = 1
-	}
-    trigger = {
-		tag = GRE
-		date > 1914.6.18
-		TUR = { has_completed_focus = TUR_greek_deportations }
-	}
+    is_triggered_only = yes
 	option = {
 		name = ww1_greece.129.a
 		add_stability = -0.02
@@ -4064,6 +4072,7 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_greece.131.a
+		set_global_flag = GRE_venizelos_assasination_plot_ended
 		retire_character = GRE_eleftherios_venizelos
 		remove_power_balance = {
 			id = GRE_venizelos_constantine
@@ -4104,6 +4113,7 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_greece.132.a
+		set_global_flag = GRE_venizelos_assasination_plot_ended
 		add_days_mission_timeout = {
 			mission = GRE_escalating_schism
 			days = -360
@@ -4197,38 +4207,18 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_greece.135.a
-		remove_power_balance = {
-			id = GRE_venizelos_constantine
-		}
-		remove_ideas = GRE_idea_national_schism2b
-		hidden_effect = {
-			remove_ideas = GRE_idea_national_schism
-			remove_ideas = GRE_idea_national_schism2
-			remove_ideas = GRE_idea_national_schism3
-			remove_ideas = GRE_idea_national_schism4
-		}
-		add_popularity = {
-			ideology = neutrality
-			popularity = -0.20
-		}
+		remove_power_balance = { id = GRE_venizelos_constantine }
 		add_stability = -0.10
-		GRE_eleftherios_venizelos = {
-			retire = yes
-		}
+		GRE_eleftherios_venizelos = { retire = yes }
+		GRE_improve_schism = yes
 	}
 	option = {
 		name = ww1_greece.135.b
-		remove_power_balance = {
-			id = GRE_venizelos_constantine
-		}
-		swap_ideas = {
-			remove_idea = GRE_idea_national_schism2b
-			add_idea = GRE_idea_national_schism3
-		}
+		remove_power_balance = { id = GRE_venizelos_constantine }
 		add_stability = 0.05
-		GRE_eleftherios_venizelos = {
-			set_nationality = FRA
-		}
+		add_political_power = -100
+		GRE_eleftherios_venizelos = { set_nationality = FRA }
+		GRE_improve_schism = yes
 	}
 }
 ###Socialist Snap Elections
@@ -4366,8 +4356,10 @@ news_event = {
 				is_ai = no
 			}
 			hidden_effect = {
+				clear_superevents = yes
 				play_song = "SE_balkan_fed"
 				set_country_flag = SE_balkan_fed
+				update_superevents = yes
 			}
 		}
 	}
@@ -4551,7 +4543,8 @@ country_event = {
 			ideology = communism
 			popularity = -0.2
 		}
-		create_faction = belgrade_pact
+		create_faction_from_template = faction_template_balkan_pact
+		set_faction_name = belgrade_pact
 		if = {
 			limit = {
 				BUL = {
@@ -5706,6 +5699,16 @@ country_event = {
 				add_claim_by = ROOT
 			}			
 		}
+		if = {
+			limit = {
+				NOT = {
+					owns_state = 1225
+				}				
+			}
+			1225 = {
+				add_claim_by = ROOT
+			}			
+		}
 		transfer_state = 164
     }
 }
@@ -6337,6 +6340,9 @@ news_event = {
 	major = yes
 
 	trigger = {
+		NOT = {
+			has_global_flag = burning_of_smyrna_event
+		}
 		any_country = {
 			original_tag = TUR
 			has_country_flag = TUR_national_movement_tag
@@ -6344,27 +6350,19 @@ news_event = {
 			has_full_control_of_state = 339
 		}
 	}
-	
-	fire_only_once = yes
-
+	mean_time_to_happen = {
+		days = 0
+	}
+	immediate = {
+		hidden_effect = {
+			set_global_flag = burning_of_smyrna_event
+		}
+	}
 	option = {
 		name = ww1_greece.209.a
 		trigger = {
 			NOT = {
 				tag = TRR
-			}
-		}
-		if = {
-			limit = {
-				has_game_rule = {
-					rule = rule_superevent
-					option = DEFAULT
-				}
-				is_ai = no
-			}
-			hidden_effect = {
-				play_song = "SE_burning_of_smyrna"
-				set_country_flag = SE_burning_of_smyrna
 			}
 		}
 	}
@@ -6373,6 +6371,8 @@ news_event = {
 		trigger = {
 			tag = TRR
 		}
+	}
+	after = {
 		if = {
 			limit = {
 				has_game_rule = {
@@ -6382,8 +6382,10 @@ news_event = {
 				is_ai = no
 			}
 			hidden_effect = {
+				clear_superevents = yes
 				play_song = "SE_burning_of_smyrna"
 				set_country_flag = SE_burning_of_smyrna
+				update_superevents = yes
 			}
 		}
 	}
@@ -7089,36 +7091,17 @@ country_event = {
 	}
 	option = {
 		name = ww1_greece.235.a
-		if = {
-			limit = {
-				has_dlc = "Man the Guns"
-			}
-			create_ship = {
-				type = ship_hull_light_0
-				equipment_variant = "Antalya Class"
-				creator = TUR
-				name = "Tatoi"
-			}
-			create_ship = {
-				type = ship_hull_light_0
-				equipment_variant = "Antalya Class"
-				creator = TUR
-				name = "Nikopolis"
-			}
+		create_ship = {
+			type = ship_hull_torpedo_boat
+			equipment_variant = "Antalya Class"
+			creator = ITA
+			name = "Tatoi"
 		}
-		else = {
-			create_ship = {
-				type = destroyer_1
-				equipment_variant = "Antalya Class"
-				creator = TUR
-				name = "Tatoi"
-			}
-			create_ship = {
-				type = destroyer_1
-				equipment_variant = "Antalya Class"
-				creator = TUR
-				name = "Nikopolis"
-			}			
+		create_ship = {
+			type = ship_hull_torpedo_boat
+			equipment_variant = "Antalya Class"
+			creator = ITA
+			name = "Nikopolis"
 		}
 		TUR = {
 			destroy_ships = {
@@ -7145,37 +7128,37 @@ country_event = {
 	option = {
 		name = ww1_greece.236.a
 		create_ship = {
-			type = ship_hull_light_2
+			type = ship_hull_light_1
 			equipment_variant = "Fiume Class"
 			creator = AUS
 			name = "Kydonia"
 		}
 		create_ship = {
-			type = ship_hull_light_2
+			type = ship_hull_light_1
 			equipment_variant = "Fiume Class"
 			creator = AUS
 			name = "Kios"
 		}
 		create_ship = {
-			type = ship_hull_light_2
+			type = ship_hull_light_1
 			equipment_variant = "Fiume Class"
 			creator = AUS
 			name = "Kyzikos"
 		}
 		create_ship = {
-			type = ship_hull_light_2
+			type = ship_hull_light_1
 			equipment_variant = "Fiume Class"
 			creator = AUS
 			name = "Panormos"
 		}
 		create_ship = {
-			type = ship_hull_light_2
+			type = ship_hull_light_1
 			equipment_variant = "Fiume Class"
 			creator = AUS
 			name = "Pergamos"
 		}
 		create_ship = {
-			type = ship_hull_light_2
+			type = ship_hull_light_1
 			equipment_variant = "Fiume Class"
 			creator = AUS
 			name = "Proussa"
@@ -7294,7 +7277,7 @@ country_event = {
 
 	}
 }
-###Thebes Earthquake 
+###Lefkada Earthquake 
 country_event = {
 	id = ww1_greece.240
 	title = ww1_greece.240.t
@@ -7311,8 +7294,23 @@ country_event = {
 		name = ww1_greece.240.a
 		add_stability = -0.02
 		47 = {
-			damage_building = { type = infrastructure damage = 1 }
+			damage_building = {
+				type = infrastructure
+				damage = 1
+			}
+			damage_building = {
+				type = rail_way
+				damage = 1
+			}
 			add_manpower = -16
+			add_province_modifier = {
+				static_modifiers = { earthquake_aftershock }
+				province = {
+					id = 1106
+					id = 12001
+				}
+				days = 120
+			}
 		}
 	}
 }
@@ -7355,14 +7353,7 @@ country_event = {
 	desc = ww1_greece.242.d
 	picture = GFX_report_event_bw1
 	fire_only_once = yes
-	trigger = {
-		original_tag = GRE
-		has_war_with = TUR
-		NOT = {
-			has_country_flag = BW1_winner
-			has_country_flag = BW1_loser 
-		}
-	}
+	is_triggered_only = yes
 	option = {
 		name = ww1_greece.242.a
 		add_war_support = 0.1
@@ -7440,17 +7431,7 @@ country_event = {
 	desc = ww1_greece.245.d
 	picture = GFX_report_event_thessaloniki
 	fire_only_once = yes
-	trigger = {
-		original_tag = GRE
-		has_war_with = TUR
-		NOT = {
-			has_country_flag = BW1_winner
-			has_country_flag = BW1_loser
-			has_global_flag = great_war
-			has_global_flag = kis_firstbalkanwar_victory
-		}
-		controls_province = 11818
-	}
+	is_triggered_only = yes
 	option = {
 		name = ww1_greece.245.a
 		add_stability = 0.05
@@ -8283,6 +8264,32 @@ country_event = {
 				modifier = {
 					factor = 0
 					has_completed_focus = GRE_negotiations_with_entente
+					1225 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
+				}
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_commit_to_neutrality
+					1225 = { check_variable = { var = GRE_garrison_control value = 4 compare = equals } }
+				}
+				modifier = {
+					factor = 10
+					1225 = { has_state_flag = GRE_national_schism_recently_chosen }
+				}
+				modifier = {
+					factor = 10
+					has_completed_focus = GRE_negotiations_with_entente
+					is_historical_focus_on = yes
+				}
+				modifier = {
+					factor = 0
+					1225 = { NOT = { is_owned_and_controlled_by = ROOT } }
+				}
+				activate_mission = GRE_expand_influence_in_the_korce_garrison_mission
+			}
+			20 = {
+				modifier = {
+					factor = 0
+					has_completed_focus = GRE_negotiations_with_entente
 					900 = { check_variable = { var = GRE_garrison_control value = 2 compare = less_than } }
 				}
 				modifier = {
@@ -8537,6 +8544,71 @@ country_event = {
 			347 = {
 			add_resistance = -5
 			add_compliance = 10
+		}
+	}
+}
+
+news_event = { #greek civil war news
+	id = ww1_greece.250
+	title = ww1_greece.250.t
+	desc = ww1_greece.250.d
+	picture = GFX_news_event_greek_civil_war
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_greece.250.a
+		trigger = {
+			OR = {
+				tag = THE
+				tag = GRM
+			}
+		}
+	}
+	option = {
+		name = ww1_greece.250.b
+		trigger = {
+			NOT = {
+				tag = THE
+				tag = GRM
+			}
+		}
+	}
+}
+
+# Georgios Averof has arrived!
+country_event = {
+	id = ww1_greece.251
+	title = ww1_greece.251.t
+	desc = ww1_greece.251.d
+	is_triggered_only = yes
+	fire_only_once = yes
+	option = {
+		name = ww1_greece.251.a
+		hidden_effect = {
+			ITA = {
+				create_equipment_variant = {
+					name = "Pisa Class"
+					type = ship_hull_cruiser_2
+					name_group = ITA_CA_HISTORICAL
+					parent_version = 0
+					modules = {
+						fixed_ship_battery_slot = ship_medium_battery_2
+						fixed_ship_fire_control_system_slot = ship_fire_control_system_0
+						fixed_ship_engine_slot = cruiser_ship_engine_1
+						fixed_ship_secondaries_slot = ship_secondaries_1
+						fixed_ship_armor_slot = ship_armor_armored_cruiser_1
+						mid_2_custom_slot = ship_torpedo_1
+						rear_1_custom_slot = ship_medium_battery_1
+					}
+					obsolete = yes
+				}
+			}			
+		}
+		create_ship = {
+			name = "Georgios Averof"
+			type = ship_hull_cruiser_2
+			creator = ITA
+			equipment_variant = "Pisa Class"
 		}
 	}
 }
