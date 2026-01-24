@@ -20,6 +20,11 @@ AUS_unit_production = {
 		value = 50		# From 70 to 75
 	}
 	ai_strategy = {
+		type = equipment_production_factor
+		id = fighter
+		value = -30
+	}
+	ai_strategy = {
 		type = unit_ratio
 		id = tactical_bomber
 		value = 5
@@ -62,80 +67,13 @@ AUS_unit_production = {
 	}
 }
 
-HUN_unit_production = {
-	allowed = {
-		original_tag = HUN
-	}
-	enable = {
-		always = yes
-	}
-	abort = { always = no }
-
-	ai_strategy = {
-		type = role_ratio
-		id = infantry
-		value = 100
-	}
-	
-	ai_strategy = {
-		type = equipment_production_factor
-		id = infantry
-		value = 100
-	}
-	
-	ai_strategy = {
-		type = equipment_production_factor
-		id = artillery
-		value = 100
-	}
-}
-
 AUS_build_army = {
 	allowed = {
 		original_tag = AUS
 	}
 	enable = {
 		has_army_manpower = {
-			size < 1200000
-		}
-		NOT = {
-			AND = {
-				has_war_with_major = yes
-				OR = {
-					stockpile_ratio = {
-						archetype = infantry_equipment
-						ratio < 0.1
-					}
-					stockpile_ratio = {
-						archetype = field_gun_equipment
-						ratio < 0.1
-					}
-				}
-			}
-			has_global_flag = great_war_ends
-			has_global_flag = crisis_in_progress
-		}
-	}
-	abort_when_not_enabled = yes
-	ai_strategy = {
-		type = build_army
-		id = infantry
-		value = 1000
-	}
-	ai_strategy = {
-		type = force_build_armies
-		value = 1000
-	}
-}
-
-HUN_build_army = {
-	allowed = {
-		original_tag = HUN
-	}
-	enable = {
-		is_subject_of = AUS
-		has_army_manpower = {
-			size < 600000
+			size < 1000000
 		}
 		NOT = {
 			AND = {
@@ -356,6 +294,11 @@ AUH_dont_help_TUR = {
 		area = middle_east
 		value = -1000
 	}
+	ai_strategy = {
+		type = front_unit_request
+		area = africa
+		value = -1000
+	}
 }
 
 AUS_crownlands_support_austria = {
@@ -386,7 +329,7 @@ AUS_crownlands_support_austria = {
 	ai_strategy = {
 		type = force_defend_ally_borders
 		id = AUS
-		value = 1
+		value = 100
 	}
 	ai_strategy = {
 		type = support
@@ -431,9 +374,7 @@ AUS_no_garrison = {
 	enable = {
 		always = yes
 	}
-	abort = {
-		always = no
-	}
+	abort_when_not_enabled = yes
 	ai_strategy = {
 		type = garrison
 		value = -1000
@@ -559,9 +500,14 @@ AUH_fight_ROM = {
 			}
 			ROM = {
 				OR = {
-					focus_progress = {
-						focus = ROM_turn_west
-						progress > 0.1
+					AND = {
+						NOT = {
+							has_completed_focus = ROM_turn_west
+						}
+						focus_progress = {
+							focus = ROM_turn_west
+							progress > 0.1
+						}
 					}
 					is_justifying_wargoal_against = ROOT
 					has_wargoal_against = ROOT
@@ -576,27 +522,9 @@ AUH_fight_ROM = {
 		OR = {
 			is_ally_with = ROM
 			has_capitulated = yes
-			ROM = {
-				AND = {
-					has_completed_focus = ROM_turn_west
-					NOT = {
-						has_war_with = AUS
-					}
-				}	
-			}
 		}
 	}
 	abort_when_not_enabled = yes
-	ai_strategy = {
-		type = front_unit_request
-		tag = ROM
-		value = 50
-	}
-	ai_strategy = {
-		type = front_unit_request
-		tag = RUS
-		value = 10
-	}
 	ai_strategy = {
 		type = prepare_for_war
 		id = ROM
@@ -622,7 +550,7 @@ AUH_destroy_ROM = {
 	ai_strategy = {
 		type = front_unit_request
 		tag = ROM
-		value = 25
+		value = 10
 	}
 	ai_strategy = {
 		type = front_control
@@ -657,31 +585,19 @@ AUH_fight_SER_before_capitulation = {
 			SER = {
 				has_capitulated = yes
 			}
+			has_global_flag = GRE_thessaloniki_state_formed
 		}
 	}
 	abort_when_not_enabled = yes
 	ai_strategy = {
 		type = front_unit_request
 		tag = SER
-		value = 50
+		value = 5
 	}
 	ai_strategy = {
 		type = front_control
 		tag = SER
-		ratio = 0.7
-		priority = 100
-		execution_type = careful
-	}
-	ai_strategy = {
-		type = front_unit_request
-		tag = MNT
-		value = 30
-	}
-	ai_strategy = {
-		type = front_control
-		tag = MNT
-		ratio = 0.7
-		priority = 100
+		ordertype = front
 		execution_type = careful
 	}
 	ai_strategy = {
@@ -729,18 +645,18 @@ AUH_kill_SER = {
 	ai_strategy = {
 		type = front_control
 		tag = SER
-		ratio = 0.4
+		ratio = 0
 		priority = 1000
+		ordertype = front
 		execution_type = rush
-		manual_attack = yes
 	}
 	ai_strategy = {
 		type = front_control
 		tag = MNT
-		ratio = 0.4
+		ratio = 0
 		priority = 1000
+		ordertype = front
 		execution_type = rush
-		manual_attack = yes
 	}
 }
 
@@ -753,57 +669,27 @@ AUH_fight_balkans_front = {
 	}
 	enable = {
 		is_great_war_ongoing = yes
-		SER = {
-			has_capitulated = yes
+		OR = {
+			SER = {
+				has_capitulated = yes
+			}
+			has_global_flag = GRE_thessaloniki_state_formed
 		}
 	}
 	abort_when_not_enabled = yes
 	ai_strategy = {
 		type = area_priority
 		id = balkan
-		value = 10
-	}
-	ai_strategy = {
-		type = front_unit_request
-		strategic_region = 25
 		value = 50
-	}
-	ai_strategy = {
-		type = front_unit_request
-		strategic_region = 24
-		value = 50
-	}
-	ai_strategy = {
-		type = front_unit_request
-		strategic_region = 14
-		value = 50
-	}
-	ai_strategy = {
-		type = front_control
-		strategic_region = 14
-		ratio = 0.5
-		execution_type = balanced
-	}
-	ai_strategy = {
-		type = front_control
-		strategic_region = 25
-		ratio = 0.5
-		execution_type = balanced
-	}
-	ai_strategy = {
-		type = front_control
-		strategic_region = 24
-		ratio = 0.5
-		execution_type = balanced
 	}
 	ai_strategy = {
 		type = force_defend_ally_borders
 		id = BUL
-		value = 10
+		value = 100
 	}
 	ai_strategy = {
 		type = spare_unit_factor
-		value = 15
+		value = 50
 	}
 }
 
@@ -819,15 +705,12 @@ AUH_front_with_RUS = {
 			has_war_with = RUS
 			has_global_flag = crisis_in_progress
 		}
-		NOT = {
-			has_idea = RUS_idea_armistice_cp
-		}
 	}
 	abort_when_not_enabled = yes
 	ai_strategy = {
 		type = front_unit_request
 		tag = RUS
-		value = 75
+		value = 5
 	}
 }
 
@@ -843,7 +726,7 @@ AUH_passive_against_RUS = {
 			has_war_with = RUS
 			has_global_flag = crisis_in_progress
 		}
-		OR = {
+		AND = {
 			RUS = {
 				is_ai = yes
 			}
@@ -882,16 +765,12 @@ AUH_passive_against_RUS = {
 	ai_strategy = {
 		type = front_control
 		tag = RUS
-		ratio = 0
 		ordertype = front
 		execution_type = careful
-		priority = 1000
-		execute_order = no
-		manual_attack = yes
 	}	
 }
 
-AUH_fight_RUS = {
+AUH_offensive_on_RUS = {
 	allowed = {
 		OR = {
 			original_tag = AUS
@@ -903,19 +782,7 @@ AUH_fight_RUS = {
 		NOT = {
 			has_idea = RUS_idea_armistice_cp
 		}
-	}
-	abort = {
 		OR = {
-			stockpile_ratio = {
-				archetype = infantry_equipment
-				ratio < 0.05
-			}
-			stockpile_ratio = {
-				archetype = field_gun_equipment
-				ratio < 0.05
-			}
-		}
-		NOT = {
 			AND = {
 				war_length_with = {
 					tag = RUS
@@ -954,22 +821,18 @@ AUH_fight_RUS = {
 	ai_strategy = {
 		type = front_control
 		tag = RUS
-		ratio = 0.3
 		ordertype = front
 		priority = 2000
-		execution_type = balanced
-		execute_order = yes
+		execution_type = rush
 	}
 	ai_strategy = {
 		type = front_control
 		country_trigger = {
 			original_tag = UKR
 		}
-		ratio = 0.3
 		ordertype = front
 		priority = 2000
-		execution_type = balanced
-		execute_order = yes
+		execution_type = rush
 	}
 }
 
@@ -990,6 +853,9 @@ AUH_fight_ITA = {
 					focus = ITA_sign_treaty_of_london
 					progress > 0 
 				}
+				NOT = {
+					has_completed_focus = ITA_sign_treaty_of_london
+				}
 			}			
 		}
 		ITA = {
@@ -1008,7 +874,7 @@ AUH_fight_ITA = {
 	ai_strategy = {
 		type = front_unit_request
 		tag = ITA
-		value = 240
+		value = 30
 	}
 	ai_strategy = {
 		type = strategic_air_importance
@@ -1171,7 +1037,6 @@ AUH_stop_sejoecseg_uprisings = {
 	}
 }
 
-
 # Industry 
 AUS_build_civs = {
 	allowed = {
@@ -1307,112 +1172,6 @@ AUS_build_mils = {
 	}
 }
 
-HUN_build_civs = {
-	allowed = {
-		original_tag = HUN
-	}
-	enable = {
-		is_subject_of = AUS
-		NOT = {
-			has_global_flag = great_war_ends
-		}
-		AND = {
-			date < 1912.1.1
-			has_war = no
-		}
-	}
-	abort_when_not_enabled = yes
-	ai_strategy = {
-		type = added_military_to_civilian_factory_ratio
-		value = -100
-	}
-	ai_strategy = {
-		type = equipment_market_spend_factories
-		value = -999
-	}
-	ai_strategy = {
-		type = intelligence_agency_usable_factories
-		value = -2
-	}
-	ai_strategy = {
-		type = build_building
-		id = industrial_complex
-		target = 43
-		value = 100
-	}
-	ai_strategy = {
-		type = build_building
-		id = industrial_complex
-		target = 155
-		value = 100
-	}
-	ai_strategy = {
-		type = build_building
-		id = industrial_complex
-		target = 664
-		value = 100
-	}
-	ai_strategy = {
-		type = build_building
-		id = industrial_complex
-		target = 109
-		value = 100
-	}
-	ai_strategy = {
-		type = build_building
-		id = industrial_complex
-		target = 1139
-		value = 90
-	}
-}
-
-HUN_build_mils = {
-	allowed = {
-		original_tag = HUN
-	}
-	enable = {
-		is_subject_of = AUS
-		NOT = {
-			has_global_flag = great_war_ends
-		}
-		OR = {
-			date > 1912.1.1
-			has_war = yes
-		}
-	}
-	abort_when_not_enabled = yes
-	ai_strategy = {
-		type = build_building
-		id = arms_factory
-		target = 43
-		value = 100
-	}
-	ai_strategy = {
-		type = build_building
-		id = arms_factory
-		target = 155
-		value = 100
-	}
-	ai_strategy = {
-		type = build_building
-		id = arms_factory
-		target = 664
-		value = 100
-	}
-	ai_strategy = {
-		type = build_building
-		id = arms_factory
-		target = 109
-		value = 100
-	}
-	ai_strategy = {
-		type = build_building
-		id = arms_factory
-		target = 1139
-		value = 90
-	}
-}
-
 AUS_defend_adriatic_ports = {
 	allowed = {
 		original_tag = AUS
@@ -1434,32 +1193,6 @@ AUS_defend_adriatic_ports = {
 			163
 		}
 		ratio = 0.1
-		subtract_invasions_from_need = yes
-		subtract_fronts_from_need = yes
-	}
-}
-
-HUN_defend_adriatic_ports = {
-	allowed = {
-		original_tag = HUN
-	}
-	enable = {
-		is_subject_of = AUS
-		is_great_war_ongoing = yes
-	}
-	abort_when_not_enabled = yes
-
-	ai_strategy = {
-		type = put_unit_buffers
-		states = {
-			513
-			208
-			103
-			1206
-			1205
-			44
-		}
-		ratio = 1
 		subtract_invasions_from_need = yes
 		subtract_fronts_from_need = yes
 	}
@@ -1504,11 +1237,15 @@ AUS_backlike_troops = {
 			has_war_with = RUS
 			has_global_flag = crisis_in_progress
 		}
-		91 = {
-			is_controlled_by = AUS
-		}
-		89 = {
-			is_fully_controlled_by = AUS
+		all_collection_elements = {
+			collection = collection:country_and_all_subjects
+			all_collection_elements = {
+				collection = {
+					input = game:scope
+					operators =  { owned_states }
+				}
+				is_controlled_by = OWNER
+			}
 		}
 		AND = {
 			RUS = {
@@ -1545,5 +1282,21 @@ AUS_backlike_troops = {
 		ratio = 1
 		subtract_invasions_from_need = yes
 		subtract_fronts_from_need = yes
+	}
+}
+
+AUS_zwolfte_isonzoschlacht = {
+	allowed = {
+		original_tag = AUS
+	}
+	enable = {
+		has_idea = GER_focus_on_italian_front
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = front_control
+		tag = ITA
+		ordertype = front
+		execution_type = rush
 	}
 }

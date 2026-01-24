@@ -287,51 +287,16 @@ country_event = {
 	title = ww1_belgium.8.t
 	desc = ww1_belgium.8.d
 	picture = GFX_report_event_generic_sign_treaty2
+	is_triggered_only = yes
 	trigger = {
-		tag = BEL
-		date > 1910.6.1
 		has_start_date < 1914.1.1
-		OR = {
-			AND = {
-				owns_state = 449
-				has_full_control_of_state = 449
-			}
-			AND = {
-				owns_state = 902
-				has_full_control_of_state = 902
-			}
-		}
-		ENG = { 
-			OR = {
-				owns_state = 548
-				owns_state = 549
-			}		
-		}
-	}
-	mean_time_to_happen = {
-		days = 10
-	}
-	fire_only_once = yes
-	option = {
-		name = ww1_belgium.8.a
-		trigger = {
-			NOT = { is_subject_of = ENG }
-		}
-		add_political_power = -100
-		ai_chance = {
-			base = 0
-			modifier = {
-				add = 100
-				NOT = { has_government = communism }
-				ENG = { has_government = communism }
-			}
-		}
 	}
 	option = {
 		name = ww1_belgium.8.b
 		trigger = {
-			NOT = { has_war_with = ENG }
+			original_tag = BEL
 		}
+		custom_effect_tooltip = historical_tt
 		every_owned_state = {
 			limit = {
 				OR = {
@@ -343,14 +308,17 @@ country_event = {
 			add_core_of = SUD
 			add_claim_by = EGY
 			transfer_state_to = ENG
-		}	
-		ai_chance = {
-			factor = 100
-			modifier = {
-				factor = 0
-				NOT = { has_government = communism }
-				ENG = { has_government = communism }
-			}
+		}
+	}
+	option = {
+		name = ww1_belgium.8.a
+		trigger = {
+			NOT = { original_tag = BEL }
+		}
+		custom_effect_tooltip = historical_tt
+		effect_tooltip = {
+			transfer_state = 449
+			transfer_state = 902
 		}
 	}
 }
@@ -1446,55 +1414,49 @@ country_event = {
 	title = ww1_belgium.32.t
 	desc = ww1_belgium.32.desc
 	picture = GFX_report_event_generic_parliament
-	trigger = {
-		tag = GER
-		has_global_flag = interbellum
-		has_country_flag = great_war_winner
-		OR = {
-			has_war = no
-			# AND = {
-			# 	has_completed_focus = GER_restore_burgundy
-			# 	surrender_progress < 0.01
-			# }
-		}
-		NOT = {
-			has_government = communism
-		}
-		BEL = {
-			is_subject_of = PREV
-			has_cosmetic_tag = BEL_GER
-		}
-	}
-	fire_only_once = yes
-	mean_time_to_happen = {
-		days = 300
-	}
+	is_triggered_only = yes
+	# trigger = {
+	# 	tag = GER
+	# 	has_global_flag = interbellum
+	# 	has_country_flag = great_war_winner
+	# 	OR = {
+	# 		has_war = no
+	# 		# AND = {
+	# 		# 	has_completed_focus = GER_restore_burgundy
+	# 		# 	surrender_progress < 0.01
+	# 		# }
+	# 	}
+	# 	NOT = {
+	# 		has_government = communism
+	# 	}
+	# 	BEL = {
+	# 		is_subject_of = PREV
+	# 		has_cosmetic_tag = BEL_GER
+	# 	}
+	# }
+	# fire_only_once = yes
+	# mean_time_to_happen = {
+	# 	days = 300
+	# }
 	immediate = {
 		hidden_effect = {
-			GER = {
-				set_autonomy = {
-					target = BEL
-					autonomous_state = autonomy_puppet
-				}
+			BEL = {
+				BEL_remove_GER_occupation = yes
+				get_current_government_type = yes
+			}
+			set_autonomy = {
+				target = BEL
+				autonomous_state = autonomy_puppet
 			}
 			BEL = {
 				set_stability = 0.40
 				set_war_support = 0.10
-				set_popularities = {
-					democratic = 10
-					neutrality = 60
-					fascism = 25
-					communism = 5
-				}
-				set_party_name = {
-					ideology = neutrality
+				restore_previous_government_type = yes
+				set_cosmetic_tag = BEL_flanders_wallonia
+				set_party_name = { 
+					ideology = neutrality 
 					long_name = GER_neutrality_party
 					name = GER_neutrality_party
-				}
-				set_cosmetic_tag = BEL_flanders_wallonia
-				set_politics = {
-					ruling_party = neutrality
-					elections_allowed = no
 				}
 				BEL_adalbert = {
 					add_country_leader_role = {
@@ -1521,24 +1483,12 @@ country_event = {
 						coordination_skill = 2
 					}
 				}
-				retire_ideology_leader = fascism
-				set_party_name = {
-					ideology = fascism
-					long_name = BEL_fascism_party
-					name = BEL_fascism_party
-				}
 				hidden_effect = {
 					BEL_albert_i = {
 						remove_country_leader_role = {
 							ideology = semi_constitutional_monarchy
 						}
 					}
-				}
-				GER_ludwig_von_falkenhausen = {
-					remove_country_leader_role = {
-						ideology = stratocracy
-					}
-					set_nationality = GER
 				}
 			}
 		}
@@ -1907,7 +1857,17 @@ country_event = {
 				}
 			}
 		}
-		activate_advisor = BEL_charles_de_broqueville
+		if = {
+			limit = {
+				NOT = {
+					has_country_flag = BEL_liberal_victory_1912
+				}
+			}		
+			activate_advisor = BEL_charles_de_broqueville
+			else = {
+				activate_advisor = BEL_paul_hymans
+			}
+		}	
 		hidden_effect = {
 			remove_ideas = BEL_idea_albert_i
 			remove_ideas = BEL_idea_albert_i2
@@ -1963,12 +1923,14 @@ country_event = {
 	desc = ww1_belgium.72.d
 	picture = GFX_report_event_picture_broqueville_and_governement
 	trigger = {
-		longest_war_length > 12
-		has_war = yes
 		tag = BEL
+		longest_war_length > 12
+		has_war = yes	
 		has_idea = BEL_question_communautaire
 		NOT = {
 			has_country_flag = BEL_frontistes
+			has_country_flag = BEL_1918_Frontpartij
+			has_country_leader_ideology = stratocracy
 		}
 	}
 	fire_only_once = yes
@@ -1976,6 +1938,11 @@ country_event = {
 		name = ww1_belgium.72.a
 		set_country_flag = BEL_frontistes
 		add_ideas = BEL_frontbeweging
+		set_party_name = {
+			ideology = fascism
+			name = BEL_frontbeweging_party
+			long_name = BEL_frontbeweging_party
+		}
 	}
 }
 
@@ -1994,18 +1961,24 @@ country_event = {
 		name = ww1_belgium.73.a
 		set_country_flag = BEL_charles_broqueville_vs_albert
 		BEL_charles_de_broqueville = {
-			add_advisor_role = {
-				advisor = {
-					slot = political_advisor
-					idea_token = BEL_charles_de_broqueville
-					can_be_fired = no
-					traits  = {
-						political_conflict_with_the_king
-					}
-				}
+			swap_country_leader_traits = {
+				remove = administration_reformer
+				add = political_conflict_with_the_king
+				ideology = conservatism
+			}
+		}	
+		hidden_effect = {
+			remove_trait = {
+				character = BEL_charles_de_broqueville
+				slot = political_advisor
+				trait = administration_reformer
+			}
+			add_trait = {
+				character = BEL_charles_de_broqueville
+				slot = political_advisor
+				trait = political_conflict_with_the_king
 			}
 		}
-		add_ideas = BEL_charles_de_broqueville
 	}
 }
 
@@ -2146,7 +2119,7 @@ country_event = {
 	fire_only_once = yes
 	option = {
 		name = ww1_belgium.79.a
-		BEL = {
+		FROM = {
 			country_event = {
 				id = ww1_belgium.80
 				days = 2
@@ -2158,7 +2131,7 @@ country_event = {
 	}
 	option = {
 		name = ww1_belgium.79.b
-		BEL = {
+		FROM = {
 			country_event = {
 				id = ww1_belgium.81
 				days = 2
@@ -2280,8 +2253,9 @@ country_event = {
 	desc = ww1_belgium.84.d
 	picture = GFX_report_event_hymans
 	trigger = {
-		date > 1912.5.1
 		tag = BEL
+		date > 1912.5.1
+		has_start_date < 1914.1.1
 		NOT = {
 			has_government = communism
 		}
@@ -2289,8 +2263,8 @@ country_event = {
 			has_country_flag = BEL_1912_elections
 		}
 		AND = {
-		has_country_flag = BEL_liberal_alliance
-		has_completed_focus = BEL_cut_local_school_funding
+			has_country_flag = BEL_liberal_alliance
+			has_completed_focus = BEL_cut_local_school_funding
 		}
 	}
 	fire_only_once = yes
@@ -2516,13 +2490,12 @@ country_event = {
 		BEL = {
 			owns_state = 6
 		}
-		has_global_flag = BEL_granted_german_passage
+		has_country_flag = BEL_granted_german_passage
 		has_global_flag = great_war_ends
 	}
 	fire_only_once = yes
 	hidden = yes
 	immediate = {
-		clr_global_flag = BEL_granted_german_passage
 		remove_ideas = BEL_idea_offshore_production
 		GER = {
 			if = {
@@ -2560,6 +2533,7 @@ country_event = {
 			}			
 		}
 		BEL = {
+			clr_country_flag = BEL_granted_german_passage
 			if = {
 				limit = {
 					has_cosmetic_tag = FLA
@@ -2605,13 +2579,15 @@ country_event = {
 	is_triggered_only = yes
 	option = {
 		name = ww1_belgium.94.a
-		set_party_name = {
-			ideology = democratic
-			long_name = BEL_all_party_long
-			name = BEL_all_party
-		}
-		promote_character = BEL_leon_delacroix
-		add_stability = -0.02
+		effect_tooltip = {
+				set_party_name = {
+				ideology = democratic
+				long_name = BEL_all_party_long
+				name = BEL_all_party
+			}
+			promote_character = BEL_leon_delacroix
+			add_stability = 0.02
+		}		
 	}
 }
 
@@ -2716,6 +2692,7 @@ country_event = {
 		date > 1919.2.2
 		NOT = {
 			has_country_flag = BEL_1918_Frontpartij
+			has_country_leader_ideology = stratocracy
 		}
 	}
 	fire_only_once = yes
@@ -2729,8 +2706,8 @@ country_event = {
 		add_ideas = BEL_frontpartij
 		set_party_name = {
 			ideology = fascism
-			name = BEL_frontpartij_paty_name
-			long_name = BEL_frontpartij_paty_name_long
+			name = BEL_frontpartij_party
+			long_name = BEL_frontpartij_pat
 		}
 	}
 }
@@ -2820,26 +2797,26 @@ country_event = {
 	picture = report_event_damremont_manifestation
 	trigger = {
 		tag = BEL
-		is_puppet = no
-		is_in_faction = no
-		NOT = {
-			FRA = {
-				has_war_with = GER
-			}
-			ENG = {
-				has_war_with = GER
-			}
-		}
+		has_global_flag = FRA_capitulation_alone
+		has_country_flag = BEL_defeat		
+		is_government_in_exile = yes
 		has_war_with = GER
 		has_capitulated = yes
+		is_subject = no
 	}
 	fire_only_once = yes
 	option = {
-		name = ww1_belgium.100.a
-		GER = {
-			white_peace = BEL
+		name = ww1_france.305.a
+		white_peace = GER
+		set_country_flag = great_war_loser
+		set_country_flag = member_of_entente
+		effect_tooltip = {
+			set_cosmetic_tag = BEL_GER
 		}
-		BEL_lost_to_CP_effects = yes
+		hidden_effect = {
+			separate_peace_all_wars = yes
+			BEL_lost_to_CP_effects = yes
+		}		
 	}
 }
 
@@ -2912,11 +2889,17 @@ country_event = {
 	fire_only_once = yes
 	picture = GFX_report_event_SWE_summer_government
 	trigger = {
+		tag = BEL
 		date > 1912.10.20
+		has_start_date < 1914.1.1
 		owns_state = 34
 		owns_state = 907
-		has_country_flag = BEL_PC_victory_1912
-		tag = BEL
+		has_country_flag = BEL_PC_victory_1912	
+		NOT = {
+			has_country_flag = BEL_frontistes
+			has_country_flag = BEL_1918_Frontpartij
+			has_country_leader_ideology = stratocracy
+		}
 	}
 	option = {
 		name = ww1_belgium.105.a
@@ -2924,11 +2907,11 @@ country_event = {
     		ideology = fascism
     		popularity = 0.03
 		}
-		set_party_name = {
-    		ideology = fascism
-    		long_name = BEL_ultranationalism_party_long
-    		name = BEL_ultranationalism_party
-				}
+		# set_party_name = {
+    	# 	ideology = fascism
+    	# 	long_name = BEL_ultranationalism_party_long
+    	# 	name = BEL_ultranationalism_party
+		# }
 	}
 }
 #end of congo reform association
@@ -3038,18 +3021,16 @@ country_event = {
 	desc = ww1_belgium.111.d
 	is_triggered_only = yes
 	fire_only_once = yes
-	trigger = {
-		
-	}
+
 	option = {
 		name = ww1_belgium.111.a
 		add_political_power = 75
 		add_stability = 0.05
 		add_tech_bonus = {
-    			bonus = 0.75
-    			uses = 1
-    			category = military_police_tech	
-			}
+    		bonus = 0.75
+    		uses = 1
+    		category = military_police_tech	
+		}
 	}
 	option = {
 		name = ww1_belgium.111.b
