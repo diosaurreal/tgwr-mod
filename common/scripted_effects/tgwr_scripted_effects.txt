@@ -569,7 +569,6 @@ GER_release_UBD = {
 		limit = {
 			OR = {
 				is_owned_by = RUS
-				is_owned_by = SOV
 				is_owned_by = GER
 			}
 			OR = {
@@ -665,49 +664,63 @@ GER_release_UBD = {
 	}
 }
 GER_release_COU = {
-	every_state = {
+	if = {
 		limit = {
-			OR = {
-				is_owned_by = RUS
-				is_owned_by = SOV
-				is_owned_by = GER
+			any_state = {
+				is_core_of = COU
+				OR = {
+					is_owned_by = RUS
+					is_owned_by = GER
+				}
 			}
-			is_core_of = COU
 		}
-		transfer_state_to = COU
-		remove_russian_claims = yes
-		remove_russian_cores = yes
-	}
-	puppet = COU
-	hidden_effect = {
-		set_global_flag = COU_released
-		COU = {
-			if = {
-				limit = {
-					GER = {
-						is_GER_a_monarchy = yes
+		clr_country_flag = COU_should_be_released
+		every_state = {
+			limit = {
+				OR = {
+					is_owned_by = RUS
+					is_owned_by = GER
+				}
+				is_core_of = COU
+			}
+			transfer_state_to = COU
+			remove_russian_claims = yes
+			remove_russian_cores = yes
+		}
+		puppet = COU
+		hidden_effect = {
+			set_global_flag = COU_released
+			COU = {
+				if = {
+					limit = {
+						GER = {
+							is_GER_a_monarchy = yes
+						}
+					}
+					set_politics = {
+						ruling_party = neutrality
+						elections_allowed = no
+					}
+					set_popularities = {
+						democratic = 25
+						communism = 22
+						neutrality = 53
 					}
 				}
-				set_politics = {
-					ruling_party = neutrality
-					elections_allowed = no
-				}
-				set_popularities = {
-					democratic = 25
-					communism = 22
-					neutrality = 53
-				}
+				set_country_flag = released_by_germany
+				inherit_technology = GER
+				delete_obsolete_russian_templates = yes
 			}
-			set_country_flag = released_by_germany
-			inherit_technology = GER
-			delete_obsolete_russian_templates = yes
-		}
-		if = {
-			limit = {
-				GER = { has_idea = RUS_idea_armistice_cp }
+			if = {
+				limit = {
+					GER = { has_idea = RUS_idea_armistice_cp }
+				}
+				COU = { add_ideas = RUS_idea_armistice_cp }
 			}
-			COU = { add_ideas = RUS_idea_armistice_cp }
 		}
+	}
+	else = {
+		set_country_flag = COU_should_be_released
 	}
 }
 
@@ -1720,7 +1733,10 @@ clear_iskolata = {
 				fascism = 0
 				communism = 20
 			}
-			remove_ideas = standing_alone
+			remove_ideas = {
+				standing_alone
+				SOV_idea_red_guard
+			}	
 		}
 	}
 }
@@ -3283,54 +3299,154 @@ set_up_syrian_monarchs = {
 		}
 	}
 }
-
-delete_obsolete_russian_templates = {
-	delete_unit_template_and_units = {
-		division_template = "Pekhotnaya Diviziya"
-		disband = yes
-	}
-	delete_unit_template_and_units = {
-		division_template = "Gvardeyskaya Pekhotnaya Diviziya"
-		disband = yes
-	}
-	delete_unit_template_and_units = {
-		division_template = "Grenaderskaya Diviziya"
-		disband = yes
-	}
-	delete_unit_template_and_units = {
-		division_template = "Strelkovaya Diviziya"
-		disband = yes
-	}
-	delete_unit_template_and_units = {
-		division_template = "Strelkovaya Brigada"
-		disband = yes
-	}
-	delete_unit_template_and_units = {
-		division_template = "Kavaleriyskaya Diviziya"
-		disband = yes
-	}
-	delete_unit_template_and_units = {
-		division_template = "Gvardeyskaya Kavaleriyskaya Diviziya"
-		disband = yes
-	}
-	delete_unit_template_and_units = {
-		division_template = "Kavaleriyskaya Brigada"
-		disband = yes
-	}
-	delete_unit_template_and_units = {
-		division_template = "Morskoy Batal'on"
-		disband = yes
+remove_all_tech_templates = {
+	if = {
+		limit = { has_template = "Marine Division" }
+		delete_unit_template_and_units = { division_template = "Marine Division" }
 	}
 	if = {
-		limit = { 
-			NOT = { has_government = communism }
-		}
-		delete_unit_template_and_units = {
-			division_template = "Krasnaya Gvardiya"
-			disband = yes
+		limit = { has_template = "Mountaineer Division" }
+		delete_unit_template_and_units = { division_template = "Mountaineer Division" }
+	}
+	if = {
+		limit = { has_template = "Motorized Division" }
+		delete_unit_template_and_units = { division_template = "Motorized Division" }
+	}
+	if = {
+		limit = { has_template = "Armoured Division" }
+		delete_unit_template_and_units = { division_template = "Armoured Division" }
+	}
+	if = {
+		limit = { has_template = "Medium Armor Division" }
+		delete_unit_template_and_units = { division_template = "Medium Armor Division" }
+	}
+	if = {
+		limit = { has_template = "Heavy Armor Division" }
+		delete_unit_template_and_units = { division_template = "Heavy Armor Division" }
+	}
+}
+remove_all_AI_templates = {
+	hidden_effect = {
+		for_loop_effect = {
+			start = 1910
+			end = 1935
+			compare = less_than_or_equals
+
+			meta_effect = {
+				text = {
+					if = {
+						limit = { has_template = "Infantry [COUNT] A" }
+						delete_unit_template_and_units = { division_template = "Infantry [COUNT] A" disband = yes }
+					}
+					if = {
+						limit = { has_template = "Infantry [COUNT] B" }
+						delete_unit_template_and_units = { division_template = "Infantry [COUNT] B" disband = yes }
+					}
+					if = {
+						limit = { has_template = "Infantry [COUNT] C" }
+						delete_unit_template_and_units = { division_template = "Infantry [COUNT] C" disband = yes }
+					}
+					if = {
+						limit = { has_template = "Infantry [COUNT] D" }
+						delete_unit_template_and_units = { division_template = "Infantry [COUNT] D" disband = yes }
+					}
+					if = {
+						limit = { has_template = "Infantry [COUNT] E" }
+						delete_unit_template_and_units = { division_template = "Infantry [COUNT] E" disband = yes }
+					}
+					if = {
+						limit = { has_template = "Cavalry [COUNT] A" }
+						delete_unit_template_and_units = { division_template = "Cavalry [COUNT] A" disband = yes }
+					}
+					if = {
+						limit = { has_template = "Cavalry [COUNT] B" }
+						delete_unit_template_and_units = { division_template = "Cavalry [COUNT] B" disband = yes }
+					}
+					if = {
+						limit = { has_template = "Cavalry [COUNT] C" }
+						delete_unit_template_and_units = { division_template = "Cavalry [COUNT] C" disband = yes }
+					}
+					if = {
+						limit = { has_template = "Cavalry [COUNT] D" }
+						delete_unit_template_and_units = { division_template = "Cavalry [COUNT] D" disband = yes }
+					}
+					if = {
+						limit = { has_template = "Cavalry [COUNT] E" }
+						delete_unit_template_and_units = { division_template = "Cavalry [COUNT] E" disband = yes }
+					}
+					if = {
+						limit = { has_template = "Light Tank [COUNT] A" }
+						delete_unit_template_and_units = { division_template = "Light Tank [COUNT] A" disband = yes }
+					}
+					if = {
+						limit = { has_template = "Medium Tank [COUNT] A" }
+						delete_unit_template_and_units = { division_template = "Medium Tank [COUNT] A" disband = yes }
+					}		
+					if = {
+						limit = { has_template = "Heavy Tank [COUNT] A" }
+						delete_unit_template_and_units = { division_template = "Heavy Tank [COUNT] A" disband = yes }
+					}		
+					if = {
+						limit = { has_template = "Marines [COUNT] A" }
+						delete_unit_template_and_units = { division_template = "Marines [COUNT] A" disband = yes }
+					}
+					if = {
+						limit = { has_template = "Mountaineers [COUNT] A" }
+						delete_unit_template_and_units = { division_template = "Mountaineers [COUNT] A" disband = yes }
+					}
+				}
+				COUNT = "[?v]"
+			}
 		}
 	}
-	
+}
+
+delete_obsolete_russian_templates = {
+	remove_all_AI_templates = yes
+	remove_all_tech_templates = yes
+	if = {
+		limit = { has_template = "Pekhotnaya Diviziya" }
+		delete_unit_template_and_units = { division_template = "Pekhotnaya Diviziya" disband = yes }
+	}
+	if = {
+		limit = { has_template = "Gvardeyskaya Pekhotnaya Diviziya" }
+		delete_unit_template_and_units = { division_template = "Gvardeyskaya Pekhotnaya Diviziya" disband = yes }
+	}
+	if = {
+		limit = { has_template = "Grenaderskaya Diviziya" }
+		delete_unit_template_and_units = { division_template = "Grenaderskaya Diviziya" disband = yes }
+	}
+	if = {
+		limit = { has_template = "Strelkovaya Diviziya" }
+		delete_unit_template_and_units = { division_template = "Strelkovaya Diviziya" disband = yes }
+	}
+	if = {
+		limit = { has_template = "Strelkovaya Brigada" }
+		delete_unit_template_and_units = { division_template = "Strelkovaya Brigada" disband = yes }
+	}
+	if = {
+		limit = { has_template = "Kavaleriyskaya Diviziya" }
+		delete_unit_template_and_units = { division_template = "Kavaleriyskaya Diviziya" disband = yes }
+	}
+	if = {
+		limit = { has_template = "Gvardeyskaya Kavaleriyskaya Diviziya" }
+		delete_unit_template_and_units = { division_template = "Gvardeyskaya Kavaleriyskaya Diviziya" disband = yes }
+	}
+	if = {
+		limit = { has_template = "Kavaleriyskaya Brigada" }
+		delete_unit_template_and_units = { division_template = "Kavaleriyskaya Brigada" disband = yes }
+	}
+	if = {
+		limit = { has_template = "Morskoy Batal'on" }
+		delete_unit_template_and_units = { division_template = "Morskoy Batal'on" disband = yes }
+	}
+	if = {
+		limit = {
+			has_template = "Krasnaya Gvardiya"
+			NOT = { has_government = communism }
+		}
+		delete_unit_template_and_units = { division_template = "Krasnaya Gvardiya" disband = yes }
+	}
 }
 
 GEO_withdraw_from_persia = {
@@ -3821,6 +3937,38 @@ fire_random_advisor_if_no_slots = {
 					is_political_advisor = yes
 					advisor_can_be_fired = {
 						slot = political_advisor
+					}
+					NOT = {
+						has_trait = head_of_intelligence
+						has_trait = mastermind_code_cracker
+						has_trait = expert_code_cracker
+						has_trait = spymaster
+						has_trait = spymaster_no_lar
+						has_trait = commander_of_the_fetno_derash
+						has_trait = commander_of_the_fetno_derash_no_lar
+						has_trait = SWI_soviet_spy
+						has_trait = SWI_intelligence_officer
+						has_trait = special_envoy
+						has_trait = BRA_soviet_spy
+						has_trait = HUN_military_intelligence_officer
+						has_trait = AUS_secretive_priest
+						has_trait = AUS_veteran_head_of_agency
+						has_trait = BEL_illusive_mastermind
+						has_trait = GER_intelligence_coordinator
+						has_trait = GER_secretary_of_state_security
+						has_trait = GER_reich_security_main_office_director_lar
+						has_trait = GER_reich_security_main_office_director_no_lar
+						has_trait = head_of_the_abwehr
+						has_trait = head_of_the_abwehr_improved
+						has_trait = intelligence_service_deputy
+						has_trait = PRC_multi_talented_diplomat_lar
+						has_trait = PRC_multi_talented_diplomat_no_lar
+						has_trait = PRC_trained_by_the_nkvd
+						has_trait = PRC_spymaster
+						has_trait = PHI_intelligence_bureau_chief
+						has_trait = HUN_stalinist_agent
+						has_trait = JAP_tokko_chief
+						has_trait = CHI_spymaster
 					}
 				}
 				set_nationality = XXA #couldn't find another way
@@ -4672,4 +4820,51 @@ clear_all_ledgers = {
         limit = { has_idea = bureau_of_ordnance_spirit }
         remove_ideas = bureau_of_ordnance_spirit
     }
+}
+
+update_superevents = {
+	set_variable_to_random = global.superevent_update
+}
+clear_superevents = {
+	clr_country_flag = se_test
+	clr_country_flag = se_great_war
+	clr_country_flag = SE_war_of_the_worlds
+	clr_country_flag = SE_great_depression
+	clr_country_flag = SE_eng_republic
+	clr_country_flag = SE_eng_kitchener
+	clr_country_flag = SE_eng_george_v
+	clr_country_flag = SE_eng_imperial_federation
+	clr_country_flag = SE_fra_socialist
+	clr_country_flag = SE_fra_orleanist
+	clr_country_flag = SE_fra_bonapartist
+	clr_country_flag = SE_fra_legitimist
+	clr_country_flag = SE_fra_national_syndicalist
+	clr_country_flag = SE_fra_victory
+	clr_country_flag = SE_rus_victory_great_war
+	clr_country_flag = SE_rus_victory_great_war_republic
+	clr_country_flag = SE_rus_february_revolution
+	clr_country_flag = SE_rus_october_revolution
+	clr_country_flag = SE_rus_civil_war_winner_white
+	clr_country_flag = SE_rus_civil_war_winner_white_siberia
+	clr_country_flag = SE_rus_civil_war_winner_white_volunteer_army
+	clr_country_flag = SE_rus_civil_war_winner_red
+	clr_country_flag = SE_rus_civil_war_winner_eser
+	clr_country_flag = SE_mex_revolution
+	clr_country_flag = SE_chi_xinhai_revolution
+	clr_country_flag = SE_chi_warlord_era
+	clr_country_flag = SE_bul_bw2_winner
+	clr_country_flag = SE_ger_nazi
+	clr_country_flag = SE_rus_savinkov_revolution
+	clr_country_flag = SE_battle_of_verdun
+	clr_country_flag = SE_eng_fall_of_america
+	clr_country_flag = SE_ger_civil_war
+	clr_country_flag = SE_ger_victory
+	clr_country_flag = SE_gre_schism
+	clr_country_flag = SE_burning_of_smyrna
+	clr_country_flag = SE_balkan_war_1
+	clr_country_flag = SE_balkan_war_2
+	clr_country_flag = SE_gre_byzantium
+	clr_country_flag = SE_greeko_turkish_war
+	clr_country_flag = SE_balkan_fed
+	clr_country_flag = SE_arab_revolt
 }
