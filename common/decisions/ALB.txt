@@ -2434,7 +2434,13 @@ operations = {
 	ALB_eject_the_foreign_garrison = {
 		icon = GFX_decision_border_war
 		allowed = { NOT = { original_tag = ALB } }
-		visible = { FROM = { any_neighbor_state = { is_controlled_by = ROOT } } }
+		visible = {
+#			OR = {
+#				has_war_with = ALB
+#				is_in_faction_with = ALB
+#			}
+			FROM = { any_neighbor_state = { is_controlled_by = ROOT } }
+		}
 		cancel_trigger = {
 			FROM = {
 				OR = {
@@ -2456,34 +2462,42 @@ operations = {
 		state_target = yes
 		target_trigger = {
 			FROM = {
-				has_contested_owner = ALB
-				owner = {
-					NOT = {
-						is_in_faction_with = ROOT
-						has_war_with = ROOT
-					}
-				}
+#				has_contested_owner = ALB
+#				owner = {
+#					NOT = {
+#						is_in_faction_with = ROOT
+#						has_war_with = ROOT
+#					}
+#				}
 			}
 		}
 		complete_effect = {
+			hidden_effect = {
+				FROM = {
+					random_neighbor_state = {
+						limit = { is_controlled_by = ROOT }
+						set_temp_variable = { global.attacker_state_vs = id }
+						set_variable = { FROM.attacker_state = id }
+					}
+					set_variable = { defender_state = id }
+					owner = { country_event = { id = albania.93 hours = 1 } }
+				}
+			}
 			start_border_war = {
 				change_state_after_war = yes
 				attacker = {
-					state = 527
+					state = global.attacker_state_vs
 					num_provinces = 4
-					on_win = japan_border_conflict.2
-					on_lose = japan_border_conflict.3
-					on_cancel = japan_border_conflict.4
-					modifier = 0.1
-					dig_in_factor = 0
-					terrain_factor = 0
+					on_win = albania.89
+					on_lose = albania.90
+					on_cancel = albania.90
 				}	
 				defender = {
-					state = 408
+					state = FROM
 					num_provinces = 4
-					on_win = japan_border_conflict.3
-					on_lose = japan_border_conflict.2
-					on_cancel = japan_border_conflict.4
+					on_win = albania.91
+					on_lose = albania.92
+					on_cancel = albania.92
 				}
 			}
 		}
