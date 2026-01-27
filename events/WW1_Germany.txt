@@ -505,7 +505,7 @@ news_event = {
 # 		FROM = {
 # 			set_autonomy = {
 # 				target = ROOT
-# 				autonomy_state = autonomy_dominion
+# 				autonomy_state = autonomy_satellite
 # 				freedom_level = 0.3
 # 			}
 # 		}
@@ -790,7 +790,7 @@ news_event = {
 # 			PREV = {
 # 				set_autonomy = {
 # 					target = PREV
-# 					autonomous_state = autonomy_dominion
+# 					autonomous_state = autonomy_satellite
 # 				}
 # 			}
 # 			hidden_effect = {
@@ -3663,11 +3663,6 @@ country_event = {
 	desc = ww1_germany.108.d
 	picture = GFX_report_event_german_reichstag_gathering
 	is_triggered_only = yes
-	immediate = {
-		hidden_effect = {
-			complete_national_focus = GER_veteran_organisation_weimar
-		}
-	}
 	option = {
 		name = ww1_germany.108.a
 		add_stability = -0.05
@@ -4025,10 +4020,10 @@ country_event = {
 		}
 		remove_ideas = GER_idea_kapp_illegitimate_government
 		hidden_effect = {
-			drop_cosmetic_tag = yes
+			set_cosmetic_tag = GER_republic
 			if = {
 				limit = {
-					has_global_flag = beer_hall_putsch
+					has_country_flag = GER_nazi_party
 				}
 				set_party_name = {
 					ideology = fascism
@@ -4037,22 +4032,27 @@ country_event = {
 				}
 				promote_character = GER_adolf_hitler
 			}
-			# else_if = {
-			# 	limit = {
-			# 		has_completed_focus = GER_deutsche_arbeiterpartei
-			# 	}
-			# 	set_party_name = {
-			# 		ideology = fascism
-			# 		long_name = GER_fascism_party_DAP_long
-			# 		name = GER_fascism_party_DAP
-			# 	}
-			# 	promote_character = GER_adolf_hitler
-			# }
 			else = {
 				set_party_name = {
 					ideology = fascism
-					long_name = GER_fascism_party
-					name = GER_fascism_party
+					long_name = GER_fascism_party_DAP_long
+					name = GER_fascism_party_DAP
+				}
+				GER_anton_drexler = {
+					if = {
+						limit = {
+							has_ideology = gen_nazism
+						}
+						promote_character = gen_nazism
+						else = {
+							add_country_leader_role = {
+								promote_leader = yes
+								country_leader = {
+									ideology = gen_nazism
+								}
+							}
+						}	
+					}
 				}
 			}
 		}
@@ -4685,6 +4685,9 @@ country_event = {
 	}
 	option = {
 		name = ww1_germany.122.b
+		trigger = {
+			is_ai = no
+		}
 		remove_ideas = strikes_3
 		start_civil_war = {
 			ideology = communism
@@ -4807,9 +4810,9 @@ country_event = {
 	picture = GFX_report_event_german_reichstag_gathering
 	trigger = {
 		original_tag = GER
-		has_civil_war = no
 		has_global_flag = ruhr_uprising
 		has_country_flag = ruhr_uprising
+		has_civil_war = no
 	}
 	fire_only_once = yes
 	mean_time_to_happen = {
@@ -4823,7 +4826,15 @@ country_event = {
 		set_capital = {
 			state = 64
 		}
-		set_cosmetic_tag = BAY_germany
+		if = {
+			limit = { 
+				has_government = communism
+			}
+			set_cosmetic_tag = GER_socialism
+		}
+		else = {
+			set_cosmetic_tag = GER_republic
+		}
 	}
 }
 
@@ -6069,6 +6080,13 @@ country_event = {
 			}
 			modifier = {
 				factor = 0
+				strength_ratio = {
+					tag = FROM
+					ratio < 1.5
+				}
+			}
+			modifier = {
+				factor = 0
 				has_capitulated = yes
 			}
 		}
@@ -6501,7 +6519,7 @@ country_event = {
 				add = 10
 				OR = {
 					tag = MAL
-					tag = SRW
+					tag = SAR
 				}
 				has_global_flag = british_civil_war
 			}
@@ -7342,12 +7360,15 @@ country_event = {
 		NOT = {
 			has_war_with = RUS
 			has_war_with = SOV
-			country_exists = BLR
+			country_exists = BPR
 		}
 	}
 	mean_time_to_happen = { days = 45 }
 	option = {
 		name = ww1_germany.167.a
+		trigger = {
+			is_GER_a_monarchy = yes
+		}
 		add_named_threat = {
 			threat = 5
 			name = ww1_germany.167.tt
@@ -7362,73 +7383,71 @@ country_event = {
 				}
 			}
 			remove_claim_by = ROOT
-			transfer_state_to = BLR
+			BPR = {
+				transfer_state = PREV #transfer_state_to breaks when a dynamic countries exist
+			}
 		}
-		puppet = BLR
+		puppet = BPR
+		BPR = {
+			setup_BLR_WHR = yes
+		}
 		hidden_effect = {
-			BLR = {
-				set_politics = {
-					ruling_party = neutrality
-					last_election = "1908.11.1"
-					election_frequency = 48
-					elections_allowed = no
+			every_state = {
+				limit = {
+					has_contested_owner = BPR
 				}
-				set_popularities = {
-					democratic = 23
-					fascism = 10
-					communism = 5
-					neutrality = 62
-				}
-				set_cosmetic_tag = BLR_WHR
-				if = {
-					limit = {
-						ROOT = {
-							is_GER_a_monarchy = yes
-						}
-					}
-					if = {
-						limit = { date < 1929.4.20 }
-						BLR_genrikh = {
-							add_country_leader_role = {
-								promote_leader = yes
-								country_leader = {
-									ideology = semi_constitutional_monarchy
-									traits = { german_agent foreign_leader }
-								}
-							}
-						}
-						GER = {
-							GER_albert_wilhelm_heinrich = {
-								set_character_name = BLR_genrikh
-								set_nationality = BLR
-							}
-						}
-					}	
-					else = {
-						BLR_uladzimir = {
-							add_country_leader_role = {
-								promote_leader = yes
-								country_leader = {
-									ideology = semi_constitutional_monarchy
-								}
-							}
-						}
-						GER = {
-							retire_character = GER_albert_wilhelm_heinrich
-						}
-					}
-					set_party_name = {
-						ideology = neutrality
-						long_name = GER_neutrality_party
-						name = GER_neutrality_party
-					}
-				}
+				remove_contested_owner = BPR
 			}
 		}
 		ai_chance = { base = 10 }
 	}
 	option = {
 		name = ww1_germany.167.b
+		every_owned_state = {
+			limit = {
+				is_core_of = BLR
+				NOT = {
+					is_core_of = ROOT
+					state = 913
+				}
+			}
+			remove_claim_by = ROOT
+			BPR = {
+				transfer_state = PREV  #transfer_state_to breaks when a dynamic countries exist
+			}
+		}
+		puppet = BPR	
+		hidden_effect = {
+			BPR = {
+				set_politics = {
+					ruling_party = democratic
+				}
+				promote_character = {
+					character = BLR_vaclau_lastouski
+					ideology = social_democracy
+				}
+				promote_character = {
+					character = BLR_vaclau_lastouski
+					ideology = authoritarian_democracy
+				}
+				set_popularities = {
+					fascism = 2
+					communism = 41
+					democratic = 4
+					neutrality = 53
+				}
+			}
+			every_state = {
+				limit = {
+					has_contested_owner = BPR
+				}
+				remove_contested_owner = BPR
+			}
+		}
+		ai_chance = { base = 15 }
+	}
+	option = {
+		name = ww1_germany.167.c
 		trigger = {
 			any_other_country = {
 				is_russian_tag = yes
@@ -7625,7 +7644,7 @@ country_event = {
 		days = 0
 	}
 	option = {
-		name = ww1_germany.167.b
+		name = ww1_germany.167.c
 		trigger = {
 			any_other_country = {
 				is_russian_tag = yes
@@ -7696,11 +7715,6 @@ country_event = {
 				}
 			}
 		}
-		add_named_threat = {
-			threat = 5
-			name = ww1_germany.169.tt
-		}
-		add_stability = -0.05
 		every_owned_state = {
 			limit = {
 				OR = {
@@ -7720,30 +7734,10 @@ country_event = {
 				}
 			}
 		}
-		ai_chance = { base = 0 }
+		ai_chance = { base = 10 }
 	}
 	option = {
 		name = ww1_germany.168.c
-		trigger = {
-			952 = {
-				owner = {
-					is_russian_tag = no
-					is_subject_of = ROOT
-				}
-			}
-			204 = {
-				owner = {
-					is_russian_tag = no
-					is_subject_of = ROOT
-				}
-			}
-			NOT = {
-				NWA = {
-					exists = yes
-					NOT = { has_war_with = ROOT }
-				}
-			}
-		}
 		add_named_threat = {
 			threat = 5
 			name = ww1_germany.169.tt
@@ -7767,15 +7761,25 @@ country_event = {
 				}
 			}
 		}
-		913 = {
-			remove_claim_by = ROOT
+		if = {
+			limit = {
+				owns_state = 913
+			}
+			remove_state_claim = 913
 			204 = {
 				owner = {
-					transfer_state = PREV.PREV
+					transfer_state = 913
 				}
 			}
 		}
-		ai_chance = { base = 0 }
+		ai_chance = {
+			base = 5 
+			modifier = {
+				factor = 4
+				has_subject = BPR
+				country_exists = BRS
+			}
+		}
 	}
 }
 
@@ -7843,11 +7847,30 @@ country_event = {
 	desc = ww1_germany.171.d
 	picture = GFX_report_event_generic_military_parade
 	is_triggered_only = yes
+	fire_only_once = yes
+	immediate = {
+		hidden_effect = {
+			annex_country = {
+				target = ALS
+				transfer_troops = no
+			}
+			ALS = {
+				remove_ideas = standing_alone
+				set_politics = {
+					ruling_party = democratic
+					elections_allowed = no
+				}
+				retire_character = ALS_johannes_rebholz #deported for being German
+			}	
+		}
+	}
 	option = {
 		name = ww1_germany.171.a
-		annex_country = {
-			target = ALS
-			transfer_troops = no
+		effect_tooltip = {
+			annex_country = {
+				target = ALS
+				transfer_troops = no
+			}			
 		}
 	}
 }
@@ -8601,7 +8624,6 @@ news_event = {
 	title = ww1_germanrework.10.t
 	desc = ww1_germanrework.10.d
 	picture = GFX_news_event_wilhelm_ii_george_v
-	fire_only_once = no
 	is_triggered_only = yes
 	major = yes
 
@@ -10154,12 +10176,11 @@ country_event = {
 		#Moltke plan
 		effect_tooltip = {
 			swap_ideas = {
-				add_idea = GER_schlieffen_moltke_plan
-				remove_idea = GER_schlieffen_plan
+				add_idea = GER_idea_schlieffen_moltke_plan
+				remove_idea = GER_idea_schlieffen_plan
 			}
 		}
-		set_country_flag = GER_schliffenmoltkeplan
-		unlock_decision_tooltip = GER_schliffenmoltkeplan
+		set_country_flag = GER_schlieffen_moltke_plan
 	}
 	option = {
 		name = ww1_germanrework.75.b
@@ -12823,7 +12844,6 @@ country_event = {
 	title = ww1_germanrework.162.t
 	desc = ww1_germanrework.162.d
 	picture = GFX_report_event_unrestricted_submarine_warfare
-	fire_only_once = no
 	is_triggered_only = yes
 	option = {
 		name = ww1_germanrework.162.a
@@ -12854,7 +12874,6 @@ country_event = {
 	title = ww1_germanrework.163.t
 	desc = ww1_germanrework.163.d
 	picture = GFX_report_event_unrestricted_submarine_warfare
-	fire_only_once = no
 	is_triggered_only = yes
 	option = {
 		name = ww1_germanrework.163.a
@@ -13051,7 +13070,6 @@ country_event = {
 	title = ww1_germanrework.170.t
 	desc = ww1_germanrework.170.d
 	picture = GFX_report_event_unrestricted_submarine_warfare
-	fire_only_once = no
 	is_triggered_only = yes
 	option = {
 		name = ww1_germanrework.170.a
@@ -13161,7 +13179,6 @@ country_event = {
 	title = ww1_germanrework.174.t
 	desc = ww1_germanrework.174.desc
 	picture = [get_GER_bundesrat_event_picture]
-	fire_only_once = no
 	is_triggered_only = yes
 	immediate = {
 		hidden_effect = {
@@ -13869,11 +13886,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			base = 5
-			modifier = {
-				has_war_with_major = yes #we need factories and pp for war
-				factor = 0
-			}
+			base = 0
 		}
 	}
 	#we changed our mind
@@ -14269,13 +14282,17 @@ country_event = {
 		}
 		set_country_flag = mexico_agrees
 		ai_chance = {
-			factor = 100
+			base = 100
 			modifier = {
 				is_historical_focus_on = yes
 				factor = 0
 			}
 			modifier = {
 				has_government = democratic
+				factor = 0
+			}
+			modifier = {
+				has_government = communism
 				factor = 0
 			}
 			modifier = {
@@ -14293,7 +14310,7 @@ country_event = {
 			}
 		}
 		ai_chance = {
-			factor = 10
+			base = 10
 			modifier = {
 				has_government = neutrality
 				factor = 10
@@ -14547,13 +14564,7 @@ country_event = {
 					can_join_factions = no
 				}
 				leave_faction = yes
-				every_state = {
-					ROM = {
-						delete_unit = {
-							state = PREV
-						}
-					}
-				}
+				delete_unit = { disband = yes }
 				delete_unit_template_and_units = {
 					division_template = "Divizia de Infanterie"
 					disband = no
@@ -14733,5 +14744,399 @@ news_event = {
 				is_in_faction_with = FRA
 			}
 		}
+	}
+}
+
+# War Plan
+country_event = {
+	id = ww1_germanrework.194
+	title = ww1_germanrework.194.t
+	desc = ww1_germanrework.194.d
+	picture = GFX_report_event_schlieffen_plan
+	is_triggered_only = yes
+	timeout_days = 1
+	option = {
+		name = ww1_germanrework.194.b
+		trigger = {
+			has_country_flag = GER_schlieffen_moltke_plan
+		}
+		GER_schlieffen_moltke_plan_effect = yes
+	}
+	option = {
+		name = ww1_germanrework.194.a
+		trigger = {
+			NOT = {
+				has_country_flag = GER_schlieffen_moltke_plan
+			}
+		}
+		GER_schlieffen_plan_effect = yes
+	}
+}
+
+# Belgium refuses ultimatum
+country_event = {
+	id = ww1_germanrework.195
+	title = ww1_germanrework.195.t
+	desc = ww1_germanrework.195.d
+	is_triggered_only = yes
+	timeout_days = 1
+	option = {
+		name = ww1_germanrework.195.a
+		if = {
+			limit = {
+				BEL = {
+					exists = yes
+					NOT = {
+						is_subject_of = ROOT
+						has_war_with = ROOT
+						is_in_faction_with = ROOT
+						has_war_with = FRA
+					}
+				}
+				NOT = { 
+					has_global_flag = BEL_granted_german_passage
+				}
+			}
+			declare_war_on = {
+				target = BEL
+				type = puppet_wargoal_focus
+			}
+			add_state_claim = 906 # Arelerland
+			add_state_claim = 907 # Ardenne
+			hidden_effect = {
+				news_event = kis_news.130 # Invasion of Belgium
+			}
+		}
+
+		# Belgian Congo?
+		# add_state_claim = 295
+		# add_state_claim = 718
+		# add_state_claim = 538
+	}
+}
+
+# Belgium accepts ultimatum
+country_event = {
+	id = ww1_germanrework.196
+	title = ww1_germanrework.196.t
+	desc = ww1_germanrework.196.d
+	is_triggered_only = yes
+	option = {
+		name = ww1_germanrework.196.a
+		GER_belgium_passage = yes
+	}
+}
+
+# Scope: GER
+# Netherlands refuses ultimatum
+country_event = {
+	id = ww1_germanrework.197
+	title = ww1_germanrework.197.t
+	desc = ww1_germanrework.197.d
+	is_triggered_only = yes
+	option = {
+		name = ww1_germanrework.197.a
+		if = {
+			limit = {
+				HOL = {
+					exists = yes
+					NOT = {
+						is_subject_of = ROOT
+						has_war_with = ROOT
+						is_in_faction_with = ROOT
+						has_war_with = FRA
+					}
+				}
+			}
+			declare_war_on = {
+				target = HOL
+				type = puppet_wargoal_focus
+			}
+			add_state_claim = 1063 # Limburg
+			hidden_effect = {
+				news_event = kis_news.154 # Invasion of the Netherlands
+			}
+		}
+	}
+}
+
+# Scope: GER
+# Netherlands accepts ultimatum
+country_event = {
+	id = ww1_germanrework.198
+	title = ww1_germanrework.198.t
+	desc = ww1_germanrework.198.d
+	is_triggered_only = yes
+	option = {
+		name = ww1_germanrework.198.a
+		GER_netherlands_passage = yes
+	}
+}
+
+# Scope: GER
+# Netherlands defies Entente ultimatum
+country_event = {
+	id = ww1_germanrework.199
+	title = ww1_germanrework.199.t
+	desc = ww1_germanrework.199.d
+	is_triggered_only = yes
+	option = {
+		name = ww1_germanrework.199.a
+		if = {
+			limit = {
+				is_faction_leader = yes
+			}
+			add_to_faction = HOL
+		}
+		HOL = {
+			if = {
+				limit = {
+					has_idea = neutrality_idea
+				}
+				remove_ideas = neutrality_idea
+			}
+		}		
+	}
+}
+
+# Scope: BEL
+# German Ultimatum to Belgium
+country_event = {
+	id = ww1_germanrework.200
+	title = ww1_germanrework.200.t
+	desc = ww1_germanrework.200.d
+	picture = GFX_report_event_armored_cars
+	is_triggered_only = yes
+	fire_only_once = yes
+	timeout_days = 4
+	# Reject Ultimatum
+	option = {
+		name = ww1_germanrework.200.a
+		add_stability = -0.1
+		add_war_support = 0.15
+		add_timed_idea = {
+			idea = idea_mobilization
+			days = 30
+		}
+		ai_chance = {
+			base = 90
+			modifier = {
+				has_game_rule = {
+					rule = BEL_ai_behavior 
+					option = DEMOCRATIC_SURRENDER #intented
+				}
+				add = -9000
+			}
+		}
+		GER = {
+			country_event = ww1_germanrework.195
+		}
+	}
+	# Accept Ultimatum
+	option = {
+		name = ww1_germanrework.200.b
+		add_stability = -0.40
+		add_war_support = -0.20
+		GER = {
+			country_event = ww1_germanrework.196
+		}
+		effect_tooltip = {
+			GER_belgium_passage = yes
+		}
+		ai_chance = {
+			base = 10
+			modifier = {
+				has_game_rule = {
+					rule = BEL_ai_behavior 
+					option = DEMOCRATIC_SURRENDER #intented
+				}
+				add = 9000
+			}
+			modifier = {
+				is_historical_focus_on = yes
+				add = -10
+			}
+		}
+	}
+}
+
+# Scope: HOL
+# German Ultimatum to Netherlands
+country_event = {
+	id = ww1_germanrework.201
+	title = ww1_germanrework.201.t
+	desc = ww1_germanrework.201.d
+	picture = GFX_report_event_armored_cars
+	is_triggered_only = yes
+	# Reject Ultimatum
+	option = {
+		name = ww1_germanrework.201.a
+		GER = {
+			country_event = {
+				id = ww1_germanrework.197
+				days = 1
+			}
+		}
+		effect_tooltip = {
+			GER = {
+				declare_war_on = {
+					target = HOL
+					type = puppet_wargoal_focus
+				}
+			}
+		}
+		ai_chance = {
+			base = 20
+			modifier = {
+				factor = 0
+				has_completed_focus = HOL_sympathy_for_germany
+			}
+		}
+	}
+	# Accept Ultimatum
+	option = {
+		name = ww1_germanrework.201.b
+		GER = {
+			country_event = ww1_germanrework.198
+		}
+		ENT = {
+			country_event = {
+				id = ww1_germanrework.202
+				days = 1
+			}
+		}
+		effect_tooltip = {
+			GER_netherlands_passage = yes
+		}
+		ai_chance = {
+			base = 80
+			modifier = {
+				factor = 0
+				has_completed_focus = HOL_sympathy_for_england
+			}
+			modifier = {
+				factor = 0.25
+				has_completed_focus = HOL_independent_course
+			}
+		}
+	}
+}
+
+# Scope: ENT
+# Notification of Dutch granting German passage to Entente
+country_event = {
+	id = ww1_germanrework.202
+	title = ww1_germanrework.202.t
+	desc = ww1_germanrework.202.d
+	picture = GFX_report_event_armored_cars
+	is_triggered_only = yes
+	# Send Ultimatum to Holland
+	option = {
+		name = ww1_germanrework.202.a
+		HOL = {
+			country_event = {
+				id = ww1_germanrework.203
+				days = 1
+			}
+		}
+		ai_chance = {
+			base = 90
+		}
+	}
+	# Accept Hollands decision
+	option = {
+		name = ww1_germanrework.202.b
+		add_stability = -0.05
+		ai_chance = {
+			base = 10
+		}
+	}
+}
+
+# Scope: HOL
+# Entente Ultimatum to the Netherlands
+country_event = {
+	id = ww1_germanrework.203
+	title = ww1_germanrework.203.t
+	desc = ww1_germanrework.203.d
+	picture = GFX_report_event_armored_cars
+	is_triggered_only = yes
+	# Reject Ultimatum
+	option = {
+		name = ww1_germanrework.203.b
+		GER = {
+			country_event = {
+				id = ww1_germanrework.199
+			}
+		}
+		HOL = {
+			add_to_war = {
+				targeted_alliance = GER
+    			enemy = ENT
+			}
+		}
+	}
+	# Accept Ultimatum
+	option = {
+		name = ww1_germanrework.203.a
+		GER = {
+			country_event = {
+				id = ww1_germanrework.204
+				days = 1
+			}
+		}
+		# Revoke Military Access
+		diplomatic_relation = {
+			country = GER
+			relation = military_access
+			active = no
+		}
+	}
+}
+
+# Scope: GER
+# Netherlands accepts Entente ultimatum
+country_event = {
+	id = ww1_germanrework.204
+	title = ww1_germanrework.204.t
+	desc = ww1_germanrework.204.d
+	picture = GFX_report_event_armored_cars
+	is_triggered_only = yes
+	# Declare War
+	option = {
+		name = ww1_germanrework.204.a
+		if = {
+			limit = {
+				HOL = {
+					exists = yes
+					NOT = {
+						is_subject_of = ROOT
+						has_war_with = ROOT
+						is_in_faction_with = ROOT
+						has_war_with = FRA
+					}
+				}
+			}
+			declare_war_on = {
+				target = HOL
+				type = puppet_wargoal_focus
+			}
+			add_state_claim = 1063 # Limburg
+			hidden_effect = {
+				news_event = kis_news.154 # Invasion of the Netherlands
+			}
+		}
+		ENT = {
+			if = {
+				limit = {
+					is_faction_leader = yes
+				}
+				add_to_faction = HOL
+			}
+		}
+	}
+	# Do nothing
+	option = {
+		name = ww1_germanrework.204.b
 	}
 }

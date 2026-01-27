@@ -156,6 +156,36 @@ GER_internal_affairs = {
 
 GER_great_war = {
 
+	GER_schlieffen_plan_show_buffs = {
+		allowed = {
+			original_tag = GER
+		}
+		visible = {
+			has_idea = GER_strategiestreit
+		}
+		available = {
+			hidden_trigger = {
+				always = no
+			}
+			has_war_with = FRA
+		}
+		complete_effect = {
+			custom_effect_tooltip = current_schlieffen_plan_buffs
+			custom_effect_tooltip = empty_space_tt
+			effect_tooltip = {
+				if = {
+					limit = {
+						has_country_flag = GER_schlieffen_moltke_plan
+					}
+					GER_schlieffen_moltke_plan_effect = yes
+				}
+				else = {
+					GER_schlieffen_plan_effect = yes
+				}
+			}
+		}
+	}
+
 	GER_alfred_von_tirpitz_resignation_mission = {
 		icon = SWE_set_navy_budget
 		days_mission_timeout = 310
@@ -199,10 +229,7 @@ GER_great_war = {
 			tag = GER
 		}
 		visible = {
-			OR = {
-				has_country_flag = GER_unrestricted_submarine_warfare_flag
-				has_completed_focus = GER_u_boat_campaign
-			}
+			has_completed_focus = GER_u_boat_campaign
 			is_great_war_ongoing = yes
 			has_war = yes
 			NOT = {
@@ -241,10 +268,7 @@ GER_great_war = {
 			tag = GER
 		}
 		visible = {
-			OR = {
-				has_country_flag = GER_unrestricted_submarine_warfare_flag
-				has_completed_focus = GER_u_boat_campaign
-			}
+			has_completed_focus = GER_u_boat_campaign
 			is_great_war_ongoing = yes
 			has_war = yes
 			has_u_boat_campaign = yes
@@ -313,7 +337,6 @@ GER_great_war = {
 			}
 		}
 		remove_effect = {
-			custom_effect_tooltip = GER_zimmermann_depesche_tt
 			FROM = {
 				country_event = {
 					id = ww1_germanrework.185
@@ -338,7 +361,7 @@ GER_great_war = {
 						limit = {
 							has_war_with = ROOT
 							OR = {
-								is_ai = no
+								is_ai = yes
 								has_completed_focus = ENG_room_40
 								has_done_agency_upgrade = upgrade_decryption_boost
 							}
@@ -351,9 +374,11 @@ GER_great_war = {
 		ai_will_do = {
 			factor = 500
 			modifier = {
-				longest_war_length < 40
-				NOT = {
-					has_war_with = ENG
+				OR = {
+					longest_war_length < 40
+					NOT = {
+						has_war_with = ENG
+					}
 				}
 				factor = 0
 			}
@@ -497,7 +522,6 @@ GER_great_war = {
 	GER_ypres_offensive = {
 		icon = GFX_decision_hol_draw_up_staff_plans
 		days_remove = 120
-		is_good = no
 		fire_only_once = yes
 		target_trigger = {
 			FROM = {
@@ -595,7 +619,6 @@ GER_great_war = {
 	GER_gorlice_tarnow = {
 		icon = GFX_decision_hol_draw_up_staff_plans
 		days_remove = 180
-		is_good = no
 		fire_only_once = yes
 		target_trigger = {
 			FROM = {
@@ -698,7 +721,6 @@ GER_great_war = {
 	GER_verdun_offensive = {
 		icon = GFX_decision_hol_draw_up_staff_plans
 		days_remove = 210
-		is_good = no
 		fire_only_once = yes
 		target_trigger = {
 			FROM = {
@@ -792,7 +814,6 @@ GER_great_war = {
 	GER_baltics_offensive = {
 		icon = GFX_decision_hol_draw_up_staff_plans
 		days_remove = 120
-		is_good = no
 		fire_only_once = yes
 		target_trigger = {
 			FROM = {
@@ -909,7 +930,6 @@ GER_great_war = {
 	GER_karfreit_offensive = {
 		icon = GFX_decision_hol_draw_up_staff_plans
 		days_remove = 60
-		is_good = no
 		fire_only_once = yes
 		target_trigger = {
 			FROM = {
@@ -1069,7 +1089,6 @@ GER_great_war = {
 			original_tag = GER
 		}
 		days_remove = 120
-		is_good = no
 		target_trigger = {
 			FROM = {
 				tag = FRA
@@ -1108,6 +1127,7 @@ GER_great_war = {
 		}
 		complete_effect = {
 			custom_effect_tooltip = GER_ludendorff_offensive_tt
+			set_country_flag = GER_on_offensive
 			add_timed_idea = {
 				idea = GER_idea_ludendorff_offensive
 				days = 120
@@ -1170,7 +1190,6 @@ GER_great_war = {
 	GER_hindenburg_offensive = {
 		icon = GFX_decision_hol_draw_up_staff_plans
 		days_remove = 180
-		is_good = no
 		fire_only_once = yes
 		target_trigger = {
 			FROM = {
@@ -1268,23 +1287,34 @@ GER_great_war = {
 		}
 		available = {
 			OR = {
-				has_global_flag = great_war_ends
-				has_war_support > 0.65
+				is_great_war_ongoing = no
+				AND = {
+					has_war_support > 0.65
+					NOT = { has_idea = GER_famine }
+				}			
 			}
-			NOT = { has_idea = GER_famine }
 		}
 		activation = {
+			is_great_war_ongoing = yes
 			#at war with Britain and another major
 			#So russia + UK trigger, as well as USA + UK
 			any_enemy_country = {
 				NOT = {
 					tag = ENG
+					tag = SOV
 				}
 				is_major = yes
 				has_capitulated = no
 			}
-			ENG = {
-				has_war_with = ROOT
+			OR = {
+				USA = {
+					has_war_with = PREV
+					has_capitulated = no
+				}
+				ENG = {
+					has_war_with = PREV
+					has_capitulated = no
+				}	
 			}
 			has_war_support < 0.5
 			OR = {
@@ -1311,7 +1341,6 @@ GER_great_war = {
 	GER_decision_naval_order_of_october_1918 = {
 		icon = GFX_decision_generic_naval
 		days_remove = 10
-		is_good = yes
 		fire_only_once = yes
 		allowed = {
 			original_tag = GER
@@ -1449,176 +1478,6 @@ GER_great_war = {
 		}
 		
 	}
-	# SCHLIFFEN PLAN
-	##################
-	GER_schliffen = {
-		icon = GFX_decision_hol_draw_up_staff_plans
-		available = {
-			has_war_with = FRA
-			NOT = { has_global_flag = GER_schlieffen_plan_enacted }
-			FRA = {
-				NOT = {
-					has_idea = neutrality_idea
-				}
-			}
-			FROM = {
-				NOT = {				
-					is_in_faction_with = ROOT
-					has_war_with = FRA
-				}
-			}
-			NOT = {
-				has_completed_focus = GER_heeringens_plan
-			}
-		}
-		visible = {
-			tag = GER
-			NOT = { has_global_flag = GER_schlieffen_plan_enacted }
-			NOT = {
-				has_country_flag = GER_schliffenmoltkeplan
-			}
-		}		
-		fire_only_once = yes
-		allowed = {
-	    	original_tag = GER
-		}
-		days_remove = 5
-		target_trigger = {
-			FROM = {
-				tag = BEL
-			}
-		}
-		target_root_trigger = {
-			NOT = {
-				has_global_flag = GER_schlieffen_plan_enacted
-				has_country_flag = GER_schliffenmoltkeplan
-			}
-		}
-
-		war_with_on_remove = BEL
-		war_with_on_remove = LUX
-		war_with_on_remove = HOL
-		highlight_states = {
-			highlight_states_trigger = {
-				is_on_continent = europe
-				OR = {
-					is_owned_by = BEL
-					is_owned_by = LUX
-					is_owned_by = HOL
-					state = 29
-					state = 33
-					state = 785
-					state = 865
-				}
-			}
-		}
-		complete_effect = {
-			BEL = {
-				country_event = ww1_belgium.70
-			}
-			every_owned_state = {
-				limit = {
-					OR = {
-						state = 793
-						state = 42
-						state = 51
-						state = 343
-					}
-				}
-				add_dynamic_modifier = {
-					modifier = GER_schliffen_preparations
-					days = 25
-				}
-			}
-		}
-		remove_effect = {
-			hidden_effect = {
-				set_global_flag = GER_schlieffen_plan_enacted
-				ENG = {
-					if = {
-						limit = { has_idea = ENG_idea_not_ready_yet }
-						remove_ideas = ENG_idea_not_ready_yet
-					}
-				}
-			}
-			GER = {
-				if = {
-					limit = {
-						HOL = {
-							NOT = {
-								is_in_faction_with = ROOT
-							}
-						}
-					}
-					declare_war_on = {
-						target = HOL
-						type = puppet_wargoal_focus
-					}
-					add_state_claim = 1063
-				}
-			}
-			GER = {
-				if = {
-					limit = {
-						NOT = { 
-							BEL = { has_war_with = ROOT }
-							has_country_flag = BEL_submit_to_GER_1914
-						}
-					}
-					declare_war_on = {
-						target = BEL
-						type = puppet_wargoal_focus
-					}
-					add_state_claim = 906
-					add_state_claim = 907
-					hidden_effect = {
-						news_event = kis_news.130
-					}
-				}
-				if = {
-					limit = {
-						LUX = {
-							exists = yes
-							NOT = {
-								has_war_with = ROOT
-								has_war_with = FRA
-								is_in_faction_with = ROOT
-							}	
-						}
-					}
-					declare_war_on = {
-						target = LUX
-						type = annex_everything
-					}
-				}	
-				if = {
-					limit = {
-						has_completed_focus = GER_more_aggressive_schlieffen_plan
-					}
-					add_timed_idea = {
-						idea = GER_schlieffen_plan2
-						days = 60
-					}
-					else = {
-						add_timed_idea = {
-							idea = GER_schlieffen_plan
-							days = 60
-						}
-					}
-				}
-				
-				add_named_threat = {
-					threat = 10
-					name = GER_schliffenmoltkeplan
-				}
-				
-				add_state_claim = 8
-			}	
-		}
-		ai_will_do = {
-			factor = 10000
-		}
-	}
 	GER_ostplan_offensive = {
 		icon = GFX_decision_hol_draw_up_staff_plans
 		available = {
@@ -1665,192 +1524,6 @@ GER_great_war = {
 			factor = 10000
 		}
 	}
-	GER_schliffenmoltkeplan = {
-		icon = GFX_decision_hol_draw_up_staff_plans
-		available = {
-			has_war_with = FRA
-			NOT = { has_global_flag = GER_schlieffen_plan_enacted }
-			FRA = {
-				NOT = {
-					has_idea = neutrality_idea
-				}
-			}
-			FROM = {
-				NOT = {				
-					is_in_faction_with = ROOT
-					has_war_with = FRA
-				}
-			}
-			OR = {
-				has_completed_focus = GER_traditional_plan
-				has_completed_focus = GER_quantitative_plan
-			}	
-		}	
-		visible = {
-			tag = GER
-			NOT = { has_global_flag = GER_schlieffen_plan_enacted }
-			has_country_flag = GER_schliffenmoltkeplan
-		}		
-		fire_only_once = yes
-		allowed = {
-	    	original_tag = GER
-		}
-		days_remove = 5
-		target_trigger = {
-			FROM = {
-				tag = BEL
-			}
-		}
-		target_root_trigger = {
-			NOT = { has_global_flag = GER_schlieffen_plan_enacted }
-			has_country_flag = GER_schliffenmoltkeplan
-		}
-		war_with_on_remove = BEL
-		war_with_on_remove = LUX
-		highlight_states = {
-			highlight_states_trigger = {
-				is_on_continent = europe
-				OR = {
-					is_owned_by = BEL
-					is_owned_by = LUX
-					state = 29
-					state = 33
-					state = 785
-					state = 865
-				}
-			}
-		}
-		complete_effect = {
-			BEL = {
-				country_event = ww1_belgium.70
-			}
-			every_owned_state = {
-				limit = {
-					OR = {
-						state = 793
-						state = 343
-					}
-				}
-				add_dynamic_modifier = {
-					modifier = GER_schliffen_preparations
-					days = 25
-				}
-			}
-		}
-		remove_effect = {
-			hidden_effect = {
-				set_global_flag = GER_schlieffen_plan_enacted
-				ENG = {
-					if = {
-						limit = { has_idea = ENG_idea_not_ready_yet }
-						remove_ideas = ENG_idea_not_ready_yet
-					}
-				}
-			}
-			GER = {
-				if = {
-					limit = {
-						BEL = {
-							exists = yes
-							NOT = {
-								is_subject_of = ROOT
-								has_war_with = ROOT
-								has_war_with = FRA
-								is_in_faction_with = ROOT
-							}	
-						}
-						NOT = { 
-							has_country_flag = BEL_submit_to_GER_1914
-						}
-					}
-					declare_war_on = {
-						target = BEL
-						type = puppet_wargoal_focus
-					}
-					add_state_claim = 906
-					add_state_claim = 907
-					hidden_effect = {
-						news_event = kis_news.130
-					}
-				}
-				if = {
-					limit = {
-						LUX = {
-							exists = yes
-							NOT = {
-								is_subject_of = ROOT
-								has_war_with = ROOT
-								has_war_with = FRA
-								is_in_faction_with = ROOT
-							}	
-						}
-					}
-					declare_war_on = {
-						target = LUX
-						type = annex_everything
-					}
-				}
-				if = {
-					limit = {
-						has_completed_focus = GER_abandon_the_great_ostaufmarsch
-					}
-					add_timed_idea = {
-						idea = GER_schlieffen_moltke_plan_historical
-						days = 60
-					}
-					else_if = {
-						limit = {
-							has_completed_focus = GER_more_aggressive_schlieffen_plan
-						}
-						add_timed_idea = {
-							idea = GER_schlieffen_moltke_plan2
-							days = 60
-						}
-						else = {
-							add_timed_idea = {
-								idea = GER_schlieffen_moltke_plan
-								days = 60
-							}
-						}
-					}
-				}	
-				add_named_threat = {
-					threat = 10
-					name = GER_schliffenmoltkeplan
-				}
-				
-				add_state_claim = 8
-				# add_state_claim = 295
-				# add_state_claim = 718
-				# add_state_claim = 538
-				every_state = {
-					limit = {
-						OR = {
-							is_owned_by = BEL
-							is_owned_by = FRA
-							is_owned_by = LUX
-						}
-						OR = {
-							state = 907
-							state = 8
-							state = 906
-							state = 34
-							state = 6
-							state = 863
-							state = 29
-						}
-					}
-					add_dynamic_modifier = {
-						modifier = GER_movement_war
-						days = 120
-					}
-				}
-			}	
-		}
-		ai_will_do = {
-			factor = 10000
-		}
-	}
 	# FAMINE TIMER
 	#################
 	GER_mission_famine_timer = {
@@ -1862,9 +1535,13 @@ GER_great_war = {
 		activation = {
 			is_great_war_ongoing = yes
 			has_idea = GER_food_shortages
-			OR = {
-				has_war_with = FRA
-				has_war_with_major = yes
+			any_enemy_country = {
+				NOT = {
+					tag = ENG
+					tag = SOV
+				}
+				is_major = yes
+				has_capitulated = no
 			}
 			enemies_naval_strength_ratio > 1.5
 			OR = {
@@ -1880,7 +1557,7 @@ GER_great_war = {
 			NOT = {
 				has_global_flag = GER_capitulation
 				is_in_faction_with = RUS
-				has_idea =  GER_famine
+				has_idea = GER_famine
 			}
 		}
 		available = {
@@ -1938,7 +1615,14 @@ GER_great_war = {
 		days_mission_timeout = 485
 		activation = {
 			is_great_war_ongoing = yes
-			has_war_with = FRA		
+			any_enemy_country = {
+				NOT = {
+					tag = ENG
+					tag = SOV
+				}
+				is_major = yes
+				has_capitulated = no
+			}
 			OR = {
 				USA = {
 					has_war_with = PREV
@@ -2135,30 +1819,15 @@ GER_great_war = {
 				is_core_of = ROOT
 				is_coastal = yes
 			}
-			OR = {
-				has_tech = early_submarine
-				has_tech = early_ship_hull_submarine
-			}
+			has_tech = early_ship_hull_submarine
 		}
 		fire_only_once = no
 		days_re_enable = 70
 		complete_effect = {
-			if = {
-				limit = {
-					has_dlc = "Man the Guns"
-				}
-				create_ship = {
-					type = ship_hull_submarine_1
-					creator = GER
-					equipment_variant = "U Class"
-				}
-			}
-			else = {
-				create_ship = {
-					type = submarine_1
-					creator = GER
-					equipment_variant = "U Class"
-				}
+			create_ship = {
+				type = ship_hull_submarine_1
+				creator = GER
+				equipment_variant = "U Class"
 			}
 		}
 		cost = 0
@@ -3350,7 +3019,7 @@ GER_great_war = {
 # 				}
 # 				set_autonomy = {
 # 					target = IRE
-# 					autonomy_state = autonomy_dominion
+# 					autonomy_state = autonomy_satellite
 # 				}
 # 			}
 # 			GER_joachim_von_preussen = {
@@ -5344,7 +5013,7 @@ foreign_politics = {
 					}
 				}
 			}
-			BLR = {
+			BPR = {
 				if = {
 					limit = {
 						is_subject = no
@@ -5498,7 +5167,7 @@ GER_decision_military_advisers = {
 		}
 		cost = 75
 		ai_will_do = {
-			factor = 100
+			factor = 5
 			modifier = {
 				factor = 0
 				FROM = { has_war = no }
@@ -6133,6 +5802,19 @@ GER_mittelafrika_project = {
 			has_global_flag = frankfurt_treaty
 			custom_override_tooltip = {
 				tooltip = GER_control_MAF_state_tt
+				any_state = {
+					NOT = {
+						is_owned_by = MAF
+					}
+					GER_is_MAF_state = yes
+					OR = {
+						is_coastal = yes
+						any_neighbor_state = {
+							is_owned_by = MAF
+						}
+					}			
+					owns_or_subject_of = yes
+				}
 			}
 		}
 		cancel_trigger = {
@@ -6815,7 +6497,7 @@ prestigious_projects = {
 # 			}
 # 		}
 # 		visible = {
-# 			has_global_flag = prussian_blue
+# 			#has_global_flag = prussian_blue
 # 			has_government = communism
 # 		}
 # 		fire_only_once = yes
@@ -7062,7 +6744,7 @@ prestigious_projects = {
 # 			}
 # 		}
 # 		visible = {
-# 			has_global_flag = prussian_blue
+# 			#has_global_flag = prussian_blue
 # 		}
 # 		fire_only_once = yes
 # 		cost = 150
@@ -7123,7 +6805,7 @@ prestigious_projects = {
 # 			NOT = {
 # 				has_global_flag = prussian_withdrawal
 # 			}
-# 			has_global_flag = prussian_blue
+# 			#has_global_flag = prussian_blue
 # 			GER = {
 # 				exists = yes
 # 				is_subject_of = RUS
@@ -7156,7 +6838,7 @@ prestigious_projects = {
 # 			NOT = {
 # 				has_global_flag = prussian_withdrawal
 # 			}
-# 			has_global_flag = prussian_blue
+# 			#has_global_flag = prussian_blue
 # 			GER = {
 # 				exists = yes
 # 				is_subject_of = RUS
@@ -7270,7 +6952,7 @@ prestigious_projects = {
 # 			}
 # 		}
 # 		visible = {
-# 			has_global_flag = prussian_blue
+# 			#has_global_flag = prussian_blue
 # 			RHN = {
 # 				owns_state = 55
 # 			}
@@ -7854,8 +7536,13 @@ GER_decision_paying_reparations = {
 				OR = {
 					has_government = communism
 					has_government = fascism
-					has_country_leader_ideology = absolute_monarchy
-					has_country_leader_ideology = semi_constitutional_monarchy
+					AND = {
+						has_global_flag = GER_1918_revolution
+						OR = {
+							has_country_leader_ideology = absolute_monarchy
+							has_country_leader_ideology = semi_constitutional_monarchy
+						}
+					}			
 				}
 				has_civil_war = no
 				is_historical_focus_on = no
@@ -8065,13 +7752,14 @@ interwar_decisions = {
 			tag = GER
 			has_global_flag = interbellum
 			has_global_flag = karl_liebknecht_dead
+			has_completed_focus = GER_veteran_organisation
 			has_government = democratic
 			has_country_flag = great_war_loser
 			is_subject = no
 			NOT = {
 				has_global_flag = kapp_putsch
-				has_global_flag = prussian_blue
-				has_global_flag = treaty_of_berlin
+				#has_global_flag = prussian_blue
+				#has_global_flag = treaty_of_berlin
 			}
 		}
 		allowed = {
@@ -8094,8 +7782,8 @@ interwar_decisions = {
 			is_subject = no
 			NOT = {
 				has_global_flag = kapp_putsch
-				has_global_flag = prussian_blue
-				has_global_flag = treaty_of_berlin
+				#has_global_flag = prussian_blue
+				#has_global_flag = treaty_of_berlin
 			}
 		}
 		fire_only_once = no
@@ -8135,8 +7823,8 @@ interwar_decisions = {
 	# 		}
 	# 		NOT = {
 	# 			has_global_flag = interwar_locarno_treaties
-	# 			has_global_flag = prussian_blue
-	# 			has_global_flag = treaty_of_berlin
+	# 			#has_global_flag = prussian_blue
+	# 			#has_global_flag = treaty_of_berlin
 	# 			has_global_flag = spartakist_in_bavaria
 	# 		}
 	# 	}
@@ -8150,8 +7838,8 @@ interwar_decisions = {
 	# 			GER = { is_subject = yes }
 	# 			FRA = { is_subject = yes }
 	# 			threat > 0.50
-	# 			has_global_flag = prussian_blue
-	# 			has_global_flag = treaty_of_berlin
+	# 			#has_global_flag = prussian_blue
+	# 			#has_global_flag = treaty_of_berlin
 	# 			has_global_flag = spartakist_in_bavaria
 	# 			GER = { has_government = fascism }
 	# 		}
@@ -8577,6 +8265,12 @@ GER_german_east_asia_cat = {
 			has_global_flag = frankfurt_treaty
 			custom_override_tooltip = {
 				tooltip = GER_control_OST_state_tt
+				OR = {
+					any_owned_state = {
+						GER_is_OST_core = yes
+					}
+					has_subject = IND
+				}
 			}
 		}
 		highlight_states = {
@@ -8833,7 +8527,7 @@ GER_german_east_asia_cat = {
 	# 		FROM = {
 	# 			OR = {
 	# 				tag = MAL
-	# 				tag = SRW
+	# 				tag = SAR
 	# 				tag = BRN
 	# 				tag = VIN
 	# 				tag = CAM
@@ -9043,71 +8737,163 @@ GER_german_east_asia_cat = {
 }
 
 economy_decisions = {
-	GER_restore_schantung_bahn_control = {
-		icon = GFX_decision_generic_railway
+	# GER_restore_schantung_bahn_control = {
+	# 	icon = GFX_decision_generic_railway
 
-		allowed = {
-			original_tag = GER
-		}
+	# 	allowed = {
+	# 		original_tag = GER
+	# 	}
 
+	# 	target_trigger = {
+	# 		FROM = {
+	# 			is_china_or_warlord_no_tt = yes
+	# 			NOT = {
+	# 				gives_military_access_to = ROOT
+	# 				is_ally_with = ROOT
+	# 			}
+	# 			OR = {
+	# 				controls_state = 597
+	# 				controls_state = 872
+	# 			}
+	# 		}
+	# 	}
+	# 	target_root_trigger = {
+	# 		OR = {
+	# 			has_country_flag = great_war_winner
+	# 			NOT = { has_global_flag = CHI_join_great_war }
+	# 		}
+	# 	}
+	# 	visible = {
+	# 		hidden_trigger = {
+	# 			OR = {
+	# 				has_country_flag = great_war_winner
+	# 				NOT = { has_global_flag = CHI_join_great_war }
+	# 			}
+	# 			owns_state = 745
+	# 			controls_state = 745
+	# 			is_subject = no
+	# 			has_capitulated = no
+	# 			any_country = {
+	# 				OR = {
+	# 					tag = ROOT
+	# 					is_subject_of = ROOT
+	# 				}
+	# 				OR = {
+	# 					AND = {
+	# 						owns_state = 597
+	# 						controls_state = 597
+	# 					}
+	# 					AND = {
+	# 						owns_state = 872
+	# 						controls_state = 872
+	# 					}
+	# 				}
+	# 			}
+	# 		}
+	# 	}
+
+	# 	days_remove = 5
+
+	# 	ai_will_do = {
+	# 		factor = 100
+	# 	}
+
+	# 	cancel_if_not_visible = yes
+	# 	remove_effect = {
+	# 		FROM = {
+	# 			give_military_access = ROOT
+	# 		}
+	# 	}
+	# }
+	GER_build_edersee_dam = {
+		icon = GFX_decision_generic_construction
+		state_target = yes
 		target_trigger = {
 			FROM = {
-				is_china_or_warlord_no_tt = yes
-				NOT = {
-					gives_military_access_to = ROOT
-					is_ally_with = ROOT
-				}
-				OR = {
-					controls_state = 597
-					controls_state = 872
-				}
-			}
-		}
-		target_root_trigger = {
-			OR = {
-				has_country_flag = great_war_winner
-				NOT = { has_global_flag = CHI_join_great_war }
+				state = 1170
+				is_owned_by = ROOT
 			}
 		}
 		visible = {
-			hidden_trigger = {
-				OR = {
-					has_country_flag = great_war_winner
-					NOT = { has_global_flag = CHI_join_great_war }
-				}
-				owns_state = 745
-				controls_state = 745
-				is_subject = no
-				has_capitulated = no
-				any_country = {
-					OR = {
-						tag = ROOT
-						is_subject_of = ROOT
-					}
-					OR = {
-						AND = {
-							owns_state = 597
-							controls_state = 597
-						}
-						AND = {
-							owns_state = 872
-							controls_state = 872
-						}
-					}
+			has_start_date < 1914.1.1
+			FROM = {
+				dam_hydroelectric < 1
+			}
+		}
+		available = {
+			controls_state = FROM
+		}
+		highlight_states = {
+			highlight_state_targets = {
+				state = FROM
+			}
+		}
+		modifier = {
+			civilian_factory_use = 2
+		}
+		fire_only_once = yes
+		days_remove = 365
+		remove_effect = {
+			FROM = {
+				add_building_construction = {
+					type = dam_hydroelectric
+					level = 1
+					province = 11533
+					instant_build = yes
 				}
 			}
 		}
-
-		days_remove = 5
-
 		ai_will_do = {
-			factor = 100
+			base = 0
+			modifier = {
+				add = 100
+				date > 1913.1.1
+			}
 		}
-
-		cancel_if_not_visible = yes
+	}
+	GER_build_mohnetalsperre = {
+		icon = GFX_decision_generic_construction
+		state_target = yes
+		target_trigger = {
+			FROM = {
+				state = 57
+				is_owned_by = ROOT
+			}
+		}
+		visible = {
+			has_start_date < 1914.1.1
+			FROM = {
+				dam_hydroelectric < 1
+			}
+		}
+		available = {
+			controls_state = FROM
+		}
+		highlight_states = {
+			highlight_state_targets = {
+				state = FROM
+			}
+		}
+		modifier = {
+			civilian_factory_use = 2
+		}
+		fire_only_once = yes
+		days_remove = 365
 		remove_effect = {
 			FROM = {
-				give_military_access = ROOT
+				add_building_construction = {
+					type = dam_hydroelectric
+					level = 1
+					province = 11431
+					instant_build = yes
+				}
+			}
+		}
+		ai_will_do = {
+			base = 0
+			modifier = {
+				add = 100
+				date > 1912.1.1
 			}
 		}
 	}
@@ -9998,7 +9784,7 @@ GER_bundesrat_category = {
 				factor  = 0
 				GER_ai_has_too_many_bundesrat_missions = yes
 				GER_ai_has_too_many_bundesrat_infrastructure_missions = yes
-				has_idea = GER_political_concessions
+				
 			}
 			modifier = {
 				factor  = 0
@@ -10241,7 +10027,7 @@ GER_bundesrat_category = {
 				factor  = 0
 				GER_ai_has_too_many_bundesrat_missions = yes
 				GER_ai_has_too_many_bundesrat_infrastructure_missions = yes
-				has_idea = GER_political_concessions
+				
 			}
 			modifier = {
 				factor  = 0
@@ -10478,7 +10264,7 @@ GER_bundesrat_category = {
 				factor  = 0
 				GER_ai_has_too_many_bundesrat_missions = yes
 				GER_ai_has_too_many_bundesrat_infrastructure_missions = yes
-				has_idea = GER_political_concessions
+				
 			}
 			modifier = {
 				factor  = 0
@@ -10715,7 +10501,7 @@ GER_bundesrat_category = {
 				factor  = 0
 				GER_ai_has_too_many_bundesrat_missions = yes
 				GER_ai_has_too_many_bundesrat_infrastructure_missions = yes
-				has_idea = GER_political_concessions
+				
 			}
 			modifier = {
 				factor  = 0
@@ -10952,7 +10738,7 @@ GER_bundesrat_category = {
 				factor  = 0
 				GER_ai_has_too_many_bundesrat_missions = yes
 				GER_ai_has_too_many_bundesrat_infrastructure_missions = yes
-				has_idea = GER_political_concessions
+				
 			}
 			modifier = {
 				factor  = 0
@@ -11189,7 +10975,7 @@ GER_bundesrat_category = {
 				factor  = 0
 				GER_ai_has_too_many_bundesrat_missions = yes
 				GER_ai_has_too_many_bundesrat_infrastructure_missions = yes
-				has_idea = GER_political_concessions
+				
 			}
 			modifier = {
 				factor  = 0
@@ -11432,7 +11218,7 @@ GER_bundesrat_category = {
 				factor  = 0
 				GER_ai_has_too_many_bundesrat_missions = yes
 				GER_ai_has_too_many_bundesrat_infrastructure_missions = yes
-				has_idea = GER_political_concessions
+				
 			}
 			modifier = {
 				factor  = 0
@@ -11699,7 +11485,7 @@ GER_bundesrat_category = {
 				factor  = 0
 				GER_ai_has_too_many_bundesrat_missions = yes
 				GER_ai_has_too_many_bundesrat_infrastructure_missions = yes
-				has_idea = GER_political_concessions
+				
 			}
 			modifier = {
 				factor  = 0
@@ -11936,7 +11722,7 @@ GER_bundesrat_category = {
 				factor  = 0
 				GER_ai_has_too_many_bundesrat_missions = yes
 				GER_ai_has_too_many_bundesrat_infrastructure_missions = yes
-				has_idea = GER_political_concessions
+				
 			}
 			modifier = {
 				factor  = 0
@@ -12173,7 +11959,7 @@ GER_bundesrat_category = {
 				factor  = 0
 				GER_ai_has_too_many_bundesrat_missions = yes
 				GER_ai_has_too_many_bundesrat_infrastructure_missions = yes
-				has_idea = GER_political_concessions
+				
 			}
 			modifier = {
 				factor  = 0
@@ -12424,7 +12210,7 @@ GER_bundesrat_category = {
 				factor  = 0
 				GER_ai_has_too_many_bundesrat_missions = yes
 				GER_ai_has_too_many_bundesrat_infrastructure_missions = yes
-				has_idea = GER_political_concessions
+				
 			}
 			modifier = {
 				factor  = 0
@@ -12753,7 +12539,7 @@ GER_bundesrat_category = {
 				factor  = 0
 				GER_ai_has_too_many_bundesrat_missions = yes
 				GER_ai_has_too_many_bundesrat_infrastructure_missions = yes
-				has_idea = GER_political_concessions
+				
 			}
 			modifier = {
 				factor  = 0
@@ -13032,7 +12818,7 @@ GER_bundesrat_category = {
 				factor  = 0
 				GER_ai_has_too_many_bundesrat_missions = yes
 				GER_ai_has_too_many_bundesrat_infrastructure_missions = yes
-				has_idea = GER_political_concessions
+				
 			}
 			modifier = {
 				factor  = 0
@@ -13279,7 +13065,7 @@ GER_bundesrat_category = {
 				factor  = 0
 				GER_ai_has_too_many_bundesrat_missions = yes
 				GER_ai_has_too_many_bundesrat_infrastructure_missions = yes
-				has_idea = GER_political_concessions
+				
 			}
 			modifier = {
 				factor  = 0
@@ -13467,7 +13253,7 @@ GER_bundesrat_category = {
 		visible = {
 			is_debug = yes
 			has_country_flag = GER_show_debug_decisions
-			has_idea = GER_political_concessions
+			
 		}
 		complete_effect = {
 			remove_ideas = GER_political_concessions
@@ -14480,7 +14266,7 @@ GER_bundesrat_category = {
 		}
 		days_remove = 30
         ai_will_do = {
-			factor = 100
+			factor = 1000
 		}
 		remove_effect = {
 			if = {
@@ -14722,9 +14508,6 @@ GER_bundesrat_category = {
 		days_remove = 30
         ai_will_do = {
 			factor = 100
-		}
-		ai_will_do = {
-			factor = 10
 		}
 		remove_effect = {
 			if = {
@@ -15014,10 +14797,8 @@ GER_reichstag_category = {
 			original_tag = GER
 		}
 		cost = 10
-		visible = {
-			has_country_flag = GER_reichstag_vote_in_progress
-		}
 		available = {
+			has_country_flag = GER_reichstag_vote_in_progress
 			OR = {
 				has_country_flag = center_vote_in_progress
 				has_country_flag = wartime_vote_in_progress
@@ -15054,10 +14835,8 @@ GER_reichstag_category = {
 			original_tag = GER
 		}
 		cost = 10
-		visible = {
-			has_country_flag = GER_reichstag_vote_in_progress
-		}
 		available = {
+			has_country_flag = GER_reichstag_vote_in_progress
 			OR = {
 				has_country_flag = left_vote_in_progress
 				has_country_flag = right_vote_in_progress
@@ -15092,10 +14871,10 @@ GER_reichstag_category = {
 		}
 		cost = 25
 		visible = {
-			has_country_flag = GER_reichstag_vote_in_progress
 			has_country_flag = GER_center_sway_20_percent
 		}
 		available = {
+			has_country_flag = GER_reichstag_vote_in_progress
 			OR = {
 				has_country_flag = left_vote_in_progress
 				has_country_flag = right_vote_in_progress
@@ -15128,10 +14907,8 @@ GER_reichstag_category = {
 			original_tag = GER
 		}
 		cost = 10
-		visible = {
-			has_country_flag = GER_reichstag_vote_in_progress
-		}
 		available = {
+			has_country_flag = GER_reichstag_vote_in_progress
 			has_country_flag = center_vote_in_progress
 			NOT = {
 				has_country_flag = GER_right_sway_20_percent
@@ -15161,10 +14938,8 @@ GER_reichstag_category = {
 			original_tag = GER
 		}
 		cost = 10
-		visible = {
-			has_country_flag = GER_reichstag_vote_in_progress
-		}
 		available = {
+			has_country_flag = GER_reichstag_vote_in_progress
 			OR = {
 				has_country_flag = center_vote_in_progress
 				has_country_flag = left_vote_in_progress
@@ -17504,7 +17279,7 @@ GER_reichstag_category = {
 GER_economic_actions = {
 	GER_finance_berlin_military_complex = {
 		icon = GFX_decision_generic_artillery_icon
-		cost = 50
+		cost = 60
 		fire_only_once = yes
 		days_remove = 70
 		allowed = {
@@ -17543,7 +17318,7 @@ GER_economic_actions = {
 	}
 	GER_finance_rhine_military_complex = {
 		icon = GFX_decision_generic_artillery_icon
-		cost = 50
+		cost = 60
 		fire_only_once = yes
 		days_remove = 70
 		allowed = {
@@ -17582,7 +17357,7 @@ GER_economic_actions = {
 	}
 	GER_finance_saarland_military_complex = {
 		icon = GFX_decision_generic_artillery_icon
-		cost = 50
+		cost = 60
 		fire_only_once = yes
 		days_remove = 70
 		allowed = {
@@ -17875,15 +17650,10 @@ GER_military_constructions = {
 			command_power < 50
 		}
 		ai_will_do = {
-			factor = 500
+			base = 1
 			modifier = {
 				command_power < 10
-				factor = 10
-			}
-			modifier = {
-				command_power < 25
-				has_war = yes
-				factor = 15
+				factor = 100
 			}
 		}
 		visible = {
@@ -17907,9 +17677,9 @@ GER_military_constructions = {
 		}
 		custom_cost_trigger = {
 			command_power > 24.9
-			num_of_civilian_factories > 10
+			num_of_civilian_factories > 3
 		}
-		custom_cost_text = decision_cost_CP_25_10_civ
+		custom_cost_text = decision_cost_CP_25_4_civ
 		available = {
 			controls_province = 2900
 			controls_province = 3447
@@ -17945,7 +17715,7 @@ GER_military_constructions = {
 			}
 		}
 		modifier = {
-			civilian_factory_use = 10
+			civilian_factory_use = 4
 		}
 		remove_effect = {
 			custom_effect_tooltip = GER_defensive_line_in_aisne_tt
@@ -17982,9 +17752,9 @@ GER_military_constructions = {
 		}
 		custom_cost_trigger = {
 			command_power > 24.9
-			num_of_civilian_factories > 10
+			num_of_civilian_factories > 3
 		}
-		custom_cost_text = decision_cost_CP_25_10_civ
+		custom_cost_text = decision_cost_CP_25_4_civ
 		available = {
 			controls_province = 575
 			controls_province = 11483
@@ -18020,7 +17790,7 @@ GER_military_constructions = {
 			}
 		}
 		modifier = {
-			civilian_factory_use = 10
+			civilian_factory_use = 4
 		}
 		remove_effect = {
 			custom_effect_tooltip = GER_defensive_line_in_ypern_tt
@@ -18057,9 +17827,9 @@ GER_military_constructions = {
 		}
 		custom_cost_trigger = {
 			command_power > 24.9
-			num_of_civilian_factories > 10
+			num_of_civilian_factories > 3
 		}
-		custom_cost_text = decision_cost_CP_25_10_civ
+		custom_cost_text = decision_cost_CP_25_4_civ
 		available = {
 			controls_province = 3536
 			controls_province = 3476
@@ -18095,7 +17865,7 @@ GER_military_constructions = {
 			}
 		}
 		modifier = {
-			civilian_factory_use = 10
+			civilian_factory_use = 4
 		}
 		remove_effect = {
 			custom_effect_tooltip = GER_defensive_line_in_arras_tt
@@ -18132,9 +17902,9 @@ GER_military_constructions = {
 		}
 		custom_cost_trigger = {
 			command_power > 24.9
-			num_of_civilian_factories > 10
+			num_of_civilian_factories > 3
 		}
-		custom_cost_text = decision_cost_CP_25_10_civ
+		custom_cost_text = decision_cost_CP_25_4_civ
 		available = {
 			controls_province = 454
 			controls_province = 3402
@@ -18170,7 +17940,7 @@ GER_military_constructions = {
 			}
 		}
 		modifier = {
-			civilian_factory_use = 10
+			civilian_factory_use = 4
 		}
 		remove_effect = {
 			custom_effect_tooltip = GER_defensive_line_in_compiegne_tt
@@ -18207,9 +17977,9 @@ GER_military_constructions = {
 		}
 		custom_cost_trigger = {
 			command_power > 24.9
-			num_of_civilian_factories > 10
+			num_of_civilian_factories > 3
 		}
-		custom_cost_text = decision_cost_CP_25_10_civ
+		custom_cost_text = decision_cost_CP_25_4_civ
 		available = {
 			controls_province = 3576
 			controls_province = 6560
@@ -18245,7 +18015,7 @@ GER_military_constructions = {
 			}
 		}
 		modifier = {
-			civilian_factory_use = 10
+			civilian_factory_use = 4
 		}
 		remove_effect = {
 			custom_effect_tooltip = GER_defensive_line_in_gent_tt
@@ -18282,9 +18052,9 @@ GER_military_constructions = {
 		}
 		custom_cost_trigger = {
 			command_power > 24.9
-			num_of_civilian_factories > 10
+			num_of_civilian_factories > 3
 		}
-		custom_cost_text = decision_cost_CP_25_10_civ
+		custom_cost_text = decision_cost_CP_25_4_civ
 		available = {
 			controls_province = 9536
 			controls_province = 13081
@@ -18320,7 +18090,7 @@ GER_military_constructions = {
 			}
 		}
 		modifier = {
-			civilian_factory_use = 10
+			civilian_factory_use = 4
 		}
 		remove_effect = {
 			custom_effect_tooltip = GER_defensive_line_in_charleroi_tt
@@ -18357,9 +18127,9 @@ GER_military_constructions = {
 		}
 		custom_cost_trigger = {
 			command_power > 24.9
-			num_of_civilian_factories > 10
+			num_of_civilian_factories > 3
 		}
-		custom_cost_text = decision_cost_CP_25_10_civ
+		custom_cost_text = decision_cost_CP_25_4_civ
 		available = {
 			controls_province = 516
 			controls_province = 6598
@@ -18395,7 +18165,7 @@ GER_military_constructions = {
 			}
 		}
 		modifier = {
-			civilian_factory_use = 10
+			civilian_factory_use = 4
 		}
 		remove_effect = {
 			custom_effect_tooltip = GER_defensive_line_in_brussel_tt
@@ -18432,9 +18202,9 @@ GER_military_constructions = {
 		}
 		custom_cost_trigger = {
 			command_power > 24.9
-			num_of_civilian_factories > 10
+			num_of_civilian_factories > 3
 		}
-		custom_cost_text = decision_cost_CP_25_10_civ
+		custom_cost_text = decision_cost_CP_25_4_civ
 		available = {
 			controls_province = 9418
 			controls_province = 9444
@@ -18470,7 +18240,7 @@ GER_military_constructions = {
 			}
 		}
 		modifier = {
-			civilian_factory_use = 10
+			civilian_factory_use = 4
 		}
 		remove_effect = {
 			custom_effect_tooltip = GER_defensive_line_in_argonnen_tt
@@ -18506,10 +18276,10 @@ GER_military_constructions = {
 			original_tag = GER
 		}
 		custom_cost_trigger = {
-			command_power > 49.9
-			num_of_civilian_factories > 10
+			command_power > 24.9
+			num_of_civilian_factories > 3
 		}
-		custom_cost_text = decision_cost_CP_25_10_civ
+		custom_cost_text = decision_cost_CP_25_4_civ
 		available = {
 			controls_province = 11328
 			controls_province = 3560
@@ -18545,7 +18315,7 @@ GER_military_constructions = {
 			}
 		}
 		modifier = {
-			civilian_factory_use = 10
+			civilian_factory_use = 4
 		}
 		remove_effect = {
 			custom_effect_tooltip = GER_defensive_line_in_verdun_tt
@@ -19248,7 +19018,7 @@ GER_african_railways = {
 				}
 			}
 			546 = {
-				is_owned_or_subject_trigger = yes
+				is_controlled_by_ROOT_or_subject = yes
 			}
 		}
 		modifier = {
@@ -19314,10 +19084,10 @@ GER_african_railways = {
 				}
 			}
 			768 = {
-				is_owned_or_subject_trigger = yes
+				is_controlled_by_ROOT_or_subject = yes
 			}
 			546 = {
-				is_owned_or_subject_trigger = yes
+				is_controlled_by_ROOT_or_subject = yes
 			}
 		}
 		modifier = {
@@ -19382,7 +19152,7 @@ GER_african_railways = {
 				}
 			}
 			546 = {
-				is_owned_or_subject_trigger = yes
+				is_controlled_by_ROOT_or_subject = yes
 			}
 		}
 		modifier = {
@@ -19448,7 +19218,7 @@ GER_african_railways = {
 				}
 			}
 			539 = {
-				is_owned_or_subject_trigger = yes
+				is_controlled_by_ROOT_or_subject = yes
 			}
 		}
 		modifier = {
@@ -19514,7 +19284,7 @@ GER_african_railways = {
 				}
 			}
 			777 = {
-				is_owned_or_subject_trigger = yes
+				is_controlled_by_ROOT_or_subject = yes
 			}
 		}
 		modifier = {

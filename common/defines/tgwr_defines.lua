@@ -47,7 +47,6 @@ NDefines.NAI.PEACE_AI_EVALUATE_OTHER_ALWAYS = true							-- Vanilla is false
 NDefines.NAI.DIPLOMACY_FACTION_WRONG_IDEOLOGY_PENALTY = 30
 NDefines.NAI.NEUTRAL_THREAT_PARANOIA = 0									
 NDefines.NAI.DIFFERENT_FACTION_THREAT = 0	
-NDefines.NAI.ENEMY_NAVY_STRENGTH_DONT_BOTHER = 1.5		
 
 -- General AI
 NDefines.NAI.RESEARCH_BONUS_FACTOR = 1.5									-- Vanilla is 0.9
@@ -104,6 +103,9 @@ NDefines.NAI.SEND_VOLUNTEER_AIDESIRE_SAME_IDEOLOGY = 0					-- Added to AI desire
 NDefines.NAI.SEND_VOLUNTEER_AIDESIRE_SAME_IDEOLOGY_CIVIL_WAR = 0		-- Added to AI desire to send volunteers if recipent is same ideology and they are currently in civil war
 
 NDefines.NAI.CALL_ALLY_PUPPET_INVITE_OVERLORD = 100    -- Desire for a puppet to call its overlord into the war -- Vanilla is -1000
+
+NDefines.NAI.CONSTRUCTION_PRIO_RAILWAY = 0.5 -- vanilla is 4
+
 NDefines.NDiplomacy.IDEOLOGY_JOIN_FACTION_MIN_LEVEL = -1
 NDefines.NDiplomacy.MARKET_ACCESS_ACCEPTANCE_SAME_IDEOLOGY = 0				 -- Acceptance value added if same ideology (Vanilla is 15)
 NDefines.NDiplomacy.MARKET_ACCESS_ACCEPTANCE_TRADE_INFLUENCE = 0.2 			 -- Acceptance factor for trade influence (Vanilla is 0.70)
@@ -116,18 +118,17 @@ NDefines.NRailwayGun.RAILWAY_GUN_POSSIBLE_RANGES = { 15, 10, 30 }	-- Possible va
 NDefines.NGraphics.VICTORY_POINT_MAP_ICON_TEXT_CUTOFF = {200, 350, 600}  	-- Vanilla is 100, 250, 500
 NDefines.NGraphics.VICTORY_POINTS_DISTANCE_CUTOFF = {300, 500, 1000} 		-- Vanilla is 300, 500, 1500
 
-NDefines_Graphics.NGraphics.POLITICAL_GRID_SMALL_BOX_LIMIT = 18              	-- Limit for gridbox in political view before it will be replaced with extended gridbox, Vanilla is 6
-
 NDefines.NSupply.CAPITAL_SUPPLY_BASE = 1.0
 NDefines.NSupply.CAPITAL_SUPPLY_CIVILIAN_FACTORIES = 0.6
 NDefines.NSupply.CAPITAL_SUPPLY_MILITARY_FACTORIES = 0.5
 NDefines.NSupply.CAPITAL_SUPPLY_DOCKYARDS = 0.3
 
 -- Production AI
+NDefines.NProduction.BASE_ENERGY_COST = 2						-- How much energy per factory consumes (Vanilla is 0.25)
 
 NDefines.NDiplomacy.EMBARGO_COST = 0 -- Vanilla is 100
 NDefines.NDiplomacy.EMBARGO_THREAT_THRESHOLD = 0 -- Vanilla is 30
-NDefines.NAI.EMBARGO_WORLD_TENSION_THREAT_DIVISOR = 0 -- Vanilla is 2.5
+NDefines.NAI.EMBARGO_WORLD_TENSION_THREAT_DIVISOR = 10000 -- Vanilla is 2.5
 
 -- Navy
 NDefines.NNavy.TRAINING_MAX_DAILY_COUNTRY_EXP = 1.0 -- Vanilla is 3.5
@@ -143,4 +144,25 @@ NDefines.NCountry.FEMALE_UNIT_LEADER_BASE_CHANCE = {
     0.1, -- air leaders
     0.3, -- operatives
     0.1, -- scientists
+}
+
+NDefines.NMilitary.LAND_COMBAT_COLLATERAL_FORT_FACTOR = 0.002 --0.005
+NDefines.NMilitary.LAND_COMBAT_FORT_DAMAGE_CHANCE = 2 -- out of 100 - vanilla is 5
+
+NDefines.NNavy.NAVAL_INVASION_PLAN_CAP = 0	--1								-- base cap of naval invasions can be planned at the same time
+NDefines.NNavy.BASE_NAVAL_INVASION_DIVISION_CAP = 0	--4						-- base cap of divisions that can be assigned in a naval invasion
+NDefines.NNavy.NAVAL_INVASION_PREPARE_DAYS = 30	--60						-- base days needed to prepare a naval invasion
+
+NDefines.NDoctrines.TRAINING_MASTERY_GAIN_FACTOR = 0.01
+
+-- Factions
+NDefines.NFactions.FACTION_SCIENTIST_CONTRIBUTION_VALUE = 0.01              --how much contribution one scientists gives to you if it is working for somebody else.
+NDefines.NFactions.FACTION_ASSIGN_SCIENTIST_COST = 50                      --how much political power it costs to assign a supportive scientist
+
+-- Special Projects
+NDefines.NProject.RECRUIT_SCIENTIST_COST = {                                -- Amount of pp to hire a scientist based on available scientist
+    100,            -- pp cost if no available scientist
+    100,            -- pp cost if 1 available scientist
+    100,            -- pp cost if 2 available scientist
+    100             -- pp cost if more than 2 available scientist
 }
