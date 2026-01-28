@@ -7642,7 +7642,7 @@ GER_decision_paying_reparations = {
 					has_government = communism
 					has_government = fascism
 					AND = {
-						has_global_flag = GER_1918_revolution
+						has_global_flag = GER_republic_proclaimed
 						OR = {
 							has_country_leader_ideology = absolute_monarchy
 							has_country_leader_ideology = semi_constitutional_monarchy
@@ -14430,7 +14430,7 @@ GER_bundesrat_category = {
 					is_GER_a_monarchy = yes
 					has_country_flag = great_war_loser
 					NOT = {
-						has_global_flag = GER_1918_revolution
+						has_global_flag = GER_republic_proclaimed
 					}
 				}
 			}
@@ -15235,134 +15235,110 @@ GER_reichstag_category = {
 		}
 	}
 
-	GER_election1 = {
+	GER_election_initial = {
+		icon = generic_political_discourse
+		desc = GER_election_desc
+
+		is_good = yes
+		fire_only_once = yes
+		days_mission_timeout = 621 # 12/01/1912
+
 		activation = {
-			has_elections = yes
-		}
-		available = {
+        	tag = GER
+        	date < 1912.1.13
+			has_war = no
+    	}
+
+		cancel_trigger = {	
 			has_elections = no
 		}
-		cancel_trigger = {
-			has_active_mission = GER_election_1919
-		}
 
-		icon = generic_political_discourse
-		is_good = yes
-		days_mission_timeout = 621 #621
-		fire_only_once  = yes
-		complete_effect = {
-		}
 		timeout_effect = {
 			if = {
 				limit = { has_war = no }
-				GER = { 
-					country_event = { 
-						id = ww1_german_reichstag.1
-					}
-					country_event = {
-						id = ww1_germanrework.45
-						days = 10
-					}
-				}
-				hidden_effect = {
-					activate_mission = GER_election2
-					GER_reload_parliament_gui = yes
-					GER_modify_parliament_seat = yes
-				}
+				GER_hold_election = yes
+				GER_start_next_election_cycle = yes
+				country_event = { id = ww1_germanrework.45 days = 10 }
 			}
 			else = {
-				GER = {
-					country_event = ww1_german_reichstag.2
-				}
+				country_event = ww1_german_reichstag.2
 			}
 		}
 	}
 
-	GER_election2 = {
-		activation = {
-			has_elections = yes
-			NOT = { has_active_mission = GER_election1 }
-			NOT = {
-				has_war = yes
-				has_global_flag = great_war_ends
-				has_global_flag = GER_1918_revolution
-			}
-		}
-		available = {
+	GER_election_cycle_empire = {
+		icon = generic_political_discourse
+		desc = GER_election_desc
+
+		is_good = yes
+		days_mission_timeout = 1825
+
+		activation = { always = no }
+
+		cancel_trigger = {	
 			has_elections = no
 		}
-		cancel_trigger = {
-			OR = {
-				has_active_mission = GER_election1
-				has_active_mission = GER_election_1919
-			}	
-		}
 
-		icon = generic_political_discourse
-		is_good = yes
-		days_mission_timeout = 1825 
-		complete_effect = {
-		}
 		timeout_effect = {
 			if = {
-				limit = { has_war = no}
-				activate_mission = GER_election2 #This election will repeat on end if the war never happens, new election missions will activate on war win/loss
-				GER = { 
-					country_event = { 
-						id = ww1_german_reichstag.3 #This election will use the same calcultations as the 1912 election
-					}
-				}
-				hidden_effect = {
-					GER_reload_parliament_gui = yes
-					GER_modify_parliament_seat = yes
-				}
+				limit = { has_war = no }
+				GER_hold_election = yes
+				GER_start_next_election_cycle = yes
 			}
 			else = {
-				GER = {
-					country_event = ww1_german_reichstag.2
-				}
+				country_event = ww1_german_reichstag.2
 			}
 		}
 	}
 
-	#used for both victor and loser germany, somehow...
-	GER_election_1919 = {
-		desc = GER_election1_desc
-		available = {
+	GER_election_cycle_republic = {
+		icon = generic_political_discourse
+		desc = GER_election_desc
+
+		is_good = yes
+		days_mission_timeout = 1461
+
+		activation = { always = no }
+
+		cancel_trigger = {	
 			has_elections = no
 		}
-		activation = {
-			always = no
-		}
-		cancel_trigger = {
-		}
 
-		icon = generic_political_discourse
-		is_good = yes
-		days_mission_timeout = 21 
-		complete_effect = {
-			
-		}
 		timeout_effect = {
 			if = {
-				limit = { has_war = no}
-				GER = { 
-					country_event = { 
-						id = ww1_german_reichstag.3 #This election will use the same calcultations as the 1912 election
-					}
-				}
-				hidden_effect = {
-					GER_reload_parliament_gui = yes
-					GER_modify_parliament_seat = yes
-				}
-				set_country_flag = snap_elections_are_done
+				limit = { has_war = no }
+				GER_hold_election = yes
+				GER_start_next_election_cycle = yes
 			}
 			else = {
-				GER = {
-					country_event = ww1_german_reichstag.2
-				}
+				country_event = ww1_german_reichstag.2
 			}
-			
+		}
+	}
+
+	GER_snap_election = {
+		icon = generic_political_discourse
+		desc = GER_election_desc
+
+		is_good = yes
+
+		days_mission_timeout = 60
+
+		activation = { always = no }
+
+		cancel_trigger = {	
+			has_elections = no
+		}
+
+		timeout_effect = {
+			if = {
+				limit = { has_war = no }
+				GER_hold_election = yes
+				GER_start_next_election_cycle = yes
+			}
+			else = {
+				country_event = ww1_german_reichstag.2
+			}
 		}
 	}
 
@@ -16457,7 +16433,7 @@ GER_reichstag_category = {
 				custom_effect_tooltip = GER_if_law_passes_reich
 				if = {
 					limit = {
-						has_global_flag = GER_1918_revolution
+						has_global_flag = GER_republic_proclaimed
 					}
 					GER_interwar_loser_new_constitution_effect = yes
 					else = {
@@ -16471,7 +16447,7 @@ GER_reichstag_category = {
 					effect_tooltip = {
 						if = {
 							limit = {
-								has_global_flag = GER_1918_revolution
+								has_global_flag = GER_republic_proclaimed
 							}
 							GER_interwar_loser_new_constitution_effect = yes
 							else = {
@@ -16874,7 +16850,7 @@ GER_reichstag_category = {
 					is_GER_a_monarchy = yes
 					has_country_flag = great_war_loser
 					NOT = {
-						has_global_flag = GER_1918_revolution
+						has_global_flag = GER_republic_proclaimed
 					}
 				}
 			}
