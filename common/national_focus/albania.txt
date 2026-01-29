@@ -182,7 +182,13 @@ focus_tree = {
 		completion_reward = {
 			if = {
 				limit = { is_in_faction = yes }
-				effect_tooltip = { become_exiled_in = { target = faction_leader legitimacy = 75 } }
+				every_country = {
+					limit = {
+						is_in_faction_with = ROOT
+						is_faction_leader = yes
+					}
+					ROOT = { become_exiled_in = { target = PREV legitimacy = 75 } }
+				}
 			}
 			else = { custom_effect_tooltip = ALB_boarding_the_ship_tt }
 		}
@@ -5787,6 +5793,7 @@ focus_tree = {
 				remove_idea = ALB_tribal_council_2
 				add_idea = ALB_council_of_mirdita
 			}
+			add_ideas = ALB_international_isolation
 			every_core_state = {
 				limit = { ALB_is_northern_state = no }
 				remove_core_of = ROOT
@@ -6284,6 +6291,7 @@ focus_tree = {
 					}
 				}
 			}
+			HUN = { add_to_faction = ALB }
 		}
 		ai_will_do = { factor = 100 }
 	}
@@ -6354,22 +6362,7 @@ focus_tree = {
 		y = 1
 		relative_position_id = ALB_proclaim_a_rival_principality
 		completion_reward = {
-		}
-		ai_will_do = { factor = 100 }
-	}
-
-	focus = {
-		id = ALB_ensure_tribal_representation
-		icon = GFX_ALB_form_the_albanian_national_council
-		cost = 5
-		search_filters = {
-			FOCUS_FILTER_INTERNAL_AFFAIRS
-		}
-		prerequisite = { focus = ALB_proclaim_a_rival_principality }
-		x = 0
-		y = 1
-		relative_position_id = ALB_proclaim_a_rival_principality
-		completion_reward = {
+			add_ideas = ALB_code_of_the_mountain
 		}
 		ai_will_do = { factor = 100 }
 	}
@@ -6386,6 +6379,19 @@ focus_tree = {
 		y = 1
 		relative_position_id = ALB_codify_the_kanun
 		completion_reward = {
+			if = {
+				limit = { has_idea = ALB_code_of_the_mountain_3 }
+				swap_ideas = {
+					remove_idea = ALB_code_of_the_mountain_3
+					add_idea = ALB_code_of_the_mountain_4
+				}
+			}
+			else = {
+				swap_ideas = {
+					remove_idea = ALB_code_of_the_mountain
+					add_idea = ALB_code_of_the_mountain_2
+				}
+			}
 		}
 		ai_will_do = { factor = 100 }
 	}
@@ -6402,6 +6408,40 @@ focus_tree = {
 		y = 1
 		relative_position_id = ALB_codify_the_kanun
 		completion_reward = {
+			if = {
+				limit = { has_idea = ALB_code_of_the_mountain_2 }
+				swap_ideas = {
+					remove_idea = ALB_code_of_the_mountain_2
+					add_idea = ALB_code_of_the_mountain_4
+				}
+			}
+			else = {
+				swap_ideas = {
+					remove_idea = ALB_code_of_the_mountain
+					add_idea = ALB_code_of_the_mountain_3
+				}
+			}
+		}
+		ai_will_do = { factor = 100 }
+	}
+
+	focus = {
+		id = ALB_ensure_tribal_representation
+		icon = GFX_ALB_form_the_albanian_national_council
+		cost = 5
+		search_filters = {
+			FOCUS_FILTER_INTERNAL_AFFAIRS
+		}
+		prerequisite = { focus = ALB_proclaim_a_rival_principality }
+		x = 0
+		y = 1
+		relative_position_id = ALB_proclaim_a_rival_principality
+		completion_reward = {
+			swap_ideas = {
+				remove_idea = ALB_council_of_mirdita
+				add_idea = ALB_council_of_mirdita_2
+			}
+			custom_effect_tooltip = ALB_tribal_allegiances_tt
 		}
 		ai_will_do = { factor = 100 }
 	}
@@ -6418,6 +6458,26 @@ focus_tree = {
 		y = 1
 		relative_position_id = ALB_ensure_tribal_representation
 		completion_reward = {
+			remove_ideas = ALB_international_isolation
+			870 = {
+				add_building_construction = {
+					type = infrastructure
+					level = 1
+					instant_build = yes
+				}
+				add_building_construction = {
+					type = naval_base
+					level = 1
+					instant_build = yes
+					province = 13274
+				}
+				add_building_construction = {
+					type = supply_node
+					level = 1
+					instant_build = yes
+					province = 13274
+				}
+			}
 		}
 		ai_will_do = { factor = 100 }
 	}
@@ -6433,7 +6493,102 @@ focus_tree = {
 		x = -1
 		y = 1
 		relative_position_id = ALB_introduce_mirdita_to_the_world
+		available = {
+			is_subject = no
+			OR = {
+				MNT = {
+					exists = yes
+					NOT = { has_war_with = ROOT }
+				}
+				SER = {
+					exists = yes
+					NOT = { has_war_with = ROOT }
+				}
+			}
+		}
+		bypass = {
+			MNT = {
+				OR = {
+					exists = no
+					has_war_with = ROOT
+				}
+			}
+			SER = {
+				OR = {
+					exists = no
+					has_war_with = ROOT
+				}
+			}
+		}
 		completion_reward = {
+			if = {
+				limit = {
+					MNT = {
+						exists = yes
+						NOT = { has_war_with = ROOT }
+					}
+					SER = {
+						exists = yes
+						NOT = { has_war_with = ROOT }
+					}
+				}
+				if = {
+					limit = {
+						MNT = {
+							exists = yes
+							NOT = { has_war_with = ROOT }
+						}
+					}
+					MNT = { country_event = { id = albania.94 hours = 8 } }
+					custom_effect_tooltip = if_they_accept_tt
+					MNT = { give_guarantee = ROOT }
+					diplomatic_relation = {
+						country = MNT
+						relation = non_aggression_pact
+						active = yes
+					}
+					add_opinion_modifier = { target = MNT modifier = ALB_foreign_recognition }
+				}
+				if = {
+					limit = {
+						SER = {
+							exists = yes
+							NOT = { has_war_with = ROOT }
+						}
+					}
+					SER = { country_event = { id = albania.94 hours = 8 } }
+					custom_effect_tooltip = if_they_accept_tt
+					SER = { give_guarantee = ROOT }
+					diplomatic_relation = {
+						country = SER
+						relation = non_aggression_pact
+						active = yes
+					}
+					add_opinion_modifier = { target = SER modifier = ALB_foreign_recognition }
+				}
+			}
+			else = {
+				effect_tooltip = {
+					MNT = { country_event = { id = albania.94 hours = 8 } }
+					custom_effect_tooltip = if_they_accept_tt
+					MNT = { give_guarantee = ROOT }
+					diplomatic_relation = {
+						country = MNT
+						relation = non_aggression_pact
+						active = yes
+					}
+					add_opinion_modifier = { target = MNT modifier = ALB_foreign_recognition }
+					SER = { country_event = { id = albania.94 hours = 8 } }
+					custom_effect_tooltip = if_they_accept_tt
+					SER = { give_guarantee = ROOT }
+					diplomatic_relation = {
+						country = SER
+						relation = non_aggression_pact
+						active = yes
+					}
+					add_opinion_modifier = { target = SER modifier = ALB_foreign_recognition }
+				}
+			}
 		}
 		ai_will_do = { factor = 100 }
 	}
@@ -6450,6 +6605,7 @@ focus_tree = {
 		y = 1
 		relative_position_id = ALB_introduce_mirdita_to_the_world
 		completion_reward = {
+			add_offsite_building = { type = industrial_complex level = 2 }
 		}
 		ai_will_do = { factor = 100 }
 	}
@@ -6465,7 +6621,30 @@ focus_tree = {
 		x = 0
 		y = 1
 		relative_position_id = ALB_attract_french_investments
+		available = { FRA = { has_war_with_major = yes } }
+		complete_tooltip = {
+			add_offsite_building = { type = arms_factory level = 1 }
+			add_ideas = ALB_french_military_investments
+			give_military_access = FRA
+			activate_mission = ALB_fading_french_support
+			every_country = {
+				limit = { has_country_flag = ALB_base_for_military_support }
+				add_opinion_modifier = { target = ROOT modifier = ALB_base_for_military_support }
+			}
+		}
 		completion_reward = {
+			add_offsite_building = { type = arms_factory level = 1 }
+			add_ideas = ALB_french_military_investments
+			give_military_access = FRA
+			activate_mission = ALB_fading_french_support
+			every_country = {
+				limit = {
+					is_major = yes
+					has_war_with = FRA
+				}
+				add_opinion_modifier = { target = ROOT modifier = ALB_base_for_military_support }
+				set_country_flag = ALB_base_for_military_support
+			}
 		}
 		ai_will_do = { factor = 100 }
 	}
@@ -6473,7 +6652,7 @@ focus_tree = {
 	focus = {
 		id = ALB_expand_the_adriatic_front
 		icon = GFX_focus_generic_provoke_border_clashes
-		cost = 10
+		cost = 5
 		search_filters = {
 			FOCUS_FILTER_INTERNAL_AFFAIRS
 		}
@@ -6482,7 +6661,47 @@ focus_tree = {
 		x = -1
 		y = 1
 		relative_position_id = ALB_base_for_military_support
+		available = {
+			OR = {
+				SER = {
+					OR = {
+						exists = no
+						AND = {
+							is_in_faction_with = FRA
+							any_neighbor_country = { has_war_with = SER }
+						}
+					}
+				}
+				MNT = {
+					OR = {
+						exists = no
+						AND = {
+							is_in_faction_with = FRA
+							any_neighbor_country = { has_war_with = MNT }
+						}
+					}
+				}
+				any_neighbor_country = { has_war_with = FRA }
+			}
+		}
 		completion_reward = {
+			custom_effect_tooltip = ALB_expand_the_adriatic_front_tt
+			every_other_country = {
+				limit = {
+					has_war_with = FRA
+					OR = {
+						is_major = yes
+						is_neighbor_of = ROOT
+					}
+				}
+				ROOT = {
+					add_to_war = {
+						targeted_alliance = FRA
+						enemy = PREV
+					}
+				}
+			}
+			FRA = { add_to_faction = ALB }
 		}
 		ai_will_do = { factor = 100 }
 	}
