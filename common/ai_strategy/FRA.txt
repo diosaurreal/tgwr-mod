@@ -84,6 +84,47 @@ FRA_area_priority = {
 	}
 }
 
+FRA_no_AIFC_during_schliefen = {
+	allowed = {
+		original_tag = FRA
+	}
+	enable = {
+		has_war_with = GER
+		GER = {
+			GER_schlieffen_plan_is_ongoing = yes
+		}
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = force_concentration_front_factor
+		country_trigger = {
+			always = yes
+		}
+		ratio = 0
+		value = -1000
+	}
+}
+
+FRA_less_prio_africa_great_war = {
+	allowed = {
+		original_tag = FRA
+	}
+	enable = {
+		is_great_war_ongoing = yes
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = area_priority
+		id = africa
+		value = -50
+	}
+	ai_strategy = {
+		type = front_unit_request
+		area = africa
+		value = -50
+	}
+}
+
 FRA_lack_of_guns = {
 	allowed = {
 		original_tag = FRA
@@ -296,11 +337,6 @@ ENTENTE_dont_help_on_eastern_front = {
 	}
 	ai_strategy = {
 		type = dont_defend_ally_borders
-		id = RUS
-		value = 1
-	}
-	ai_strategy = {
-		type = dont_defend_ally_borders
 		id = EST
 		value = 1
 	}
@@ -435,10 +471,18 @@ FRA_dont_go_belgium = {
 	enable = {
 		is_in_faction_with = BEL
 		has_war_with = GER
-		NOT = {
-			war_length_with = {
-				tag = GER
-				months > 6
+		OR = {
+			BEL = {
+				OR = {
+					has_capitulated = no
+					surrender_progress < 0.8
+				}
+			}
+			NOT = {
+				war_length_with = {
+					tag = GER
+					months > 6
+				}
 			}
 		}
 	}
@@ -482,7 +526,6 @@ FRA_backline_picardy = {
 			has_global_flag = crisis_in_progress
 		}
 		is_in_faction_with = BEL
-		controls_province = 11420
 		BEL = {
 			OR = {
 				has_capitulated = yes
@@ -516,7 +559,7 @@ FRA_backline_picardy = {
 		states = {
 			18
 		}
-		ratio = 1
+		ratio = 0.6
 		subtract_invasions_from_need = yes
 		subtract_fronts_from_need = yes
 	}
@@ -527,7 +570,6 @@ FRA_backline_belfort = {
 		original_tag = FRA
 	}
 	enable = {
-		controls_province = 9642
 		OR = {
 			has_war_with_major = yes
 			has_global_flag = crisis_in_progress
@@ -540,7 +582,7 @@ FRA_backline_belfort = {
 			war_length_with = {
 				# stabilzed front
 				tag = GER
-				months > 36
+				months > 12
 			}
 		}
 	}
@@ -550,7 +592,16 @@ FRA_backline_belfort = {
 		states = {
 			20
 		}
-		ratio = 0.9
+		ratio = 0.5
+		subtract_invasions_from_need = yes
+		subtract_fronts_from_need = yes
+	}
+	ai_strategy = {
+		type = put_unit_buffers
+		states = {
+			864
+		}
+		ratio = 1
 		subtract_invasions_from_need = yes
 		subtract_fronts_from_need = yes
 	}
@@ -584,6 +635,43 @@ FRA_paris_garrison = {
 			16
 		}
 		ratio = 0.8
+		subtract_invasions_from_need = yes
+		subtract_fronts_from_need = yes
+	}
+}
+
+FRA_lion_garrison = {
+	allowed = {
+		original_tag = FRA
+	}
+	enable = {
+		controls_province = 6613
+		NOT = {
+			controls_province = 698 # front is falling apart on the south
+		}
+		OR = {
+			has_war_with_major = yes
+			has_global_flag = crisis_in_progress
+		}
+		NOT = {
+			has_game_rule = {
+				rule = battle_of_france_outcome
+				option = FRENCH_EARLY_DEFEAT
+			}
+			war_length_with = {
+				# stabilzed front
+				tag = GER
+				months > 8
+			}
+		}
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = put_unit_buffers
+		states = {
+			32
+		}
+		ratio = 0.7
 		subtract_invasions_from_need = yes
 		subtract_fronts_from_need = yes
 	}
@@ -840,24 +928,44 @@ ENTENTE_less_prio_balkans = {
 		value = -60
 	}
 }
-
-FRA_defend_ports_in_great_war = {
+FRA_backline_normandie = {
 	allowed = {
 		original_tag = FRA
 	}
 	enable = {
-		has_war_with_major = yes
+		is_great_war_ongoing = yes
+		NOT = {
+			controls_province = 9500
+		}
+		war_length_with = {
+			tag = GER
+			months < 10
+		}
 	}
 	abort_when_not_enabled = yes
 	ai_strategy = {
 		type = put_unit_buffers
-		ratio = 0.9
+		ratio = 0.6
 		states = {
 			15
 		}
 		subtract_invasions_from_need = yes
 		subtract_fronts_from_need = yes
 	}
+}
+
+FRA_defend_ports_in_great_war = {
+	allowed = {
+		original_tag = FRA
+	}
+	enable = {
+		war_length_with = {
+			tag = GER
+			months > 10
+		}
+		surrender_progress < 0.3
+	}
+	abort_when_not_enabled = yes
 	ai_strategy = {
 		type = put_unit_buffers
 		ratio = 0.5
@@ -1342,21 +1450,6 @@ FRA_unit_production = {
 		value = -10
 	}
 	ai_strategy = {
-		type = role_ratio
-		id = mountaineers
-		value = 2
-	}
-	ai_strategy = {
-		type = role_ratio
-		id = marines
-		value = 1
-	}
-	ai_strategy = {
-		type = role_ratio
-		id = cavalry
-		value = 1
-	}
-	ai_strategy = {
 		type = template_prio
 		id = medium_armor
 		value = 20
@@ -1385,7 +1478,7 @@ FRA_unit_production = {
 	ai_strategy = {
 		type = unit_ratio
 		id = fighter
-		value = 50		# From 70 to 75
+		value = 60		# From 70 to 75
 	}
 	ai_strategy = {
 		type = unit_ratio
@@ -1436,7 +1529,7 @@ FRA_unit_production = {
 	ai_strategy = {
 		type = equipment_production_factor
 		id = fighter
-		value = 20
+		value = 40
 	}
 	ai_strategy = {
 		type = equipment_production_factor
@@ -1450,6 +1543,26 @@ FRA_unit_production = {
 	}
 }
 
+FRA_air_production = {
+	allowed = {
+		original_tag = FRA
+	}
+	enable = {
+		has_tech = fighter1
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = equipment_production_factor
+		id = fighter
+		value = 80
+	}
+	ai_strategy = {
+		type = equipment_production_factor
+		id = tactical_bomber
+		value = 50
+	}
+}
+
 FRA_early_tank_production = {
 	allowed = {
 		original_tag = FRA
@@ -1458,40 +1571,19 @@ FRA_early_tank_production = {
 		NOT = {
 			has_global_flag = great_war_ends
 		}
-		OR = {
-			has_active_mission = FRA_fufill_schneider_contract
-			NOT = {
-				check_variable = {
-					num_equipment_in_armies@light_tank_chassis > 59
-				}
-			}
-		}
+		has_active_mission = FRA_fufill_schneider_contract
 		has_tech = basic_medium_tank_chassis
 	}
-	abort = {
-		has_completed_focus = FRA_ww1_form_the_armored_spearhead
-	}
 	abort_when_not_enabled = yes
-	#it will force AI to produce armored cars and schneider tanks
 	ai_strategy = {
 		type = equipment_production_factor
 		id = armor
-		value = 800		#build some
-	}
-	ai_strategy = {
-		type = equipment_production_factor
-		id = fighter
-		value = -100		#no concurrency over steel cars
+		value = 100
 	}
 	ai_strategy = {
 		type = role_ratio
 		id = medium_armor
-		value = 10
-	}
-	ai_strategy = {
-		type = role_ratio
-		id = armored_car
-		value = -1
+		value = 20
 	}
 }
 
@@ -1502,67 +1594,20 @@ FRA_renault_tank_production = {
 	enable = {
 		NOT = {
 			has_global_flag = great_war_ends
-		}
-		NOT = {
 			has_active_mission = FRA_fufill_schneider_contract
 		}
 		has_tech = basic_light_tank_chassis
 	}
 	abort_when_not_enabled = yes
-	#it will force AI to produce armored cars and schneider tanks
-	ai_strategy = {
-		type = role_ratio
-		id = medium_armor
-		value = -2
-	}
 	ai_strategy = {
 		type = role_ratio
 		id = light_armor
-		value = 2
-	}
-	ai_strategy = {
-		type = role_ratio
-		id = light_armor_artillery
-		value = 2
-	}
-	ai_strategy = {
-		type = role_ratio
-		id = armor
-		value = 6
-	}
-	ai_strategy = {
-		type = role_ratio
-		id = armored_car
-		value = -1
+		value = 20
 	}
 	ai_strategy = {
 		type = equipment_production_factor
 		id = armor
-		value = 500		#build some
-	}
-}
-
-FRA_chamond_production = {
-	#st chamond stays while sex
-	allowed = {
-		original_tag = FRA
-	}
-	enable = {
-		has_tech = basic_heavy_tank_chassis
-		NOT = {
-			has_global_flag = great_war_ends
-		}
-	}
-	abort_when_not_enabled = yes
-	ai_strategy = {
-		type = build_army
-		id = heavy_armor
-		value = 2
-	}
-	ai_strategy = {
-		type = role_ratio
-		id = heavy_armor
-		value = 1
+		value = 100
 	}
 }
 
@@ -1575,28 +1620,18 @@ FRA_renault_mission_focus = {
 			has_global_flag = great_war_ends
 		}
 		has_tech = basic_light_tank_chassis
-		has_tech = basic_medium_tank_chassis
-	}
-	abort = {
-		NOT = {
-			has_active_mission = FRA_fufill_renault_contract
-		}
+		has_active_mission = FRA_fufill_renault_contract
 	}
 	abort_when_not_enabled = yes
 	ai_strategy = {
-		type = equipment_production_factor
-		id = armor
-		value = 400		#build some
-	}
-	ai_strategy = {
-		type = role_ratio
-		id = medium_armor
-		value = -20
-	}
-	ai_strategy = {
 		type = role_ratio
 		id = light_armor
-		value = 5
+		value = 20
+	}
+	ai_strategy = {
+		type = equipment_production_factor
+		id = armor
+		value = 400
 	}
 }
 
@@ -1609,66 +1644,17 @@ FRA_duval_plan_mission_focus_fighters = {
 			has_global_flag = great_war_ends
 		}
 		has_active_mission = FRA_duval_plan
-		surrender_progress < 0.15
-		NOT = {
-			check_variable = {
-				num_deployed_planes_with_type@fighter_equipment > 999
-			}
-			has_equipment = {
-				fighter_equipment > 999
-			}
-		}
 	}
 	abort_when_not_enabled = yes
 	ai_strategy = {
 		type = equipment_production_factor
 		id = fighter
-		value = 600		#bfighuild some
-	}
-	ai_strategy = {
-		type = air_factory_balance		# focus on air
-		value = 20
-	}
-	ai_strategy = {
-		type = equipment_production_min_factories
-		id = fighter
-		value = 8
-	}
-}
-
-FRA_duval_plan_mission_focus_bombers = {
-	allowed = {
-		original_tag = FRA
-	}
-	enable = {
-		NOT = {
-			has_global_flag = great_war_ends
-		}
-		has_active_mission = FRA_duval_plan
-		surrender_progress < 0.15
-		NOT = {
-			check_variable = {
-				num_deployed_planes_with_type@tac_bomber_equipment > 499
-			}
-			has_equipment = {
-				tac_bomber_equipment > 499
-			}
-		}
-	}
-	abort_when_not_enabled = yes
-	ai_strategy = {
-		type = air_factory_balance		# focus on air
-		value = 20
+		value = 100
 	}
 	ai_strategy = {
 		type = equipment_production_factor
 		id = tactical_bomber
-		value = 800
-	}
-	ai_strategy = {
-		type = equipment_production_min_factories
-		id = tactical_bomber
-		value = 8
+		value = 200
 	}
 }
 
@@ -1867,6 +1853,25 @@ FRA_build_mils = {
 		type = build_building
 		id = air_base
 		target = 16
+		value = 300
+	}
+}
+
+FRA_build_reserve_air_base = {
+	allowed = {
+		original_tag = FRA
+	}
+	enable = {
+		has_war_with_major = yes
+		NOT = {
+			controls_province = 6949
+		}
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = build_building
+		id = air_base
+		target = 24
 		value = 300
 	}
 }
