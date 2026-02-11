@@ -364,7 +364,7 @@ focus_tree = {
 		relative_position_id = ALB_organize_the_post_office_system
 		available = { is_subject = yes }
 		completion_reward = {
-			overlord = { annex_country = { target = ROOT transfer_troops = no } }
+			var:ALB_pro_overlord_education_country = { annex_country = { target = ROOT transfer_troops = no } }
 			custom_effect_tooltip = GAME_OVER_TT
 		}
 		ai_will_do = { factor = 100 }
@@ -455,6 +455,7 @@ focus_tree = {
 							is_controlled_by = PREV
 							is_claimed_by = PREV
 						}
+						has_state_flag = ALB_lc_state_to_alb
 					}
 					set_state_owner_to = ROOT
 					set_state_flag = ALB_overlord_albanian_agreement1
@@ -466,6 +467,7 @@ focus_tree = {
 							is_owned_by = PREV
 							is_claimed_by = PREV
 						}
+						has_state_flag = ALB_lc_state_to_alb
 					}
 					set_state_controller_to = ROOT
 					set_state_flag = ALB_overlord_albanian_agreement2
@@ -475,6 +477,7 @@ focus_tree = {
 						is_core_of = ALB
 						is_controlled_by = PREV
 						NOT = { is_claimed_by = PREV }
+						has_state_flag = ALB_lc_state_to_alb
 					}
 					transfer_state_to = ROOT
 					set_state_flag = ALB_overlord_albanian_agreement3
@@ -519,8 +522,30 @@ focus_tree = {
 		y = 1
 		relative_position_id = ALB_overlord_albanian_agreement
 		available = { is_subject = yes }
+		complete_tooltip = {
+			add_political_power = 100
+			add_stability = -0.1
+			every_country = {
+				limit = { has_country_flag = ALB_prevent_the_congress_of_lushnje }
+				add_opinion_modifier = {
+					target = ROOT
+					modifier = ALB_proven_loyalties
+				}
+			}
+		}
 		completion_reward = {
-			
+			add_political_power = 100
+			add_stability = -0.1
+			if = {
+				limit = { is_subject = yes }
+				overlord = {
+					add_opinion_modifier = {
+						target = ROOT
+						modifier = ALB_proven_loyalties
+					}
+					set_country_flag = ALB_prevent_the_congress_of_lushnje
+				}
+			}
 		}
 		ai_will_do = { factor = 100 }
 	}
@@ -540,8 +565,68 @@ focus_tree = {
 		relative_position_id = ALB_overlord_albanian_agreement
 		available = { is_subject = yes }
 		bypass_if_unavailable = yes
+		complete_tooltip = {
+			every_country = {
+				limit = { has_country_flag = ALB_convene_the_congress_of_lushnje1 }
+				custom_effect_tooltip = ALB_convene_the_congress_of_lushnje_tt
+				add_country_leader_role = {
+					character = ALB_sulejman_delvina
+					promote_leader = yes
+					country_leader = { ideology = authoritarian_democracy }
+				}
+			}
+			set_politics = {
+				ruling_party = neutrality
+				elections_allowed = yes
+				name = ALB_delvina_government
+				long_name = ALB_delvina_government
+			}
+			every_country = {
+				limit = { has_country_flag = ALB_convene_the_congress_of_lushnje2 }
+				end_puppet = ROOT
+			}
+			add_victory_points = {
+				province = 9914
+				value = 2
+			}
+			set_capital = {
+				state = 1215
+				remember_old_capital = no
+			}
+		}
 		completion_reward = {
-			
+			every_other_country = {
+				limit = { has_character = ALB_sulejman_delvina }
+				ALB_sulejman_delvina = { set_nationality = ROOT }
+				add_country_leader_role = {
+					character = ALB_sulejman_delvina
+					promote_leader = yes
+					country_leader = { ideology = authoritarian_democracy }
+				}
+				set_country_flag = ALB_convene_the_congress_of_lushnje1
+			}
+			set_politics = {
+				ruling_party = neutrality
+				elections_allowed = yes
+				name = ALB_delvina_government
+				long_name = ALB_delvina_government
+			}
+			if = {
+				limit = { is_subject = yes }
+				overlord = {
+					end_puppet = ROOT
+					set_country_flag = ALB_convene_the_congress_of_lushnje2
+				}
+			}
+			set_capital = {
+				state = 1215
+				remember_old_capital = no
+			}
+			add_victory_points = {
+				province = 9914
+				value = 2
+			}
+			1215 = { set_state_name = VICTORY_POINTS_9914 }
 		}
 		ai_will_do = { factor = 100 }
 	}
@@ -560,7 +645,14 @@ focus_tree = {
 		relative_position_id = ALB_prevent_the_congress_of_lushnje
 		available = { is_subject = yes }
 		completion_reward = {
-			
+			var:ALB_pro_overlord_education_country = {
+				set_autonomy = {
+					target = ROOT
+					autonomous_state = autonomy_satellite
+					end_wars = no
+					end_civil_wars = no
+				}
+			}
 		}
 		ai_will_do = { factor = 100 }
 	}
@@ -617,7 +709,12 @@ focus_tree = {
 		x = 0
 		y = 1
 		relative_position_id = ALB_convene_the_congress_of_lushnje
-		available = { is_subject = yes }
+		available = {
+			any_state = {
+				has_state_flag = ALB_lc_state_to_alb
+				NOT = { is_owned_by = ROOT }
+			}
+		}
 		bypass_if_unavailable = yes
 		completion_reward = {
 			
@@ -638,7 +735,12 @@ focus_tree = {
 		y = 1
 		relative_position_id = ALB_kick_the_occupiers_out
 		completion_reward = {
-			
+			add_political_power = 50
+			add_stability = 0.1
+			add_opinion_modifier = {
+				target = USA
+				modifier = ALB_recognized_independence
+			}
 		}
 		ai_will_do = { factor = 100 }
 	}
@@ -2224,6 +2326,37 @@ focus_tree = {
 			}
 			NOT = { has_completed_focus = ALB_albanian_independence }
 		}
+		complete_tooltip = {
+			set_capital = {
+				state = 1214
+				remember_old_capital = no
+			}
+			set_party_name = {
+				ideology = neutrality
+				name = ALB_kimza_party
+				long_name = ALB_kimza_party
+			}
+			set_party_name = {
+				ideology = democratic
+				name = ALB_kimza_party
+				long_name = ALB_kimza_party
+			}
+			set_party_name = {
+				ideology = fascism
+				name = ALB_kimza_party
+				long_name = ALB_kimza_party
+			}
+			set_party_name = {
+				ideology = communism
+				name = ALB_kimza_party
+				long_name = ALB_kimza_party
+			}
+			every_country = {
+				limit = { has_country_flag = ALB_establish_the_kimza_government }
+				custom_effect_tooltip = ALB_establish_the_kimza_government_tt
+				promote_character = { character = ALB_terenc_toci ideology = civilian_dictatorship }
+			}
+		}
 		completion_reward = {
 			set_capital = {
 				state = 1214
@@ -2249,7 +2382,12 @@ focus_tree = {
 				name = ALB_kimza_party
 				long_name = ALB_kimza_party
 			}
-			promote_character = { character = ALB_terenc_toci ideology = civilian_dictatorship }
+			every_country = {
+				limit = { has_character = ALB_terenc_toci }
+				ALB_terenc_toci = { set_nationality = ROOT }
+				promote_character = { character = ALB_terenc_toci ideology = civilian_dictatorship }
+				set_country_flag = ALB_establish_the_kimza_government
+			}
 			set_country_flag = ALB_kimza_government
 		}
 		ai_will_do = { factor = 100 }
