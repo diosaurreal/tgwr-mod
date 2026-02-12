@@ -68,50 +68,37 @@ NDefines.NAI.DESIRE_USE_XP_TO_UNLOCK_NAVY_SPIRIT = 0.4   -- How quickly is desir
 NDefines.NAI.DESIRE_USE_XP_TO_UNLOCK_AIR_SPIRIT = 0.4     -- How quickly is desire to unlock air spirits accumulated?
 
 NDefines.NAI.DAYS_BETWEEN_CHECK_BEST_DOCTRINE = 7       -- Recalculate desired best doctrine to unlock with this many days inbetween.
-NDefines.NAI.DAYS_BETWEEN_CHECK_BEST_TEMPLATE = 7       -- Recalculate desired best template to upgrade with this many days inbetween.
-NDefines.NAI.DAYS_BETWEEN_CHECK_BEST_EQUIPMENT = 7      -- Recalculate desired best equipment to upgrade with this many days inbetween.
 
 NDefines.NAI.GARRISON_TEMPLATE_SCORE_IC_FACTOR = 1.0 -- ai uses these defines while calculating garrison template score of a template.
 NDefines.NAI.GARRISON_TEMPLATE_SCORE_MANPOWER_FACTOR = 0.05 -- formula is (template_ic * ic_factor + template_manpower * manpower_factor ) / template_supression (lower is better)
 
 ---------------
 
-NDefines.NAI.REFIT_SHIP_RELUCTANCE = 5000							-- How often to consider refitting to new equipment variants for ships in the field
-NDefines.NAI.REFIT_SHIP_PERCENTAGE_OF_FORCES = 0.0				-- How big part of the navy that should be considered for refitting
-
-NDefines.NAI.DIVISION_DESIGN_MANPOWER_WEIGHT = 0 --0.005
-NDefines.NAI.DIVISION_DESIGN_STOCKPILE_WEIGHT = 0 --0.01
-NDefines.NAI.DIVISION_DESIGN_COMBAT_WIDTH_TARGET_WEIGHT = -10000 -- -200	        -- This score is reduced the farther the width is from the target width (if set)
-
-NDefines.NAI.UPGRADE_PERCENTAGE_OF_FORCES = 0.25 --0.1
-NDefines.NAI.UPGRADES_DEFICIT_LIMIT_DAYS = 365 --180 --50                           -- Ai will avoid upgrading units in the field to new templates if it takes longer than this to fullfill their equipment need
+NDefines.NAI.UPGRADE_PERCENTAGE_OF_FORCES = 0.1							-- How big part of the army that should be considered for upgrading, vanila 0.05
+NDefines.NAI.UPGRADES_DEFICIT_LIMIT_DAYS = 60                           -- Ai will avoid upgrading units in the field to new templates if it takes longer than this to fullfill their equipment need, vanila - 30
 
 --------------------------------------------------------------------------------------------------------------
 -- DIVISION PRODUCTION
 --------------------------------------------------------------------------------------------------------------
-
-NDefines.NAI.MANPOWER_RATIO_REQUIRED_TO_PRIO_MOBILIZATION_LAW = 0.4		-- percentage of manpower in field is desired to be buffered for AI when it has upcoming wars or already at war. if it has less manpower, it will prio manpower laws
-
-NDefines.NAI.DEPLOY_MIN_TRAINING_SURRENDER_FACTOR = 0.5		-- Required percentage of training (1.0 = 100%) for AI to deploy unit in wartime while surrender progress is higher than 0 
-NDefines.NAI.DEPLOY_MIN_EQUIPMENT_SURRENDER_FACTOR = 0.8	-- Required percentage of equipment (1.0 = 100%) for AI to deploy unit in wartime while surrender progress is higher than 0 
-NDefines.NAI.DEPLOY_MIN_TRAINING_PEACE_FACTOR = 0.4		-- Required percentage of training (1.0 = 100%) for AI to deploy unit in peacetime
-NDefines.NAI.DEPLOY_MIN_EQUIPMENT_PEACE_FACTOR = 0.9	-- Required percentage of equipment (1.0 = 100%) for AI to deploy unit in peacetime
-NDefines.NAI.DEPLOY_MIN_TRAINING_WAR_FACTOR = 0.9		-- Required percentage of training (1.0 = 100%) for AI to deploy unit in wartime
-NDefines.NAI.DEPLOY_MIN_EQUIPMENT_WAR_FACTOR = 0.9		-- Required percentage of equipment (1.0 = 100%) for AI to deploy unit in wartime
-NDefines.NAI.DEPLOY_MIN_EQUIPMENT_CAP_DEPLOY_FACTOR = 0.85 -- If training is capped by equipment deficit and we have reached that cap, deploy unit anyway if percentage is above this (reinforce in field instead).
+NDefines.NAI.DEPLOY_MIN_TRAINING_SURRENDER_FACTOR = 0.5					-- Required percentage of training (1.0 = 100%) for AI to deploy unit in wartime while surrender progress is higher than 0
+NDefines.NAI.DEPLOY_MIN_EQUIPMENT_SURRENDER_FACTOR = 0.90 				-- Required percentage of equipment (1.0 = 100%) for AI to deploy unit in wartime while surrender progress is higher than 0
+NDefines.NAI.DEPLOY_MIN_TRAINING_PEACE_FACTOR = 1						-- Required percentage of training (1.0 = 100%) for AI to deploy unit in peacetime
+NDefines.NAI.DEPLOY_MIN_EQUIPMENT_PEACE_FACTOR = 0.70					-- Required percentage of equipment (1.0 = 100%) for AI to deploy unit in peacetime
+NDefines.NAI.DEPLOY_MIN_TRAINING_WAR_FACTOR = 1							-- Required percentage of training (1.0 = 100%) for AI to deploy unit in wartime
+NDefines.NAI.DEPLOY_MIN_EQUIPMENT_WAR_FACTOR = 0.85						-- Required percentage of equipment (1.0 = 100%) for AI to deploy unit in wartime
+NDefines.NAI.DEPLOY_MIN_EQUIPMENT_CAP_DEPLOY_FACTOR = 0.85				-- If training is capped by equipment deficit and we have reached that cap, deploy unit anyway if percentage is above this (reinforce in field instead).
 
 --------------------------------------------------------------------------------------------------------------
--- EQUIPMENT PRODUCTION
+-- SHIPS
 --------------------------------------------------------------------------------------------------------------
-
-NDefines.NAI.PRODUCTION_EQUIPMENT_SURPLUS_FACTOR = 1 -- [0.4] -- Base value for how much of currently used equipment the AI will at least strive to have in stock
-
 
 NDefines.NAI.SHIPS_PRODUCTION_BASE_COST = 1
 NDefines.NAI.NEEDED_NAVAL_FACTORIES_EXPENSIVE_SHIP_BONUS = 1000
 NDefines.NAI.PRODUCTION_MAX_PROGRESS_TO_SWITCH_NAVAL = 0.001 -- temp fix
 NDefines.NAI.PRODUCTION_WAIT_TO_FINISH_IF_EXPENSIVE = 0.01
 NDefines.NAI.PRODUCTION_WAIT_TO_FINISH_IF_CHEAP = 0.01
+NDefines.NAI.REFIT_SHIP_RELUCTANCE = 5000							-- How often to consider refitting to new equipment variants for ships in the field
+NDefines.NAI.REFIT_SHIP_PERCENTAGE_OF_FORCES = 0.33				-- How big part of the navy that should be considered for refitting
 
 NDefines.NAI.NAVAL_DOCKYARDS_SHIP_FACTOR = 1000			-- The extent to which number of dockyards play into amount of sips a nation wants
 NDefines.NAI.NAVAL_BASES_SHIP_FACTOR = 1000				-- The extent to which number of naval bases play into amount of sips a nation wants
@@ -267,7 +254,6 @@ NDefines.NAI.ENEMY_HOME_AREA_RATIO_TO_DISABLE_INVASIONS = 1000		-- if we are fig
 NDefines.NAI.ENEMY_NAVY_STRENGTH_DONT_BOTHER = 4					-- If the enemy has a navy at least these many times stronger that the own, don't bother invading
 NDefines.NAI.RELATIVE_STRENGTH_TO_INVADE = 0 --0.08					-- Compares the estimated strength of the country/faction compared to it's enemies to see if it should invade or stay at home to defend.
 NDefines.NAI.RELATIVE_STRENGTH_TO_INVADE_DEFENSIVE = 0 --0.4		-- Compares the estimated strength of the country/faction compared to it's enemies to see if it should invade or stay at home to defend, but while being a defensive country.
-NDefines.NAI.AI_MIN_DOMINANCE_MARGIN = 500
 
 NDefines.NAI.INVASION_COASTAL_PROVS_PER_ORDER = 12 --24								-- AI will consider one extra invasion per number of provinces stated here (num orders = total coast / this)
 
@@ -335,8 +321,6 @@ NDefines.NAI.STR_BOMB_MIN_EXCORT_PLANES = 0					-- Min amount of planes requeste
 -------------------------
 -- Naval air
 -------------------------
-
-
 NDefines.NAI.SUPPLY_PRIO_FACTOR = -100 --100 						--	AI is bad with that
 NDefines.NAI.NAVAL_SHIP_AIR_IMPORTANCE = 1 --2.0					-- Naval ship air importance
 NDefines.NAI.STR_BOMB_IMPORTANCE_SCALE = 5 --1.0
@@ -358,7 +342,6 @@ NDefines.NAI.ESTIMATED_CONVOYS_PER_DIVISION = 18			-- Not always correct, but ma
 NDefines.NAI.MAX_DISTANCE_NAVAL_INVASION = 200.0				-- AI is extremely unwilling to plan naval invasions above this naval distance limit. van 250 this value is multiplied by 15.92 I think for the actual km distance, aka 250 ='s almost 4k km.
 NDefines.NAI.NAVY_PREFERED_MAX_SIZE = 50
 NDefines.NAI.RESEARCH_NAVAL_DOCTRINE_NEED_GAIN_FACTOR = 0.075 -- Multiplies value based on relative naval industry size / country size.
-NDefines.NAI.NAVAL_MISSION_INVASION_BASE = 1000					-- Base score for region with naval invasion (modified dynamically by prioritizing orders)
 
 --- Diplo Defines
 NDefines.NDiplomacy.NAP_UNBREAKABLE_MONTHS = 18                    -- NAPS cannot be broken for this many months
@@ -373,7 +356,7 @@ NDefines.NDiplomacy.NOT_READY_FOR_WAR_BASE = -100 		-- AI should be unwilling to
 
 --- AI Defines
 NDefines.NAI.MICRO_POCKET_SIZE = 1						-- Pockets with a size equal to or lower than this will be mocroed by the AI, for efficiency.
-NDefines.NAI.UPGRADE_DIVISION_RELUCTANCE = .0042 		-- aggressively trying to get the AI to upgrade divisions to newer templates, may work, may not, but it doesn't break anything. vanilla is 14, .0042 is just over 1 hour, where I believe the vanilla value at 14 = 14 days. So it should be checking to upgrade ONE division every single hour. 
+NDefines.NAI.UPGRADE_DIVISION_RELUCTANCE = 3 			-- How often to consider upgrading to new templates for units in the field vanila - 7
 NDefines.NAI.RESEARCH_BONUS_FACTOR = 4.5 				-- To which extent AI should care about bonuses to research
 NDefines.NAI.RESEARCH_AHEAD_OF_TIME_FACTOR = 7.0 		-- To which extent AI should care about ahead of time penalties to research
 NDefines.NAI.MAX_SUPPLY_DIVISOR = 1.5					-- To make sure the AI does not overdeploy divisions. Higher number means more supply per unit. van 2.0
