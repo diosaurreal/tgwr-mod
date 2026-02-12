@@ -64,7 +64,7 @@ RUS_civil_war = {
 			# 			}
 			# 			every_controlled_state = {
 			# 				create_unit = {
-			# 					division = "name = \"Krasnaya Gvardiya\" division_template = \"Krasnaya Gvardiya\" start_experience_factor = 0.1 start_equipment_factor = 0.5"
+			# 					division = "division_template = \"Krasnaya Gvardiya\" start_experience_factor = 0.1 start_equipment_factor = 0.5"
 			# 					owner = KUB
 			# 					count = 5
 			# 				}
@@ -90,7 +90,7 @@ RUS_civil_war = {
 			# 			}
 			# 			every_controlled_state = {
 			# 				create_unit = {
-			# 					division = "name = \"Krasnaya Gvardiya\" division_template = \"Krasnaya Gvardiya\" start_experience_factor = 0.1 start_equipment_factor = 0.5"
+			# 					division = "division_template = \"Krasnaya Gvardiya\" start_experience_factor = 0.1 start_equipment_factor = 0.5"
 			# 					owner = DSR
 			# 					count = 3
 			# 				}
@@ -116,7 +116,7 @@ RUS_civil_war = {
 			# 			}
 			# 			capital_scope = {
 			# 				create_unit = {
-			# 					division = "name = \"Krasnaya Gvardiya\" division_template = \"Krasnaya Gvardiya\" start_experience_factor = 0.1 start_equipment_factor = 0.5"
+			# 					division = "division_template = \"Krasnaya Gvardiya\" start_experience_factor = 0.1 start_equipment_factor = 0.5"
 			# 					owner = CONTROLLER
 			# 					count = 10
 			# 				}
@@ -330,7 +330,8 @@ RUS_civil_war = {
 					tag = MOU
 					tag = TER
 					tag = TRC
-				}
+					tag = UCH
+				}			
 				NOT = {
 					has_war_with = ROOT
 					has_government = communism
@@ -338,10 +339,10 @@ RUS_civil_war = {
 				is_subject = no
 			}
 		}
+		target_root_trigger = {
+			has_country_flag = SRA_foreign_relation_decisions
+		}
 		available = {
-			NOT = {
-				has_country_flag = SRA_asked_integration
-			}
 			NOT = {
 				has_country_flag = SRA_is_asking_integration
 			}
@@ -360,7 +361,7 @@ RUS_civil_war = {
 		remove_effect = {
 			clr_country_flag = SRA_is_asking_integration
 			FROM = {
-				set_country_flag = SRA_is_asking_integration
+				set_country_flag = SRA_asked_integration
 				country_event = {
 					id = ww1_sra.35
 					days = 1
@@ -370,6 +371,19 @@ RUS_civil_war = {
 		cost = 25
 		ai_will_do = {
 			base = 9999
+			modifier = {
+				factor = 0
+				is_historical_focus_on = yes
+				FROM = {
+					tag = UCH
+				}
+				SIB = {
+					NOT = {
+						has_war_with = ROOT
+						has_completed_focus = SIB_no_compromise_with_reaction
+					}
+				}		
+			}
 		}
 	}
 	SRA_annex_white_states = {
@@ -380,22 +394,35 @@ RUS_civil_war = {
 		}
 		target_trigger = {
 			FROM = {
+				is_subject_of = ROOT
 				OR = {
 					## dont care about them
 					tag = CRI
 					tag = MOU
 					tag = TER
 					tag = TRC
+					tag = UCH
 				}
 				NOT = {
 					has_war_with = ROOT
 					has_government = communism
-				}
-				is_subject_of = ROOT
-				is_neighbor_of = ROOT
+				}			
 			}
 		}
+		target_root_trigger = {
+			has_country_flag = SRA_foreign_relation_decisions
+		}
 		available = {
+			FROM = {
+				any_owned_state = {
+					any_neighbor_state = {
+						is_controlled_by = OWNER
+						owner = {
+							tag = ROOT
+						}
+					}
+				}
+			}
 			NOT = {
 				has_country_flag = SRA_is_annexing
 			}
@@ -422,7 +449,7 @@ RUS_civil_war = {
 							is_core_of = RUS
 							is_owned_by = FROM
 						}	
-					}				
+					}
 				}
 				add_core_of = SRA
 			}
@@ -457,7 +484,7 @@ RUS_civil_war = {
 		timeout_effect = {
 			add_equipment_to_stockpile = {
 				type = infantry_equipment_1
-				amount = 10000
+				amount = 1000
 				producer = ENG
 			}
 		}
@@ -596,7 +623,7 @@ RUS_civil_war = {
 								tank_nsb_armor_upgrade = 3
 							}
 						}
-					}				
+					}
 				}
 				else_if = {
 					limit = {
@@ -863,10 +890,18 @@ RUS_civil_war = {
 	}
 
 	SRA_send_Glazenap_to_NWA = {
-		icon = GFX_decision_generic_reorganize_irregulars
+		icon = generic_army_support
 		fire_only_once = yes
 		allowed = {
 			tag = SRA
+		}
+		target_trigger = {
+			FROM = {
+				tag = NWA
+			}
+		}
+		target_root_trigger = {
+			has_character = RUS_pyotr_fon_glazenap
 		}
 
 		available = {
@@ -888,129 +923,9 @@ RUS_civil_war = {
 		}
 
 		complete_effect = {
+			add_command_power = 20
 			RUS_pyotr_fon_glazenap = {
 				set_nationality = NWA
-			}
-		}
-	}
-
-		# AI is too retar to spawn proper troops
-	SRA_spawn_troops_ffs = {
-		icon = GFX_decision_generic_reorganize_irregulars
-		allowed = {
-			tag = SRA
-		}
-		visible = {
-			is_ai = yes
-			has_war_with = SOV
-		}
-		available = {
-			has_completed_focus = SRA_open_up_mobilization
-			# NOT = {
-			# 	has_idea = SIB_mobilization_of_the_siberian_army
-			# }
-			has_manpower > 25800
-			has_equipment = {
-				infantry_equipment > 2430
-			}
-			has_equipment = {
-				field_gun_equipment > 12
-			}
-			has_equipment = {
-				support_equipment > 30
-			}
-			has_capitulated = no
-		}
-		
-		cost = 0
-		days_re_enable = 15
-		days_remove = 15
-
-		complete_effect = {
-			add_manpower = -25800
-			add_equipment_to_stockpile = {
-				type = infantry_equipment
-				amount = -2430
-			}
-			add_equipment_to_stockpile = {
-				type = field_gun_equipment
-				amount = -12
-			}
-			add_equipment_to_stockpile = {
-				type = support_equipment
-				amount = -30
-			}
-		}
-		remove_effect = {
-			hidden_effect = {
-				if = {
-					limit = {
-						NOT = {
-							has_template = "Volunteer Army Corp"
-						}
-					}
-					division_template = {
-						name = "Volunteer Army Corp"
-						division_names_group = RUS_GAR_01
-						is_locked = yes
-						regiments = {
-							infantry = { x = 0 y = 0 }
-							infantry = { x = 0 y = 1 }
-							infantry = { x = 0 y = 2 }
-							infantry = { x = 0 y = 3 }
-							infantry = { x = 1 y = 0 }
-							infantry = { x = 1 y = 1 }
-							infantry = { x = 1 y = 2 }
-							infantry = { x = 1 y = 3 }
-						}
-						support = { 
-							field_gun = { x = 0 y = 0 }
-							engineer = { x = 0 y = 1 }
-						}
-					}
-				}
-			}
-			if = {
-				limit = {
-					has_full_control_of_state = 571
-				}
-				571 = {
-					create_unit = {
-						division = "division_template = \"Volunteer Army Corp\" start_experience_factor = 0.2"
-						owner = ROOT
-						count = 3
-						allow_spawning_on_enemy_provs = no
-					}
-				}
-			}
-			else = {
-				capital_scope = {
-					create_unit = {
-						division = "division_template = \"Volunteer Army Corp\" start_experience_factor = 0.2"
-						owner = ROOT
-						count = 3
-						allow_spawning_on_enemy_provs = no
-					}
-				}
-			}
-		}
-
-		ai_will_do = {
-			base = 1000
-			# modifier = {
-			# 	add = 1000
-			# 	has_army_manpower = {
-			# 		size < 250000
-			# 	}
-			# }
-			modifier = {
-				add = -3000
-				OR = {
-					has_equipment = {
-						infantry_equipment < 7500
-					}
-					has_manpower < 50000
-				}
 			}
 		}
 	}
@@ -1018,7 +933,7 @@ RUS_civil_war = {
 
 operations = {
 	SRA_vol_departure = {
-		icon = GFX_decision_generic_reorganize_irregulars
+		icon = eng_blackshirt_march
 
 		allowed = {
 			tag = DON
@@ -1723,7 +1638,7 @@ SRA_rada_interactions = {
 		}
 	}
 	SRA_raise_cossack_host = {
-		icon = GFX_decision_generic_reorganize_irregulars
+		icon = generic_cavalry
 		allowed = {
 			tag = SRA
 		}
@@ -1762,12 +1677,12 @@ SRA_rada_interactions = {
 				if = {
 					limit = {
 						NOT = {
-							has_template = "AFSR cossacks"
+							has_template = "Kazachiy polk VSYUR"
 						}
 					}
 					division_template = {
-						name = "AFSR cossacks"
-						division_names_group = RUS_GAR_01
+						name = "Kazachiy polk VSYUR"
+						division_names_group = RUS_COS_02
 						is_locked = yes
 						regiments = {
 							cavalry = { x = 0 y = 0 }
@@ -1785,7 +1700,7 @@ SRA_rada_interactions = {
 			}
 			capital_scope = {
 				create_unit = {
-					division = "name = \"Kuban Cossacks\" division_template = \"AFSR cossacks\" start_experience_factor = 0.5"
+					division = "name = \"Kuban Cossacks\" division_template = \"Kazachiy polk VSYUR\" start_experience_factor = 0.5"
 					owner = ROOT
 					count = 2
 					allow_spawning_on_enemy_provs = no
@@ -1824,7 +1739,7 @@ SRA_rada_interactions = {
 SRA_army_recruitement = {
 
 	SRA_unlock_templates = {
-        icon = GFX_decision_generic_reorganize_irregulars
+        icon = GFX_decision_generic_prepare_civil_war
         allowed = {
             tag = SRA
         }
@@ -1840,15 +1755,15 @@ SRA_army_recruitement = {
         complete_effect = {
             set_country_flag = SRA_mobilize_manpower
             set_division_template_lock = {
-                division_template = "ASFR militsiya"
+                division_template = "Polk VSYUR"
                 is_locked = no
             }
             set_division_template_lock = {
-                division_template = "ASFR caucasian cavalry"
+                division_template = "Kavkazskaya kavaleriya VSYUR"
                 is_locked = no
             }
 			set_division_template_lock = {
-                division_template = "ASFR cossacks"
+                division_template = "Kazachiy polk VSYUR"
                 is_locked = no
             }
             custom_effect_tooltip = sra_all_divisions_unlocked_tt
@@ -1868,32 +1783,25 @@ SRA_army_recruitement = {
     }
 
 	SRA_recruit_units = {
-		icon = GFX_decision_generic_reorganize_irregulars
+		icon = generic_military
 		allowed = {
 			tag = SRA
 		}
 		cost = 5
 		state_target = yes
-		target_array = SRA.core_states
+		target_array = SRA.owned_states
 		target_trigger = {
 			FROM = {
-				is_owned_by = ROOT
+				is_core_of = ROOT
+				is_controlled_by = ROOT
+				NOT = {
+					has_state_flag = SRA_has_mobilized_militia
+				}
 			}
 		}
 		fire_only_once = yes
 		on_map_mode = map_only
 		days_remove = 15
-		visible = {
-			controls_state = FROM
-			FROM = {
-				is_core_of = ROOT
-			}
-			FROM = {
-				NOT = {
-					has_state_flag = SRA_has_mobilized
-				}
-			}
-		}
 		complete_effect = {
 			FROM = {
 				set_state_flag = SRA_has_mobilized_militia
@@ -1909,12 +1817,12 @@ SRA_army_recruitement = {
 				if = {
 					limit = {
 						NOT = {
-							has_template = "ASFR militsiya"
+							has_template = "Polk VSYUR"
 						}
 					}
 					division_template = {
-						name = "ASFR militsiya"
-						division_names_group = RUS_GAR_01
+						name = "Polk VSYUR"
+						division_names_group = RUS_INF_07
 						is_locked = yes
 						force_allow_recruiting = yes
 						regiments = {
@@ -1933,7 +1841,7 @@ SRA_army_recruitement = {
 					custom_effect_tooltip = SRA_3_infantry_unit
 					hidden_effect = {
 						create_unit = {
-							division = "name = \"ASFR militsiya\" division_template = \"ASFR militsiya\" start_experience_factor = 0.6"
+							division = "division_template = \"Polk VSYUR\" start_experience_factor = 0.6"
 							owner = ROOT
 							allow_spawning_on_enemy_provs = yes
 						}
@@ -1990,21 +1898,21 @@ SRA_army_recruitement = {
 				if = {
 					limit = {
 						NOT = {
-							has_template = "ASFR caucasian cavalry"
+							has_template = "Kavkazskaya kavaleriya VSYUR"
 						}
 					}
 					division_template = {
-						name = "ASFR caucasian cavalry"
-						division_names_group = RUS_GAR_01
+						name = "Kavkazskaya kavaleriya VSYUR"
+						division_names_group = RUS_CAV_04
 						is_locked = yes
 						force_allow_recruiting = yes
 						regiments = {
-							cavalry = { x = 0 y = 0 }
-							cavalry = { x = 0 y = 1 }
-							cavalry = { x = 0 y = 2 }
-							cavalry = { x = 1 y = 0 }
-							cavalry = { x = 1 y = 1 }
-							cavalry = { x = 1 y = 2 }
+							irregular_cavalry = { x = 0 y = 0 }
+							irregular_cavalry = { x = 0 y = 1 }
+							irregular_cavalry = { x = 0 y = 2 }
+							irregular_cavalry = { x = 1 y = 0 }
+							irregular_cavalry = { x = 1 y = 1 }
+							irregular_cavalry = { x = 1 y = 2 }
 						}
 					}
 				}
@@ -2012,7 +1920,7 @@ SRA_army_recruitement = {
 					custom_effect_tooltip = SRA_6_cavalry_unit
 					hidden_effect = {
 						create_unit = {
-							division = "name = \"ASFR caucasian cavalry\" division_template = \"ASFR caucasian cavalry\" start_experience_factor = 0.6"
+							division = "division_template = \"Kavkazskaya kavaleriya VSYUR\" start_experience_factor = 0.6"
 							owner = ROOT
 							allow_spawning_on_enemy_provs = yes
 						}
@@ -2081,12 +1989,12 @@ SRA_army_recruitement = {
 				if = {
 					limit = {
 						NOT = {
-							has_template = "ASFR cossacks"
+							has_template = "Kazachiy polk VSYUR"
 						}
 					}
 					division_template = {
-						name = "ASFR cossacks"
-						division_names_group = RUS_GAR_01
+						name = "Kazachiy polk VSYUR"
+						division_names_group = RUS_COS_02
 						is_locked = yes
 						force_allow_recruiting = yes
 						regiments = {
@@ -2106,7 +2014,7 @@ SRA_army_recruitement = {
 					custom_effect_tooltip = SRA_4_calvary_unit
 					hidden_effect = {
 						create_unit = {
-							division = "name = \"ASFR cossacks\" division_template = \"ASFR cossacks\" start_experience_factor = 0.6"
+							division = "division_template = \"Kazachiy polk VSYUR\" start_experience_factor = 0.6"
 							owner = ROOT
 							allow_spawning_on_enemy_provs = yes
 						}
@@ -2192,13 +2100,13 @@ RUS_support_in_civil_war = {
 		cost = 0
 		days_remove = 30
 		days_re_enable = 30
-		target_trigger = {
-			has_country_flag = can_send_to_SRA
+		target_trigger = {		
 			FROM = {
-				AND = {
-					tag = SRA
-				}
+				tag = SRA
 			}
+		}
+		target_root_trigger = {
+			has_country_flag = can_send_to_SRA
 		}
 		available = {
 			custom_trigger_tooltip = {
@@ -2220,7 +2128,7 @@ RUS_support_in_civil_war = {
 			effect_tooltip = {
 				send_equipment = {
 					equipment = infantry_equipment
-					amount = 10000
+					amount = 1000
 					target = SRA
 				}
 			}
@@ -2234,7 +2142,7 @@ RUS_support_in_civil_war = {
 					has_country_flag = great_war_loser
 				}
 				has_equipment = {
-					infantry_equipment > 10000
+					infantry_equipment > 5000
 				}
 			}
 			modifier = {
@@ -2266,13 +2174,11 @@ RUS_support_in_civil_war = {
 		days_re_enable = 30
 		target_trigger = {
 			FROM = {
-				AND = {
-					ROOT = {
-						has_country_flag = can_send_to_SRA
-					}
-					tag = SRA
-				}
+				tag = SRA
 			}
+		}
+		target_root_trigger = {
+			has_country_flag = can_send_to_SRA
 		}
 		available = {
 			custom_trigger_tooltip = {
@@ -2337,13 +2243,11 @@ RUS_support_in_civil_war = {
 		days_re_enable = 30
 		target_trigger = {
 			FROM = {
-				AND = {
-					ROOT = {
-						has_country_flag = can_send_to_SRA
-					}
-					tag = SRA
-				}
+				tag = SRA
 			}
+		}
+		target_root_trigger = {
+			has_country_flag = can_send_to_SRA
 		}
 		available = {
 			custom_trigger_tooltip = {
@@ -2408,13 +2312,11 @@ RUS_support_in_civil_war = {
 		days_re_enable = 30
 		target_trigger = {
 			FROM = {
-				AND = {
-					ROOT = {
-						has_country_flag = can_send_to_SRA
-					}
-					tag = SRA
-				}
+				tag = SRA
 			}
+		}
+		target_root_trigger = {
+			has_country_flag = can_send_to_SRA
 		}
 		available = {
 			custom_trigger_tooltip = {
@@ -2479,13 +2381,11 @@ RUS_support_in_civil_war = {
 		days_re_enable = 30
 		target_trigger = {
 			FROM = {
-				AND = {
-					ROOT = {
-						has_country_flag = can_send_to_SRA
-					}
-					tag = SRA
-				}
+				tag = SRA
 			}
+		}
+		target_root_trigger = {
+			has_country_flag = can_send_to_SRA
 		}
 		available = {
 			custom_trigger_tooltip = {
@@ -2550,13 +2450,11 @@ RUS_support_in_civil_war = {
 		days_re_enable = 30
 		target_trigger = {
 			FROM = {
-				AND = {
-					ROOT = {
-						has_country_flag = can_send_to_SRA
-					}
-					tag = SRA
-				}
+				tag = SRA
 			}
+		}
+		target_root_trigger = {
+			has_country_flag = can_send_to_SRA
 		}
 		available = {
 			custom_trigger_tooltip = {
@@ -2624,13 +2522,11 @@ RUS_support_in_civil_war = {
 		days_re_enable = 30
 		target_trigger = {
 			FROM = {
-				AND = {
-					ROOT = {
-						has_country_flag = can_send_to_SRA
-					}
-					tag = SRA
-				}
+				tag = SRA
 			}
+		}
+		target_root_trigger = {
+			has_country_flag = can_send_to_SRA
 		}
 		available = {
 			custom_trigger_tooltip = {
