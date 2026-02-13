@@ -177,26 +177,6 @@ NDefines.NAITheatre.AI_THEATRE_SUPPLY_CRISIS_LIMIT = 0.25
 NDefines.NAI.FRONT_BULGE_RATIO_LOWER_CUTOFF = 1.2
 NDefines.NAI.FRONT_BULGE_RATIO_UPPER_CUTOFF = 1.8
 NDefines.NAI.FRONT_CUTOFF_MIN_EDGE_PROXIMITY = 1
---------------------------------------------------------------------------------------------------------------
--- OlD COAST DEFENSE AI
---------------------------------------------------------------------------------------------------------------
-
-
--- these are all 3 numbers for min, desired, max unit need weights for area defense
-NDefines.NAI.AREA_DEFENSE_CAPITAL_PEACE_VP_WEIGHT = { 1.0, 1.0, 1.0 }
-NDefines.NAI.AREA_DEFENSE_CAPITAL_VP_WEIGHT = { 0.0, 1.5, 2.0 }
-NDefines.NAI.AREA_DEFENSE_HOME_VP_WEIGHT = { 0.0, 0.75, 1.0 }
-NDefines.NAI.AREA_DEFENSE_OTHER_VP_WEIGHT = { 0.0, 0.5, 1.0 }
-
-NDefines.NAI.AREA_DEFENSE_CAPITAL_PEACE_COAST_WEIGHT = { 0.25, 1.0, 2.0 } 
-NDefines.NAI.AREA_DEFENSE_CAPITAL_COAST_WEIGHT = { 0.0, 0.3, 1.0 }
-NDefines.NAI.AREA_DEFENSE_HOME_COAST_WEIGHT = { 0.0, 0.2, 0.75 }
-NDefines.NAI.AREA_DEFENSE_OTHER_COAST_WEIGHT = { 0.0, 0.0, 0.0 }
-
-NDefines.NAI.AREA_DEFENSE_CAPITAL_PEACE_BASE_WEIGHT = { 0.0, 0.0, 0.0 }
-NDefines.NAI.AREA_DEFENSE_CAPITAL_BASE_WEIGHT = { 0.5, 1.5, 1.5 }
-NDefines.NAI.AREA_DEFENSE_HOME_BASE_WEIGHT = { 0.5, 1.5, 1.5 }
-NDefines.NAI.AREA_DEFENSE_OTHER_BASE_WEIGHT = { 0.5, 1.0, 1.0 }
 
 --------------------------------------------------------------------------------------------------------------
 -- NAVY AI
@@ -360,19 +340,17 @@ NDefines.NAI.TRADEABLE_FACTORIES_FRACTION = 0.6			-- Will at most trade away thi
 NDefines.NDiplomacy.NOT_READY_FOR_WAR_BASE = -100 		-- AI should be unwilling to enter accept a call to war if not ready ---for war against the relevant enemies. vanilla -50 - suggested define by SensitiveDannyBoi
 
 --- AI Defines
-NDefines.NAI.MICRO_POCKET_SIZE = 1						-- Pockets with a size equal to or lower than this will be mocroed by the AI, for efficiency.
+NDefines.NAI.MICRO_POCKET_SIZE = 3						-- Pockets with a size equal to or lower than this will be mocroed by the AI, for efficiency.
 NDefines.NAI.UPGRADE_DIVISION_RELUCTANCE = 3 			-- How often to consider upgrading to new templates for units in the field vanila - 7
 NDefines.NAI.RESEARCH_BONUS_FACTOR = 4.5 				-- To which extent AI should care about bonuses to research
 NDefines.NAI.RESEARCH_AHEAD_OF_TIME_FACTOR = 7.0 		-- To which extent AI should care about ahead of time penalties to research
 NDefines.NAI.MAX_SUPPLY_DIVISOR = 1.5					-- To make sure the AI does not overdeploy divisions. Higher number means more supply per unit. van 2.0
-NDefines.NAI.PLAN_FACTION_WEAK_TO_ABORT = 0.50			-- % or more of units in an order to consider ececuting the plan
-NDefines.NAI.PLAN_FACTION_NORMAL_TO_EXECUTE = 0.50
 
 --------------------------------------------------------------------------------------------------------------
--- AMRS MARKET AI
+-- ARMS MARKET AI
 --------------------------------------------------------------------------------------------------------------
 
-NDefines.NAI.EQUIPMENT_MARKET_MAX_CIVS_FOR_PURCHASES_RATIO = 0.2            -- Ratio of available civilian factories to max use for equipment purchases (0.2 = 20 %, so 50 available civs would mean max ca 10 civs to spend on purchases at any one time). Gets modified by equipment_market_spend_factories AI strategy.
+NDefines.NAI.EQUIPMENT_MARKET_MAX_CIVS_FOR_PURCHASES_RATIO = 0.1            -- vanilla
 NDefines.NAI.EQUIPMENT_MARKET_NR_DELIVERIES_SOFT_MAX = 7                   -- AI tries to adjust assigned factories and amount of equipment to keep nr deliveries at max this
 	
 
