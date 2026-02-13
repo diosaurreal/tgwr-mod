@@ -39,6 +39,7 @@ NDefines.NAI.MIN_MANPOWER_TO_BUILD_UNITS = 0.7	--default 0.7				-- Cancel unit p
 
 NDefines.NMilitary.PLAN_SPREAD_ATTACK_WEIGHT = 12-- 1.0 -- (was 12.0)	-- The higher the value, the less it should crowd provinces with multiple attacks.		#WICHTIG
 NDefines.NMilitary.PLAN_MIN_AUTOMATED_EMPTY_POCKET_SIZE = 15			 -- The battle plan system will only automatically attack provinces in pockets that has no resistance and are no bigger than these many provinces
+NDefines.NAI.POCKET_DISTANCE_MAX = 6000
 
 NDefines.NMilitary.FRONTLINE_EXPANSION_FACTOR = 0.7  -- was 0.6,				-- When attacking along a frontline, how much should units spread out as they advance. 0.0 means head (more or less) directly to the drawn frontline, with no distractions
 
@@ -172,6 +173,10 @@ NDefines.NAI.RECON_PLANES_LAND_COMBAT = 100
 NDefines.NAI.LOW_PRIO_TEMPLATE_BONUS_FOR_GARRISONS = 300000
 NDefines.NAI.LOW_PRIO_TEMPLATE_PENALTY_FOR_FRONTS = -2000
 NDefines.NAITheatre.AI_THEATRE_SUPPLY_CRISIS_LIMIT = 0.25
+
+NDefines.NAI.FRONT_BULGE_RATIO_LOWER_CUTOFF = 1.2
+NDefines.NAI.FRONT_BULGE_RATIO_UPPER_CUTOFF = 1.8
+NDefines.NAI.FRONT_CUTOFF_MIN_EDGE_PROXIMITY = 1
 --------------------------------------------------------------------------------------------------------------
 -- OlD COAST DEFENSE AI
 --------------------------------------------------------------------------------------------------------------
@@ -370,10 +375,6 @@ NDefines.NAI.PLAN_FACTION_NORMAL_TO_EXECUTE = 0.50
 NDefines.NAI.EQUIPMENT_MARKET_MAX_CIVS_FOR_PURCHASES_RATIO = 0.2            -- Ratio of available civilian factories to max use for equipment purchases (0.2 = 20 %, so 50 available civs would mean max ca 10 civs to spend on purchases at any one time). Gets modified by equipment_market_spend_factories AI strategy.
 NDefines.NAI.EQUIPMENT_MARKET_NR_DELIVERIES_SOFT_MAX = 7                   -- AI tries to adjust assigned factories and amount of equipment to keep nr deliveries at max this
 	
---------------------------------------------------------------------------------------------------------------
--- LEND LEASE AI
---------------------------------------------------------------------------------------------------------------
-
 
 NDefines.NProduction.EQUIPMENT_LEND_LEASE_WEIGHT_FACTOR     = 0.0025
 
