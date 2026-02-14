@@ -5,9 +5,7 @@ RUS_no_garrision = {
 	enable = {
 		always = yes
 	}
-	abort = {
-		always = no
-	}
+	abort_when_not_enabled = yes
 	ai_strategy = {
 		type = garrison_reinforcement_priority
 		value = -1000
@@ -20,7 +18,7 @@ RUS_no_garrision = {
 
 RUS_dont_help_anyone = {
 	allowed = {
-		original_tag = RUS
+		tag = RUS
 	}
 	enable = {
 		always = yes
@@ -108,6 +106,11 @@ RUS_dont_help_anyone = {
 	}
 	ai_strategy = {
 		type = dont_defend_ally_borders
+		id = MNT
+		value = 1
+	}
+	ai_strategy = {
+		type = dont_defend_ally_borders
 		id = KUW
 		value = 1
 	}
@@ -176,9 +179,29 @@ RUS_fight_TUR = {
 		execution_type = balanced
 	}
 	ai_strategy = {
-		type = dont_defend_ally_borders
-		id = PER
-		value = 1
+		type = front_unit_request
+		id = TUR
+		value = 5
+	}
+	ai_strategy = {
+		type = front_control
+		country_trigger = {
+			has_country_flag = PER_gendarmerie_flag
+			has_war_with = FROM
+		}
+		ratio = 0.1
+		priority = 100
+		ordertype = front
+		execution_type = rush_weak
+	}
+	ai_strategy = {
+		type = front_unit_request
+		country_trigger = {
+			has_country_flag = PER_gendarmerie_flag
+			has_war_with = FROM
+			is_ai = yes
+		}
+		value = -70
 	}
 	ai_strategy = {
 		type = dont_defend_ally_borders
@@ -371,9 +394,14 @@ RUS_disable_AIFC = {
 		tag = RUS
 	}
 	enable = {
-		always = yes
+		has_war_with = GER
+		GER = {
+			has_idea = GER_focus_on_russian_front
+		}
 	}
-	abort_when_not_enabled = yes
+	abort = {
+		tag = SOV
+	}
 	ai_strategy = {
 		type = force_concentration_front_factor
 		country_trigger = {
@@ -496,17 +524,18 @@ RUS_prepare_front_TUR = {
 	}
 }
 
-RUS_capture_lvov = {
+RUS_early_offensive = {
 	allowed = {
 		tag = RUS
 	}
 	enable = {
 		war_length_with = {
 			tag = AUS
-			months < 2
+			months < 4
 		}
 		NOT = {
 			controls_state = 91
+			controls_state = 763
 		}
 		OR = {
 			has_war_with = AUS
@@ -519,11 +548,10 @@ RUS_capture_lvov = {
 	abort_when_not_enabled = yes
 	ai_strategy = {
 		type = front_control
+		tag = GER
 		tag = AUS
-		ratio = 0.2
 		ordertype = front
-		execution_type = balanced
-		execute_order = yes
+		execution_type = rush
 	}
 }
 
@@ -555,36 +583,6 @@ RUS_vilna_backline = {
 	}
 }
 
-RUS_lodz_backline = {
-	allowed = {
-		tag = RUS
-	}
-	enable = {
-		OR = {
-			has_war_with = GER
-			has_global_flag = crisis_in_progress
-		}
-		1202 = {
-			is_controlled_by_ROOT_or_subject = yes
-		}
-	}
-	abort = {
-		GER = {
-			has_idea = GER_focus_on_russian_front
-		}
-	}
-	abort_when_not_enabled = yes
-	ai_strategy = {
-		type = put_unit_buffers
-		states = {
-			1202
-		}
-		ratio = 0.3
-		subtract_invasions_from_need = yes
-		subtract_fronts_from_need = yes
-	}
-}
-
 RUS_varshava_backline = {
 	allowed = {
 		tag = RUS
@@ -595,6 +593,9 @@ RUS_varshava_backline = {
 			has_global_flag = crisis_in_progress
 		}
 		10 = {
+			is_controlled_by_ROOT_or_subject = yes
+		}
+		131 = { # why hold varshava if the front is behind
 			is_controlled_by_ROOT_or_subject = yes
 		}
 	}
@@ -637,7 +638,7 @@ RUS_dvinsk_backline = {
 		states = {
 			96
 		}
-		ratio = 0.15
+		ratio = 0.2
 	}
 }
 
@@ -663,7 +664,7 @@ RUS_minsk_backline = {
 		states = {
 			206
 		}
-		ratio = 0.4
+		ratio = 0.3
 		subtract_invasions_from_need = yes
 		subtract_fronts_from_need = yes
 	}
@@ -705,7 +706,7 @@ RUS_pinsk_backline = {
 		states = {
 			94
 		}
-		ratio = 0.4
+		ratio = 0.3
 		subtract_invasions_from_need = yes
 		subtract_fronts_from_need = yes
 	}
@@ -733,7 +734,7 @@ RUS_moldova_backline = {
 		states = {
 			78
 		}
-		ratio = 0.4
+		ratio = 0.2
 		subtract_fronts_from_need = yes
 	}
 }
@@ -932,10 +933,12 @@ RUS_france_is_in_danger = {
 ####
 RUS_unit_production = {
 	allowed = {
-		original_tag = RUS
+		tag = RUS
 	}
 	enable = {
-		always = yes
+		NOT = {
+			tag = SOV
+		}
 	}
 	abort = {
 		always = no
@@ -1055,7 +1058,15 @@ RUS_ignore_AFG = {
 	}
 	enable = {
 		AFG = {
-			is_subject_of = ENG
+			OR = {
+				is_subject_of = ENG
+				AND = {
+					is_subject = yes
+					OVERLORD = {
+						is_subject_of = ENG
+					}			
+				}
+			}	
 		}
 	}
 	abort_when_not_enabled = yes
@@ -1325,6 +1336,7 @@ RUS_help_ROM = {
 	}
 	enable = {
 		ROM = {
+			surrender_progress > 0.1
 			has_war_together_with = RUS
 		}
 	}
@@ -1342,7 +1354,7 @@ RUS_help_ROM = {
 		states = {
 			79
 		}
-		ratio = 0.55
+		ratio = 0.4
 		subtract_fronts_from_need = yes
 	}
 	ai_strategy = {
@@ -1350,12 +1362,17 @@ RUS_help_ROM = {
 		states = {
 			192
 		}
-		ratio = 0.3
+		ratio = 0.1
 		subtract_fronts_from_need = yes
 	}
 	ai_strategy = {
 		type = front_unit_request
-		tag = BUL
+		state_trigger = {
+			controller = {
+				tag = BUL
+			}
+			region = 26
+		}
 		value = -100
 	}
 }
@@ -1793,5 +1810,41 @@ UKR_SOV_kill_UPR = {
 		priority = 100
 		execute_order = yes
 		execution_type = rush
+	}
+}
+
+KAZAKI_dont_push_SOV = {
+	allowed = {
+		OR = {
+			tag = UCH
+			tag = ORE
+		}
+	}
+	enable = {
+		NOT = {
+			has_global_flag = russian_civil_war
+		}
+		has_war_with = SOV
+		surrender_progress < 0.4
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = front_control
+		country_trigger = {
+			OR = {
+				tag = SOV
+				is_subject_of = SOV
+			}
+		}
+		manual_attack = no
+		execute_order = no
+	}
+	ai_strategy = {
+		type = garrison
+		value = 2000
+	}
+	ai_strategy = {
+		type = garrison_reinforcement_priority
+		value = 2000
 	}
 }
