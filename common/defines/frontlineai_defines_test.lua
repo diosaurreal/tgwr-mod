@@ -93,7 +93,7 @@ NDefines.NAI.DEPLOY_MIN_EQUIPMENT_CAP_DEPLOY_FACTOR = 0.85				-- If training is 
 -- SHIPS
 --------------------------------------------------------------------------------------------------------------
 
-NDefines.NAI.SHIPS_PRODUCTION_BASE_COST = 1
+NDefines.NAI.SHIPS_PRODUCTION_BASE_COST = 10000
 NDefines.NAI.NEEDED_NAVAL_FACTORIES_EXPENSIVE_SHIP_BONUS = 1000
 NDefines.NAI.PRODUCTION_MAX_PROGRESS_TO_SWITCH_NAVAL = 0.001 -- temp fix
 NDefines.NAI.PRODUCTION_WAIT_TO_FINISH_IF_EXPENSIVE = 0.01
@@ -280,6 +280,9 @@ NDefines.NAI.DAYS_BETWEEN_AIR_PRIORITIES_UPDATE = 7
 
 NDefines.NAI.LAND_DEFENSE_FIGHERS_PER_PLANE = 2.5
 
+
+NDefines.NAI.AI_AIR_MISSION_COVERAGE_TO_STAY_PUT = 0.2			-- lower than vanilla due to small range of our aviation, vanilla 0.5
+NDefines.NAI.AIR_AI_ENEMY_PROV_RATIO_FOR_COMBAT_REGION = 0.1 	-- vanilla 0.15
 -------------------------
 -- Defense
 -------------------------
