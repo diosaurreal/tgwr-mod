@@ -76,6 +76,7 @@ replace_path="scenario_tests/effects"
 replace_path="scenario_tests/tests"
 replace_path="scenario_tests/triggers"
 replace_path="common/focus_inlay_windows"
+replace_path="common/frontend/backgrounds"
 tags={
 	"Historical"
 	"Gameplay"
