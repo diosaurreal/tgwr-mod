@@ -1577,7 +1577,177 @@ peace_deals = {
 			}
 		}
 	}
+	SOV_sue_for_peace_JAP = {
+		icon = GFX_decision_SWI_consolidate_council_power
+		allowed = {
+			original_tag = RUS
+		}
+		target_trigger = {
+			FROM = {
+				tag = JAP
+				is_subject = no
+				has_war_with = ROOT
+			}
+		}
+		visible = {
+			tag = SOV
+			is_subject = no
+		}
+		available = {
+			NOT = {
+				has_war_with = SIB
+			}
+			JAP = {
+				NOT = {
+					any_allied_country = {
+						is_russian_tag = no
+						is_subject = no
+						has_war_with = ROOT
+					}
+				}
+			}
+		}
+		fire_only_once = yes
+		complete_effect = {
+			655 = { #North Sakhalin
+				if = {
+					limit = {
+						OWNER = {
+							is_russian_tag = yes
+						}
+					}
+					transfer_state_to = FROM
+				}
+			}
+			if = {
+				limit = {
+					country_exists = TBK
+				}
+				TBK = { transfer_state = 564 }
+			}
+			every_state = {
+				limit = {
+					is_owned_or_subject_trigger = yes
+					region = 148
+					NOT = { #Sakhalin
+						state = 537
+						state = 655
+					}
+				}
+				transfer_state_to = FER
+			}
+			FER = {
+				set_country_flag = protectorate
+				FROM = {
+					set_autonomy = {
+						target = PREV
+						autonomy_state = autonomy_tgwr_informal_protectorate
+					}
+				}
+				if = {
+					limit = {
+						country_exists = USS
+					}
+					annex_country = {
+						target = USS
+						transfer_troops = yes
+					}
+				}
+			}
+			CER = { #will add smr tag on update-branch
+				if = {
+					limit = {
+						exists = yes
+						OR = {
+							is_subject = no
+							is_subject_of = ROOT
+						}
+					}
+					FROM = {
+						set_autonomy = {
+							target = PREV
+							autonomy_state = autonomy_tgwr_concession
+						}
+					}
+					add_ideas = JAP_siberian_intervention
+				}
+			}
+			every_other_country = {
+				limit = {
+					OR = {
+						original_tag = BYA
+						original_tag = TBK
+					}
+				}
+				if = {
+					limit = {
+						has_government = communism
+					}
+					set_politics = {
+						ruling_party = fascism
+						elections_allowed = no
+					}
+					set_popularities = {
+						fascism = 44
+						communism = 25
+						democratic = 11
+						neutrality = 20
+					}
+				}
+				get_current_government_type = yes
+				set_country_flag = protectorate
+				FROM = {
+					set_autonomy = {
+						target = PREV
+						autonomy_state = autonomy_tgwr_informal_protectorate
+					}
+				}
+				restore_previous_government_type = yes
+				add_ideas = JAP_siberian_intervention
+			}
+			white_peace = FROM
+			hidden_effect = {
+				news_event = {
+					id = ww1_soviet.53
+					hours = 3
+				}
+			}
+		}
+		ai_will_do = {
+			base = 0
+			modifier = {
+				add = 1000
+				surrender_progress > 0.60
+			}
+			modifier = {
+				add = 1000
+				FER = {
+					is_subject_of = ROOT
+					has_capitulated = yes
+				}
+			}
+			modifier = {
+				add = 1000
+				408 = {
+					CONTROLLER = {
+						has_war_with = ROOT
+					}
+				}
+				564 = {
+					CONTROLLER = {
+						has_war_with = ROOT
+					}
+				}
+				566 = {
+					CONTROLLER = {
+						has_war_with = ROOT
+					}
+				}
+			}
+		}
+	}
 }
+
 crisis = {
 	# SOV_german_offensive_mission = {
 	# 	icon = generic_ignite_civil_war		
@@ -5536,6 +5706,39 @@ operations = {
 		fire_only_once = yes
 		days_mission_timeout = 260
 		is_good = no
+	}
+	SOV_soviet_japanese_war_timer = {
+		icon = GFX_decision_generic_operation
+		allowed = {
+			original_tag = RUS
+		}
+		activation = {
+			tag = SOV
+			JAP = {
+				is_subject = no
+				has_war_with = ROOT
+				NOT = {
+					any_allied_country = {
+						is_russian_tag = no
+						has_war_with = ROOT
+						is_subject = no
+					}
+				}
+			}
+		}
+		selectable_mission = no
+		fire_only_once = yes
+		days_mission_timeout = 1000
+		available = {
+			NOT = {
+				has_war_with = JAP
+			}
+		}
+		timeout_effect = {
+			effect_tooltip = {
+				white_peace = JAP
+			}
+		}
 	}
 }
 RUS_constituent_assembly_category = {
