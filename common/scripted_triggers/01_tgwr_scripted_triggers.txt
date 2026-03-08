@@ -427,6 +427,7 @@ is_arab_core = {
 		is_core_of = MOR
 		is_core_of = RIF
 		is_core_of = TRP
+		is_core_of = GUD
 	}
 }
 is_islamic_nation = {
@@ -923,80 +924,68 @@ is_neighbor_of_subject = {
 # meaning it's the top 7 in the world or has at least 70% of the average of those 7
 # we're also including a number of tags which should act like majors even if they're not in that category
 is_actual_major = {
-	custom_trigger_tooltip = {
+	custom_override_tooltip = {
 		tooltip = is_actual_major
-		# is_major = yes
+		is_major = yes
+		num_of_factories > 19 #MAJOR_MIN_FACTORIES
 
 		# rank the majors according to their num_of_factories
-		clear_temp_array = global.actual_majors
 		get_sorted_scored_countries_temp = {
-			scorer = actual_majors_score
-			array = global.actual_majors
+			scorer = major_industry_count_scorer
+			array = actual_majors
 		}
 
 		# limit that ranking to the top 8
-		resize_temp_array = { global.actual_majors = 8 }
-
-		# now figure out what 70% of the average of those 8 is, with a minimum of 35
-		set_temp_variable = { global.factory_average = 0 }
-		all_of_scopes = {
-			array = global.actual_majors
-			add_to_temp_variable = { global.factory_average = THIS.num_of_factories }
-		}
-		divide_temp_variable = { global.factory_average = 7 }
-		multiply_temp_variable = { global.factory_average = 0.7 }
-		clamp_temp_variable = { var = global.factory_average min = 35 }
+		resize_temp_array = { actual_majors = 8 }
 
 		OR = {
-			# is actually in the top 8
-			is_in_array = { global.actual_majors = THIS }
-			# has more than 70% of the average of the top 8
-			check_variable = { num_of_factories > global.factory_average }
-			# is in the list of "always acts like a major" countries
-			tag = GER
-			tag = AUS
-			tag = FRA
-			tag = ENG
-			tag = RUS
-			tag = JAP
-			tag = USA
+			# is one of the seven largest
+			is_in_array = { actual_majors = THIS }
+
+			#is an exception
+			tag = ENT		
 			tag = ITA
 			tag = TUR
+
+			# has more than 70% of the average of the top 7
+			set_temp_variable = { factory_average = 0 }
+			all_of_scopes = {
+				array = actual_majors
+				add_to_temp_variable = { factory_average = THIS.num_of_factories }
+			}
+			divide_temp_variable = { factory_average = 4.9 }
+			num_of_factories > factory_average
 		}
 	}
 }
 
 is_actual_major_without_exceptions = {
-	custom_trigger_tooltip = {
+	custom_override_tooltip = {
 		tooltip = is_actual_major_without_exceptions
-		# is_major = yes
+		is_major = yes
+		num_of_factories > 19 #MAJOR_MIN_FACTORIES
 
 		# rank the majors according to their num_of_factories
-		clear_temp_array = global.actual_majors
 		get_sorted_scored_countries_temp = {
-			scorer = actual_majors_score
-			array = global.actual_majors
+			scorer = major_industry_count_scorer
+			array = actual_majors
 		}
 
 		# limit that ranking to the top 8
-		resize_temp_array = { global.actual_majors = 8 }
-
-		# now figure out what 70% of the average of those 8 is, with a minimum of 35
-		set_temp_variable = { global.factory_average = 0 }
-		all_of_scopes = {
-			array = global.actual_majors
-			add_to_temp_variable = { global.factory_average = THIS.num_of_factories }
-		}
-		divide_temp_variable = { global.factory_average = 8 }
-		multiply_temp_variable = { global.factory_average = 0.7 }
-		clamp_temp_variable = { var = global.factory_average min = 35 }
+		resize_temp_array = { actual_majors = 8 }
 
 		OR = {
-			# is actually in the top 8
-			is_in_array = { global.actual_majors = THIS }
-			# has more than 70% of the average of the top 8
-			check_variable = { num_of_factories > global.factory_average }
-			# is in the list of "always acts like a major" countries
+			# is one of the seven largest
+			is_in_array = { actual_majors = THIS }
+
+			# has more than 70% of the average of the top 7
+			set_temp_variable = { factory_average = 0 }
+			all_of_scopes = {
+				array = actual_majors
+				add_to_temp_variable = { factory_average = THIS.num_of_factories }
+			}
+			divide_temp_variable = { factory_average = 4.9 }
+			num_of_factories > factory_average
 		}
 	}
 }
