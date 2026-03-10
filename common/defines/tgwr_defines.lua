@@ -10,6 +10,7 @@ NDefines.NGame.LAG_DAYS_FOR_LOWER_SPEED = 30								-- Vanilla is 10
 NDefines.NGame.LAG_DAYS_FOR_PAUSE = 60			
 NDefines.NCountry.BASE_STABILITY_WAR_FACTOR = -0.1
 NDefines.NCountry.WAR_SUPPORT_OFFNSIVE_WAR = -0.1							-- Vanilla is 25
+NDefines.NCountry.MAJOR_MIN_FACTORIES = 20							        -- Vanilla is 35 -- need at least these many factories to become a major
 
 NDefines.NDiplomacy.TENSION_TIME_SCALE_START_DATE = "1910.5.1.12"
 
