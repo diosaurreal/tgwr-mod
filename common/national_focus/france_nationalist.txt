@@ -11,12 +11,218 @@ focus_tree = {
 	}
 	default = no
 	continuous_focus_position = {
-		x = 2200
+		x = 2800
 		y = 200
 	}
 	shared_focus = early_industrialization
 	shared_focus = naval_experience
 	shared_focus = state_of_the_country_army
+
+	#dissolve the parliament
+	focus = {
+		id = NFA_dissolve_the_parliament
+		icon = GFX_goal_generic_forceful_treaty
+		x = 25
+		y = 0
+		cost = 5
+		available_if_capitulated = yes
+		bypass_if_unavailable = yes
+		ai_will_do = {
+			factor = 1000
+		}
+		available = {
+			NOT = { has_country_flag =  FRA_parliament_dissolved }
+		}
+		completion_reward = {
+			add_political_power = 75
+			add_ideas = FRA_idea_union_sacree
+			country_event = {
+				id = ww1_france.622
+				days = 2
+			}
+		}
+	}
+
+	focus = {
+		id = NFA_government_of_national_defence
+		icon = GFX_focus_FRA_goverment_reform
+		x = 0
+		y = 1
+		cost = 5
+		prerequisite = {
+			focus = NFA_dissolve_the_parliament
+		}
+		relative_position_id = NFA_dissolve_the_parliament
+		ai_will_do = {
+			factor = 1000
+		}
+		available = {
+			
+		}
+		completion_reward = {
+			add_political_power = 120
+			set_country_flag = FRA_national_defence_government
+			custom_effect_tooltip = available_political_advisor
+			show_ideas_tooltip = FRA_leon_daudet
+			custom_effect_tooltip = available_political_advisor
+			show_ideas_tooltip = FRA_antoine_schwerer
+			custom_effect_tooltip = available_political_advisor
+			show_ideas_tooltip = FRA_maurice_barres
+		}
+	}
+
+	focus = {
+		id = NFA_support_paramilitary_nationalists
+		icon = GFX_focus_RAJ_a_private_military
+		x = 0
+		y = 1
+		cost = 5
+		prerequisite = {
+			focus = NFA_government_of_national_defence
+		}
+		relative_position_id = NFA_government_of_national_defence
+		ai_will_do = {
+			factor = 1000
+		}
+		available = {
+			
+		}
+		completion_reward = {
+			add_war_support = 0.05
+			set_country_flag = FRA_join_act_with_nationalists
+			unlock_decision_tooltip = FRA_governement_support_to_cross_of_fire
+			unlock_decision_tooltip = FRA_governement_support_to_young_patriots
+			unlock_decision_tooltip = FRA_governement_support_to_le_faisceau
+			hidden_effect = {
+				country_event = {
+					id = ww1_france.623
+					days = 2
+				}
+			}
+		}
+	}
+
+	focus = {
+		id = NFA_structured_high_quarter
+		icon = GFX_focus_generic_advanced_military_studies
+		x = 0
+		y = 1
+		cost = 5
+		prerequisite = {
+			focus = NFA_support_paramilitary_nationalists
+		}
+		relative_position_id = NFA_support_paramilitary_nationalists
+		ai_will_do = {
+			factor = 1000
+		}
+		available = {
+			
+		}
+		completion_reward = {
+			add_ideas = NFA_structured_doctrines
+		}
+	}
+
+	focus = {
+		id = NFA_rally_conservatives
+		icon = GFX_focus_FRA_democracy
+		x = 1
+		y = 1
+		cost = 5
+		mutually_exclusive = {
+			focus = NFA_continue_the_military_junta
+		}
+		prerequisite = {
+			focus = NFA_structured_high_quarter
+		}
+		relative_position_id = NFA_structured_high_quarter
+		ai_will_do = {
+			factor = 1000
+		}
+		available = {
+			
+		}
+		completion_reward = {
+			add_stability = 0.1
+			if = {
+				limit = {
+					has_idea = FRA_disjointed_government2
+				}
+				remove_ideas = FRA_disjointed_government2
+			}
+			add_popularity = {
+				ideology = democratic
+				popularity = 0.1
+			}
+			set_temp_variable = {
+				fascismCut = party_popularity@fascism
+			}
+			divide_temp_variable = {
+				fascismCut = 2
+			}
+			add_popularity = {
+				ideology = neutrality
+				popularity = fascismCut
+			}
+			
+			FRA_maurice_pujo = {
+				promote_character = yes
+			}
+		}
+	}
+
+	focus = {
+		id = NFA_continue_the_military_junta
+		icon = GFX_focus_ITA_army_officer
+		x = -1
+		y = 1
+		cost = 5
+		mutually_exclusive = {
+			focus = NFA_rally_conservatives
+		}
+		prerequisite = {
+			focus = NFA_structured_high_quarter
+		}
+		relative_position_id = NFA_structured_high_quarter
+		ai_will_do = {
+			factor = 1000
+		}
+		available = {
+			
+		}
+		completion_reward = {
+			if = {
+				limit = {
+					has_idea = FRA_disjointed_government
+				}
+				swap_ideas = {
+					remove_idea = FRA_disjointed_government
+					add_idea = FRA_disjointed_government3
+				}
+			}
+			if = {
+				limit = {
+					has_idea = FRA_disjointed_government2
+				}
+				swap_ideas = {
+					remove_idea = FRA_disjointed_government2
+					add_idea = FRA_disjointed_government3
+				}
+			}
+			# country_event = {
+			# 	id = ww1_france.624
+			# 	days = 2
+			# }
+			swap_ideas = {
+				remove_idea = NFA_structured_doctrines
+				add_idea = NFA_general_staff_dictatorship
+			} 
+		}
+	}
+
+
+
+
 	#Focus for Above All The Losses
 	focus = {
 		id = NFA_above_all_the_losses
@@ -31,6 +237,7 @@ focus_tree = {
 		available = {
 			has_war = no
 			is_subject = no
+			has_global_flag = FRA_three_side_civil_war
 		}
 		completion_reward = {
 			remove_ideas = standing_alone
@@ -202,7 +409,9 @@ focus_tree = {
 			factor = 1000
 		}
 		bypass = {
-			has_government = neutrality
+			any_country = {
+				has_country_flag = FRA_law_of_exile_retired
+			}
 		}
 		available = {
 			is_subject = no
@@ -351,59 +560,128 @@ focus_tree = {
 				has_government = neutrality
 				has_government = fascism
 			}
+			NOT = {
+				any_other_country = {
+					OR = {
+						has_country_leader = {
+							character = FRA_charles_xii
+						}
+						has_country_leader = {
+							character = FRA_jacques_i
+						}
+						has_idea = FRA_jacques_of_bourbon
+						has_idea = FRA_jacques_i
+						has_idea = FRA_charles_xii
+					}
+				}
+			}
 		}
 		completion_reward = {
+			set_country_flag = FRA_allow_bourbon_visit
+			hidden_effect = {
+				if = {
+					limit = {
+						NOT = {
+							has_character = FRA_charles_xii
+						}
+					}
+					FRA = {
+						FRA_charles_xii = {
+							set_nationality = ROOT
+						}
+					}
+				}
+			}
 			if = {
 				limit = {
-					date < 1931.10.2
+					date < 1931.10.1
+					FRA = {
+						FRA_jacques_i = {
+							NOT = { has_character_flag = character_died }
+						}
+					}
 				}
 				hidden_effect = {
+					if = {
+						limit = {
+							NOT = {
+								has_character = FRA_jacques_i
+							}
+						}
+						FRA = {
+							FRA_jacques_i = {
+								set_nationality = ROOT
+							}
+						}
+					}
 					FRA_charles_xii = {
+						if = {
+							limit = { 
+								has_ideology = absolute_monarchy
+							}
+							promote_character = absolute_monarchy
+						}
+						else = {
+							add_country_leader_role = {
+								promote_leader = yes
+								country_leader = {
+									ideology = absolute_monarchy
+									traits = { legitimate_heir }
+								}
+							}
+						}				
+					}
+				}
+				FRA_jacques_i = {
+					set_character_name = FRA_jacques_i
+					if = {
+						limit = { 
+							has_ideology = absolute_monarchy
+						}
+						promote_character = absolute_monarchy
+					}
+					else = {
 						add_country_leader_role = {
 							promote_leader = yes
 							country_leader = {
 								ideology = absolute_monarchy
 								traits = { legitimate_heir }
 							}
-						}					
-					}
-				}
-				FRA_jacques_i = {
-					add_country_leader_role = {
-						promote_leader = yes
-						country_leader = {
-							ideology = absolute_monarchy
-							traits = { legitimate_heir }
 						}
 					}
 				}
 				else = {
 					FRA_charles_xii = {
-						add_country_leader_role = {
-							promote_leader = yes
-							country_leader = {
-								ideology = absolute_monarchy
-								traits = { legitimate_heir }
+						set_character_name = FRA_charles_xii
+						if = {
+							limit = { 
+								has_ideology = absolute_monarchy
 							}
-						}					
+							promote_character = absolute_monarchy
+						}
+						else = {
+							add_country_leader_role = {
+								promote_leader = yes
+								country_leader = {
+									ideology = absolute_monarchy
+									traits = { legitimate_heir }
+								}
+							}
+						}
 					}
 				}
 			}
-			set_party_name = {
-				ideology = neutrality
-				long_name = FRA_legitimist_party
-				name = FRA_legitimist_party
-			}
 			set_politics = {
 				ruling_party = neutrality
+				long_name = FRA_legitimist_party_long
+				name = FRA_legitimist_party
 				elections_allowed = no
 			}
 			set_cosmetic_tag = FRA_KINGDOM_legitimist
 			hidden_effect = {
 				news_event = {
 					id = ww1_france.30
-					days = 3
-					random_days = 5
+					hours = 3
 				}
 			}
 			if = {
@@ -440,58 +718,154 @@ focus_tree = {
 				has_government = neutrality
 				has_government = fascism
 			}
+			NOT = {
+				any_other_country = {
+					OR = {
+						has_country_leader = {
+							character = FRA_napoleon_v
+						}
+						has_country_leader = {
+							character = FRA_louis_joseph_bonaparte
+						}
+						has_country_leader = {
+							character = FRA_napoleon_vi
+						}
+						has_idea = FRA_victor_napoleon
+						has_idea = FRA_napoleon_v
+						has_idea = FRA_idea_louis_joseph_bonaparte
+						has_idea = FRA_napoleon_vi
+					}				
+				}
+			}
 		}
 		completion_reward = {
+			set_country_flag = FRA_allow_bonaparte_visit
+			hidden_effect = {
+				if = {
+					limit = {
+						NOT = {
+							has_character = FRA_napoleon_vi
+						}
+					}
+					FRA = {
+						FRA_napoleon_vi = {
+							set_nationality = ROOT
+						}
+					}
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_character = FRA_louis_joseph_bonaparte
+						}
+					}
+					FRA = {
+						FRA_louis_joseph_bonaparte = {
+							set_nationality = ROOT
+						}
+					}
+				}
+			}
 			if = {
 				limit = {
-					date < 1926.5.3
+					date < 1926.5.1
+					FRA = {
+						FRA_napoleon_v = {
+							NOT = { has_character_flag = character_died }
+						}
+					}
 				}
 				hidden_effect = {
-					FRA_napoleon_vi = {
+					if = {
+						limit = {
+							NOT = {
+								has_character = FRA_napoleon_v
+							}
+						}
+						FRA = {
+							FRA_napoleon_v = {
+								set_nationality = ROOT
+							}
+						}
+					}
+				}
+				FRA_napoleon_v = {
+					set_character_name = FRA_napoleon_v
+					set_portraits = {
+						civilian={
+							large="gfx/leaders/FRA/FRA_Napoleon_V.png"
+							small="gfx/interface/ideas/FRA/idea_FRA_napoleon_v.png"
+						}
+					}
+					if = {
+						limit = { 
+							has_ideology = semi_constitutional_monarchy
+						}
+						promote_character = semi_constitutional_monarchy
+					}
+					else = {
 						add_country_leader_role = {
 							promote_leader = yes
 							country_leader = {
 								ideology = semi_constitutional_monarchy
-								traits = { empire_builder }
+								traits = { bonaparte_legacy empire_builder }
 							}
-						}					
+						}
 					}
 				}
-				FRA_napoleon_v = {
-					add_country_leader_role = {
-						promote_leader = yes
-						country_leader = {
-							ideology = semi_constitutional_monarchy
-							traits = { empire_builder }
+				else_if = {
+					limit = {
+						date < 1932.10.14
+					}
+					FRA_louis_joseph_bonaparte = {
+						if = {
+							limit = { 
+								has_ideology = semi_constitutional_monarchy
+							}
+							promote_character = semi_constitutional_monarchy
+						}
+						else = {
+							add_country_leader_role = {
+								promote_leader = yes
+								country_leader = {
+									ideology = semi_constitutional_monarchy
+									traits = { bonaparte_legacy_louis empire_builder }
+								}
+							}
 						}
 					}
 				}
 				else = {
 					FRA_napoleon_vi = {
-						add_country_leader_role = {
-							promote_leader = yes
-							country_leader = {
-								ideology = semi_constitutional_monarchy
-								traits = { empire_builder }
+						set_character_name = FRA_napoleon_vi
+						if = {
+							limit = { 
+								has_ideology = semi_constitutional_monarchy
 							}
-						}					
+							promote_character = semi_constitutional_monarchy
+						}
+						else = {
+							add_country_leader_role = {
+								promote_leader = yes
+								country_leader = {
+									ideology = semi_constitutional_monarchy
+									traits = { bonaparte_legacy empire_builder }
+								}
+							}
+						}
 					}
 				}
 			}
-			set_party_name = {
-				ideology = neutrality
-				long_name = FRA_bonepartist_party
-				name = FRA_bonepartist_party
-			}
 			set_politics = {
 				ruling_party = neutrality
+				long_name = FRA_house_of_bonapart_party
+				name = FRA_house_of_bonapart_party
 				elections_allowed = no
 			}
 			hidden_effect = {
 				news_event = {
 					id = ww1_france.30
-					days = 3
-					random_days = 5
+					hours = 3
 				}
 			}
 			set_cosmetic_tag = FRA_THIRD_EMPIRE
@@ -692,57 +1066,124 @@ focus_tree = {
 				has_government = neutrality
 				has_government = fascism
 			}
+			NOT = {
+				any_other_country = {
+					OR = {
+						has_country_leader = {
+							character = FRA_philippe_viii
+							ruling_only = yes
+						}
+						has_country_leader = {
+							character = FRA_jean_iii
+							ruling_only = yes
+						}
+						has_idea = FRA_philippe_of_orleans
+						has_idea = FRA_jean_iii
+					}				
+				}
+			}
 		}
 		completion_reward = {
+			set_country_flag = FRA_allow_orleans_visit
+			hidden_effect = {
+				if = {
+					limit = {
+						NOT = {
+							has_character = FRA_jean_iii
+						}
+					}
+					FRA = {
+						FRA_jean_iii = {
+							set_nationality = ROOT
+						}
+					}
+				}
+			}
 			if = {
 				limit = {
 					date < 1926.3.23
 				}
 				hidden_effect = {
 					FRA_jean_iii = {
-						add_country_leader_role = {
-							promote_leader = yes
-							country_leader = {
-								ideology = semi_constitutional_monarchy_reserve
+						if = {
+							limit = { 
+								has_ideology = semi_constitutional_monarchy_reserve
+							}
+							promote_character = semi_constitutional_monarchy_reserve
+						}
+						else = {
+							add_country_leader_role = {
+								promote_leader = yes
+								country_leader = {
+									ideology = semi_constitutional_monarchy_reserve
+								}
+							}
+						}
+					}
+				}
+				hidden_effect = {
+					if = {
+						limit = {
+							NOT = {
+								has_character = FRA_philippe_viii
+							}
+						}
+						FRA = {
+							FRA_philippe_viii = {
+								set_nationality = ROOT
 							}
 						}
 					}
 				}
 				FRA_philippe_viii = {
-					add_country_leader_role = {
-						promote_leader = yes
-						country_leader = {
-							ideology = semi_constitutional_monarchy_reserve
-							traits = { duke_of_orleans }
+					set_character_name = FRA_philippe_viii
+					if = {
+						limit = { 
+							has_ideology = semi_constitutional_monarchy_reserve
+						}
+						promote_character = semi_constitutional_monarchy_reserve
+					}
+					else = {
+						add_country_leader_role = {
+							promote_leader = yes
+							country_leader = {
+								ideology = semi_constitutional_monarchy_reserve
+								traits = { duke_of_orleans }
+							}
 						}
 					}
 				}
 				else = {
 					FRA_jean_iii = {
-						add_country_leader_role = {
-							promote_leader = yes
-							country_leader = {
-								ideology = semi_constitutional_monarchy_reserve
+						set_character_name = FRA_jean_iii
+						if = {
+							limit = { 
+								has_ideology = semi_constitutional_monarchy_reserve
 							}
-						}						
+							promote_character = semi_constitutional_monarchy_reserve
+						}
+						else = {
+							add_country_leader_role = {
+								promote_leader = yes
+								country_leader = {
+									ideology = semi_constitutional_monarchy_reserve
+								}
+							}
+						}
 					}
 				}
 			}
-			set_party_name = {
-				ideology = neutrality
-				long_name = FRA_orleanists_long
-				name = FRA_orleanists
-			}
 			set_politics = {
 				ruling_party = neutrality
+				long_name = FRA_orleanists_long
+				name = FRA_orleanists
 				elections_allowed = no
 			}
 			set_cosmetic_tag = FRA_KINGDOM
 			hidden_effect = {
 				news_event = {
 					id = ww1_france.30
-					days = 3
-					random_days = 5
+					hours = 3
 				}
 			}
 			if = {
@@ -939,16 +1380,18 @@ focus_tree = {
 						hours = 1
 					}
 				}
-				else_if = {
-					limit = {
-						is_faction_leader = yes
-					}
-					set_faction_name = entente
-					else = {
-						create_faction = entente
-					}
-				}
 			}
+			else_if = {
+				limit = {
+					is_faction_leader = yes
+				}
+				set_faction_name = entente
+			}
+			else = {
+				create_faction_from_template = faction_template_entente
+				set_faction_name = entente
+			}
+
 			if = {
 				limit = {
 					is_in_faction = yes
@@ -1035,7 +1478,7 @@ focus_tree = {
 					ENG = {
 						exists = yes
 						is_subject = no
-						has_focus_tree = uk_3
+						has_focus_tree = uk_iw_focus
 						NOT = {
 							has_government = communism
 							has_country_flag = great_war_winner
@@ -1069,7 +1512,8 @@ focus_tree = {
 				set_faction_name = entente
 			}
 			else = {
-				create_faction = entente
+				create_faction_from_template = faction_template_entente
+				set_faction_name = entente
 			}
 		}
 	}
@@ -1161,7 +1605,7 @@ focus_tree = {
 	#Focus for New Jobs
 	focus = {
 		id = NFA_new_jobs
-		icon = GFX_goal_generic_production2
+		icon = GFX_focus_generic_war_industry_jobs
 		relative_position_id = NFA_the_great_exile
 		x = 0
 		y = 1
@@ -1361,8 +1805,7 @@ focus_tree = {
 				exists = yes
 				NOT = {
 					has_war_with = ROOT
-					is_in_faction_with = ROOT
-					is_subject_of = ROOT
+					is_ally_with = ROOT
 				}
 			}
 		}

@@ -14,8 +14,40 @@ focus_tree = {
 		x = 100
 		y = 1200
 	}
+	
 	default = no
 	reset_on_civilwar = no
+
+	shortcut = {
+		name = army_tree_shortcut
+		target = state_of_the_country_army
+		scroll_wheel_factor = 1
+	}
+	shortcut = {
+		name = air_tree_shortcut
+		target = planes_experiments
+		scroll_wheel_factor = 1
+	}
+	shortcut = {
+		name = navy_tree_shortcut
+		target = naval_experience
+		scroll_wheel_factor = 1
+	}
+	shortcut = {
+		name = foreign_policy_tree_shortcut
+		target = MOR_independant_politics
+		scroll_wheel_factor = 0.9
+	}
+	shortcut = {
+		name = inner_politics_tree_shortcut
+		target = MOR_strenghten_makhzen_control
+		scroll_wheel_factor = 0.9
+	}
+	shortcut = {
+		name = economic_tree_shortcut
+		target = MOR_excavation_concession_question
+		scroll_wheel_factor = 1
+	}
 
 	focus = {
 		id = MOR_cooperate_with_french
@@ -65,13 +97,17 @@ focus_tree = {
 			add_political_power = 75
 			if = {
 				limit = {
-					any_character = {
+					has_country_leader = {
+						character = MOR_mulay_abdelhafid
+					}
+					MOR_mulay_abdelhafid = {
+						has_ideology = semi_constitutional_monarchy
 						has_trait = unpopular_sultan
 					}
 				}
 				remove_trait = {
 					character = MOR_mulay_abdelhafid
-					slot = country_leader
+					ideology = semi_constitutional_monarchy
 					trait = unpopular_sultan
 				}
 			}
@@ -364,6 +400,46 @@ focus_tree = {
 	}
 
 	focus = {
+		id = MOR_modernize_al_makina_arsenal
+		icon = GFX_focus_generic_military_industry
+		relative_position_id = MOR_second_army_reform
+		prerequisite = {
+			focus = MOR_second_army_reform
+			focus = MOR_guerrila_warfare_tradition
+		}
+		available = {
+			461 = {
+				is_owned_and_controlled_by = ROOT
+			}
+		}
+		ai_will_do = {
+			factor = 50
+		}
+		completion_reward = {
+			add_tech_bonus = {
+				name = MOR_modernize_al_makina_arsenal
+				bonus = 0.5
+				uses = 1
+				category = infantry_weapons
+			}
+			461 = {
+				add_extra_state_shared_building_slots = 1
+				add_building_construction = {
+					type = arms_factory
+					level = 1
+					instant_build = yes
+				}
+			}
+		}
+		cost = 10
+		x = -1
+		y = 1
+		search_filters = {
+			FOCUS_FILTER_ARMY_XP
+		}
+	}
+
+	focus = {
 		id = MOR_buy_warships
 		icon = GFX_focus_generic_naval_ship_transfer
 		relative_position_id = MOR_steady_as_he_goes
@@ -574,6 +650,9 @@ focus_tree = {
 				limit = {
 					is_core_of = ROOT
 					is_controlled_by = ROOT
+					NOT = {
+						state = 461
+					}
 				}
 				prioritize = { 462 }
 				add_extra_state_shared_building_slots = 1
@@ -987,7 +1066,7 @@ focus_tree = {
 
 	focus = {
 		id = MOR_new_army_reform
-		icon = GFX_goal_CAN_british_rifle_lease
+		icon = GFX_goal_generic_army_doctrines
 		prerequisite = {
 			focus = MOR_strenghten_makhzen_control
 		}
@@ -1215,7 +1294,7 @@ focus_tree = {
 
 	focus = {
 		id = MOR_past_the_asif_oulghas
-		icon = GFX_focus_islam_guns
+		icon = GFX_goal_generic_more_territorial_claims
 		mutually_exclusive = {
 			focus = MOR_concilliation_with_hostiles_caids
 		}
@@ -1312,7 +1391,7 @@ focus_tree = {
 		}
 		relative_position_id = MOR_past_the_asif_oulghas
 		completion_reward = {
-			add_ideas = POL_french_advisors
+			add_ideas = MOR_french_advisors
 		}
 		ai_will_do = {
 			factor = 80
@@ -1348,7 +1427,7 @@ focus_tree = {
 		}
 		relative_position_id = MOR_past_the_asif_oulghas
 		completion_reward = {
-			add_ideas = idea_turkey_german_advisors
+			add_ideas = MOR_german_advisors
 		}
 		ai_will_do = {
 			factor = 80
@@ -1445,7 +1524,6 @@ focus_tree = {
 		}
 		completion_reward = {
 			FRA = {
-				custom_effect_tooltip = needs_approval
 				country_event = {
 					id = ww1_morocco.38
 					days = 4
@@ -1455,6 +1533,7 @@ focus_tree = {
 			effect_tooltip = {
 				MOR_improve_economical_situation = yes
 			}
+			custom_effect_tooltip = needs_approval
 		}
 		ai_will_do = {
 			factor = 80
@@ -1685,7 +1764,7 @@ focus_tree = {
 		available = {
 			has_country_flag = MOR_french_excavation_mission
 		}
-		icon = GFX_focus_ENG_Legacy_Of_Industrial_Revolution
+		icon = GFX_goal_workers_rights
 		completion_reward = {
 			hidden_effect = {
 				if = {
@@ -1779,7 +1858,7 @@ focus_tree = {
 		available = {
 			controls_state = 461
 		}
-		icon = GFX_focus_industry_steel
+		icon = GFX_focus_generic_steel
 		completion_reward = {
 			add_tech_bonus = {
 				name = MOR_sousse_mines
@@ -1870,15 +1949,27 @@ focus_tree = {
 				target = GER
 				modifier = small_increase
 			}
-			add_equipment_to_stockpile = {
-				type = infantry_equipment_0
-				producer = GER
-				amount = 300
+			if = {
+				limit = {
+					has_dlc = "Arms Against Tyranny"
+				}
+				add_equipment_subsidy = {
+					cic = 1000 
+					equipment_type = infantry_equipment
+					seller_tags = { GER }
+				}
+				add_equipment_to_stockpile = {
+					type = infantry_equipment_0
+					producer = GER
+					amount = 300
+				}
 			}
-			add_equipment_subsidy = {
-				cic = 1000 
-				equipment_type = infantry_equipment
-				seller_tags = { GER }
+			else = {
+				add_equipment_to_stockpile = {
+					type = infantry_equipment_0
+					producer = GER
+					amount = 450
+				}
 			}
 		}
 		ai_will_do = {
@@ -1912,15 +2003,27 @@ focus_tree = {
 				target = FRA
 				modifier = small_increase
 			}
-			add_equipment_to_stockpile = {
-				type = infantry_equipment_0
-				producer = FRA
-				amount = 300
+			if = {
+				limit = {
+					has_dlc = "Arms Against Tyranny"
+				}
+				add_equipment_subsidy = {
+					cic = 1000 
+					equipment_type = infantry_equipment
+					seller_tags = { FRA }
+				}
+				add_equipment_to_stockpile = {
+					type = infantry_equipment_0
+					producer = FRA
+					amount = 300
+				}
 			}
-			add_equipment_subsidy = {
-				cic = 1000 
-				equipment_type = infantry_equipment
-				seller_tags = { FRA }
+			else = {
+				add_equipment_to_stockpile = {
+					type = infantry_equipment_0
+					producer = FRA
+					amount = 450
+				}
 			}
 		}
 		ai_will_do = {

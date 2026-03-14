@@ -256,7 +256,7 @@ VLN_dont_invite = {
 	
 	ai_strategy = {
 		type = alliance
-		id = "VLN"
+		id = VLN
 		value = -5000
 	}
 }
@@ -309,7 +309,10 @@ SOV_focus_on_sra = {
 	}
 	abort = {
 		SRA = {
-			exists = no
+			OR = {
+				exists = no
+				has_capitulated = yes
+			}
 		}
 	}
 	ai_strategy = {
@@ -461,28 +464,27 @@ SOV_north_is_danger = {
 	}
 	abort = {
 		RSO = {
-			exists = no
+			OR = {
+				exists = no
+				has_capitulated = yes
+			}
 		}
 	}
 	ai_strategy = {
 		type = front_unit_request
 		country_trigger = {
-			original_tag = RUS
-			has_country_flag = RUS_northern_oblast
+			tag = RSO
 		}
 		value = 50
 	}
 	ai_strategy = {
 		type = front_control
 		country_trigger = {
-			original_tag = RUS
-			has_country_flag = RUS_northern_oblast
+			tag = RSO
 		}
 		priority = 50
 		ordertype = front
 		execution_type = balanced
-		manual_attack = yes
-		execute_order = yes
 	}
 }
 SOV_northwestern_army_front = {
@@ -495,28 +497,27 @@ SOV_northwestern_army_front = {
 	}
 	abort = {
 		NWA = {
-			exists = no
+			OR = {
+				exists = no
+				has_capitulated = yes
+			}
 		}
 	}
 	ai_strategy = {
 		type = front_unit_request
 		country_trigger = {
-			original_tag = RUS
-			has_country_flag = RUS_northwestern_army_tag
+			tag = NWA
 		}
 		value = 100
 	}
 	ai_strategy = {
 		type = front_control
 		country_trigger = {
-			original_tag = RUS
-			has_country_flag = RUS_northwestern_army_tag
+			tag = NWA
 		}
 		priority = 100
 		ordertype = front
 		execution_type = balanced
-		manual_attack = yes
-		execute_order = yes
 	}
 }
 SOV_estonian_front = {
@@ -568,7 +569,10 @@ SOV_dont_ignore_ore = {
 	}
 	abort = {
 		ORE = {
-			exists = no
+			OR = {
+				exists = no
+				has_capitulated = yes
+			}
 		}
 	}
 	ai_strategy = {
@@ -587,7 +591,10 @@ SOV_dont_ignore_UCH = {
 	}
 	abort = {
 		UCH = {
-			exists = no
+			OR = {
+				exists = no
+				has_capitulated = yes
+			}
 		}
 	}
 	ai_strategy = {
@@ -606,8 +613,8 @@ SOV_ignore_caucasus_1 = {
 		SOV = {
 			has_idea = SOV_war_in_the_caucasus_1
 		}	
-		any_country = {
-			original_tag = DON
+		any_country_with_original_tag = {
+			original_tag_to_check = DON
 			has_country_flag = DON_soviet_tag
 		}
 	}
@@ -631,8 +638,8 @@ SOV_ignore_caucasus_2 = {
 		SOV = {
 			has_idea = SOV_war_in_the_caucasus_2
 		}
-		any_country = {
-			original_tag = DON
+		any_country_with_original_tag = {
+			original_tag_to_check = DON
 			has_country_flag = DON_soviet_tag
 		}
 	}
@@ -659,7 +666,14 @@ SOV_sra_front = {
 		tag = SOV
 		has_war_with = SRA
 	}
-	abort_when_not_enabled = yes
+	abort = {
+		SRA = {
+			OR = {
+				exists = no
+				has_capitulated = yes
+			}
+		}	
+	}
 
 	ai_strategy = {
 		type = front_unit_request
@@ -835,31 +849,19 @@ dont_join_red_guard_baku_commune = {
 	}
 }
 
-default_unit_production = {
+SOV_unit_production = {
 	allowed = {
-		original_tag = RUS
+		tag = RUS
 	}
 	enable = {
 		tag = SOV
 	}
 	abort = { always = no }
-	
-	ai_strategy = {
-		type = role_ratio
-		id = paratroopers
-		value = 0
-	}
 
 	ai_strategy = {
 		type = role_ratio
 		id = mountaineers
 		value = 4
-	}
-
-	ai_strategy = {
-		type = role_ratio
-		id = marines
-		value = 0
 	}
 
 	ai_strategy = {
@@ -952,5 +954,102 @@ default_unit_production = {
 		type = equipment_production_factor
 		id = armor
 		value = -9999
+	}
+}
+
+
+SOV_support_FER = {
+	allowed = {
+		tag = RUS
+	}
+	enable = {
+		tag = SOV
+		has_subject = FER
+		FER = { has_war = yes }
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = support
+		id = FER
+		value = 500
+	}
+	ai_strategy = {
+		type = send_lend_lease_desire
+		id = FER
+		value = 500
+	}
+	ai_strategy = {
+		type = equipment_market_trade_desire
+		id = FER
+		value = 500
+	}
+	ai_strategy = {
+		type = send_volunteers_desire
+		id = FER
+		value = 400
+	}
+}
+
+FER_no_garrison = {
+	allowed = {
+		tag = FER
+	}
+	enable = {
+		always = yes
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = garrison
+		value = -1000
+	}
+}
+
+FER_ignore_ally_MON = {
+	allowed = {
+		tag = FER
+	}
+	enable = {
+		has_war_with = TBK
+		is_ally_with = MON
+		MON = {
+			NOT = {
+				has_war_with = TBK
+			}
+		}
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = dont_defend_ally_borders
+		id = MON
+		value = 1
+	}
+}
+
+SOV_crush_kolchak = {
+	allowed = {
+		tag = SOV
+	}
+	enable = {
+		has_war_with = SIB
+		NOT = {
+			has_war_with = POL
+		}
+		if = {
+			limit = { 
+				has_war_with = SRA
+			}
+			SRA = {
+				has_capitulated = yes
+			}
+		}
+	}
+	abort_when_not_enabled = yes
+	ai_strategy = {
+		type = front_control
+		country_trigger = {
+			tag = SIB
+		}
+		execute_order = yes
+		execution_type = rush
 	}
 }
