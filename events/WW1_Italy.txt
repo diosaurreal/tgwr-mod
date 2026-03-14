@@ -2650,25 +2650,50 @@ country_event = {
 		set_global_flag = libyan_crisis_resolved
 		set_global_flag = italo_turkish_war_ends
 		hidden_effect = {
-			white_peace = TUR
-			white_peace = LBA
-			every_country = {
-				limit = {
-					OR = {
-						is_ally_with = TUR
-						AND = {
-							tag = LBA
-							has_war_with = ITA
+			TUR = {
+				white_peace = ITA
+				ITA = {
+					every_allied_country = {
+						PREV.PREV = {
+							white_peace = PREV
 						}
 					}
 				}
-				white_peace = ITA
-			}
-			every_country = {
-				limit = {
-					is_ally_with = ITA
+				every_allied_country = {
+					white_peace = ITA
+					ITA = {
+						every_allied_country = {
+							PREV.PREV = {
+								white_peace = PREV
+							}
+						}
+					}
 				}
-				white_peace = TUR
+				every_owned_state = {
+					limit = {
+						region = 225
+					}
+					teleport_armies = {
+						limit = { original_tag = TUR }
+						to_state_array = owned_controlled_states
+					}
+				}
+				ottoman_minority_variable_check = yes
+			}
+			if = {
+				limit = { 
+					LBA = {
+						has_war_with = ITA
+					}
+				}
+				white_peace = ITA
+				ITA = {
+					every_allied_country = {
+						PREV.PREV = {
+							white_peace = PREV
+						}
+					}
+				}
 			}
 			# TUR = {
 			# 	diplomatic_relation = {
@@ -2691,73 +2716,75 @@ country_event = {
 					days = 5
 				}
 			}
-			every_state = {
-				limit = {
-					is_owned_by = TUR
-					has_state_flag = fallen_to_italy_ITA_TUR_war
-				}
-				transfer_state_to = ITA
-				add_claim_by = ITA
-				if = {
-					limit = { 
-						is_core_of = TUR 
+			TUR = {
+				every_owned_state = {
+					limit = {
+						has_state_flag = fallen_to_italy_ITA_TUR_war
 					}
-					remove_core_of = TUR
-					add_claim_by = TUR				
+					transfer_state_to = ITA
+					add_claim_by = ITA
+					if = {
+						limit = { 
+							is_core_of = TUR 
+						}
+						remove_core_of = TUR
+						add_claim_by = TUR				
+					}
 				}
 			}
 			if = {
 				limit = {
-					any_state = {
-						is_owned_by = TUR
-						has_state_flag = fallen_to_italy_ITA_TUR_war
+					TUR = {
+						any_owned_state = {
+							has_state_flag = fallen_to_italy_ITA_TUR_war
+						}
 					}
 				}
 				activate_mission = ITA_return_rhodes_mission
 			}
-			every_state = {
-				limit = {
-					is_owned_by = TUR
-					OR = {
-						state = 448
-						state = 450
-						state = 1060
-						state = 1157
-						state = 1156
-						state = 663
-						state = 1061
-					}
-				}
-				transfer_state_to = ITA
-				add_claim_by = ITA
-				if = {
-					limit = { 
-						is_core_of = TUR 
-					}
-					remove_core_of = TUR
-					add_claim_by = TUR				
-				}
-				if = {
+			TUR = {
+				every_owned_state = {
 					limit = {
-						has_resistance = yes
-						has_global_flag = libyan_compliance
+						OR = {
+							state = 448
+							state = 450
+							state = 1060
+							state = 1157
+							state = 1156
+							state = 663
+							state = 1061
+						}
 					}
-					add_compliance = 20
-				}
-			}
-			every_state = {
-				limit = {
-					is_owned_by = TUR
-					is_core_of = LBA
-				}
-				if = {
-					limit = { 
-						is_core_of = TUR 
+					transfer_state_to = ITA
+					add_claim_by = ITA
+					if = {
+						limit = { 
+							is_core_of = TUR 
+						}
+						remove_core_of = TUR
+						add_claim_by = TUR				
 					}
-					remove_core_of = TUR
-					add_claim_by = TUR				
+					if = {
+						limit = {
+							has_resistance = yes
+							has_global_flag = libyan_compliance
+						}
+						add_compliance = 20
+					}
 				}
-				transfer_state_to = LBA
+				every_owned_state = {
+					limit = {
+						is_core_of = LBA
+					}
+					if = {
+						limit = { 
+							is_core_of = TUR 
+						}
+						remove_core_of = TUR
+						add_claim_by = TUR				
+					}
+					transfer_state_to = LBA
+				}
 			}
 			LBA = {
 				add_opinion_modifier = {
@@ -2770,13 +2797,14 @@ country_event = {
 				    limit = {
 					    has_country_flag = TUR_italo_turkish_war_arab_minorities
 				    }
-			        every_state = {
-				        limit = {
-					        is_core_of = LBA
-					        has_state_flag = TUR_removed_libyan_minority
-				        }
-				        set_state_flag = TUR_arab_state
-			        }
+					LBA = {
+						every_core_state = {
+							limit = {
+								has_state_flag = TUR_removed_libyan_minority
+							}
+							set_state_flag = TUR_arab_state
+						}
+					}
 			    }
 			    #delete_unit_template_and_units = { division_template = "Trablusgarp Milisi" }
 				diplomatic_relation = {
@@ -2786,16 +2814,6 @@ country_event = {
 				}
 				country_event = { id = ww1_ottoman.138 days = 90 }
 			}
-			every_state = {
-				limit = {
-					region = 225
-				}
-				teleport_armies = {
-					limit = { original_tag = TUR }
-					to_state_array = owned_controlled_states
-				}
-			}
-			ottoman_minority_variable_check = yes
 		}
 	}
 	option = {
