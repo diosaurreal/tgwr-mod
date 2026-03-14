@@ -558,10 +558,18 @@ focus_tree = {
 			country_event = { id = ww_sverige.8 }
 			effect_tooltip = {
 				add_political_power = 25
-				add_timed_idea = {
-					idea = SWE_limited_prohibition
-					days = 600
-				}
+				add_ideas = SWE_stockholmssystemet
+			}
+			custom_effect_tooltip = adjust_swe_economic_tt
+			add_to_variable = {
+				tooltip = political_power_gain_tt
+				var = SWE_eco_political_power_gain
+				value = -0.05
+			}
+			add_to_variable = {
+				tooltip = consumer_goods_factor_tt
+				var = SWE_consumer_goods
+				value = -0.025
 			}
 		}
 	}
@@ -973,7 +981,6 @@ focus_tree = {
 				idea = SWE_agrarian_issues_adressed
 				days = 365
 			}
-			# TBD: Make this lightly increase 'progressive agrarian' amount
 			custom_effect_tooltip = adjust_swe_economic_tt
 			add_to_variable = {
 				tooltip = consumer_goods_factor_tt
@@ -999,7 +1006,7 @@ focus_tree = {
 			add_to_variable = {
 				tooltip = swe_agr_prog_vote_share_tt
 				var = swe_agr_prog_vote_share
-				value = 0.02
+				value = 0.04
 			}
 		}
 	}
@@ -1174,7 +1181,7 @@ focus_tree = {
 		available = {
 			OR = {
 				has_country_leader_ideology = social_liberalism
-				has_country_leader_ideology = social_democracy
+				SWE_social_democracy_trigger = yes
 			}
 			OR = {	# For now
 				threat > 0.3
@@ -1283,7 +1290,7 @@ focus_tree = {
 		available = {
 			OR = {
 				has_country_leader_ideology = social_liberalism
-				has_country_leader_ideology = social_democracy
+				SWE_social_democracy_trigger = yes
 			}
 		}
 		
@@ -1310,7 +1317,7 @@ focus_tree = {
 		available = {
 			OR = {
 				has_country_leader_ideology = social_liberalism
-				has_country_leader_ideology = social_democracy
+				SWE_social_democracy_trigger = yes
 			}
 			fascism < 0.2
 			neutrality < 0.2
@@ -1426,6 +1433,30 @@ focus_tree = {
 		
 		completion_reward = {
 			add_ideas = SWE_new_liberalism
+			custom_effect_tooltip = skip_line
+			custom_effect_tooltip = adjust_swe_political_tt
+			add_to_variable = {
+				tooltip = trade_laws_cost_factor_tt
+				var = SWE_pol_trade_laws_cost_factor
+				value = -0.20
+			}
+			add_to_variable = {
+				tooltip = min_export_tt
+				var = SWE_pol_min_export
+				value = 0.05
+			}
+			custom_effect_tooltip = adjust_swe_economic_tt
+			add_to_variable = {
+				tooltip = political_power_cost_tt
+				var = SWE_eco_political_power_cost
+				value = 0.10
+			}
+			add_to_variable = {
+				tooltip = production_speed_industrial_complex_factor_tt
+				var = SWE_civ_build_speed
+				value = 0.05
+			}
+			custom_effect_tooltip = skip_line
 			custom_effect_tooltip = enables_further_riksdag_decisions
 			# Riksdag Decisision tba:
 				# Anti-monopoly
@@ -1451,10 +1482,33 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_INDUSTRY FOCUS_FILTER_POLITICAL FOCUS_FILTER_INTERNAL_AFFAIRS }
 		
 		completion_reward = {
-			add_ideas = SWE_mixed_economy
+			custom_effect_tooltip = adjust_swe_political_tt
+			add_to_variable = {
+				tooltip = economy_cost_factor_tt
+				var = SWE_pol_economy_cost_factor
+				value = -0.10
+			}
+			add_to_variable = {
+				tooltip = trade_laws_cost_factor_tt
+				var = SWE_pol_trade_laws_cost_factor
+				value = -0.10
+			}
+			custom_effect_tooltip = adjust_swe_economic_tt
+			add_to_variable = {
+				tooltip = consumer_goods_factor_tt
+				var = SWE_consumer_goods_factor
+				value = -0.05
+			}
+			add_to_variable = {
+				tooltip = line_change_production_efficiency_factor_tt
+				var = SWE_eco_line_change_production_efficiency_factor
+				value = -0.15
+			}
 			custom_effect_tooltip = enables_further_riksdag_decisions
 			# Riksdag Decisision tba:
 				# Anti-monopoly
+				# Reform tariff
+				# Make taxation better
 		}
 	}
 	# Historical
@@ -1479,7 +1533,7 @@ focus_tree = {
 	}
 	focus = {
 		id = SWE_cement_riksdag_regime
-		icon = GFX_focus_ARG_defense_and_democracy
+		icon = GFX_focus_generic_treaty
 		prerequisite = {
 			focus = SWE_courtyard_speech
 			focus = SWE_third_liberal_regering
@@ -1596,6 +1650,9 @@ focus_tree = {
 					value = -0.01
 				}
 			}
+			hidden_effect = {
+				country_event = { id = ww_sverige_general.58 days = 365 }
+			}
 		}
 	}
 	# Historical
@@ -1674,13 +1731,48 @@ focus_tree = {
 				var = SWE_pol_war_support_factor
 				value = -0.05
 			}
-			add_to_variable = {
-				tooltip = neutrality_drift_tt
-				var = SWE_pol_neutrality_drift
-				value = -0.01
-			}
+			#add_to_variable = {
+			#	tooltip = neutrality_drift_tt
+			#	var = SWE_pol_neutrality_drift
+			#	value = -0.01
+			#}
 			custom_effect_tooltip = skip_line
 			custom_effect_tooltip = SWE_gives_access_to_path_in_diplomatic_tree
+		}
+	}
+	focus = {	# Generic to be adjusted, but here to fix some alternate paths
+		id = SWE_flexible_political_manuevering
+		icon = GFX_goal_generic_improve_relations
+		prerequisite = { focus = SWE_keeping_our_head_down }
+		mutually_exclusive = { focus = SWE_steadfast_behind_the_scenes }
+		relative_position_id = SWE_keeping_our_head_down
+		cost = 10.00
+		x = -1
+		y = 1
+		
+		available = {
+			OR = {
+				NOT = {
+					has_completed_focus = SWE_hammarskjold_government
+				}
+				NOT = {
+					has_country_leader = {
+						character = SWE_hjalmar_hammarskjold
+						ruling_only = yes
+					}
+				}
+			}
+		}
+		search_filters = { FOCUS_FILTER_STABILITY FOCUS_FILTER_INTERNAL_AFFAIRS }
+		
+		completion_reward = {
+			add_stability = 0.05
+			custom_effect_tooltip = adjust_swe_political_tt
+			add_to_variable = {
+				tooltip = political_power_cost_tt
+				var = SWE_pol_political_power_cost
+				value = 0.05
+			}
 		}
 	}
 	focus = {
@@ -1689,8 +1781,8 @@ focus_tree = {
 		prerequisite = { focus = SWE_keeping_our_head_down }
 		relative_position_id = SWE_keeping_our_head_down
 		cost = 10.00
-		x = -1
-		y = 1
+		x = 0
+		y = 2
 		
 		available = {
 			has_war = no
@@ -1784,6 +1876,7 @@ focus_tree = {
 		icon = GFX_goal_generic_political_pressure
 		prerequisite = { focus = SWE_hammarskjold_government }
 		prerequisite = { focus = SWE_keeping_our_head_down }
+		mutually_exclusive = { focus = SWE_flexible_political_manuevering }
 		relative_position_id = SWE_hammarskjold_government
 		cost = 5.00
 		x = 0
@@ -1828,7 +1921,7 @@ focus_tree = {
 	}
 	focus = {
 		id = SWE_balance_of_royal_support
-		icon = GFX_goal_generic_political_pressure
+		icon = GFX_focus_SWE_king_in_council
 		prerequisite = { focus = SWE_steadfast_behind_the_scenes }
 		relative_position_id = SWE_hammarskjold_government
 		cost = 7.00
@@ -1900,9 +1993,10 @@ focus_tree = {
 	}
 	focus = {
 		id = SWE_swartz_government
-		icon = GFX_goal_generic_political_pressure
+		icon = GFX_focus_generic_self_management
 		prerequisite = {
 			focus = SWE_balance_of_royal_support
+			focus = SWE_flexible_political_manuevering
 			focus = SWE_block_the_problems
 		}
 		relative_position_id = SWE_hammarskjold_government
@@ -1946,19 +2040,20 @@ focus_tree = {
 				# King's Opinion
 				country_event = { id = ww_sverige_general.1001 hours = 1 }
 			}
+			custom_effect_tooltip = skip_line
+			custom_effect_tooltip = enables_the_stoppa_eden_plan_event_chain_tt
 		}
 	}
 	focus = {
 		id = SWE_riksdagens_breakthrough
 		icon = GFX_goal_generic_political_pressure
-		prerequisite = {
-			focus = SWE_swartz_government
-			focus = SWE_an_unfortunate_passing
-		}
-		mutually_exclusive = { focus = SWE_the_conservative_gamble }
+		#prerequisite = {
+		#	focus = SWE_swartz_government
+		#	focus = SWE_an_unfortunate_passing
+		#}
 		relative_position_id = SWE_hammarskjold_government
 		cost = 4.00
-		x = -2
+		x = -1
 		y = 5
 		
 		available = {
@@ -1966,6 +2061,16 @@ focus_tree = {
 		}
 		
 		bypass = {
+			OR = {
+				has_completed_focus = SWE_promises_from_the_king
+				has_completed_focus = SWE_cement_riksdag_regime
+				has_government = communism	# For now
+				has_country_flag = SWE_suffrage_flag
+				power_balance_value = {
+					id = SWE_parliamentalism_vs_royalism
+					value < -0.5
+				}
+			}
 			OR = {
 				has_completed_focus = SWE_third_liberal_regering
 				has_completed_focus = SWE_courtyard_speech
@@ -1985,11 +2090,17 @@ focus_tree = {
 					character = SWE_hjalmar_hammarskjold
 					ruling_only = yes
 				}
+				has_country_leader = {
+					character = SWE_johan_widen
+					ruling_only = yes
+				}
 			}
+			NOT = { has_completed_focus = SWE_the_conservative_gamble }
 		}
 		
 		search_filters = { FOCUS_FILTER_HISTORICAL FOCUS_FILTER_POLITICAL }
 		
+		# Bypass Effect for this
 		completion_reward = {
 			
 		}
@@ -2006,7 +2117,7 @@ focus_tree = {
 		available = {
 			OR = {
 				has_government = communism
-				has_country_leader_ideology = social_democracy
+				SWE_social_democracy_trigger = yes
 				AND = {
 					has_country_leader_ideology = social_liberalism
 					communism > 0.2
@@ -2045,38 +2156,36 @@ focus_tree = {
 			
 		}
 	}
-	focus = {
+	focus = {	# Adjust to be event chain that makes this occur at later point
 		id = SWE_the_conservative_gamble
 		icon = GFX_goal_generic_political_pressure
 		prerequisite = { focus = SWE_swartz_government }
-		mutually_exclusive = { focus = SWE_riksdagens_breakthrough }
 		relative_position_id = SWE_swartz_government
 		cost = 5.00
 		x = 1
 		y = 1
 		
 		available = {
-			date > 1917.1.1
-			has_country_leader = {
-				character = SWE_carl_swartz
-				ruling_only = yes
+			has_country_flag = swe_con_gamble_successful
+			NOT = { has_completed_focus = SWE_riksdagens_breakthrough }
+			hidden_trigger = {
+				always = no
 			}
-			NOT = { has_country_flag = sweden_failed_con_gamble }
 		}
 		
-		search_filters = { FOCUS_FILTER_HISTORICAL FOCUS_FILTER_POLITICAL }
-		
-		select_effect = {
-			country_event = { id = ww_sverige_general.6 days = 5 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		bypass = {
+			has_country_flag = swe_con_gamble_successful
+			NOT = { has_completed_focus = SWE_riksdagens_breakthrough }
 		}
 		
-		completion_reward = {
+		bypass_effect = {
 			# Outcomes:
-				# Swarts forms government after liberals fail to form government
+				# Swarts forms government after liberals fail to form government (not implemented atm)
 				# Johan Widén forms government, but needs king's intervention
 				# Fail leads to historical outcome, mutually exclusive focus is completed
 			# Mission will activate to push through Suffrage
-			promote_character = SWE_johan_widen
+			promote_character = SWE_johan_widen	# For now, later when other outcome exist add those
 			add_to_variable = {
 				tooltip = swe_lib_dem_vote_a_tt
 				var = SWE_lib_dem_votes_a
@@ -2089,6 +2198,10 @@ focus_tree = {
 			}
 			activate_mission = SWE_conservative_promises_of_suffrage
 		}
+		
+		completion_reward = {
+			custom_effect_tooltip = SWE_the_conservative_gamble_tt
+		}
 	}
 	focus = {	# Temporary
 		id = SWE_strengthen_border_control
@@ -2099,8 +2212,8 @@ focus_tree = {
 		x = 0
 		y = 1
 		
-		available = {
-			has_dynamic_modifier = { modifier = SWE_emigration_problem }
+		bypass = {
+			NOT = { has_dynamic_modifier = { modifier = SWE_emigration_problem } }
 		}
 		
 		search_filters = { FOCUS_FILTER_MANPOWER }
@@ -2210,7 +2323,7 @@ focus_tree = {
 	}
 	focus = {
 		id = SWE_block_the_problems
-		icon = GFX_goal_generic_intelligence_exchange
+		icon = GFX_goal_generic_political_pressure
 		prerequisite = { focus = SWE_allies_in_unlikely_places }
 		relative_position_id = SWE_foreign_policy_of_the_king
 		cost = 5.00
@@ -2232,6 +2345,58 @@ focus_tree = {
 				var = SWE_pol_war_support_factor
 				value = -0.05
 			}
+		}
+	}
+	focus = {
+		id = SWE_importance_of_tradition
+		icon = GFX_goal_generic_propaganda
+		prerequisite = { focus = SWE_block_the_problems }
+		relative_position_id = SWE_foreign_policy_of_the_king
+		cost = 5.00
+		x = -1
+		y = 3
+		
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		
+		available = {
+			has_country_leader = {
+				character = SWE_ernst_trygger
+				ruling_only = yes
+			}
+		}
+		
+		completion_reward = {
+			add_stability = 0.05
+			add_war_support = 0.05
+		}
+	}
+	focus = {
+		id = SWE_pursue_agrarian_policies
+		icon = GFX_focus_generic_wheat
+		prerequisite = { focus = SWE_block_the_problems }
+		relative_position_id = SWE_foreign_policy_of_the_king
+		cost = 5.00
+		x = 1
+		y = 3
+		
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		
+		available = {
+			OR = {
+				has_country_leader_ideology = conservatism
+				has_government = neutrality
+				has_government = fascism
+			}
+		}
+		
+		completion_reward = {
+			add_to_variable = {
+				tooltip = swe_agr_prog_vote_share_tt
+				var = swe_agr_prog_vote_share
+				value = -0.02
+			}
+			# Unlocks Agrarian Reform decision
+			custom_effect_tooltip = enables_further_riksdag_decisions
 		}
 	}
 	focus = {
@@ -2769,6 +2934,7 @@ focus_tree = {
 			SWE_medium_riksdag_decrease = yes
 			hidden_effect = {
 				country_event = { id = ww_sverige_demo_crisis.13 days = 30 }
+				country_event = { id = ww_sverige_demo_crisis.16 days = 1095 }
 				# Temporary
 				promote_character = SWE_gustaf_v
 				set_party_name = {
@@ -2781,7 +2947,25 @@ focus_tree = {
 			show_ideas_tooltip = SWE_carl_bennedich
 		}
 	}
-	# Another focus here, prob industrial
+	focus = {
+		id = SWE_win_over_agrarian_parties
+		icon = GFX_focus_generic_manpower
+		prerequisite = {
+			focus = SWE_kungliga_regeringen
+			focus = SWE_military_control
+		}
+		relative_position_id = SWE_kungliga_regeringen
+		cost = 7.00
+		x = 1
+		y = 1
+		
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		
+		completion_reward = {
+			add_political_power = 35
+			custom_effect_tooltip = enables_further_riksdag_decisions
+		}
+	}
 	focus = {
 		id = SWE_creation_of_paramilitaries
 		icon = GFX_focus_generic_manpower
@@ -3000,6 +3184,14 @@ focus_tree = {
 				has_idea = idea_armistice
 			}
 			# Should check for something like a communist major existing
+		}
+		continue_if_invalid = yes
+		cancel = {
+			OR = {
+				has_idea = idea_army_restrictions
+				has_idea = idea_armistice
+				NOT = { has_government = fascism }
+			}
 		}
 		
 		search_filters = { FOCUS_FILTER_POLITICAL }
@@ -3269,7 +3461,12 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_STABILITY }
 		
 		completion_reward = {
-			add_stability = 0.05
+			custom_effect_tooltip = adjust_swe_economic_tt
+			add_to_variable = {
+				tooltip = stability_factor_tt
+				var = SWE_eco_stability
+				value = 0.05
+			}
 			if = {
 				limit = { has_dynamic_modifier = { modifier = SWE_emigration_problem } }
 				custom_effect_tooltip = adjust_emigration_problem_tt
@@ -3307,6 +3504,11 @@ focus_tree = {
 				}
 			}
 			custom_effect_tooltip = adjust_swe_economic_tt
+			add_to_variable = {
+				tooltip = stability_factor_tt
+				var = SWE_eco_stability
+				value = -0.10
+			}
 			add_to_variable = {
 				tooltip = consumer_goods_factor_tt
 				var = SWE_consumer_goods
@@ -3470,16 +3672,16 @@ focus_tree = {
 				var = SWE_pol_trade_laws_cost_factor
 				value = -0.10
 			}
+			add_to_variable = {
+				tooltip = min_export_tt
+				var = SWE_pol_min_export
+				value = 0.05
+			}
 			custom_effect_tooltip = adjust_swe_economic_tt
 			add_to_variable = {
 				tooltip = political_power_gain_tt
 				var = SWE_eco_political_power_gain
 				value = -0.03
-			}
-			add_to_variable = {
-				tooltip = min_export_tt
-				var = SWE_min_export
-				value = 0.05
 			}
 			add_to_variable = {
 				tooltip = consumer_goods_factor_tt
@@ -3501,7 +3703,7 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_STABILITY FOCUS_FILTER_INDUSTRY }
 		available = {
 			OR = {
-				has_country_leader_ideology = social_democracy
+				SWE_social_democracy_trigger = yes
 				has_government = communism
 			}
 		}
@@ -4408,40 +4610,10 @@ focus_tree = {
 				var = SWE_mil_industrial_capacity_dockyard
 				value = 0.02
 			}
-			every_owned_state = {
-				limit = {
-					is_controlled_by = ROOT
-					is_coastal = yes
-					free_building_slots = {
-						building = dockyard
-						size > 0
-						include_locked = yes
-					}
-					OR = {
-						is_in_home_area = yes
-						NOT = {
-							owner = {
-								any_owned_state = {
-									is_controlled_by = ROOT
-									is_coastal = yes
-									free_building_slots = {
-										building = dockyard
-										size > 0
-										include_locked = yes
-									}
-									is_in_home_area = yes
-								}
-							}
-						}
-					}
-				}
-				random_select_amount = 3
-				add_extra_state_shared_building_slots = 1
-				add_building_construction = {
-					type = dockyard
-					level = 1
-					instant_build = yes
-				}
+			# Remove/Adjust bonuses - perhaps make a decision for dockyard
+			unlock_decision_tooltip = {
+				decision = SWE_priority_to_baltic_supremacy
+				show_effect_tooltip = yes
 			}
 		}
 	}
@@ -4484,9 +4656,26 @@ focus_tree = {
 			if = {
 				limit = { has_dlc = "Man the Guns" }
 				create_equipment_variant = {
+					name = "Sökaren Class"
+					type = ship_hull_light_3
+					name_group = SWE_DD_HISTORICAL
+					parent_version = 0
+					show_position = no
+					modules = {
+						fixed_ship_battery_slot = ship_light_battery_1
+						fixed_ship_anti_air_slot = empty
+						#fixed_ship_fire_control_system_slot = empty
+						fixed_ship_radar_slot = empty
+						fixed_ship_engine_slot = light_ship_engine_2
+						fixed_ship_torpedo_slot = empty
+						mid_1_custom_slot = ship_mine_sweeper_1
+						rear_1_custom_slot = empty
+					}
+				}
+				create_equipment_variant = {
 					name = "Clas Fleming Class"
-					type = ship_hull_light_2
-					name_group = NOR_DD_HISTORICAL
+					type = ship_hull_light_3
+					name_group = SWE_DD_HISTORICAL
 					parent_version = 0
 					modules = {
 						fixed_ship_battery_slot = ship_light_battery_1
@@ -5305,8 +5494,11 @@ focus_tree = {
 			}
 			OR = {
 				is_ally_with = FIN
-				has_government = fascism
-				# Intervened in Civil War but didn't fail
+				AND = {
+					has_government = fascism
+					FIN = { NOT = { has_government = communism } }
+				}
+				# Intervened in Civil War and didn't fail
 				AND = {
 					has_country_flag = swe_intervene_in_finland_cw
 					NOT = { has_country_flag = swe_failed_fin_intervention }
@@ -5321,9 +5513,19 @@ focus_tree = {
 		available_if_capitulated = yes
 		
 		completion_reward = {
-			add_political_power = -50
-			add_stability = -0.10
-			# Event to Finland to form defensive pact
+			if = {
+				limit = { has_subject = FIN }
+				add_political_power = -35
+				army_experience = 10
+				FIN = {
+					army_experience = 10
+				}
+			}
+			else = {
+				add_political_power = -50
+				add_stability = -0.10
+				# Event to Finland to form defensive pact
+			}
 		}
 	}
 	focus = {
@@ -5996,15 +6198,18 @@ focus_tree = {
 			has_war = no
 			is_in_faction = no
 			is_great_war_ongoing = yes
-			DEN = {
-				exists = yes
-				is_in_faction = no
-				has_war = no
-			}
-			NOR = {
-				exists = yes
-				is_in_faction = no
-				has_war = no
+			custom_trigger_tooltip = {
+				tooltip = SWE_censorship_requirements_tt
+				DEN = {
+					exists = yes
+					is_in_faction = no
+					has_war = no
+				}
+				NOR = {
+					exists = yes
+					is_in_faction = no
+					has_war = no
+				}
 			}
 		}
 		search_filters = { FOCUS_FILTER_HISTORICAL }
@@ -6013,20 +6218,21 @@ focus_tree = {
 			# Adds some bonus to spies?
 			NOR = {
 				country_event = { id = ww_sverige_general.28 }
-				custom_effect_tooltip = if_they_accept_tt
-				effect_tooltip = {
-					add_ideas = SWE_nordic_censorship_agreement
-				}
 			}
 			DEN = {
 				country_event = { id = ww_sverige_general.28 }
-				custom_effect_tooltip = if_they_accept_tt
-				effect_tooltip = {
-					add_ideas = SWE_nordic_censorship_agreement
-				}
 			}
 			custom_effect_tooltip = if_they_accept_tt
 			effect_tooltip = {
+				every_other_country = {
+					limit = {
+						OR = {
+							tag = NOR
+							tag = DEN
+						}
+					}
+					add_ideas = SWE_nordic_censorship_agreement
+				}
 				add_ideas = SWE_nordic_censorship_agreement
 			}
 		}
@@ -6324,6 +6530,7 @@ focus_tree = {
 		}
 		
 		completion_reward = {
+			custom_effect_tooltip = SWE_support_finnish_resistance_tt
 			# Unlock decision to train Finnish for outbreak of war with Russia
 			unlock_decision_tooltip = SWE_secretly_bring_in_finnish_volunteers
 		}
@@ -6386,7 +6593,7 @@ focus_tree = {
 	}
 	focus = {
 		id = SWE_prepare_strikebreakers
-		icon = GFX_goal_generic_political_pressure
+		icon = GFX_generic_police_state
 		prerequisite = { focus = SWE_endorse_pro_german_press }
 		relative_position_id = SWE_strengthen_german_relations
 		cost = 7.00
@@ -6430,16 +6637,6 @@ focus_tree = {
 		}
 		
 		completion_reward = {
-			#if = {
-			#	limit = {
-			#		GER = {
-			#			is_ai = yes
-			#		}
-			#	}
-			#	GER = {
-			#		add_to_faction = SWE
-			#	}
-			#}
 			unlock_decision_tooltip = SWE_join_the_great_war_ger
 			# Unlock decision to join war under certain circumstances
 				# Presumably:
@@ -6520,6 +6717,7 @@ focus_tree = {
 			}
 		}
 	}
+	# Unless shared tree is made, don't use focus
 	focus = {
 		id = SWE_address_scandinavia_monetary_union
 		icon = GFX_focus_SWE_approach_the_allies
@@ -6528,6 +6726,8 @@ focus_tree = {
 		cost = 2.00
 		x = 7
 		y = 1
+		
+		allow_branch = { always = no }	# For now
 		
 		available = {
 			is_in_faction = no

@@ -2152,6 +2152,125 @@ SWE_random_neutrality_event_effect = {	# For when moving this to mission
 	}
 }
 
+# For now, later maybe make hardcoded
+SWE_prohibition_result_effect = {
+	SWE = {
+		set_temp_variable = {
+			var = swe_population
+			value = max_manpower_k
+		}
+		set_temp_variable = {
+			var = swe_pos_for_prohbition
+			value = 0
+		}
+		set_temp_variable = {
+			var = swe_adj_for_laws
+			value = -0.01
+		}
+		# Combined (War Support + Socialist Popularity) * 0.05
+		# So max value is 0.09 (unlikely normally) (which can increase to 0.16 with suffrage)
+		add_to_temp_variable = {
+			var = swe_adj_for_laws
+			value = SWE.party_popularity@communism
+		}
+		add_to_temp_variable = {
+			var = swe_adj_for_laws
+			value = SWE.has_war_support
+		}
+		multiply_temp_variable = {
+			var = swe_adj_for_laws
+			value = 0.05
+		}
+		if = {
+			limit = { has_country_flag = SWE_suffrage_flag }
+			add_to_temp_variable = {
+				var = swe_adj_for_laws
+				value = 0.07
+			}
+		}
+		every_owned_state = {
+			limit = {
+				is_core_of = SWE
+			}
+			set_temp_variable = {
+				var = weighted_population_var
+				value = state_population_k
+			}
+			set_temp_variable = {
+				var = pop_weight_adj
+				value = 0.49
+			}
+			add_to_temp_variable = {
+				var = pop_weight_adj
+				value = PREV.swe_adj_for_laws
+			}
+			if = {
+				limit = {
+					state = 666
+				}
+				add_to_temp_variable = {
+					var = pop_weight_adj
+					value = 0.25
+				}
+			}
+			else_if = {
+				limit = {
+					state = 38
+				}
+				add_to_temp_variable = {
+					var = pop_weight_adj
+					value = 0.08
+				}
+			}
+			else_if = {
+				limit = {
+					state = 141
+				}
+				add_to_temp_variable = {
+					var = pop_weight_adj
+					value = -0.09
+				}
+			}
+			else_if = {
+				limit = {
+					state = 124
+				}
+				add_to_temp_variable = {
+					var = pop_weight_adj
+					value = -0.21
+				}
+			}
+			else_if = {
+				limit = {
+					state = 130
+				}
+				add_to_temp_variable = {
+					var = pop_weight_adj
+					value = -0.29
+				}
+			}
+			multiply_temp_variable = {
+				var = weighted_population_var
+				value = pop_weight_adj
+			}
+			round_temp_variable = weighted_population_var
+			add_to_temp_variable = {
+				var = PREV.swe_pos_for_prohbition
+				value = weighted_population_var
+			}
+		}
+		set_variable = {
+			var = swe_proh_result
+			value = swe_pos_for_prohbition
+		}
+		divide_variable = {
+			var = swe_proh_result
+			value = swe_population
+		}
+	}
+	
+}
+
 # Unused right now
 SWE_increase_riksdag_rigidity = {
 	custom_effect_tooltip = swe_temporary_increase_political_rigidity
